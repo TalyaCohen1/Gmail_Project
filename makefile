@@ -13,15 +13,16 @@ TEST_SRCS = $(wildcard tests/*_test.cpp)
 OBJS = $(SRCS:.cpp=.o)
 
 # Output
+BIN = main
 TEST_BIN = runTests
 
-# Default target
-all: $(TEST_BIN)
+all: $(BIN) $(TEST_BIN)
 
-# Link the test binary
+$(BIN): $(SRCS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
 $(TEST_BIN): $(SRCS) $(TEST_SRCS)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(GTEST_FLAGS)
 
-# Clean
 clean:
-	rm -f $(TEST_BIN) *.o src/*.o
+	rm -f $(BIN) $(TEST_BIN)
