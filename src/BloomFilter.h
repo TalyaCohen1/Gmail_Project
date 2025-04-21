@@ -18,4 +18,6 @@ public:
  
     void saveToFile(const std::string& filename) const;
     void loadFromFile(const std::string& filename);
+
+    int getSize();
 };
