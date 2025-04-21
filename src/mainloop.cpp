@@ -1,51 +1,56 @@
-#include "mainloop.h"
-#include "initialize.h"
-#include "UrlBlacklist.h"
+#include "MainLoop.h"
 #include "ConfigParser.h"
+#include "Initialize.h"
+#include "UrlAdder.h"
+
 #include <iostream>
+#include <sstream>
 
-void mainloop :: run(){
-    // Create a bloom filter with the given size and hash functions
-    std ::string input;
-    ConfigParser configParser;
-    ConfigData configData;
+MainLoop::MainLoop(){
+    // Constructor initializes the bloom filter and URL blacklist
+    pm = PersistentManager("data"); // Initialize the persistent manager
 
-    std::cout << "Enter the size of the bloom filter and the hash functions (e.g., 100 1 2 3): ";
-    std::getline(std::cin, input); // Read the entire line of input
-    configData = configParser.parseLine(input); // Parse the input line
+    std::string line;
+    std::cout << "Enter configuration";
+    std::getline(std::cin, line);
 
-    if(!configData.valid) {
-        std::cerr << "Invalid input. Please enter a valid size and hash functions." << std::endl;
-        return; // Exit if the input is invalid
+    ConfigParser parser;
+    ConfigData config = parser.parseLine(line);
+
+    if (!config.valid) {
+        std::cerr << "Invalid configuration. Exiting." << std::endl;
+        exit(1);
     }
 
-    // Create the bloom filter using the factory
-    BloomFilter bloomFilter =initalize::create(configData.size, configData.hashFunc);
-    UrlBlacklist realBlacklist;
-    realBlacklist.loadFromFile("data/blacklist.txt");
-    bloomFilter->loadFromFile("data/bloom.dat");            // Load the bloom filter from a file
+    bloomFilter = Initialize::create(config.size, config.hashFunc); // Create the bloom filter using the factory
 
+    pm.loadURLBlacklist(realBlacklist, "blacklist.txt");
+
+
+}
+
+void mainloop :: run(){
+    // Main loop for processing user input
+    std::string input;
 
     while (std:: getline(std:: cin, input)){
 
         if (input.size() < 2) continue;
 
         if (input.substr(0, 2) == "1 ") {
-            std::string url = input.substr(2);
-            bloomFilter->add(url);
-            realBlacklist.add(url);
-            bloomFilter->saveToFile("data/bloom.dat");
-            realBlacklist.saveToFile("data/blacklist.txt");
+            UrlAdder adder(bloomFilter, realBlacklist);
+            adder.addUrl(url);
+            adder.saveChanges("data/bloom.txt", "data/blacklist.txt");
         }
         else if (input.substr(0, 2) == "2 ") {
-            std::string url = input.substr(2);
-            bool bloomResult = bloomFilter->possiblyContain(url);
-            std::cout << (bloomResult ? "true" : "false") << " ";
+            bool possibly = bloomFilter.possiblyContains(url);
+            std::cout << (possibly ? "true" : "false") << " ";
 
-            if (bloomResult) {
-                bool real = realBlacklist.contains(url); 
-                std::cout << (real ? "true" : "false");
+            if (possibly) {
+                bool actually = realBlacklist.contains(url);
+                std::cout << (actually ? "true" : "false");
             }
+
             std::cout << std::endl;
         }
     }    

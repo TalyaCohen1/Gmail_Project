@@ -4,7 +4,7 @@
 //struct to save the first line from the user
 struct ConfigData {
     int size;  //size of the bloomfilter
-    std::vector<int> hashFunc;  
+    std::vector<int> hashFunc;  //how many time we will call every hash function
     bool valid; 
 };
 
