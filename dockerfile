@@ -1,29 +1,14 @@
-# Base image with build tools and Google Test
-FROM ubuntu:22.04
+FROM gcc:latest
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    git \
-    wget \
-    libgtest-dev \
-    libgmock-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y cmake
 
-# Build Google Test (comes uncompiled)
-RUN cd /usr/src/gtest && cmake . && make && cp *.a /usr/lib
+COPY . /usr/src/mytest
 
-# Set workdir inside container
-WORKDIR /usr/src/app
+WORKDIR /usr/src/mytest
 
-# Copy project into container
-COPY . .
+RUN mkdir build
+WORKDIR /usr/src/mytest/build
 
-# Compile everything using your Makefile
-RUN make
+RUN cmake .. && make
 
-# Set default command to run the main app
-CMD ["./main"]
-
-# CMD ["./runTests"]
+CMD ["./runTests"]
