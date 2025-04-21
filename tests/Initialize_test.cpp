@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "../src/initialize.h"
 #include "../src/BloomFilter.h"
 #include "../src/hashfunc.h"
