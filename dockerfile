@@ -16,4 +16,4 @@ COPY . .
 RUN mkdir -p build && cd build && cmake .. && make
 
 # Default command
-CMD ["./build/runTests"]
+CMD ["./runTests"]

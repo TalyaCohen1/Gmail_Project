@@ -1,7 +1,7 @@
 #include "BloomFilter.h"
-#include "HashFunc.h"
+#include "hashfunc.h"
 #include "multihash.h"
-#include "configparser.h"
+#include "ConfigParser.h"
 #include <vector>
 
 class Initialize {

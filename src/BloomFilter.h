@@ -7,10 +7,10 @@ class BloomFilter {
 private:
     int size;
     std::vector<bool> bitArray;
-    std::vector<HashFunc*> hashFunctions;
+    std::vector<hashfunc*> hashFunctions;
 
 public:
-    BloomFilter(int size, const std::vector<HashFunc*>& functions);
+    BloomFilter(int size, const std::vector<hashfunc*>& functions);
     ~BloomFilter(); // נשתמש בו כדי למחוק את הפונקציות שהוקצו בזיכרון
 
     void add(const std::string& url);

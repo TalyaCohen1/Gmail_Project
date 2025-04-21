@@ -14,6 +14,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(runTests math.cpp test.cpp)
+add_executable(runTests tests/Initialize_test.cpp)
 
 target_link_libraries(runTests gtest_main)
