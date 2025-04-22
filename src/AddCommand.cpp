@@ -1,8 +1,8 @@
 #include "AddCommand.h"
 #include <string>
 
-AddCommand::AddCommand(BloomFilter& bf, URLBlacklist& bl, PersistentManager& p)
-            : bloomFilter(bf), realBlacklist(bl), pm(p) {}
+AddCommand::AddCommand(BloomFilter& bf, URLBlacklist& bl)
+            : bloomFilter(bf), realBlacklist(bl) {}
     
 void AddCommand:: execute(const std::string& input) {
             std::string url = input.substr(2); 

@@ -64,6 +64,8 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xutility": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "regex": "cpp",
+        "xtree": "cpp"
     }
 }

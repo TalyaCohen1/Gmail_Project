@@ -1,3 +1,5 @@
+#ifndef APP_H
+#define APP_H
 #include <map>
 #include <string>
 #include <iostream>
@@ -13,4 +15,5 @@ public:
     App(map<string ,ICommand*> commands);
     void run();
 };
+#endif // APP_H
 
