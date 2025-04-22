@@ -11,14 +11,14 @@ URLBlacklist::URLBlacklist( )
 {
 }
 
-void UrlBlacklist::add(const std::string& url) {
+void URLBlacklist::add(const std::string& url) {
     if (contains(url)) {
         return; // URL already exists, no need to add it again
     }
     blacklist.push_back(url);
 }
 
-bool UrlBlacklist::contains(const std::string& url) const {
+bool URLBlacklist::contains(const std::string& url) const {
     for (const auto& blacklistedUrl : blacklist) {
         if (blacklistedUrl == url) {
             return true;
@@ -27,7 +27,7 @@ bool UrlBlacklist::contains(const std::string& url) const {
     return false;
 }
 
-void UrlBlacklist::saveToFile(const std::string& filename) const {
+void URLBlacklist::saveToFile(const std::string& filename) const {
     std::ofstream outFile(std::filesystem::current_path() / filename);
     if (outFile.is_open()) {
         for (const auto& bl_url : blacklist) {
@@ -39,7 +39,7 @@ void UrlBlacklist::saveToFile(const std::string& filename) const {
     }
 }
 
-void UrlBlacklist::loadFromFile(const std::string& filename) {
+void URLBlacklist::loadFromFile(const std::string& filename) {
     std::ifstream inFile(std::filesystem::current_path() / filename);
     if (inFile.is_open()) {
         std::string url;
@@ -52,6 +52,6 @@ void UrlBlacklist::loadFromFile(const std::string& filename) {
     }
 }
 
-const std::vector<std::string>& UrlBlacklist::getBlacklist() const {
+const std::vector<std::string>& URLBlacklist::getBlacklist() const {
     return blacklist;
 }
