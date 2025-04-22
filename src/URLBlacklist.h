@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-class UrlBlacklist {
+class URLBlacklist {
 private:
     std::vector<std::string> blacklist;
 
