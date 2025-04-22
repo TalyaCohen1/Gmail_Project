@@ -16,7 +16,7 @@ public:
 
 private:
     BloomFilter& bloomFilter;
-    Blacklist& realBlacklist;
+    URLBlacklist& realBlacklist;
 };
 
 #endif
