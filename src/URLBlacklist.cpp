@@ -5,8 +5,7 @@
 #include <filesystem>
 #include <iostream>
 
-
-void add(const std::string& url){
+void URLBlacklist::add(const std::string& url){
     // Check if the URL is already in the blacklist
     if (contains(url)) {
         return; // URL already exists, no need to add it again
@@ -14,7 +13,7 @@ void add(const std::string& url){
     blacklist.push_back(url); // Add the URL to the blacklist
 }
 
-bool contains(const std::string& url) const{
+bool URLBlacklist::contains(const std::string& url) const{
     // Check if the URL is in the blacklist
     for (const auto& blacklistedUrl : blacklist) {
         if (blacklistedUrl == url) {
@@ -24,7 +23,7 @@ bool contains(const std::string& url) const{
     return false; // URL not found in the blacklist
 }
 
-void saveToFile(const std::string& filename) const{
+void URLBlacklist::saveToFile(const std::string& filename) const{
     std::ofstream outFile(std::filesystem::current_path() / filename); // Open the file for writing
     if (outFile.is_open()) {
         for (const auto& bl_url : blacklist) {
@@ -36,7 +35,7 @@ void saveToFile(const std::string& filename) const{
     }
 }
 
-void loadFromFile(const std::string& filename){
+void URLBlacklist::loadFromFile(const std::string& filename){
     std::ifstream inFile(std::filesystem::current_path() / filename); // Open the file for reading
     if (inFile.is_open()) {
         std::string url;

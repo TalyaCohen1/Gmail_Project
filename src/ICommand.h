@@ -1,4 +1,4 @@
 class ICommand {
 public:
-    virtual void execute() = 0;
+    virtual void execute(const std::string& input) = 0;
 };

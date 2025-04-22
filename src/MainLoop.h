@@ -4,6 +4,8 @@
 #include <string>
 #include "BloomFilter.h"
 #include "ConfigParser.h"
+#include "URLBlacklist.h"
+#include <regex>
 
 class MainLoop {
 private:
