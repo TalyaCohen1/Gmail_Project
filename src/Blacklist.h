@@ -4,13 +4,15 @@
 #include <unordered_set>
 #include <string>
 
+using namespace std;
+
 class Blacklist {
 public:
-    void loadFromFile(const std::string& path);  // e.g., "blacklist.txt"
-    bool contains(const std::string& url) const;
+    void loadFromFile(const string& path);  // e.g., "blacklist.txt"
+    bool contains(const string& url) const;
 
 private:
-    std::unordered_set<std::string> urls;
+    unordered_set<string> urls;
 };
 
 #endif
