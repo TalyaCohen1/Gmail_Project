@@ -1,32 +1,72 @@
 #include <gtest/gtest.h>
 #include "../src/BloomFilter.h"
-//#include "bloom_filter.h" // Replace with the actual header file for your Bloom Filter implementation
+#include "../src/URLBlacklist.h"
+#include "../src/HashFunc.h" // Include your concrete hash function implementation
 
-// Test case for adding elements to the Bloom Filter
-TEST(BloomFilterTest, AddElement) {
-    BloomFilter bf(1000, 3); // Example: 1000 bits, 3 hash functions
-    bf.add("test");
-    EXPECT_TRUE(bf.contains("test"));
-    EXPECT_FALSE(bf.contains("not_in_filter"));
-}
+// ----------------------------
+// Test suite: BloomFilterCheckTest
+// ----------------------------
 
-// Test case for false positives
-TEST(BloomFilterTest, FalsePositive) {
-    BloomFilter bf(1000, 3);
+// Test for Bloom filter false positives and URLBlacklist usage
+TEST(BloomFilterCheckTest, FalsePositiveAndBlacklistCheck) {
+    std::vector<HashFunc*> hashFuncs = {
+        new HashFunc(),
+        new HashFunc(),
+        new HashFunc()
+    };
+    BloomFilter bf(1000, hashFuncs);
+    URLBlacklist ub;
+
+    ub.add("example.com");
     bf.add("example");
-    // Since Bloom Filters can have false positives, we can't guarantee "false" for unrelated elements.
-    // But we can ensure that added elements are always detected.
-    EXPECT_TRUE(bf.contains("example"));
+
+    EXPECT_TRUE(bf.possiblyContain("example"));
+    EXPECT_FALSE(bf.possiblyContain("not_in_filter"));
+
+    EXPECT_TRUE(ub.contains("example.com"));
+    EXPECT_FALSE(ub.contains("not_in_filter"));
+
+    for (auto* func : hashFuncs) delete func;
 }
 
-// Test case for edge cases
-TEST(BloomFilterTest, EdgeCases) {
-    BloomFilter bf(1000, 3);
-    EXPECT_FALSE(bf.contains("")); // Empty string
+// Test edge cases like empty strings
+TEST(BloomFilterCheckTest, EdgeCases) {
+    std::vector<HashFunc*> hashFuncs = {
+        new HashFunc(),
+        new HashFunc(),
+        new HashFunc()
+    };
+    BloomFilter bf(1000, hashFuncs);
+    URLBlacklist ub;
+
+    EXPECT_FALSE(bf.possiblyContain(""));
+    EXPECT_FALSE(ub.contains(""));
+
     bf.add("");
-    EXPECT_TRUE(bf.contains("")); // Now it should contain the empty string
+    ub.add("");
+
+    EXPECT_TRUE(bf.possiblyContain(""));
+    EXPECT_TRUE(ub.contains(""));
+
+    for (auto* func : hashFuncs) delete func;
 }
 
+// Test Bloom filter without any insertions
+TEST(BloomFilterCheckTest, EmptyFilter) {
+    std::vector<HashFunc*> hashFuncs = {
+        new HashFunc(),
+        new HashFunc(),
+        new HashFunc()
+    };
+    BloomFilter bf(1000, hashFuncs);
+
+    EXPECT_FALSE(bf.possiblyContain("something"));
+
+    for (auto* func : hashFuncs) delete func;
+}
+
+// --------------------
+// Google Test main()
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

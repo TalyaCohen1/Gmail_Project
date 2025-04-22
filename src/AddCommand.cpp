@@ -1,4 +1,5 @@
 #include "AddCommand.h"
+#include <string>
 
 AddCommand::AddCommand(BloomFilter& bf, URLBlacklist& bl, PersistentManager& p)
             : bloomFilter(bf), realBlacklist(bl), pm(p) {}
