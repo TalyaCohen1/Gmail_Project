@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 #include <utility> // for std::pair
-#include <memory> // for std::unique_ptr
 
 std::vector<HashFunc*> MainLoop::convertToHashFunc(const std::vector<int>& hashIDs) {
     // Convert the hash IDs to HashFunc objects
