@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BLACKLIST_H
+#define BLACKLIST_H
+
 #include <unordered_set>
 #include <string>
 
@@ -10,3 +12,5 @@ public:
 private:
     std::unordered_set<std::string> urls;
 };
+
+#endif

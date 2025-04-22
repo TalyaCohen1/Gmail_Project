@@ -1,7 +1,13 @@
 #include <gtest/gtest.h>
+<<<<<<< HEAD
 // #include "../src/Initialize.h"
 // #include "../src/BloomFilter.h"
 // #include "../src/HashFunc.h"
+=======
+#include "../src/initialize.h"
+#include "../src/BloomFilter.h"
+#include "../src/hashfunc.h"
+>>>>>>> de1e9a33eabd982e30c4a5018a5d939c9f573b36
 
 TEST(InitializeTest, CreatesBloomFilterWithCorrectSize) {
     int expectedSize = 256;
