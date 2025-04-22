@@ -14,6 +14,8 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(runTests tests/Initialize_test.cpp)
+add_executable(runTests tests/ConfigParser_test.cpp)
 
-target_link_libraries(runTests gtest_main)
+add_library(ConfigParser src/ConfigParser.cpp)
+target_include_directories(ConfigParser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(runTests gtest_main ConfigParser)
