@@ -4,6 +4,10 @@
 #include "PersistentManager.h"
 #include "URLBlacklist.h"
 #include "BloomFilter.h"
+#include "AddCommand.h"
+#include "CheckCommand.h"
+#include "ICommand.h"
+#include <map>
 
 #include <iostream>
 #include <sstream>
@@ -41,9 +45,7 @@ void MainLoop::run() {
         std::string commandKey = input.substr(0, 1);
         if (commands.find(commandKey) != commands.end()) {
             commands[commandKey]->execute(input);
-        } else {
-            std::cerr << "Invalid command. Try again." << std::endl;
-        }
+        } 
     }
 
     delete commands["1"];
