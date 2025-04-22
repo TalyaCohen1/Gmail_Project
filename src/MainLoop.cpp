@@ -1,7 +1,7 @@
 #include "MainLoop.h"
 #include "ConfigParser.h"
 #include "Initialize.h"
-#include "UrlAdder.h"
+#include "PersistentManager.h"
 
 #include <iostream>
 #include <sstream>
@@ -38,7 +38,7 @@ void Mainloop :: run(){
         if (input.size() < 2) continue;
 
         if (input.substr(0, 2) == "1 ") {
-            UrlAdder adder(bloomFilter, realBlacklist);
+            UrlBlackList adder(bloomFilter, realBlacklist);
             adder.addUrl(url);
             adder.saveChanges("data/bloom.txt", "data/blacklist.txt");
         }

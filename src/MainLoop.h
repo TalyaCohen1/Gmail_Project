@@ -1,5 +1,6 @@
 #ifndef MAINLOOP_H
 #define MAINLOOP_H
+
 #include <string>
 #include "BloomFilter.h"
 #include "ConfigParser.h"
