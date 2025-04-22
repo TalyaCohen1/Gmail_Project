@@ -1,5 +1,3 @@
-
-
 #ifndef URLBLACKLIST_H
 #define URLBLACKLIST_H
 
@@ -16,6 +14,9 @@ public:
 
     void saveToFile(const std::string& filename) const;
     void loadFromFile(const std::string& filename);
+
+    // Getter for the blacklist vector
+    const std::vector<std::string>& getBlacklist() const;
 };
 
 #endif
