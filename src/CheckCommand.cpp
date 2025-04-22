@@ -1,18 +1,27 @@
 #include "CheckCommand.h"
 
-CheckCommand::CheckCommand(BloomFilter &bf, URLBlacklist &rb) : bloomFilter(bf), realBlacklist(rb) {}
-
-void CheckCommand::execute(const std::string &input) override
+CheckCommand::CheckCommand(BloomFilter& bloom, URLBlacklist& blacklist)
+    : bloomFilter(bloom), blacklist(blacklist) // Use initializer list
 {
-    std::string url = input.substr(2);
-    bool possibly = bloomFilter.possiblyContain(url);
-    std::cout << (possibly ? "true" : "false");
-
-    if (possibly)
-    {
-        bool actually = realBlacklist.contains(url);
-        std::cout << " " << (actually ? "true" : "false");
-    }
-
-    std::cout << std::endl;
 }
+
+/*
+ * Checks if the URL is blacklisted using the bloom filter and the real blacklist.
+ * Returns true if blacklisted, false otherwise.
+ * Also prints if it was a false positive.
+*/
+void CheckCommand::execute(const std::string& url) {
+    // Check if the URL is in the bloom filter
+    if (bloomFilter.possiblyContain(url)) {
+        // If it is, check if it is in the real blacklist
+        std::cout << "true ";
+        if (blacklist.contains(url)) {
+            std::cout << "true"; // URL is blacklisted
+        } else {
+            std::cout << "False";
+        }
+    } else {
+        std::cout << "False";
+    }
+}
+

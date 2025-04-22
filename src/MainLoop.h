@@ -9,17 +9,15 @@
 
 class MainLoop {
 private:
-    BloomFilter* bloomFilter;
+    BloomFilter bloomFilter;
     URLBlacklist realBlacklist;
 public:
     MainLoop();
-    ~MainLoop() {
-        delete bloomFilter; // Clean up the dynamically allocated BloomFilter
-    }
+    ~MainLoop();
     void run();  //main loop function
-    bool isValidCommand(const std::string& command);
+    bool isValidCommand(const int command);
     bool isValidURL(const std::string& url);
     std::vector<HashFunc*> convertToHashFunc(const std::vector<int>& hashIDs);
-    vector<std::string> split(const std::string& str, char delimiter);
+    std::pair<int , std::string> splitCommandAndUrl(const std::string& input);
 };
 #endif // MAINLOOP_H

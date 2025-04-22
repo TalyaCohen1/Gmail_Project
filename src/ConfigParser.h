@@ -12,6 +12,7 @@ private:
 ;
 
 public:
+    ConfigParser(); //constructor
     //function that get a line from the user and return the result
     void parseLine(const std::string& line);
     int getSize();
