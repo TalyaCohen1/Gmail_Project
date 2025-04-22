@@ -16,7 +16,7 @@ public:
 
     void execute(const std::string& input) override {
         std::string url = input.substr(2); // מתחיל אחרי "2 "
-        bool possibly = bloomFilter.possiblyContains(url);
+        bool possibly = bloomFilter.possiblyContain(url);
         std::cout << (possibly ? "true" : "false");
 
         if (possibly) {
