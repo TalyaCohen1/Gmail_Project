@@ -3,13 +3,15 @@
 #include <iostream>
 #include <cctype> 
 
-//function that get a line from the user and return the result
-void ConfigParser::parseLine(const std::string& line){
+ConfigParser::ConfigParser(){
     this->size = 0; // Initialize size to 0
     this->valid = false; // Initialize valid to false
     this->hashFunc = {}; // Initialize hashFunc to an empty vector
+}
 
-
+//function that get a line from the user and return the result
+void ConfigParser::parseLine(const std::string& line){
+   
     std::istringstream iss(line); // Use istringstream to parse the line
     std::string token;
     int count = 0;
