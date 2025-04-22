@@ -14,7 +14,7 @@ PersistentManager::PersistentManager(const std::string& dataDir) : dataDirectory
     }
 }
 
-bool PersistentManager::saveURLBlacklist(const URLBlacklist& blacklist, const std::string& filename) {
+bool PersistentManager::saveURLBlacklist(const Blacklist& blacklist, const std::string& filename) {
     std::ofstream out(fullPath(filename));
     if (!out.is_open()) {
         std::cerr << "Error: Could not open file for writing: " << filename << std::endl;
@@ -31,7 +31,7 @@ bool PersistentManager::saveURLBlacklist(const URLBlacklist& blacklist, const st
     return true;
 }
 
-bool PersistentManager::loadURLBlacklist(URLBlacklist& blacklist, const std::string& filename) {
+bool PersistentManager::loadURLBlacklist(Blacklist& blacklist, const std::string& filename) {
     std::ifstream in(fullPath(filename));
     if (!in.is_open()) {
         std::cerr << "Warning: Could not open file for reading: " << filename << std::endl;

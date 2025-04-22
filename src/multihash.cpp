@@ -6,7 +6,7 @@ MultiHash::MultiHash(int times) : times(times) {}
 
 MultiHash::~MultiHash() {}
 
-int MultiHash::execute(const std::string& input) const {
+int MultiHash::execute(const std::string& input){
     std::string current = input;
     std::hash<std::string> myHasher;
     int result = myHasher(current);
