@@ -1,19 +1,20 @@
 FROM gcc:latest
 
-# Install CMake and Git
+# Install cmake and git
 RUN apt-get update && apt-get install -y cmake git
 
-# Create a working directory
+# Set working directory
 WORKDIR /usr/src/app
 
-# Clone GoogleTest into a subdirectory
-RUN git clone https://github.com/google/googletest.git
-
-# Copy your local project files into the container
+# Copy project files into container
 COPY . .
 
-# Build your project
+# Build the project inside a build directory
 RUN mkdir -p build && cd build && cmake .. && make
 
-# Default command
+# Set working directory to where runTests was generated
+WORKDIR /usr/src/app/build
+
+# Run the tests
 CMD ["./runTests"]
+
