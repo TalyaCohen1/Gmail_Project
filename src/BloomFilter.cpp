@@ -24,7 +24,7 @@ BloomFilter::~BloomFilter() {
 // Add a URL
 void BloomFilter::add(const std::string& url) {
     for (int i = 0; i < hashNum; ++i) {
-        int hash_result = hashFunctions[i]->hash(url);
+        int hash_result = hashFunctions[i]->execute(url);
         int index = hash_result % arraySize;
         bitArray[index] = true;
     }
@@ -33,7 +33,7 @@ void BloomFilter::add(const std::string& url) {
 // Check if URL possibly exists
 bool BloomFilter::possiblyContain(const std::string& url) const {
     for (int i = 0; i < hashNum; ++i) {
-        int hash_result = hashFunctions[i]->hash(url);
+        int hash_result = hashFunctions[i]->execute(url);
         int index = hash_result % arraySize;
         if (!bitArray[index]) {
             return false;
