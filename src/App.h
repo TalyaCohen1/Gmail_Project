@@ -3,16 +3,15 @@
 #include <map>
 #include <string>
 #include <iostream>
-#include <string>
 #include "ICommand.h"
 
 using namespace std;
 
 class App{
 private:
-    map<string ,ICommand*> m_commands;
+    map<int ,ICommand*> m_commands;
 public:
-    App(map<string ,ICommand*> commands);
+    App(map<int ,ICommand*> commands);
     void run();
 };
 #endif // APP_H
