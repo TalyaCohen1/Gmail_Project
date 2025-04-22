@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
-#include "bloom_filter.h" // Replace with the actual header file for your Bloom Filter implementation
+#include "../src/BloomFilter.h"
+//#include "bloom_filter.h" // Replace with the actual header file for your Bloom Filter implementation
 
 // Test case for adding elements to the Bloom Filter
 TEST(BloomFilterTest, AddElement) {
