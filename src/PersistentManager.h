@@ -2,7 +2,7 @@
 #define MANAGER_H
 
 #include <string>
-#include "Blacklist.h"
+#include "URLBlacklist.h"
 // class for managing persistent data storage
 // This class is responsible for saving and loading data to and from files
 class PersistentManager {
@@ -13,8 +13,8 @@ private:
 public:
     PersistentManager(const std::string& dataDir);
     
-    bool saveURLBlacklist(const Blacklist& blacklist, const std::string& filename);
-    bool loadURLBlacklist(Blacklist& blacklist, const std::string& filename);
+    bool saveURLBlacklist(const URLBlacklist& blacklist, const std::string& filename);
+    bool loadURLBlacklist(URLBlacklist& blacklist, const std::string& filename);
 };
 
 #endif // MANAGER_H

@@ -2,6 +2,8 @@
 #include "ConfigParser.h"
 #include "Initialize.h"
 #include "PersistentManager.h"
+#include "URLBlacklist.h"
+#include "BloomFilter.h"
 
 #include <iostream>
 #include <sstream>
@@ -22,36 +24,28 @@ MainLoop::MainLoop(){
         exit(1);
     }
 
-    bloomFilter = Initialize::create(config.size, config.hashFunc); // Create the bloom filter using the factory
+    bloomFilter = BloomFilter(config.size, config.hashFunc); // Create the bloom filter with the given size and hash functions
 
     pm.loadURLBlacklist(realBlacklist, "blacklist.txt");
-
-
 }
 
-void Mainloop :: run(){
-    // Main loop for processing user input
+void MainLoop::run() {
+    std::map<std::string, ICommand*> commands;
+    commands["1"] = new AddCommand(bloomFilter, realBlacklist);
+    commands["2"] = new CheckCommand(bloomFilter, realBlacklist);
+
     std::string input;
-
-    while (std:: getline(std:: cin, input)){
-
+    while (std::getline(std::cin, input)) {
         if (input.size() < 2) continue;
 
-        if (input.substr(0, 2) == "1 ") {
-            UrlBlackList adder(bloomFilter, realBlacklist);
-            adder.addUrl(url);
-            adder.saveChanges("data/bloom.txt", "data/blacklist.txt");
+        std::string commandKey = input.substr(0, 1);
+        if (commands.find(commandKey) != commands.end()) {
+            commands[commandKey]->execute(input);
+        } else {
+            std::cerr << "Invalid command. Try again." << std::endl;
         }
-        else if (input.substr(0, 2) == "2 ") {
-            bool possibly = bloomFilter.possiblyContains(url);
-            std::cout << (possibly ? "true" : "false") << " ";
+    }
 
-            if (possibly) {
-                bool actually = realBlacklist.contains(url);
-                std::cout << (actually ? "true" : "false");
-            }
-
-            std::cout << std::endl;
-        }
-    }    
+    delete commands["1"];
+    delete commands["2"];
 }
