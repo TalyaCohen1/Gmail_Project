@@ -4,7 +4,7 @@
 #include <vector>
 
 class ConfigParser {
-//struct to save the first line from the user
+
 private: 
     int size; //size of the bloomfilter
     std::vector<int> hashFunc;  //how many time we will call every hash function

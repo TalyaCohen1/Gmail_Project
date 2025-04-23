@@ -7,60 +7,56 @@
 TEST(ConfigParserTest, ParsesValidLine) {
     ConfigParser parser;
     std::string line = "256 1 2 3";
-    ConfigData data = parser.parseLine(line);
+    ConfigParser parser = parser.parseLine(line);
 
-    EXPECT_EQ(data.size, 256);
-    EXPECT_EQ(data.hashFunc.size(), 3);
-    EXPECT_EQ(data.hashFunc[0], 1);
-    EXPECT_EQ(data.hashFunc[1], 2);
-    EXPECT_EQ(data.hashFunc[2], 3);
-    EXPECT_TRUE(data.valid);
+    EXPECT_EQ(parser.getSize(), 256);
+    EXPECT_EQ(parser.getHushFunc().size(), 3);
+    EXPECT_EQ(parser.getHushFunc(), [1, 2, 3]);
+    EXPECT_TRUE(parser.isValid());
 }
 TEST(ConfigParserTest, ParsesLineWithInvalidSize) {
     ConfigParser parser;
     std::string line = "-1 12 4";
-    ConfigData data = parser.parseLine(line);
+    ConfigParser parser = parser.parseLine(line);
 
-    EXPECT_EQ(data.size, -1);
-    EXPECT_EQ(data.hashFunc.size(), 2);
-    EXPECT_EQ(data.hashFunc[0], 12);
-    EXPECT_EQ(data.hashFunc[1], 4);
-    EXPECT_FALSE(data.valid);
+    EXPECT_EQ(parser.getSize(), -1);
+    EXPECT_EQ(parser.getHushFunc().size(), 2);
+    EXPECT_EQ(parser.getHushFunc(), [12,4]);
+    EXPECT_FALSE(parser.isValid());
 }
 TEST(ConfigParserTest, ParsesLineWithNoHashFunctions) {
     ConfigParser parser;
     std::string line = "100";
-    ConfigData data = parser.parseLine(line);
+    ConfigParser parser = parser.parseLine(line);
 
-    EXPECT_EQ(data.size, 100);
-    EXPECT_EQ(data.hashFunc.size(), 0);
-    EXPECT_FALSE(data.valid);
+    EXPECT_EQ(parser.getSize(), 100);
+    EXPECT_EQ(parser.getHushFunc().size(), 0);
+    EXPECT_FALSE(parser.isValid());
 }
 TEST(ConfigParserTest, ParsesLineWithInvalidHashFunction) {
     ConfigParser parser;
     std::string line = "128 1 -2 3";
-    ConfigData data = parser.parseLine(line);
+    ConfigParser parser = parser.parseLine(line);
 
-    EXPECT_EQ(data.size, 128);
-    EXPECT_EQ(data.hashFunc.size(), 3);
-    EXPECT_FALSE(data.valid);
+    EXPECT_EQ(parser.getSize(), 128);
+    EXPECT_EQ(parser.getHushFunc().size(), 3);
+    EXPECT_FALSE(parser.isValid());
 }
 TEST(ConfigParserTest, ParsesLineWithNonInteger) {
     ConfigParser parser;
     std::string line = "256 1 a 3";
-    ConfigData data = parser.parseLine(line);
+    ConfigParser parser = parser.parseLine(line);
 
-    EXPECT_EQ(data.size, 256);
-    EXPECT_EQ(data.hashFunc.size(), 2);
-    EXPECT_EQ(data.hashFunc[0], 1);
-    EXPECT_EQ(data.hashFunc[1], 3);
-    EXPECT_FALSE(data.valid);
+    EXPECT_EQ(parser.getSize(), 256);
+    EXPECT_EQ(parser.getHushFunc().size(), 2);
+    EXPECT_EQ(parser.getHushFunc(), [1, 3]);
+    EXPECT_FALSE(parser.isValid());
 }
 TEST(ConfigParserTest, ParsesLineWithEmptyString) {
     ConfigParser parser;
     std::string line = "";
-    ConfigData data = parser.parseLine(line);
+    ConfigParser parser = parser.parseLine(line);
 
-    EXPECT_EQ(data.size, 0);
-    EXPECT_FALSE(data.valid);
+    EXPECT_EQ(parser.getSize(), 0);
+    EXPECT_FALSE(parser.isValid());
 }

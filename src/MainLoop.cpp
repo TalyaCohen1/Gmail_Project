@@ -14,14 +14,6 @@
 #include <vector>
 #include <utility> // for std::pair
 
-std::vector<HashFunc*> MainLoop::convertToHashFunc(const std::vector<int>& hashIDs) {
-    // Convert the hash IDs to HashFunc objects
-    std::vector<HashFunc*> funcs;
-    for (int id : hashIDs) {
-        funcs.push_back(new MultiHash(id)); // Create a new MultiHash object for each ID
-    }
-    return funcs;
-}
 
 MainLoop::MainLoop() : bloomFilter(0, {}) {
     // Constructor initializes the bloom filter and URL blacklist
