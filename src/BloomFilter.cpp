@@ -1,5 +1,5 @@
 #include "BloomFilter.h"
-#include "hashfunc.h"
+#include "HashFunc.h"
 #include <vector>
 #include <string>
 #include <fstream>
