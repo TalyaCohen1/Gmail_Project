@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include <cctype> 
+#include <regex>
 
 
 ConfigParser::ConfigParser(){
@@ -17,8 +18,12 @@ void ConfigParser::parseLine(const std::string& line){
     std::string token;
     int count = 0;
 
+
     // Read the first token (size of the bloom filter)
     if (iss >> token) {
+        if (token.empty() || token[0] < '1') {
+            return; // Invalid size (not a positive integer)
+        }        
         try {
             this->size = std::stoi(token);  
             if (this->size <= 0) {
@@ -31,13 +36,14 @@ void ConfigParser::parseLine(const std::string& line){
         return; // No size provided
     }
 
+
     // Read the rest of the tokens (hash functions)
     while (iss >> token) {
+        if (token.empty() || token[0] < '0') {
+            continue; // Skip empty tokens or tokens that are not positive integers
+        }        
         try {
             int hashFunction = std::stoi(token);
-            if (hashFunction < 0) {
-                return; // Invalid hash function
-            }
             this->hashFunc.push_back(hashFunction); // Store the hash function
             count++;
         } catch (const std::invalid_argument&) {
