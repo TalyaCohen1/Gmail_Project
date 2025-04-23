@@ -3,23 +3,14 @@
 #include "../src/CheckCommand.h"
 #include "../src/BloomFilter.h"
 #include "../src/URLBlacklist.h"
-#include "../src/PersistentManager.h"
 #include "../src/MultiHash.h"
 #include <vector>
 #include <string>
-#include <filesystem>
-#include <fstream>
 #include <sstream>
-
 
 class CommandTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        // Create a test directory if it doesn't exist
-        if (!std::filesystem::exists("test_data")) {
-            std::filesystem::create_directory("test_data");
-        }
-        
         // Create hash functions for our test bloom filter
         hashFuncs.push_back(new MultiHash(1));
         
@@ -28,21 +19,18 @@ protected:
         
         // Create a test URL blacklist
         blacklist = new URLBlacklist();
-        
-        // Create a persistent manager
-        persistentManager = new PersistentManager("test_data");
     }
 
     void TearDown() override {
         // Clean up resources
         delete bloomFilter;
         delete blacklist;
-        delete persistentManager;
         
-        // Clean up test files
-        if (std::filesystem::exists("test_data/blacklist.txt")) {
-            std::filesystem::remove("test_data/blacklist.txt");
+        // Clean up hash functions
+        for (auto* hashFunc : hashFuncs) {
+            delete hashFunc;
         }
+        hashFuncs.clear();
     }
     
     // Redirect cout for testing output
@@ -59,15 +47,14 @@ protected:
     std::vector<HashFunc*> hashFuncs;
     BloomFilter* bloomFilter;
     URLBlacklist* blacklist;
-    PersistentManager* persistentManager;
     std::stringstream outputBuffer;
     std::streambuf* oldCoutBuffer;
 };
 
 // Test AddCommand
 TEST_F(CommandTest, AddCommand) {
-    // Create an AddCommand
-    AddCommand addCmd(*bloomFilter, *blacklist, *persistentManager);
+    // Create an AddCommand without PersistentManager
+    AddCommand addCmd(*bloomFilter, *blacklist);
     
     // Execute the command
     addCmd.execute("1 www.example.com");
@@ -75,9 +62,6 @@ TEST_F(CommandTest, AddCommand) {
     // Verify the URL was added to both the bloom filter and blacklist
     EXPECT_TRUE(bloomFilter->possiblyContain("www.example.com"));
     EXPECT_TRUE(blacklist->contains("www.example.com"));
-    
-    // Verify a file was created
-    EXPECT_TRUE(std::filesystem::exists("test_data/blacklist.txt"));
 }
 
 // Test CheckCommand with non-blacklisted URL
