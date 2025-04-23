@@ -6,7 +6,8 @@ AddCommand::AddCommand(BloomFilter& bf, URLBlacklist& bl)
     
 void AddCommand:: execute(const std::string& input) {
             std::string url = input.substr(2); 
-            URLBlacklist adder( realBlacklist);
-            adder.add(url);
-            adder.saveToFile("data/blacklist.txt");
+            //URLBlacklist adder(realBlacklist);
+            realBlacklist.add(url);
+            bloomFilter.add(url);
+            realBlacklist.saveToFile("data/blacklist.txt");
     }    

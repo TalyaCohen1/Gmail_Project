@@ -60,9 +60,9 @@ TEST(BloomFilterAddTest, ManyInsertions) {
 // Test special characters in strings
 TEST(BloomFilterAddTest, SpecialCharacters) {
     std::vector<HashFunc*> hashFuncs = {
-        new HashFunc(),
-        new HashFunc(),
-        new HashFunc()
+        HashFunc(),
+        HashFunc(),
+        HashFunc()
     };
     BloomFilter bf(1000, hashFuncs);
     std::string special = "!@#$%^&*()_+|}{:?><";
