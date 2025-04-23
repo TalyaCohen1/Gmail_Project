@@ -18,5 +18,6 @@ public:
     int getSize();
     std::vector<int> getHashFunc();
     bool isValid();
+    void setToStart();
 };
 #endif // configparser_h
