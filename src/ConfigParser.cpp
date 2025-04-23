@@ -46,8 +46,11 @@ void ConfigParser::parseLine(const std::string& line){
             int hashFunction = std::stoi(token);
             this->hashFunc.push_back(hashFunction); // Store the hash function
             count++;
-        } catch (const std::invalid_argument&) {
-            return; // Invalid hash function
+        }  
+        catch (const std::invalid_argument&) {
+            continue;
+        } catch (const std::out_of_range&) {
+            continue;
         }
     }
 
