@@ -27,6 +27,7 @@ void ConfigParser::parseLine(const std::string& line){
         try {
             this->size = std::stoi(token);  
             if (this->size <= 0) {
+                this->setToStart();
                 return; // Invalid size
             }
         } catch (const std::invalid_argument&) {
@@ -39,8 +40,9 @@ void ConfigParser::parseLine(const std::string& line){
 
     // Read the rest of the tokens (hash functions)
     while (iss >> token) {
-        if (token.empty() || token[0] < '0') {
-            continue; // Skip empty tokens or tokens that are not positive integers
+        if (token[0] < '0') {
+            this->setToStart();
+            return; 
         }        
         try {
             int hashFunction = std::stoi(token);
@@ -48,9 +50,11 @@ void ConfigParser::parseLine(const std::string& line){
             count++;
         }  
         catch (const std::invalid_argument&) {
-            continue;
+            this->setToStart();
+            return;
         } catch (const std::out_of_range&) {
-            continue;
+            this->setToStart();
+            return;
         }
     }
 
@@ -71,4 +75,9 @@ std::vector<int> ConfigParser::getHashFunc(){
 }
 bool ConfigParser::isValid(){
     return this->valid; // Return whether the configuration is valid
+}
+void ConfigParser::setToStart() {
+    this->size = 0; // Reset size to 0
+    this->valid = false; // Reset valid to false
+    this->hashFunc.clear(); // Clear the hash functions vector
 }
