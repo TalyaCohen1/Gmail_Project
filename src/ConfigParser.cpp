@@ -54,3 +54,12 @@ void ConfigParser::parseLine(const std::string& line){
     this->valid = true; // Valid configuration
     return;
 }
+int ConfigParser::getSize(){
+    return this->size; // Return the size of the bloom filter
+}
+std::vector<int> ConfigParser::getHashFunc(){
+    return this->hashFunc; // Return the hash functions
+}
+bool ConfigParser::isValid(){
+    return this->valid; // Return whether the configuration is valid
+}
