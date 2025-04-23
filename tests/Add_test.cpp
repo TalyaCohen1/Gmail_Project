@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 #include "../src/BloomFilter.h"
 #include "../src/URLBlacklist.h"
+#include "../src/MultiHash.h"
 #include "../src/HashFunc.h" 
+
 
 // ----------------------------
 // Test suite: BloomFilterAddTest
@@ -10,9 +12,9 @@
 // Test adding and checking a known element
 TEST(BloomFilterAddTest, AddElement) {
     std::vector<HashFunc*> hashFuncs = {
-        new HashFunc(),
-        new HashFunc(),
-        new HashFunc()
+        new MultiHash(1),
+        new MultiHash(1),
+        new MultiHash(1)
     };
     BloomFilter bf(1000, hashFuncs);
     bf.add("test");
@@ -25,9 +27,9 @@ TEST(BloomFilterAddTest, AddElement) {
 // Test duplicate insertions
 TEST(BloomFilterAddTest, DuplicateInsertions) {
     std::vector<HashFunc*> hashFuncs = {
-        new HashFunc(),
-        new HashFunc(),
-        new HashFunc()
+        new MultiHash(1),
+        new MultiHash(1),
+        new MultiHash(1)
     };
     BloomFilter bf(1000, hashFuncs);
     bf.add("duplicate");
@@ -41,9 +43,9 @@ TEST(BloomFilterAddTest, DuplicateInsertions) {
 // Test large number of insertions
 TEST(BloomFilterAddTest, ManyInsertions) {
     std::vector<HashFunc*> hashFuncs = {
-        new HashFunc(),
-        new HashFunc(),
-        new HashFunc()
+        new MultiHash(1),
+        new MultiHash(1),
+        new MultiHash(1)
     };
     BloomFilter bf(10000, hashFuncs);
     for (int i = 0; i < 500; ++i) {
@@ -60,9 +62,9 @@ TEST(BloomFilterAddTest, ManyInsertions) {
 // Test special characters in strings
 TEST(BloomFilterAddTest, SpecialCharacters) {
     std::vector<HashFunc*> hashFuncs = {
-        HashFunc(),
-        HashFunc(),
-        HashFunc()
+        new MultiHash(1),
+        new MultiHash(1),
+        new MultiHash(1)
     };
     BloomFilter bf(1000, hashFuncs);
     std::string special = "!@#$%^&*()_+|}{:?><";
