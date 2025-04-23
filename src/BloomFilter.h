@@ -1,7 +1,7 @@
 #ifndef BLOOMFILTER_H
 #define BLOOMFILTER_H
 
-#include "hashfunc.h"
+#include "HashFunc.h"
 #include <vector>
 #include <string>
 #include <fstream>
