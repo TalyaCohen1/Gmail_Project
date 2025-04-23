@@ -4,8 +4,8 @@
 #include <cctype> 
 
 //function that get a line from the user and return the result
-ConfigData ConfigParser::parseLine(const std::string& line){
-    ConfigData configData;
+ConfigParser ConfigParser::parseLine(const std::string& line){
+    ConfigParser configData;
     configData.size = 0; // Initialize size to 0
     configData.valid = false; // Initialize valid to false
 

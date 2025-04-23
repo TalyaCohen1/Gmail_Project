@@ -4,7 +4,7 @@
 #include <vector>
 
 //struct to save the first line from the user
-struct ConfigData {
+struct ConfigParser {
     int size;  //size of the bloomfilter
     std::vector<int> hashFunc;  //how many time we will call every hash function
     bool valid; 
@@ -13,6 +13,6 @@ struct ConfigData {
 class ConfigParser {
 public:
     //function that get a line from the user and return the result
-    ConfigData parseLine(const std::string& line);
+    ConfigParser parseLine(const std::string& line);
 };
 #endif // configparser_h

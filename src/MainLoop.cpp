@@ -15,7 +15,7 @@ MainLoop::MainLoop(){
     std::getline(std::cin, line);
 
     ConfigParser parser;
-    ConfigData config = parser.parseLine(line);
+    ConfigParser config = parser.parseLine(line);
 
     if (!config.valid) {
         std::cerr << "Invalid configuration. Exiting." << std::endl;
