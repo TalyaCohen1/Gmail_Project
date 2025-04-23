@@ -1,57 +1,100 @@
 #include "MainLoop.h"
+#include "BloomFilter.h"
+#include "MultiHash.h"
+#include "AddCommand.h"
+#include "CheckCommand.h"
 #include "ConfigParser.h"
-#include "Initialize.h"
-#include "PersistentManager.h"
-
 #include <iostream>
 #include <sstream>
+#include <map>
+#include <fstream>
+#include <filesystem>
+#include <regex>
+#include <string>
+#include <vector>
+#include <utility> // for std::pair
 
-MainLoop::MainLoop(){
+
+MainLoop::MainLoop() : bloomFilter(0, {}) {
     // Constructor initializes the bloom filter and URL blacklist
-    pm = PersistentManager("data"); // Initialize the persistent manager
-
-    std::string line;
-    std::cout << "Enter configuration";
-    std::getline(std::cin, line);
-
-    ConfigParser parser;
-    ConfigParser config = parser.parseLine(line);
-
-    if (!config.valid) {
-        std::cerr << "Invalid configuration. Exiting." << std::endl;
+    namespace fs = std::filesystem;
+    //create data directory and urlblacklist.txt file if they do not exist
+    if (!fs::exists("data")) {
+        fs::create_directory("data");
+    }
+    std::ofstream out("data/urlblacklist.txt", std::ios::trunc);
+    if (!out.is_open()) {
+        std::cerr << "Failed to create blacklist file." << std::endl;
         exit(1);
     }
+    out.close();
+    ConfigParser parser = ConfigParser(); // Create a ConfigParser object
+    std::string line;
 
-    bloomFilter = Initialize::create(config.size, config.hashFunc); // Create the bloom filter using the factory
-
-    pm.loadURLBlacklist(realBlacklist, "blacklist.txt");
-
-
+    while (true) {
+    std::cout << "Enter configuration: ";
+    std::getline(std::cin, line);
+    
+    parser.parseLine(line);
+    if (parser.isValid()) {
+        break; 
+    }
+    std::cerr << "Invalid configuration. Please try again." << std::endl;
+    }
+    std::vector<HashFunc*> hashFuncs = convertToHashFunc(parser.getHashFunc()); // Convert the hash IDs to HashFunc objects
+    bloomFilter = BloomFilter(parser.getSize(), hashFuncs); // Create the bloom filter with the given size and hash functions
 }
 
-void Mainloop :: run(){
-    // Main loop for processing user input
+
+bool MainLoop::isValidCommand(const int command) {
+    // Check if the command is valid (e.g., "1" or "2")
+    return command == 1 || command == 2;
+}
+bool MainLoop::isValidURL(const std::string& url) {
+    // Check if the URL is valid using a regex pattern
+    std::regex pattern(R"((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?
+        [a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?
+        (\/[a-zA-Z0-9\-._~%!$&'()+,;=:@/])?)");
+    return regex_match(url,pattern);
+}
+
+std::pair<int , std::string> splitCommandAndUrl(const std::string& input) {
+    std::istringstream iss(input);
+    int command;
+    std::string url;
+
+    iss >> command;
+    std::getline(iss, url); 
+
+    if (!url.empty() && url[0] == ' ') {
+        url.erase(0, 1);
+    }
+    return {command, url};
+}
+
+void MainLoop::run() {
+    std::map<int, ICommand*> commands;
+    commands.at(1) = new AddCommand(bloomFilter, realBlacklist);
+    commands.at(2) = new CheckCommand(bloomFilter, realBlacklist);
+
     std::string input;
-
-    while (std:: getline(std:: cin, input)){
-
-        if (input.size() < 2) continue;
-
-        if (input.substr(0, 2) == "1 ") {
-            UrlBlackList adder(bloomFilter, realBlacklist);
-            adder.addUrl(url);
-            adder.saveChanges("data/bloom.txt", "data/blacklist.txt");
+    while (std::getline(std::cin, input)) {
+        if (input.empty()) {
+            continue; // Skip empty lines
         }
-        else if (input.substr(0, 2) == "2 ") {
-            bool possibly = bloomFilter.possiblyContains(url);
-            std::cout << (possibly ? "true" : "false") << " ";
 
-            if (possibly) {
-                bool actually = realBlacklist.contains(url);
-                std::cout << (actually ? "true" : "false");
-            }
+        auto [commandNum, url] = splitCommandAndUrl(input);
 
-            std::cout << std::endl;
+        if (!isValidURL(url) || !isValidCommand(commandNum)) {
+            continue;
         }
-    }    
+
+        auto it = commands.find(commandNum);
+        if (it != commands.end()) {
+            it->second->execute(input);
+        } 
+    }
+    // Clean up dynamically allocated memory
+    delete commands.at(1);
+    delete commands.at(2);
 }

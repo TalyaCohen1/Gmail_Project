@@ -3,16 +3,20 @@
 #include <string>
 #include <vector>
 
-//struct to save the first line from the user
-struct ConfigParser {
-    int size;  //size of the bloomfilter
-    std::vector<int> hashFunc;  //how many time we will call every hash function
-    bool valid; 
-};
-
 class ConfigParser {
+
+private: 
+    int size; //size of the bloomfilter
+    std::vector<int> hashFunc;  //how many time we will call every hash function
+    bool valid;
+;
+
 public:
+    ConfigParser(); //constructor
     //function that get a line from the user and return the result
-    ConfigParser parseLine(const std::string& line);
+    void parseLine(const std::string& line);
+    int getSize();
+    std::vector<int> getHashFunc();
+    bool isValid();
 };
 #endif // configparser_h

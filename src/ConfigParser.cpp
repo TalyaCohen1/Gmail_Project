@@ -3,12 +3,16 @@
 #include <iostream>
 #include <cctype> 
 
-//function that get a line from the user and return the result
-ConfigParser ConfigParser::parseLine(const std::string& line){
-    ConfigParser configData;
-    configData.size = 0; // Initialize size to 0
-    configData.valid = false; // Initialize valid to false
 
+ConfigParser::ConfigParser(){
+    this->size = 0; // Initialize size to 0
+    this->valid = false; // Initialize valid to false
+    this->hashFunc = {}; // Initialize hashFunc to an empty vector
+}
+
+//function that get a line from the user and return the result
+void ConfigParser::parseLine(const std::string& line){
+   
     std::istringstream iss(line); // Use istringstream to parse the line
     std::string token;
     int count = 0;
@@ -16,15 +20,15 @@ ConfigParser ConfigParser::parseLine(const std::string& line){
     // Read the first token (size of the bloom filter)
     if (iss >> token) {
         try {
-            configData.size = std::stoi(token);  
-            if (configData.size <= 0) {
-                return configData; // Invalid size
+            this->size = std::stoi(token);  
+            if (this->size <= 0) {
+                return; // Invalid size
             }
         } catch (const std::invalid_argument&) {
-            return configData; // Invalid size
+            return; // Invalid size
         }
     } else {
-        return configData; // No size provided
+        return; // No size provided
     }
 
     // Read the rest of the tokens (hash functions)
@@ -32,21 +36,21 @@ ConfigParser ConfigParser::parseLine(const std::string& line){
         try {
             int hashFunction = std::stoi(token);
             if (hashFunction < 0) {
-                return configData; // Invalid hash function
+                return; // Invalid hash function
             }
-            configData.hashFunc.push_back(hashFunction); // Store the hash function
+            this->hashFunc.push_back(hashFunction); // Store the hash function
             count++;
         } catch (const std::invalid_argument&) {
-            return configData; // Invalid hash function
+            return; // Invalid hash function
         }
     }
 
     // Check if at least one hash function is provided
     if (count == 0) {
-        configData.valid = false;
-        return configData; // No hash functions provided
+        this->valid = false;
+        return; // No hash functions provided
     }
 
-    configData.valid = true; // Valid configuration
-    return configData;
+    this->valid = true; // Valid configuration
+    return;
 }

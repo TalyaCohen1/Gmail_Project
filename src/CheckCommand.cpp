@@ -1,6 +1,6 @@
-#include "URLChecker.h"
+#include "CheckCommand.h"
 
-URLChecker::URLChecker(BloomFilter& bloom, URLBlacklist& blacklist)
+CheckCommand::CheckCommand(BloomFilter& bloom, URLBlacklist& blacklist)
     : bloomFilter(bloom), blacklist(blacklist) // Use initializer list
 {
 }
@@ -10,7 +10,7 @@ URLChecker::URLChecker(BloomFilter& bloom, URLBlacklist& blacklist)
  * Returns true if blacklisted, false otherwise.
  * Also prints if it was a false positive.
 */
-void URLChecker::execute(const std::string& url) {
+void CheckCommand::execute(const std::string& url) {
     // Check if the URL is in the bloom filter
     if (bloomFilter.possiblyContain(url)) {
         // If it is, check if it is in the real blacklist
