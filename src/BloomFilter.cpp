@@ -15,13 +15,13 @@ BloomFilter::BloomFilter(int size, const std::vector<HashFunc *> &functions)
 }
 
 // Destructor
-BloomFilter::~BloomFilter()
-{
-    for (int i = 0; i < hashNum; ++i)
-    {
-        delete hashFunctions[i]; // Free each hash function
-    }
-}
+//BloomFilter::~BloomFilter()
+//{
+//    for (int i = 0; i < hashNum; ++i)
+//    {
+//        delete hashFunctions[i]; // Free each hash function
+//    }
+//}
 
 // Add a URL
 void BloomFilter::add(const std::string &url)
@@ -30,6 +30,9 @@ void BloomFilter::add(const std::string &url)
     {
         int hash_result = hashFunctions[i]->execute(url);
         int index = hash_result % arraySize;
+        //int index = hash_result % arraySize;
+        if (index < 0) index += arraySize;  // Fix potential negatives
+
         bitArray[index] = true;
     }
 }
@@ -41,6 +44,7 @@ bool BloomFilter::possiblyContain(const std::string &url) const
     {
         int hash_result = hashFunctions[i]->execute(url);
         int index = hash_result % arraySize;
+        if (index < 0) index += arraySize;  // Fix potential negatives
         if (!bitArray[index])
         {
             return false;

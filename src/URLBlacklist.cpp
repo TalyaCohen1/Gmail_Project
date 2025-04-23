@@ -6,7 +6,7 @@
 #include <iostream>
 
 // Constructor
-URLBlacklist::URLBlacklist( )
+URLBlacklist::URLBlacklist()
     : blacklist()  // Initialize the blacklist vector
 {
 }
