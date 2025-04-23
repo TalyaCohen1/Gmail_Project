@@ -1,18 +1,12 @@
 #ifndef APP_H
 #define APP_H
-#include <map>
-#include <string>
-#include <iostream>
-#include "ICommand.h"
 
-using namespace std;
+#include "MainLoop.h"
 
-class App{
-private:
-    map<int ,ICommand*> m_commands;
+class App {
 public:
-    App(map<int ,ICommand*> commands);
-    void run();
+    App();         
+    void run(); 
 };
-#endif // APP_H
 
+#endif // APP_H

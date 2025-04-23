@@ -1,11 +1,11 @@
 #include "App.h"
 
-using namespace std;
-
-App::App(map<int ,ICommand*> commands){
-    m_commands = commands;
-}
-void App::run(){
-    //
+App::App() {
+    // Constructor initializes the application
+    // You can add any necessary initialization code here
 }
 
+void App::run() {
+    MainLoop loop= MainLoop(); // Create a MainLoop object
+    loop.run();
+}
