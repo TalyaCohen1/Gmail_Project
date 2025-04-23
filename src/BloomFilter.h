@@ -10,10 +10,10 @@
 class BloomFilter {
 public:
     // Constructor: takes ownership of hash functions
-    BloomFilter(int size, const std::vector<HashFunc*>& functions);
+    BloomFilter(int size, const std::vector<HashFunc*> &functions);
 
     // Destructor
-    ~BloomFilter();
+    ~BloomFilter()= default; // Default destructor handles cleanup
 
     // Adds a URL to the filter
     void add(const std::string& url);

@@ -9,6 +9,8 @@ private:
     std::vector<std::string> blacklist;
 
 public:
+    // Constructor
+    URLBlacklist();
     void add(const std::string& url);
     bool contains(const std::string& url) const;
 

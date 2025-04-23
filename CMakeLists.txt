@@ -5,30 +5,53 @@ project(MyExample)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-
+# GoogleTest setup
 include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/tags/release-1.11.0.zip
 )
-
-# For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Add the library for ConfigParser
+# Create a library for ConfigParser
 add_library(ConfigParser src/ConfigParser.cpp)
 target_include_directories(ConfigParser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# Find all test files in the tests directory
+# Create a library for the BloomFilter system
+add_library(BloomLib
+    src/AddCommand.cpp
+    src/AddCommand.h
+    src/App.cpp
+    src/App.h
+    src/BloomFilter.cpp
+    src/BloomFilter.h
+    src/CheckCommand.cpp
+    src/CheckCommand.h
+    src/ConfigParser.cpp
+    src/ConfigParser.h
+    src/HashFunc.h
+    src/ICommand.h
+    src/main.cpp
+    src/MainLoop.cpp
+    src/MainLoop.h
+    src/MultiHash.cpp
+    src/MultiHash.h
+    src/URLBlacklist.cpp
+    src/URLBlacklist.h
+)
+target_include_directories(BloomLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+# Find all test source files in tests/
 file(GLOB TEST_SOURCES tests/*.cpp)
 
-# Add the test executable
+# Create test executable and link everything
 add_executable(runTests ${TEST_SOURCES})
+target_link_libraries(runTests
+    gtest_main
+    ConfigParser
+    BloomLib
+)
 
-# Link the test executable with GTest and ConfigParser
-target_link_libraries(runTests gtest_main ConfigParser)
-
-# Enable testing and add the tests
 enable_testing()
 add_test(NAME runTests COMMAND runTests)

@@ -1,35 +1,35 @@
 #include <gtest/gtest.h>
 #include "../src/BloomFilter.h"
 #include "../src/URLBlacklist.h"
-#include "../src/MultiHash.h"
-#include "../src/HashFunc.h" 
+#include "../src/MultiHash.h" // Changed from HashFunc to MultiHash
 
+// Ensure all namespaces or classes are properly closed
 
 // ----------------------------
 // Test suite: BloomFilterAddTest
 // ----------------------------
 
 // Test adding and checking a known element
-TEST(BloomFilterAddTest, AddElement) {
+TEST(BloomFilterAddTest, AddElement)
+{
     std::vector<HashFunc*> hashFuncs = {
-        new MultiHash(1),
-        new MultiHash(1),
-        new MultiHash(1)
+        new MultiHash(1), // Using MultiHash instead of HashFunc
+        new MultiHash(2),
+        new MultiHash(3)
     };
     BloomFilter bf(1000, hashFuncs);
     bf.add("test");
 
     EXPECT_TRUE(bf.possiblyContain("test"));
-
-    for (auto* func : hashFuncs) delete func;
+    // No need to delete hashFuncs as BloomFilter destructor will handle it
 }
 
 // Test duplicate insertions
 TEST(BloomFilterAddTest, DuplicateInsertions) {
     std::vector<HashFunc*> hashFuncs = {
         new MultiHash(1),
-        new MultiHash(1),
-        new MultiHash(1)
+        new MultiHash(2),
+        new MultiHash(3)
     };
     BloomFilter bf(1000, hashFuncs);
     bf.add("duplicate");
@@ -37,15 +37,15 @@ TEST(BloomFilterAddTest, DuplicateInsertions) {
 
     EXPECT_TRUE(bf.possiblyContain("duplicate"));
 
-    for (auto* func : hashFuncs) delete func;
+    // No need to delete hashFuncs as BloomFilter destructor will handle it
 }
 
 // Test large number of insertions
 TEST(BloomFilterAddTest, ManyInsertions) {
     std::vector<HashFunc*> hashFuncs = {
         new MultiHash(1),
-        new MultiHash(1),
-        new MultiHash(1)
+        new MultiHash(2),
+        new MultiHash(3)
     };
     BloomFilter bf(10000, hashFuncs);
     for (int i = 0; i < 500; ++i) {
@@ -56,15 +56,15 @@ TEST(BloomFilterAddTest, ManyInsertions) {
         EXPECT_TRUE(bf.possiblyContain("item" + std::to_string(i)));
     }
 
-    for (auto* func : hashFuncs) delete func;
+    // No need to delete hashFuncs as BloomFilter destructor will handle it
 }
 
 // Test special characters in strings
 TEST(BloomFilterAddTest, SpecialCharacters) {
     std::vector<HashFunc*> hashFuncs = {
         new MultiHash(1),
-        new MultiHash(1),
-        new MultiHash(1)
+        new MultiHash(2), 
+        new MultiHash(3)
     };
     BloomFilter bf(1000, hashFuncs);
     std::string special = "!@#$%^&*()_+|}{:?><";
@@ -72,13 +72,6 @@ TEST(BloomFilterAddTest, SpecialCharacters) {
 
     EXPECT_TRUE(bf.possiblyContain(special));
 
-    for (auto* func : hashFuncs) delete func;
-}
-
-// --------------------
-// Google Test main()
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    // No need to delete hashFuncs as BloomFilter destructor will handle it
 }
 
