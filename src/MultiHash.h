@@ -10,6 +10,7 @@ private:
 
 public:
     MultiHash(int times);
+    MultiHash();
     ~MultiHash();
 
     int execute(const std::string& input) override;
