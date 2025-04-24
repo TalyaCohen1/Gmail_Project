@@ -14,10 +14,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Create a library for ConfigParser
-add_library(ConfigParser src/ConfigParser.cpp)
-target_include_directories(ConfigParser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
 # Create a library for the BloomFilter system
 add_library(BloomLib
     src/AddCommand.cpp
@@ -49,9 +45,13 @@ file(GLOB TEST_SOURCES tests/*.cpp)
 add_executable(runTests ${TEST_SOURCES})
 target_link_libraries(runTests
     gtest_main
-    ConfigParser
     BloomLib
 )
+
+# Main application executable
+# file(GLOB SRC_FILES src/*.cpp)
+# add_executable(mainApp ${SRC_FILES})
+# target_include_directories(mainApp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 enable_testing()
 add_test(NAME runTests COMMAND runTests)

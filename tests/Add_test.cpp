@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 #include "../src/BloomFilter.h"
 #include "../src/URLBlacklist.h"
-#include "../src/MultiHash.h" // Changed from HashFunc to MultiHash
+#include "../src/MultiHash.h"
+ // Changed from HashFunc to MultiHash
 
 // Ensure all namespaces or classes are properly closed
 

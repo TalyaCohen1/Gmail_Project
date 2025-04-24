@@ -16,5 +16,6 @@ RUN mkdir -p build && cd build && cmake .. && make
 WORKDIR /usr/src/app/build
 
 # Run the tests
-CMD ["./runTests"]
+# CMD ["./runTests"]
+# No CMD defined
 
