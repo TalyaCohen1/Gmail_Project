@@ -39,6 +39,7 @@ public:
     // Get the hash function at a specific index
     HashFunc* getHashFunction(int index) const;
 
+
 private:
     std::vector<bool> bitArray;               // The bit array
     int arraySize;                            // Size of the bit array

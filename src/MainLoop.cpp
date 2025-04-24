@@ -63,7 +63,7 @@ bool MainLoop::isValidCommand(const int command) {
     return command == 1 || command == 2;
 }
 bool MainLoop::isValidURL(const std::string& url) {
-    // Check if the URL is valid using a regex pattern
+    // Check if the URL is valid 
     std::regex pattern(R"(^(https?:\/\/)?(www\.)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]{2,})+(\/.*)?$)");
     return regex_match(url,pattern);
 }

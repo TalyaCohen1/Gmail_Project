@@ -1,8 +1,6 @@
 #include "App.h"
 
 App::App() {
-    // Constructor initializes the application
-    // You can add any necessary initialization code here
 }
 
 void App::run() {

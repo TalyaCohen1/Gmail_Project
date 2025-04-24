@@ -16,12 +16,10 @@ void URLBlacklist::add(const std::string& url) {
         return; // URL already exists, no need to add it again
     }
     blacklist.push_back(url);
-    //saveToFile("data/blacklist.txt"); // Save to file after adding
 }
 
 bool URLBlacklist::contains(const std::string& url) const {
     for (const auto& blacklistedUrl : blacklist) {
-        printf("Checking %s against %s\n", url.c_str(), blacklistedUrl.c_str());
         if (blacklistedUrl == url) {
             return true;
         }
@@ -38,7 +36,6 @@ void URLBlacklist::saveToFile(const std::string& filename) const {
         std::filesystem::create_directories(path.parent_path());
     }    
     std::ofstream outFile(path, std::ios::app);
-    printf("Saving to %s\n", path.c_str());
     if (outFile.is_open()) {
         for (const auto& bl_url : blacklist) {
             outFile << bl_url << std::endl;
