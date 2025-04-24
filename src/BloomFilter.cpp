@@ -30,7 +30,6 @@ void BloomFilter::add(const std::string &url)
     {
         int hash_result = hashFunctions[i]->execute(url);
         int index = hash_result % arraySize;
-        //int index = hash_result % arraySize;
         if (index < 0) index += arraySize;  // Fix potential negatives
 
         bitArray[index] = true;
