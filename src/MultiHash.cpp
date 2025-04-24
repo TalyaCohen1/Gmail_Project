@@ -1,8 +1,6 @@
 #include "MultiHash.h"
 #include <functional> // std::hash
 #include <string>
-#include <limits> // std::numeric_limits
-#include <cstdint> // For fixed-width integer types
 
 MultiHash::MultiHash(int times) : times(times) {}
 MultiHash::MultiHash() : times(0) {} // Default constructor initializes times to 1
