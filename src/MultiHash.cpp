@@ -9,11 +9,7 @@ MultiHash::MultiHash() : times(0) {} // Default constructor initializes times to
 
 MultiHash::~MultiHash() {}
 
-/*
-This function applies each hash function to the input string to compute
- * multiple hash values. Each value is then mapped to an index in the bit array
- * using modulo operation. The bits at the resulting indices are set to true.
-*/
+// The execute function applies the hash function multiple times to the input string
 size_t MultiHash::execute(const std::string& input){
     size_t temp = HashFunc::execute(input);
     for(int i = 0; i < times - 1; i++) {
