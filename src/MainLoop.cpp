@@ -53,6 +53,12 @@ MainLoop::MainLoop() : bloomFilter(0, {}) {
     bloomFilter = BloomFilter(parser.getSize(), hashFuncs); // Create the bloom filter with the given size and hash functions
 }
 
+MainLoop::~MainLoop() {
+    // // Destructor cleans up the dynamically allocated hash functions
+    // for (auto& func : bloomFilter.getHashFunctions()) {
+    //     delete func; // Delete each hash function
+    // }
+}
 
 bool MainLoop::isValidCommand(const int command) {
     // Check if the command is valid (e.g., "1" or "2")
@@ -66,7 +72,7 @@ bool MainLoop::isValidURL(const std::string& url) {
     return regex_match(url,pattern);
 }
 
-std::pair<int , std::string> splitCommandAndUrl(const std::string& input) {
+std::pair<int , std::string> MainLoop::splitCommandAndUrl(const std::string& input) {
     std::istringstream iss(input);
     int command;
     std::string url;

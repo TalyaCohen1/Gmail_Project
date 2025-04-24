@@ -19,5 +19,8 @@ public:
     bool isValidURL(const std::string& url);
     std::vector<HashFunc*> convertToHashFunc(const std::vector<int>& hashIDs);
     std::pair<int , std::string> splitCommandAndUrl(const std::string& input);
+
+    BloomFilter& getBloomFilter() { return bloomFilter; } // Getter for bloomFilter
+    URLBlacklist& getRealBlacklist() { return realBlacklist; } // Getter for realBlacklist
 };
 #endif // MAINLOOP_H
