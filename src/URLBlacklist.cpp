@@ -16,10 +16,12 @@ void URLBlacklist::add(const std::string& url) {
         return; // URL already exists, no need to add it again
     }
     blacklist.push_back(url);
+    //saveToFile("data/blacklist.txt"); // Save to file after adding
 }
 
 bool URLBlacklist::contains(const std::string& url) const {
     for (const auto& blacklistedUrl : blacklist) {
+        printf("Checking %s against %s\n", url.c_str(), blacklistedUrl.c_str());
         if (blacklistedUrl == url) {
             return true;
         }
@@ -27,20 +29,31 @@ bool URLBlacklist::contains(const std::string& url) const {
     return false;
 }
 
+#include <filesystem>
+
+// Save
 void URLBlacklist::saveToFile(const std::string& filename) const {
-    std::ofstream outFile(std::filesystem::current_path() / filename);
+    std::filesystem::path path = filename;
+    if (!path.parent_path().empty()) {
+        std::filesystem::create_directories(path.parent_path());
+    }    
+    std::ofstream outFile(path, std::ios::app);
+    printf("Saving to %s\n", path.c_str());
     if (outFile.is_open()) {
         for (const auto& bl_url : blacklist) {
             outFile << bl_url << std::endl;
         }
         outFile.close();
     } else {
-        std::cerr << "Unable to open file for writing" << std::endl;
+        std::cerr << "Unable to open file for writing: " << path << std::endl;
     }
 }
 
+// Load
 void URLBlacklist::loadFromFile(const std::string& filename) {
-    std::ifstream inFile(std::filesystem::current_path() / filename);
+    std::filesystem::path path = filename;
+
+    std::ifstream inFile(path);
     if (inFile.is_open()) {
         std::string url;
         while (std::getline(inFile, url)) {
@@ -48,7 +61,7 @@ void URLBlacklist::loadFromFile(const std::string& filename) {
         }
         inFile.close();
     } else {
-        std::cerr << "Unable to open file for reading" << std::endl;
+        std::cerr << "Unable to open file for reading: " << path << std::endl;
     }
 }
 

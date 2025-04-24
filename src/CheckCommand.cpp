@@ -14,9 +14,9 @@ void CheckCommand::execute(const std::string& url) {
     // Check if the URL is in the bloom filter
     if (bloomFilter.possiblyContain(url)) {
         // If it is, check if it is in the real blacklist
-        std::cout << "true ";
+        std::cout << "True ";
         if (blacklist.contains(url)) {
-            std::cout << "true"; // URL is blacklisted
+            std::cout << "True"; // URL is blacklisted
         } else {
             std::cout << "False";
         }
