@@ -30,7 +30,7 @@ MainLoop::MainLoop() : bloomFilter(0, {}) {
     if (!fs::exists("data")) {
         fs::create_directory("data");
     }
-    std::ofstream out("data/urlblacklist.txt", std::ios::trunc);
+    std::ofstream out("data/urlblacklist.txt", std::ios::app); // Open the file in append mode
     if (!out.is_open()) {
         std::cerr << "Failed to create blacklist file." << std::endl;
         exit(1);

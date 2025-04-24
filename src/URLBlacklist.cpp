@@ -27,8 +27,6 @@ bool URLBlacklist::contains(const std::string& url) const {
     return false;
 }
 
-#include <filesystem>
-
 // Save
 void URLBlacklist::saveToFile(const std::string& filename) const {
     std::filesystem::path path = filename;
