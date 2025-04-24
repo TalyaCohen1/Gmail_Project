@@ -13,7 +13,7 @@ public:
     MultiHash();
     ~MultiHash();
 
-    int execute(const std::string& input) override;
+    size_t execute(const std::string& input);
 };
 
 #endif // MULTIHASH_H

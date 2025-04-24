@@ -5,7 +5,7 @@
 class HashFunc {
 public:
 
-    virtual int execute(const std::string& input) = 0; //pure virtual function
+    virtual size_t execute(const std::string& input) const { return std::hash<std::string>{}(input);};
     virtual ~HashFunc() = default; // virtual destructor
 };
 
