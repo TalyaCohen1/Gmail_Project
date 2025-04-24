@@ -51,7 +51,7 @@ TEST(MainLoopTest, ConstructorInitializesBloomFilter) {
     MainLoop mainLoop;
 
     EXPECT_EQ(mainLoop.getBloomFilter().getSize(), 256);
-    EXPECT_EQ(mainLoop.getBloomFilter().getHashFunctions().size(), 3);
+    EXPECT_EQ(mainLoop.getBloomFilter().getHashNum(), 3);
 }
 
 TEST(MainLoopTest, isValidCommandRecognizesValidCommands) {
