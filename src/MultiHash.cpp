@@ -17,7 +17,7 @@ This function applies each hash function to the input string to compute
 size_t MultiHash::execute(const std::string& input){
     size_t temp = HashFunc::execute(input);
     for(int i = 0; i < times - 1; i++) {
-        temp = HashFunc::execute(to_string(temp));
+        temp = HashFunc::execute(std::to_string(temp));
     }
     return temp;
 }
