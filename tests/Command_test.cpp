@@ -102,6 +102,7 @@ TEST_F(CommandTest, CheckCommandBlacklisted) {
     
     // Verify the output
     EXPECT_EQ(outputBuffer.str(), "true true\n");
+
 }
 
 // Test CheckCommand with bloom filter false positive
@@ -142,6 +143,7 @@ TEST_F(CommandTest, CheckCommandFalsePositive) {
         
         // Verify the output (should be "true false\n" for a false positive)
         EXPECT_EQ(outputBuffer.str(), "true false\n");
+
     }
     
     // Clean up
