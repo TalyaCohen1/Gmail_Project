@@ -23,7 +23,7 @@ void prepareMainLoopInput(const std::string& config = "256 1 2 3\n") {
         fs::remove_all("data");
     }
     std::istringstream* input = new std::istringstream(config);
-    std::cin.rdbuf(input.rdbuf());
+    std::cin.rdbuf(input->rdbuf());
 }
 
 // ----------------------------
