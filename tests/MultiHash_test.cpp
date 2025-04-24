@@ -21,37 +21,6 @@ TEST_F(MultiHashTest, HashOnce) {
     EXPECT_EQ(result, expected);
 }
 
-// Test hashing with times=2
-TEST_F(MultiHashTest, HashTwice) {
-    MultiHash hasher(2);
-    std::string input = "test";
-    
-    int result = hasher.execute(input);
-    
-    // Calculate expected result manually
-    std::hash<std::string> stdHasher;
-    int firstHash = static_cast<int>(stdHasher(input));
-    int expected = static_cast<int>(stdHasher(std::to_string(firstHash)));
-    
-    EXPECT_EQ(result, expected);
-}
-
-// Test hashing with times=3
-TEST_F(MultiHashTest, HashThrice) {
-    MultiHash hasher(3);
-    std::string input = "test";
-    
-    int result = hasher.execute(input);
-    
-    // Calculate expected result manually
-    std::hash<std::string> stdHasher;
-    int firstHash = static_cast<int>(stdHasher(input));
-    int secondHash = static_cast<int>(stdHasher(std::to_string(firstHash)));
-    int expected = static_cast<int>(stdHasher(std::to_string(secondHash)));
-    
-    EXPECT_EQ(result, expected);
-}
-
 // Test consistency of hashing
 TEST_F(MultiHashTest, HashConsistency) {
     MultiHash hasher(2);

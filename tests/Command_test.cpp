@@ -57,7 +57,7 @@ TEST_F(CommandTest, AddCommand) {
     AddCommand addCmd(*bloomFilter, *blacklist);
     
     // Execute the command
-    addCmd.execute("1 www.example.com");
+    addCmd.execute("www.example.com");
     
     // Verify the URL was added to both the bloom filter and blacklist
     EXPECT_TRUE(bloomFilter->possiblyContain("www.example.com"));
@@ -73,7 +73,7 @@ TEST_F(CommandTest, CheckCommandNonBlacklisted) {
     CheckCommand checkCmd(*bloomFilter, *blacklist);
     
     // Execute the command with a URL that's not in the blacklist
-    checkCmd.execute("2 www.notblacklisted.com");
+    checkCmd.execute("www.notblacklisted.com");
     
     // Restore cout
     RestoreCout();
@@ -95,7 +95,7 @@ TEST_F(CommandTest, CheckCommandBlacklisted) {
     CheckCommand checkCmd(*bloomFilter, *blacklist);
     
     // Execute the command with a blacklisted URL
-    checkCmd.execute("2 www.blacklisted.com");
+    checkCmd.execute("www.blacklisted.com");
     
     // Restore cout
     RestoreCout();
