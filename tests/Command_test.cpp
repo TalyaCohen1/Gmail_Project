@@ -79,7 +79,7 @@ TEST_F(CommandTest, CheckCommandNonBlacklisted) {
     RestoreCout();
     
     // Verify the output
-    EXPECT_EQ(outputBuffer.str(), "False");
+    EXPECT_EQ(outputBuffer.str(), "false");
 }
 
 // Test CheckCommand with blacklisted URL
@@ -101,7 +101,7 @@ TEST_F(CommandTest, CheckCommandBlacklisted) {
     RestoreCout();
     
     // Verify the output
-    EXPECT_EQ(outputBuffer.str(), "True True");
+    EXPECT_EQ(outputBuffer.str(), "true true");
 }
 
 // Test CheckCommand with bloom filter false positive
@@ -141,7 +141,7 @@ TEST_F(CommandTest, CheckCommandFalsePositive) {
         RestoreCout();
         
         // Verify the output (should be "true false\n" for a false positive)
-        EXPECT_EQ(outputBuffer.str(), "True False");
+        EXPECT_EQ(outputBuffer.str(), "true false");
     }
     
     // Clean up
