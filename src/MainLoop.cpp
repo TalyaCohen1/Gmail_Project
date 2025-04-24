@@ -40,14 +40,12 @@ MainLoop::MainLoop() : bloomFilter(0, {}) {
     std::string line;
 
     while (true) {
-    std::cout << "Enter configuration: ";
-    std::getline(std::cin, line);
-    
-    parser.parseLine(line);
-    if (parser.isValid()) {
-        break; 
-    }
-    std::cerr << "Invalid configuration. Please try again." << std::endl;
+        std::getline(std::cin, line);
+        
+        parser.parseLine(line);
+        if (parser.isValid()) {
+            break; 
+        }
     }
     std::vector<HashFunc*> hashFuncs = convertToHashFunc(parser.getHashFunc()); // Convert the hash IDs to HashFunc objects
     bloomFilter = BloomFilter(parser.getSize(), hashFuncs); // Create the bloom filter with the given size and hash functions
@@ -66,9 +64,7 @@ bool MainLoop::isValidCommand(const int command) {
 }
 bool MainLoop::isValidURL(const std::string& url) {
     // Check if the URL is valid using a regex pattern
-    std::regex pattern(R"((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?
-        [a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?
-        (\/[a-zA-Z0-9\-._~%!$&'()+,;=:@/])?)");
+    std::regex pattern(R"(^(https?:\/\/)?(www\.)?[a-zA-Z0-9\-]+(\.[a-zA-Z]{2,})+(\/.*)?$)");
     return regex_match(url,pattern);
 }
 
@@ -88,8 +84,8 @@ std::pair<int , std::string> MainLoop::splitCommandAndUrl(const std::string& inp
 
 void MainLoop::run() {
     std::map<int, ICommand*> commands;
-    commands.at(1) = new AddCommand(bloomFilter, realBlacklist);
-    commands.at(2) = new CheckCommand(bloomFilter, realBlacklist);
+    commands[1] = new AddCommand(bloomFilter, realBlacklist);
+    commands[2] = new CheckCommand(bloomFilter, realBlacklist);
 
     std::string input;
     while (std::getline(std::cin, input)) {
@@ -105,10 +101,11 @@ void MainLoop::run() {
 
         auto it = commands.find(commandNum);
         if (it != commands.end()) {
-            it->second->execute(input);
+            it->second->execute(url);
         } 
     }
     // Clean up dynamically allocated memory
-    delete commands.at(1);
-    delete commands.at(2);
+    delete commands[1];
+    delete commands[2];
+
 }
