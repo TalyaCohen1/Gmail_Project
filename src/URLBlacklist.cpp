@@ -4,6 +4,8 @@
 #include <fstream>
 #include <filesystem>
 #include <iostream>
+#include <unordered_set>
+
 
 // Constructor
 URLBlacklist::URLBlacklist()
@@ -33,15 +35,28 @@ void URLBlacklist::saveToFile(const std::string& filename) const {
     if (!path.parent_path().empty()) {
         std::filesystem::create_directories(path.parent_path());
     }    
+    std::unordered_set<std::string> existingUrls;
+    std::ifstream inFile(path);
+    std::string line;
+    while (std::getline(inFile, line)) {
+        if (!line.empty()) {
+            existingUrls.insert(line);
+        }
+    }
+    inFile.close();
+
     std::ofstream outFile(path, std::ios::app);
-    if (outFile.is_open()) {
-        for (const auto& bl_url : blacklist) {
+    if (!outFile.is_open()) {
+        std::cerr << "Unable to open file for writing: " << path << std::endl;
+        return;
+    }
+
+    for (const auto& bl_url : blacklist) {
+        if (existingUrls.find(bl_url) == existingUrls.end()) {
             outFile << bl_url << std::endl;
         }
-        outFile.close();
-    } else {
-        std::cerr << "Unable to open file for writing: " << path << std::endl;
     }
+    outFile.close();
 }
 
 // Load
