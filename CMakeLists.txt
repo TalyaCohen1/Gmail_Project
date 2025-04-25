@@ -49,9 +49,9 @@ target_link_libraries(runTests
 )
 
 # Main application executable
-# file(GLOB SRC_FILES src/*.cpp)
-# add_executable(mainApp ${SRC_FILES})
-# target_include_directories(mainApp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+file(GLOB SRC_FILES src/*.cpp)
+add_executable(mainApp ${SRC_FILES})
+target_include_directories(mainApp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 enable_testing()
 add_test(NAME runTests COMMAND runTests)
