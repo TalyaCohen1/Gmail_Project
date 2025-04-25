@@ -49,6 +49,24 @@ MainLoop::MainLoop() : bloomFilter(0, {}) {
     }
     std::vector<HashFunc*> hashFuncs = convertToHashFunc(parser.getHashFunc()); // Convert the hash IDs to HashFunc objects
     bloomFilter = BloomFilter(parser.getSize(), hashFuncs); // Create the bloom filter with the given size and hash functions
+    loadBlacklistToBloomFilter(); // Load the blacklist into the bloom filter
+}
+void MainLoop::loadBlacklistToBloomFilter() {
+    std::ifstream blacklistfile ("data/urlblacklist.txt");
+    if (!blacklistfile.is_open()) {
+        std::cerr << "Failed to open blacklist file for reading." << std::endl;
+        return;
+    }
+
+    std::string url;
+    while (std::getline(blacklistfile, url)) {
+        if (!url.empty()) {
+            this->bloomFilter.add(url); // Add each URL to the bloom filter
+            if (!realBlacklist.contains(url)) {
+                realBlacklist.add(url); // Add each URL to the URLBlacklist if it doesn't already exist
+            }        
+    }
+    blacklistfile.close();
 }
 
 MainLoop::~MainLoop() {
