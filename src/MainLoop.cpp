@@ -125,5 +125,4 @@ void MainLoop::run() {
     // Clean up dynamically allocated memory
     delete commands[1];
     delete commands[2];
-
 }
