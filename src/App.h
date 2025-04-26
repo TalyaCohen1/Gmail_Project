@@ -3,10 +3,15 @@
 
 #include "MainLoop.h"
 
+// App class
+// Responsible for starting and managing the application
 class App {
 public:
-    App();         
-    void run(); 
+    // Constructor
+    App();
+
+    // Runs the application
+    void run();
 };
 
 #endif // APP_H

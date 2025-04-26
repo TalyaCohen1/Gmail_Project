@@ -18,6 +18,7 @@
 
 namespace fs = std::filesystem;
 
+// Helper function to prepare input for MainLoop tests
 void prepareMainLoopInput(const std::string& config = "256 1 2 3\n") {
     if (fs::exists("data")) {
         fs::remove_all("data");
@@ -29,15 +30,19 @@ void prepareMainLoopInput(const std::string& config = "256 1 2 3\n") {
 // ----------------------------
 // Test suite: MainLoopTest
 // ----------------------------
+
 // Test the constructor and initialization of the MainLoop class
 
 TEST(MainLoopTest, ConstructorCreatesDataDirectoryAndBlacklistFile) {
     prepareMainLoopInput();
     MainLoop mainLoop;
 
+    // Verify that 'data' directory is created
     EXPECT_TRUE(fs::exists("data")) << "The 'data' directory was not created.";
+    // Verify that 'urlblacklist.txt' file is created
     EXPECT_TRUE(fs::exists("data/urlblacklist.txt")) << "The 'urlblacklist.txt' file was not created.";
 
+    // Verify that 'urlblacklist.txt' is empty
     std::ifstream blacklistFile("data/urlblacklist.txt");
     EXPECT_TRUE(blacklistFile.is_open()) << "Failed to open 'urlblacklist.txt'.";
     std::string content;
@@ -50,14 +55,18 @@ TEST(MainLoopTest, ConstructorInitializesBloomFilter) {
     prepareMainLoopInput();
     MainLoop mainLoop;
 
+    // Verify the size and number of hash functions for the Bloom filter
     EXPECT_EQ(mainLoop.getBloomFilter().getSize(), 256);
     EXPECT_EQ(mainLoop.getBloomFilter().getHashNum(), 3);
 }
+
+// Test isValidCommand() method for recognizing valid commands
 
 TEST(MainLoopTest, isValidCommandRecognizesValidCommands) {
     prepareMainLoopInput();
     MainLoop mainLoop;
 
+    // Verify that valid commands are recognized
     EXPECT_TRUE(mainLoop.isValidCommand(1));
     EXPECT_TRUE(mainLoop.isValidCommand(2));
 }
@@ -66,15 +75,19 @@ TEST(MainLoopTest, isValidCommandRejectsInvalidCommands) {
     prepareMainLoopInput();
     MainLoop mainLoop;
 
+    // Verify that invalid commands are rejected
     EXPECT_FALSE(mainLoop.isValidCommand(0));
     EXPECT_FALSE(mainLoop.isValidCommand(3));
     EXPECT_FALSE(mainLoop.isValidCommand(-1));
 }
 
+// Test isValidURL() method for recognizing valid URLs
+
 TEST(MainLoopTest, isValidURLRecognizesValidURLs) {
     prepareMainLoopInput();
     MainLoop mainLoop;
 
+    // Verify that valid URLs are recognized
     EXPECT_TRUE(mainLoop.isValidURL("https://example.com"));
     EXPECT_TRUE(mainLoop.isValidURL("http://example.co.uk"));
 }
@@ -83,16 +96,19 @@ TEST(MainLoopTest, isValidURLRejectsInvalidURLs) {
     prepareMainLoopInput();
     MainLoop mainLoop;
 
+    // Verify that invalid URLs are rejected
     EXPECT_FALSE(mainLoop.isValidURL("justtext"));
     EXPECT_FALSE(mainLoop.isValidURL("http//invalid"));
 }
 
 // Tests for the run() method
+
 TEST(MainLoopTest, Run_MatchesExample1Output) {
     if (fs::exists("data")) {
         fs::remove_all("data");
     }
 
+    // Prepare input for the run method
     std::istringstream input(
         "a\n" // Incorrect configuration
         "8 1 2\n" // Correct configuration
@@ -120,15 +136,13 @@ TEST(MainLoopTest, Run_MatchesExample1Output) {
         "false\n"
         "true false\n";
 
-    // Normalize output (remove prompts and empty lines if needed)
+    // Normalize output by removing unnecessary prompts and empty lines
     std::string actual = output.str();
-    // remove "Enter configuration: " after first time (already in expected)
     size_t pos;
     while ((pos = actual.find("Enter configuration: ")) != std::string::npos && pos > 0) {
         actual.erase(pos, std::string("Enter configuration: ").length());
     }
 
-    // remove empty lines
     actual.erase(std::remove(actual.begin(), actual.end(), '\r'), actual.end());
 
     EXPECT_NE(actual.find(expectedOutput), std::string::npos)
@@ -140,6 +154,7 @@ TEST(MainLoopTest, Run_MatchesExample3Output) {
         fs::remove_all("data");
     }
 
+    // Prepare input for the run method
     std::istringstream input(
         "8 2\n" // Correct configuration
         "1 www.example.com0\n" // Added
