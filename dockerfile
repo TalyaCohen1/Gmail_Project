@@ -12,10 +12,11 @@ COPY . .
 # Build the project inside a build directory
 RUN mkdir -p build && cd build && cmake .. && make
 
+# Create data directory for persistence
+RUN mkdir -p /usr/src/app/build/data
+
 # Set working directory to where runTests was generated
 WORKDIR /usr/src/app/build
 
-# Run the tests
-# CMD ["./runTests"]
-# No CMD defined
-
+# Run the mainApp executable
+ENTRYPOINT [ "sh", "-c" ]
