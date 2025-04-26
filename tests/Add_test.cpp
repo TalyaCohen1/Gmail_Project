@@ -2,9 +2,6 @@
 #include "../src/BloomFilter.h"
 #include "../src/URLBlacklist.h"
 #include "../src/MultiHash.h"
- // Changed from HashFunc to MultiHash
-
-// Ensure all namespaces or classes are properly closed
 
 // ----------------------------
 // Test suite: BloomFilterAddTest
@@ -22,7 +19,6 @@ TEST(BloomFilterAddTest, AddElement)
     bf.add("test");
 
     EXPECT_TRUE(bf.possiblyContain("test"));
-    // No need to delete hashFuncs as BloomFilter destructor will handle it
 }
 
 // Test duplicate insertions
@@ -37,8 +33,6 @@ TEST(BloomFilterAddTest, DuplicateInsertions) {
     bf.add("duplicate");
 
     EXPECT_TRUE(bf.possiblyContain("duplicate"));
-
-    // No need to delete hashFuncs as BloomFilter destructor will handle it
 }
 
 // Test large number of insertions
@@ -57,7 +51,6 @@ TEST(BloomFilterAddTest, ManyInsertions) {
         EXPECT_TRUE(bf.possiblyContain("item" + std::to_string(i)));
     }
 
-    // No need to delete hashFuncs as BloomFilter destructor will handle it
 }
 
 // Test special characters in strings
@@ -73,6 +66,5 @@ TEST(BloomFilterAddTest, SpecialCharacters) {
 
     EXPECT_TRUE(bf.possiblyContain(special));
 
-    // No need to delete hashFuncs as BloomFilter destructor will handle it
 }
 

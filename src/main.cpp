@@ -1,7 +1,7 @@
 #include "App.h"
 
 int main() {
-    App app;
-    app.run(); 
-    return 0;
+    App app;  // Create an instance of the App class
+    app.run(); // Run the application
+    return 0;  // Exit the program with a success code
 }

@@ -13,7 +13,7 @@ public:
     BloomFilter(int size, const std::vector<HashFunc*> &functions);
 
     // Destructor
-    ~BloomFilter()= default; // Default destructor handles cleanup
+    ~BloomFilter(); // Default destructor handles cleanup
 
     // Adds a URL to the filter
     void add(const std::string& url);

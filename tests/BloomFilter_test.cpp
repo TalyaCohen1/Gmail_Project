@@ -6,6 +6,10 @@
 #include <fstream>
 #include <filesystem>
 
+// -----------------------------
+// Test suite: BloomFilterTest
+// -----------------------------
+
 class BloomFilterTest : public ::testing::Test {
 protected:
     void SetUp() override {
@@ -32,7 +36,10 @@ protected:
     }
 };
 
-// Test adding a URL to the bloom filter
+// ----------------------------
+// Test case: AddURL
+// ----------------------------
+
 TEST_F(BloomFilterTest, AddURL) {
     // Create a bloom filter with a single hash function
     std::vector<HashFunc*> hashFuncs = createHashFunctions({1});
@@ -45,7 +52,10 @@ TEST_F(BloomFilterTest, AddURL) {
     EXPECT_TRUE(filter.possiblyContain("www.example.com"));
 }
 
-// Test checking for non-existent URL
+// ----------------------------
+// Test case: CheckNonExistentURL
+// ----------------------------
+
 TEST_F(BloomFilterTest, CheckNonExistentURL) {
     // Create a bloom filter with two hash functions
     std::vector<HashFunc*> hashFuncs = createHashFunctions({1, 2});
@@ -58,7 +68,10 @@ TEST_F(BloomFilterTest, CheckNonExistentURL) {
     EXPECT_FALSE(filter.possiblyContain("www.different.com"));
 }
 
-// Test saving and loading the bloom filter
+// ----------------------------
+// Test case: SaveAndLoad
+// ----------------------------
+
 TEST_F(BloomFilterTest, SaveAndLoad) {
     // Create a bloom filter
     std::vector<HashFunc*> hashFuncs = createHashFunctions({1});
@@ -83,7 +96,10 @@ TEST_F(BloomFilterTest, SaveAndLoad) {
     EXPECT_TRUE(newFilter.possiblyContain("www.example2.com"));
 }
 
-// Test false positives
+// ----------------------------
+// Test case: FalsePositives
+// ----------------------------
+
 TEST_F(BloomFilterTest, FalsePositives) {
     // Create a small bloom filter to increase chance of false positives
     std::vector<HashFunc*> hashFuncs = createHashFunctions({1});
@@ -111,7 +127,10 @@ TEST_F(BloomFilterTest, FalsePositives) {
     EXPECT_LT(falsePositives, totalTests);
 }
 
-// Test with multiple hash functions
+// ----------------------------
+// Test case: MultipleHashFunctions
+// ----------------------------
+
 TEST_F(BloomFilterTest, MultipleHashFunctions) {
     // Create a bloom filter with three hash functions
     std::vector<HashFunc*> hashFuncs = createHashFunctions({1, 2, 3});
@@ -127,7 +146,10 @@ TEST_F(BloomFilterTest, MultipleHashFunctions) {
     EXPECT_FALSE(filter.possiblyContain("www.different.com"));
 }
 
-// Test getters
+// ----------------------------
+// Test case: Getters
+// ----------------------------
+
 TEST_F(BloomFilterTest, Getters) {
     // Create a bloom filter
     std::vector<HashFunc*> hashFuncs = createHashFunctions({1, 2});
