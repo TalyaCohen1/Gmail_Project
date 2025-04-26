@@ -7,6 +7,6 @@ App::App() {}
 // Runs the application
 // Creates and starts the main loop
 void App::run() {
-    MainLoop loop; // Create a MainLoop object
+    MainLoop loop= MainLoop(); // Create a MainLoop object
     loop.run();    // Run the MainLoop
 }

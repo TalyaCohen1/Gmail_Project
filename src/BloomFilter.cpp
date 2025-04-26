@@ -15,14 +15,14 @@ BloomFilter::BloomFilter(int size, const std::vector<HashFunc*>& functions)
 {
 }
 
-// Destructor
-// Frees dynamically allocated hash functions
-BloomFilter::~BloomFilter() {
-    for (HashFunc* func : hashFunctions) {
-        delete func; // Free each hash function
-    }
-    hashFunctions.clear(); // Clear the vector after deleting
-}
+// // Destructor
+// // Frees dynamically allocated hash functions
+// BloomFilter::~BloomFilter() {
+//     for (HashFunc* func : hashFunctions) {
+//         delete func; // Free each hash function
+//     }
+//     hashFunctions.clear(); // Clear the vector after deleting
+// }
 
 // Adds a URL to the Bloom filter
 void BloomFilter::add(const std::string& url) {

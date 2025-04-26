@@ -16,10 +16,11 @@ private:
 
 public:
     MainLoop();  // Constructor: Initializes the main loop, Bloom filter, and blacklist
+    ~MainLoop() = default;  // Default destructor
     void run();  // Main loop function that drives the program
 
     // Utility functions
-    bool isValidCommand(int command);  // Check if the command is valid
+    bool isValidCommand(const int command);  // Check if the command is valid
     bool isValidURL(const std::string& url);  // Validate URL format
     std::vector<HashFunc*> convertToHashFunc(const std::vector<int>& hashIDs);  // Convert hash IDs to hash functions
     std::pair<int, std::string> splitCommandAndUrl(const std::string& input);  // Split input into command and URL

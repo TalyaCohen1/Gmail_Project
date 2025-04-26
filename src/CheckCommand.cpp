@@ -2,8 +2,8 @@
 
 // Constructor
 // Initializes the CheckCommand with references to a Bloom filter and a real blacklist
-CheckCommand::CheckCommand(BloomFilter& bloom, URLBlacklist& blacklist)
-    : bloomFilter(bloom), blacklist(blacklist) 
+CheckCommand::CheckCommand(BloomFilter &bloom, URLBlacklist &blacklist)
+    : bloomFilter(bloom), blacklist(blacklist) // Use initializer list
 {
 }
 
