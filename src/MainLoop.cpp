@@ -63,12 +63,10 @@ void MainLoop::loadBlacklistToBloomFilter() {
     while (std::getline(blacklistfile, url)) {
         if (!url.empty()) {
             this->bloomFilter.add(url); // Add each URL to the bloom filter
-            if (!realBlacklist.contains(url)) {
-                realBlacklist.add(url); // Add each URL to the URLBlacklist if it doesn't already exist
-            }        
+            this->realBlacklist.add(url); // Add each URL to the real blacklist
         }
-        blacklistfile.close();
     }
+    blacklistfile.close();
 }
 
 MainLoop::~MainLoop() {
