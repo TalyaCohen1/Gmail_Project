@@ -41,7 +41,9 @@ Where:
 - `<hash1> <hash2> ... <hashN>` are the number of times each hash function should be applied
 
 Example:
+```
 100 1 2 3
+```
 This creates a Bloom filter of size 100, applying hash function 1 once, hash function 2 twice, and hash function 3 three times.
 
 ## Commands
@@ -75,10 +77,10 @@ All blacklisted URLs are stored in a file at `data/urlblacklist.txt`. The Docker
 ## Development
 Project Structure
 
-`src/`: Source code files
-`tests/`: Test files
-`CMakeLists.txt`: CMake configuration
-`Dockerfile`: Docker build configuration
+- `src/`: Source code files
+- `tests/`: Test files
+- `CMakeLists.txt`: CMake configuration
+- `Dockerfile`: Docker build configuration
 
 ## Testing
 Run the tests with:
