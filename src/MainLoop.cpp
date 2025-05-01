@@ -103,32 +103,14 @@ std::pair<int, std::string> MainLoop::splitCommandAndUrl(const std::string& inpu
 
 // Main loop for handling user input and executing commands
 void MainLoop::run() {
-    std::map<int, ICommand*> commands;
-    commands[1] = new AddCommand(bloomFilter, realBlacklist); // AddCommand for command 1
-    commands[2] = new CheckCommand(bloomFilter, realBlacklist); // CheckCommand for command 2
-
+    
     std::string input;
     while (std::getline(std::cin, input)) {
         if (input.empty()) {
             continue; // Skip empty lines
         }
-
-        // Split input into command and URL
-        auto [commandNum, url] = splitCommandAndUrl(input);
-
-        // Validate the URL and command number
-        if (!isValidURL(url) || !isValidCommand(commandNum)) {
-            continue; // Skip invalid input
-        }
-
-        // Execute the corresponding command
-        auto it = commands.find(commandNum);
-        if (it != commands.end()) {
-            it->second->execute(url); // Execute the command
-        }
+        CommandParser parser = CommandParser(input);
+        parser.send_to_command();
     }
-
-    // Clean up dynamically allocated memory
-    delete commands[1];
-    delete commands[2];
+    
 }
