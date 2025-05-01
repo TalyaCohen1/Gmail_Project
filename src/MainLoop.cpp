@@ -111,6 +111,7 @@ void MainLoop::run() {
         }
         CommandParser parser = CommandParser(input);
         parser.send_to_command();
+        parser.~CommandParser(); // Clean up the parser object
     }
     
 }
