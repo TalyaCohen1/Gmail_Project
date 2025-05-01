@@ -47,5 +47,6 @@ void CommandParser::send_to_command() {
         commands[command]->execute(url);
     } else {
         // שליחה של הודעה מתאימה לשרת
+        //ההודעה צריכה להיות -- בדיוק ככה : 400 Bad Request
     }
 }
