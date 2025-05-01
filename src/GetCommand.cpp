@@ -18,7 +18,7 @@ GetCommand::GetCommand(BloomFilter &bloom, URLBlacklist &blacklist)
  * - "false" if the Bloom filter says the URL is definitely not blacklisted.
  */
 void GetCommand::execute(const std::string& url) {
-    std::cout << "200 Ok\n\n " << url << std::endl;
+    std::cout << "200 Ok\n\n " << std::endl;
     if (bloomFilter.possiblyContain(url)) {
         std::cout << "true ";
         if (blacklist.contains(url)) {

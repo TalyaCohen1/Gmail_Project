@@ -2,8 +2,8 @@
 #include "../src/MainLoop.h"
 #include "../src/BloomFilter.h"
 #include "../src/MultiHash.h"
-#include "../src/AddCommand.h"
-#include "../src/CheckCommand.h"
+#include "../src/PostCommand.h"
+#include "../src/GetCommand.h"
 #include "../src/ConfigParser.h"
 #include "../src/URLBlacklist.h"
 #include <iostream>
