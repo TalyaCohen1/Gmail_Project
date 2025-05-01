@@ -24,6 +24,8 @@ public:
     // Loads the blacklist from a file
     void loadFromFile(const std::string& filename);
 
+    void deleteURL(const std::string& url, const std::string& filename);
+
     // Getter for the blacklist vector, returns a constant reference to the blacklist
     const std::vector<std::string>& getBlacklist() const;
 };
