@@ -6,6 +6,7 @@
 #include <regex>
 #include <map>
 #include <string>
+#include "BadRequest.h"
 
 
 using namespace std;
@@ -15,14 +16,9 @@ CommandParser::CommandParser(string& line){
     iss >> this.url;
     this.validCommand = isValidCommand(cmd);
     this.validUrl = isValidUrl(this.url);
-    commands["POST"] = new PostCommand();
-    commands["DELETE"] = new DeleteCommand();
-    commands["GET"] = new GetCommand();
 }
 CommandParser::~CommandParser() {
-    for (auto& pair : commands) {
-        delete pair.second; // Delete each command object
-    }
+    // Destructor implementation (if needed)
 }
 
 string CommandParser::getCommand() const {
@@ -42,11 +38,10 @@ bool CommandParser::isValidUrl(){
     return regex_match(this.url, pattern);
 }
 
-void CommandParser::send_to_command() {
+ICommand* CommandParser::getCommandObject() {
     if (validCommand && validUrl) {
-        commands[command]->execute(url);
+        return commands[command];
     } else {
-        // שליחה של הודעה מתאימה לשרת
-        //ההודעה צריכה להיות -- בדיוק ככה : 400 Bad Request
+        return new BadRequestCommand();
     }
 }

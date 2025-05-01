@@ -103,6 +103,10 @@ std::pair<int, std::string> MainLoop::splitCommandAndUrl(const std::string& inpu
 
 // Main loop for handling user input and executing commands
 void MainLoop::run() {
+    map<string, ICommand*> commands;
+    commands["POST"] = new PostCommand();
+    commands["DELETE"] = new DeleteCommand();
+    commands["GET"] = new GetCommand();
     
     std::string input;
     while (std::getline(std::cin, input)) {
@@ -110,8 +114,12 @@ void MainLoop::run() {
             continue; // Skip empty lines
         }
         CommandParser parser = CommandParser(input);
-        parser.send_to_command();
-        parser.~CommandParser(); // Clean up the parser object
+        ICommand* cmd = parser.getCommandObject();
+        cmd->execute(parser.getUrl());
     }
     
+    // Clean up command objects
+    for (auto& command : commands) {
+        delete command.second; // Delete each command object
+    }
 }

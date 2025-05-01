@@ -12,7 +12,6 @@ private:
     string url;
     bool validCommand;
     bool validUrl;
-    map<string, ICommand*> commands;
 
 public:
     CommandParser(const string& line);
@@ -22,8 +21,7 @@ public:
     string getUrl() const;
     bool isValidCommand() const;
     bool isValidUrl() const;
-    void send_to_command();
-
+    ICommand* getCommandObject();
 };
 
 #endif 
