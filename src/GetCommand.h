@@ -1,5 +1,5 @@
-#ifndef CHECKCOMMAND_H
-#define CHECKCOMMAND_H
+#ifndef GETCOMMAND_H
+#define GETCOMMAND_H
 
 #include <string>
 #include <iostream>
@@ -7,19 +7,19 @@
 #include "URLBlacklist.h"
 #include "ICommand.h"
 
-// CheckCommand class
+// GetCommand class
 // Responsible for checking if a URL is blacklisted
-class CheckCommand : public ICommand {
+class GetCommand : public ICommand {
 private:
     BloomFilter& bloomFilter;  // Reference to the Bloom filter
     URLBlacklist& blacklist;   // Reference to the real URL blacklist
 
 public:
     // Constructor
-    CheckCommand(BloomFilter& bloom, URLBlacklist& blacklist);
+    GetCommand(BloomFilter& bloom, URLBlacklist& blacklist);
 
     /*
-     * Executes the check for a given URL.
+     * Executes the get for a given URL.
      * Prints "true true" if in both Bloom filter and blacklist,
      * "true false" if false positive (only in Bloom filter),
      * "false" if not found at all.
@@ -27,4 +27,4 @@ public:
     void execute(const std::string& url) override;
 };
 
-#endif // CHECKCOMMAND_H
+#endif // GETCOMMAND_H

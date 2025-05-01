@@ -1,8 +1,8 @@
-#include "CheckCommand.h"
+#include "GetCommand.h"
 
 // Constructor
 // Initializes the CheckCommand with references to a Bloom filter and a real blacklist
-CheckCommand::CheckCommand(BloomFilter &bloom, URLBlacklist &blacklist)
+GetCommand::GetCommand(BloomFilter &bloom, URLBlacklist &blacklist)
     : bloomFilter(bloom), blacklist(blacklist) // Use initializer list
 {
 }
@@ -17,7 +17,8 @@ CheckCommand::CheckCommand(BloomFilter &bloom, URLBlacklist &blacklist)
  * - "true false" if it was a false positive (Bloom filter says yes, but blacklist says no).
  * - "false" if the Bloom filter says the URL is definitely not blacklisted.
  */
-void CheckCommand::execute(const std::string& url) {
+void GetCommand::execute(const std::string& url) {
+    std::cout << "200 Ok\n\n " << url << std::endl;
     if (bloomFilter.possiblyContain(url)) {
         std::cout << "true ";
         if (blacklist.contains(url)) {
