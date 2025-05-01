@@ -75,32 +75,6 @@ void MainLoop::loadBlacklistToBloomFilter() {
     blacklistfile.close();
 }
 
-// Validate if the given command is valid (1 or 2)
-bool MainLoop::isValidCommand(const int command) {
-    return command == 1 || command == 2;
-}
-
-// Validate the URL format using regex
-bool MainLoop::isValidURL(const std::string& url) {
-    std::regex pattern(R"(^(https?:\/\/)?(www\.)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]{2,})+(\/.*)?$)");
-    return regex_match(url, pattern);
-}
-
-// Split the input into command number and URL
-std::pair<int, std::string> MainLoop::splitCommandAndUrl(const std::string& input) {
-    std::istringstream iss(input);
-    int command;
-    std::string url;
-
-    iss >> command;
-    std::getline(iss, url);
-
-    if (!url.empty() && url[0] == ' ') {
-        url.erase(0, 1); // Trim leading space if present
-    }
-    return {command, url};
-}
-
 // Main loop for handling user input and executing commands
 void MainLoop::run() {
     map<string, ICommand*> commands;
