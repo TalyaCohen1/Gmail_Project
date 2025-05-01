@@ -122,3 +122,101 @@ TEST_F(URLBlacklistTest, SaveToInvalidPath) {
 
     // No assertions needed; test that it does not crash
 }
+
+// ----------------------------
+// Tests for deleting URLs
+// ----------------------------
+
+TEST_F(URLBlacklistTest, DeleteURL) {
+    URLBlacklist blacklist;
+
+    // Add URLs
+    blacklist.add("www.to-delete.com");
+    blacklist.add("www.to-keep.com");
+
+    // Save to file
+    blacklist.saveToFile("test_data/blacklist_test.txt");
+
+    // Delete a URL
+    blacklist.deleteURL("www.to-delete.com", "test_data/blacklist_test.txt");
+
+    // Check that it's no longer in memory
+    EXPECT_FALSE(blacklist.contains("www.to-delete.com"));
+    EXPECT_TRUE(blacklist.contains("www.to-keep.com"));
+
+    // Reload from file to ensure persistence
+    URLBlacklist loaded;
+    loaded.loadFromFile("test_data/blacklist_test.txt");
+
+    EXPECT_FALSE(loaded.contains("www.to-delete.com"));
+    EXPECT_TRUE(loaded.contains("www.to-keep.com"));
+    EXPECT_EQ(loaded.getBlacklist().size(), 1);
+}
+
+// -----------------------------
+// Tests for deleting a URL that doesn't exist
+// -----------------------------
+
+TEST_F(URLBlacklistTest, DeleteNonExistentURL) {
+    URLBlacklist blacklist;
+
+    blacklist.add("www.keep-me.com");
+    blacklist.saveToFile("test_data/blacklist_test.txt");
+
+    // Attempt to delete a URL that doesn't exist
+    blacklist.deleteURL("www.not-in-list.com", "test_data/blacklist_test.txt");
+
+    // Should not affect the original URL
+    EXPECT_TRUE(blacklist.contains("www.keep-me.com"));
+    EXPECT_FALSE(blacklist.contains("www.not-in-list.com"));
+
+    // Reload to confirm file wasn't incorrectly changed
+    URLBlacklist loaded;
+    loaded.loadFromFile("test_data/blacklist_test.txt");
+
+    EXPECT_TRUE(loaded.contains("www.keep-me.com"));
+    EXPECT_FALSE(loaded.contains("www.not-in-list.com"));
+    EXPECT_EQ(loaded.getBlacklist().size(), 1);
+}
+
+// -----------------------------
+// Tests for deleting from an empty blacklist
+// -----------------------------
+
+TEST_F(URLBlacklistTest, DeleteFromEmptyBlacklist) {
+    URLBlacklist blacklist;
+
+    // Attempt to delete from empty blacklist
+    blacklist.deleteURL("www.anything.com", "test_data/blacklist_test.txt");
+
+    // Blacklist should still be empty
+    EXPECT_EQ(blacklist.getBlacklist().size(), 0);
+
+    // File should be empty too
+    std::ifstream infile("test_data/blacklist_test.txt");
+    std::string line;
+    EXPECT_FALSE(std::getline(infile, line));  // Should be empty
+}
+
+// -----------------------------
+// Tests for deleting a URL from a large blacklist
+// -----------------------------
+
+TEST_F(URLBlacklistTest, DeleteURLFromLargeBlacklist) {
+    URLBlacklist blacklist;
+
+    // Add a large number of URLs
+    for (int i = 0; i < 1000; ++i) {
+        blacklist.add("www.example" + std::to_string(i) + ".com");
+    }
+
+    // Delete a specific URL
+    std::string urlToDelete = "www.example500.com";
+    blacklist.deleteURL(urlToDelete, "test_data/blacklist_test.txt");
+
+    // The deleted URL should no longer exist
+    EXPECT_FALSE(blacklist.contains(urlToDelete));
+
+    // The size should be reduced by one
+    EXPECT_EQ(blacklist.getBlacklist().size(), 999);
+}

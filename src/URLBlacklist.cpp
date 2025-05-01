@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <iostream>
 #include <unordered_set>
+#include <algorithm>
+#include <iterator>
 
 // Constructor: Initializes the blacklist as an empty vector
 URLBlacklist::URLBlacklist()
@@ -82,6 +84,16 @@ void URLBlacklist::loadFromFile(const std::string& filename) {
         std::cerr << "Unable to open file for reading: " << path << std::endl;
     }
 }
+
+void URLBlacklist::deleteURL(const std::string& url, const std::string& filename) {
+    // Find and remove the URL in the blacklist
+    auto it = std::find(blacklist.begin(), blacklist.end(), url);
+    if (it != blacklist.end()) {
+        blacklist.erase(it); // Remove the URL from the blacklist
+    }
+    saveToFile(filename); // Save the updated blacklist to the file
+}
+
 
 // Returns the current blacklist
 const std::vector<std::string>& URLBlacklist::getBlacklist() const {
