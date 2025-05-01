@@ -75,60 +75,25 @@ void MainLoop::loadBlacklistToBloomFilter() {
     blacklistfile.close();
 }
 
-// Validate if the given command is valid (1 or 2)
-bool MainLoop::isValidCommand(const int command) {
-    return command == 1 || command == 2;
-}
-
-// Validate the URL format using regex
-bool MainLoop::isValidURL(const std::string& url) {
-    std::regex pattern(R"(^(https?:\/\/)?(www\.)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]{2,})+(\/.*)?$)");
-    return regex_match(url, pattern);
-}
-
-// Split the input into command number and URL
-std::pair<int, std::string> MainLoop::splitCommandAndUrl(const std::string& input) {
-    std::istringstream iss(input);
-    int command;
-    std::string url;
-
-    iss >> command;
-    std::getline(iss, url);
-
-    if (!url.empty() && url[0] == ' ') {
-        url.erase(0, 1); // Trim leading space if present
-    }
-    return {command, url};
-}
-
 // Main loop for handling user input and executing commands
 void MainLoop::run() {
-    std::map<int, ICommand*> commands;
-    commands[1] = new AddCommand(bloomFilter, realBlacklist); // AddCommand for command 1
-    commands[2] = new CheckCommand(bloomFilter, realBlacklist); // CheckCommand for command 2
-
+    map<string, ICommand*> commands;
+    commands["POST"] = new PostCommand();
+    commands["DELETE"] = new DeleteCommand();
+    commands["GET"] = new GetCommand();
+    
     std::string input;
     while (std::getline(std::cin, input)) {
         if (input.empty()) {
             continue; // Skip empty lines
         }
-
-        // Split input into command and URL
-        auto [commandNum, url] = splitCommandAndUrl(input);
-
-        // Validate the URL and command number
-        if (!isValidURL(url) || !isValidCommand(commandNum)) {
-            continue; // Skip invalid input
-        }
-
-        // Execute the corresponding command
-        auto it = commands.find(commandNum);
-        if (it != commands.end()) {
-            it->second->execute(url); // Execute the command
-        }
+        CommandParser parser = CommandParser(input);
+        ICommand* cmd = parser.getCommandObject();
+        cmd->execute(parser.getUrl());
     }
-
-    // Clean up dynamically allocated memory
-    delete commands[1];
-    delete commands[2];
+    
+    // Clean up command objects
+    for (auto& command : commands) {
+        delete command.second; // Delete each command object
+    }
 }
