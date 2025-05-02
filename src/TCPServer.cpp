@@ -8,6 +8,10 @@
 
 TCPServer::TCPServer(int port) : port(port) {}
 
+int TCPServer::getPort() const {
+    return port;
+}
+
 void TCPServer::run() {
     int server_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (server_sock < 0) {
@@ -31,8 +35,6 @@ void TCPServer::run() {
         close(server_sock);
         return;
     }
-
-    std::cout << "Server is listening on port " << port << "...\n";
 
     sockaddr_in client_addr{};
     socklen_t client_len = sizeof(client_addr);
