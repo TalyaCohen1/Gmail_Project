@@ -1,12 +1,10 @@
 #include "App.h"
+#include "TCPServer.h"
 
-// Constructor for App
-// Initializes the application
-App::App() {}
+App::App(int port) : port(port) {}
 
-// Runs the application
-// Creates and starts the main loop
 void App::run() {
-    MainLoop loop= MainLoop(); // Create a MainLoop object
-    loop.run();    // Run the MainLoop
+    TCPServer server(port);  // Create server on given port
+    server.run();            // Start handling client
 }
+

@@ -1,17 +1,12 @@
 #ifndef APP_H
 #define APP_H
 
-#include "MainLoop.h"
-
-// App class
-// Responsible for starting and managing the application
 class App {
 public:
-    // Constructor
-    App();
-
-    // Runs the application
-    void run();
+    App(int port);  // constructor with port
+    void run();     // runs the TCP server
+private:
+    int port;
 };
 
-#endif // APP_H
+#endif

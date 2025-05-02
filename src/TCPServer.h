@@ -5,7 +5,7 @@
 
 class TCPServer {
 public:
-    TCPServer(int port = 5555);
+    TCPServer(int port);
     void run();
     int getPort() const;
 private:
