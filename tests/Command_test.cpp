@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "../src/AddCommand.h"
-#include "../src/CheckCommand.h"
+#include "../src/PostCommand.h"
+#include "../src/GetCommand.h"
 #include "../src/BloomFilter.h"
 #include "../src/URLBlacklist.h"
 #include "../src/MultiHash.h"
@@ -59,9 +59,9 @@ protected:
 // -------------------------------
 // Test: AddCommand
 // -------------------------------
-TEST_F(CommandTest, AddCommand) {
+TEST_F(CommandTest, GetCommand) {
     // Create an AddCommand instance with Bloom filter and URL blacklist
-    AddCommand addCmd(*bloomFilter, *blacklist);
+    GetCommand addCmd(*bloomFilter, *blacklist);
     
     // Execute the AddCommand to add a URL
     addCmd.execute("www.example.com");
@@ -88,7 +88,7 @@ TEST_F(CommandTest, CheckCommandNonBlacklisted) {
     RestoreCout();
     
     // Verify that the output is "false\n" indicating the URL is not blacklisted
-    EXPECT_EQ(outputBuffer.str(), "false\n");
+    EXPECT_EQ(outputBuffer.str(), "200 Ok\n\nfalse\n");
 }
 
 // -------------------------------
@@ -103,7 +103,7 @@ TEST_F(CommandTest, CheckCommandBlacklisted) {
     RedirectCoutToBuffer();
     
     // Create a CheckCommand instance with Bloom filter and blacklist
-    CheckCommand checkCmd(*bloomFilter, *blacklist);
+    GetCommand checkCmd(*bloomFilter, *blacklist);
     
     // Execute CheckCommand for the blacklisted URL
     checkCmd.execute("www.blacklisted.com");
@@ -112,7 +112,7 @@ TEST_F(CommandTest, CheckCommandBlacklisted) {
     RestoreCout();
     
     // Verify the output is "true true\n" indicating the URL is blacklisted
-    EXPECT_EQ(outputBuffer.str(), "true true\n");
+    EXPECT_EQ(outputBuffer.str(), "200 Ok\n\ntrue true\n");
 }
 
 // -------------------------------
@@ -147,7 +147,7 @@ TEST_F(CommandTest, CheckCommandFalsePositive) {
         RedirectCoutToBuffer();
         
         // Create a CheckCommand with the small Bloom filter
-        CheckCommand checkCmd(smallFilter, *blacklist);
+        GetCommand checkCmd(smallFilter, *blacklist);
         
         // Execute CheckCommand for the false positive URL
         checkCmd.execute("2 " + falsePositiveUrl);
@@ -157,7 +157,7 @@ TEST_F(CommandTest, CheckCommandFalsePositive) {
         
         // Verify the output is "true false\n" because the Bloom filter returns true (false positive)
         // and the blacklist returns false
-        EXPECT_EQ(outputBuffer.str(), "true false\n");
+        EXPECT_EQ(outputBuffer.str(), "200 Ok\n\ntrue false\n");
     }
     
     // Clean up hash functions
