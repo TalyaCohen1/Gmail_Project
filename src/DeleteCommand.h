@@ -19,7 +19,7 @@ public:
     DeleteCommand(URLBlacklist& blacklist);
 
    
-    void execute(const std::string& url) override;
+    std::string execute(const std::string& url) override;
 };
 
 #endif // DELETECOMMAND_H

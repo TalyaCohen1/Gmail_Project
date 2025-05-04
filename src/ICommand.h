@@ -7,7 +7,7 @@
 class ICommand {
 public:
     // Pure virtual function for executing a command with the given input
-    virtual void execute(const std::string& input) = 0;
+    virtual std::string execute(const std::string& input) = 0;
 };
 
 #endif // ICOMMAND_H

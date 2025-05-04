@@ -19,9 +19,9 @@ public:
     
     string getCommand() const;
     string getUrl() const;
-    bool isValidCommand() const;
-    bool isValidUrl() const;
-    ICommand* getCommandObject();
+    bool isValidCommand( string& command);
+    bool isValidUrl( string& url);
+    // ICommand* getCommandObject();
 };
 
 #endif 

@@ -1,9 +1,13 @@
 #include "MainLoop.h"
 #include "BloomFilter.h"
 #include "MultiHash.h"
-#include "AddCommand.h"
-#include "CheckCommand.h"
+#include "PostCommand.h"
+#include "DeleteCommand.h"
+#include "CommandParser.h"
+#include "GetCommand.h"
+#include "BadRequest.h"
 #include "ConfigParser.h"
+#include "ICommand.h"
 #include <iostream>
 #include <sstream>
 #include <map>
@@ -14,9 +18,11 @@
 #include <vector>
 #include <utility> // for std::pair
 
+using namespace std;
+
 // Converts the list of hash IDs to actual hash function objects
-std::vector<HashFunc*> MainLoop::convertToHashFunc(const std::vector<int>& hashIDs) {
-    std::vector<HashFunc*> funcs;
+vector<HashFunc*> MainLoop::convertToHashFunc(const vector<int>& hashIDs) {
+    vector<HashFunc*> funcs;
     for (int id : hashIDs) {
         funcs.push_back(new MultiHash(id)); // Create a new MultiHash object for each ID
     }
@@ -24,16 +30,18 @@ std::vector<HashFunc*> MainLoop::convertToHashFunc(const std::vector<int>& hashI
 }
 
 // Constructor
-MainLoop::MainLoop() : bloomFilter(0, {}) {
-    namespace fs = std::filesystem;
+MainLoop::MainLoop(string &line) : bloomFilter(0, {}) {
+    this->realBlacklist = URLBlacklist(); // Initialize the real blacklist
+
+    namespace fs = filesystem;
 
     // Create 'data' directory and 'urlblacklist.txt' file if they don't exist
     if (!fs::exists("data")) {
         fs::create_directory("data");
     }
-    std::ofstream out("data/urlblacklist.txt", std::ios::app); // Open the file in append mode
+    ofstream out("data/urlblacklist.txt", ios::app); // Open the file in append mode
     if (!out.is_open()) {
-        std::cerr << "Failed to create blacklist file." << std::endl;
+        cerr << "Failed to create blacklist file." << endl;
         exit(1);
     }
     out.close();
@@ -43,25 +51,39 @@ MainLoop::MainLoop() : bloomFilter(0, {}) {
     std::string line;
 
     // Parse the configuration line until it is valid
-    while (true) {
-        std::getline(std::cin, line);
-        parser.parseLine(line);
-        if (parser.isValid()) {
-            break; 
-        }
+    parser.parseLine(line);
+    while (!parser.isValid()) {
+        cout << "Invalid configuration" << endl;
+        exit(0); // Exit if the configuration is invalid
     }
-
+    
     // Convert hash IDs to HashFunc objects and create BloomFilter
     std::vector<HashFunc*> hashFuncs = convertToHashFunc(parser.getHashFunc());
     bloomFilter = BloomFilter(parser.getSize(), hashFuncs);
     loadBlacklistToBloomFilter(); // Load the blacklist into the Bloom filter
+
+
+    // Initialize the command map with command objects
+    map<string, ICommand*> commands;
+    commands["POST"] = new PostCommand(bloomFilter,realBlacklist);
+    commands["DELETE"] = new DeleteCommand(realBlacklist);
+    commands["GET"] = new GetCommand(bloomFilter, realBlacklist);
+    commands["BAD"] = new BadRequest();
+    
+}
+
+MainLoop::~MainLoop() {
+    // Clean up command objects
+    for (auto& command : commands) {
+        delete command.second; // Delete each command object
+    }
 }
 
 // Load the blacklist from the file and add URLs to the Bloom filter
 void MainLoop::loadBlacklistToBloomFilter() {
     std::ifstream blacklistfile("data/urlblacklist.txt");
     if (!blacklistfile.is_open()) {
-        std::cerr << "Failed to open blacklist file for reading." << std::endl;
+        cerr << "Failed to open blacklist file for reading." << endl;
         return;
     }
 
@@ -74,26 +96,22 @@ void MainLoop::loadBlacklistToBloomFilter() {
     }
     blacklistfile.close();
 }
+ICommand* MainLoop::convertToCMD(string command) {
+    // Check if the command exists in the map
+    auto it = commands.find(command);
+    if (it != commands.end()) {
+        return it->second; // Return the command object
+    }
+    return nullptr; // Return null if command not found
+}
 
 // Main loop for handling user input and executing commands
-void MainLoop::run() {
-    map<string, ICommand*> commands;
-    commands["POST"] = new PostCommand();
-    commands["DELETE"] = new DeleteCommand();
-    commands["GET"] = new GetCommand();
-    
-    std::string input;
-    while (std::getline(std::cin, input)) {
-        if (input.empty()) {
-            continue; // Skip empty lines
-        }
-        CommandParser parser = CommandParser(input);
-        ICommand* cmd = parser.getCommandObject();
-        cmd->execute(parser.getUrl());
+string MainLoop::run(string input) {
+    if (input.empty()) {
+        return nullptr; // Skip empty lines
     }
-    
-    // Clean up command objects
-    for (auto& command : commands) {
-        delete command.second; // Delete each command object
-    }
+    CommandParser parser = CommandParser(input);
+    ICommand* cmd = convertToCMD(parser.getCommand());
+    string response = cmd->execute(parser.getUrl());
+    return response; // Return the response from the command
 }

@@ -24,7 +24,7 @@ public:
      * "true false" if false positive (only in Bloom filter),
      * "false" if not found at all.
      */
-    void execute(const std::string& url) override;
+    std::string execute(const std::string& url) override;
 };
 
 #endif // GETCOMMAND_H
