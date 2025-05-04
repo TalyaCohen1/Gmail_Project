@@ -1,5 +1,5 @@
-#ifndef "BADREQUEST_H"
-#define "BADREQUEST_H"
+#ifndef BADREQUEST_H
+#define BADREQUEST_H
 #include "ICommand.h"
 #include <string>
 
