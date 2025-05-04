@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
     MainLoop loop= MainLoop(argv[2]); //ענבר תפתרי את זה הוא צריך לקבל שורה שאיתו הוא יאתחל !
 
     int port = std::atoi(argv[1]);
-    TCPServer server(port, loop);  // Create server on given port
-    server.run();            // Start handling client
+    TCPServer server(port);  // Create server on given port
+    server.run(loop);            // Start handling client
     return 0;
 }
