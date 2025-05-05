@@ -12,7 +12,7 @@ int TCPServer::getPort() const {
     return port;
 }
 
-void TCPServer::run() {
+void TCPServer::run(MainLoop& loop) {
     int server_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (server_sock < 0) {
         perror("socket");
@@ -45,7 +45,6 @@ void TCPServer::run() {
         return;
     }
 
-    MainLoop loop;
     char buffer[4096];
 
     while (true) {

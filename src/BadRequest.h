@@ -4,8 +4,10 @@
 #include <string>
 
 
-class BadRequestCommand : public ICommand {
+class BadRequest: public ICommand {
 public:
-    void execute(const std::string& url) override ;
+    // Constructor
+    BadRequest() = default;
+    std::string execute(const std::string& url) override ;
 };
 #endif // BADREQUEST_H
