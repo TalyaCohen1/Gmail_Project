@@ -8,8 +8,15 @@ int main(int argc, char* argv[]) {
         std::cerr << "Usage: ./app <port>" << std::endl;
         return 1;
     }
-    MainLoop loop= MainLoop(argv[2]); //ענבר תפתרי את זה הוא צריך לקבל שורה שאיתו הוא יאתחל !
+    std::string combinedArgs;
+    for (int i = 2; i < argc; ++i) {
+        combinedArgs += argv[i];
+        if (i != argc - 1)
+            combinedArgs += " ";
+    }
 
+    MainLoop loop= MainLoop(combinedArgs);
+    
     int port = std::atoi(argv[1]);
     TCPServer server(port);  // Create server on given port
     server.run(loop);            // Start handling client
