@@ -5,6 +5,9 @@ project(MyExample)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+#Python setup
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
 # GoogleTest setup
 include(FetchContent)
 FetchContent_Declare(
@@ -16,16 +19,18 @@ FetchContent_MakeAvailable(googletest)
 
 # Create a library for the BloomFilter system
 add_library(BloomLib
-    src/AddCommand.cpp
-    src/AddCommand.h
-    src/App.cpp
-    src/App.h
+    src/BadRequesrt.cpp
+    src/BadRequest.h
     src/BloomFilter.cpp
     src/BloomFilter.h
-    src/CheckCommand.cpp
-    src/CheckCommand.h
+    src/CommandParser.cpp
+    src/CommandParser.h
     src/ConfigParser.cpp
     src/ConfigParser.h
+    src/DeleteCommand.cpp
+    src/DeleteCommand.h
+    src/GetCommand.cpp
+    src/GetCommand.h
     src/HashFunc.h
     src/ICommand.h
     src/main.cpp
@@ -33,6 +38,10 @@ add_library(BloomLib
     src/MainLoop.h
     src/MultiHash.cpp
     src/MultiHash.h
+    src/PostCommand.cpp
+    src/PostCommand.h
+    src/TCPServer.cpp
+    src/TCPServer.h
     src/URLBlacklist.cpp
     src/URLBlacklist.h
 )
@@ -55,3 +64,9 @@ target_include_directories(mainApp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 enable_testing()
 add_test(NAME runTests COMMAND runTests)
+
+# Custom target to run the client
+add_custom_target(runClient
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tcp_client.py
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
