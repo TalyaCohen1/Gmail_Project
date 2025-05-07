@@ -48,7 +48,6 @@ MainLoop::MainLoop(string &line) : bloomFilter(0, {}) {
 
     // Create a ConfigParser object
     ConfigParser parser = ConfigParser();
-    std::string line;
 
     // Parse the configuration line until it is valid
     parser.parseLine(line);
