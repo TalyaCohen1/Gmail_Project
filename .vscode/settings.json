@@ -67,6 +67,16 @@
         "map": "cpp",
         "regex": "cpp",
         "xtree": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "array": "cpp",
+        "bitset": "cpp",
+        "codecvt": "cpp",
+        "cstdarg": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "numbers": "cpp"
     }
 }

@@ -63,7 +63,7 @@ MainLoop::MainLoop(string &line) : bloomFilter(0, {}) {
 
 
     // Initialize the command map with command objects
-    map<string, ICommand*> commands;
+    //map<string, ICommand*> commands;
     commands["POST"] = new PostCommand(bloomFilter,realBlacklist);
     commands["DELETE"] = new DeleteCommand(realBlacklist);
     commands["GET"] = new GetCommand(bloomFilter, realBlacklist);
