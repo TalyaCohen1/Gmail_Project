@@ -110,7 +110,13 @@ string MainLoop::run(string input) {
         return nullptr; // Skip empty lines
     }
     CommandParser parser = CommandParser(input);
-    ICommand* cmd = convertToCMD(parser.getCommand());
+    ICommand* cmd;
+    if (!parser.isValidCommand() || !parser.isValidUrl()) {
+        cmd = new BadRequest();
+    } else{
+        cmd = convertToCMD(parser.getCommand());
+    }
+
     if (!cmd) {
         return nullptr; // Skip if command is null
     }

@@ -17,6 +17,8 @@ std::string DeleteCommand::execute(const std::string &url)
         if (!blacklist.contains(url))
         {
             return "204 No Content\n"; // URL successfully deleted from the blacklist
+        } else {
+            return " ";
         }
     }
     else
