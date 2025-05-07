@@ -23,7 +23,7 @@ public:
     std::string run(std::string input);  // Main loop function that drives the program
     std::vector<HashFunc*> convertToHashFunc(const std::vector<int>& hashIDs);  // Convert hash IDs to hash functions
     void loadBlacklistToBloomFilter();  // Load blacklisted URLs into the Bloom filter
-    ICommand* convertToCMD(string command);
+    ICommand* convertToCMD(std::string command);
 
     // Getters for Bloom Filter and real blacklist
     BloomFilter& getBloomFilter() { return bloomFilter; }
