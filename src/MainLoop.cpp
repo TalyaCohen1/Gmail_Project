@@ -101,7 +101,7 @@ ICommand* MainLoop::convertToCMD(string command) {
     if (it != commands.end()) {
         return it->second; // Return the command object
     }
-    return nullptr; // Return null if command not found
+    return commands["BAD"]; // Return null if command not found
 }
 
 // Main loop for handling user input and executing commands
@@ -111,6 +111,9 @@ string MainLoop::run(string input) {
     }
     CommandParser parser = CommandParser(input);
     ICommand* cmd = convertToCMD(parser.getCommand());
+    if (!cmd) {
+        return nullptr; // Skip if command is null
+    }
     string response = cmd->execute(parser.getUrl());
     return response; // Return the response from the command
 }
