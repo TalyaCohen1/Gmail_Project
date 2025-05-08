@@ -5,9 +5,6 @@ project(MyExample)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#Python setup
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
-
 # GoogleTest setup
 include(FetchContent)
 FetchContent_Declare(
@@ -64,9 +61,3 @@ target_include_directories(mainApp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 enable_testing()
 add_test(NAME runTests COMMAND runTests)
-
-# Custom target to run the client
-add_custom_target(runClient
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/tcp_client.py
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
