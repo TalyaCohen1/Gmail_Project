@@ -16,7 +16,7 @@ FetchContent_MakeAvailable(googletest)
 
 # Create a library for the BloomFilter system
 add_library(BloomLib
-    src/BadRequesrt.cpp
+    src/BadRequest.cpp
     src/BadRequest.h
     src/BloomFilter.cpp
     src/BloomFilter.h

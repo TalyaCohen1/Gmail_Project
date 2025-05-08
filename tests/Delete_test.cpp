@@ -47,7 +47,7 @@ TEST_F(DeleteCommandTest, DeleteExistingURL) {
     DeleteCommand deleteCmd(*blacklist);
     
     // Execute the command with a URL that exists in the blacklist
-    deleteCmd.execute("3 www.example.com");
+    deleteCmd.execute( "www.example.com");
     
     // Restore cout
     RestoreCout();
