@@ -4,10 +4,9 @@
 #include "MainLoop.h"
 
 int main(int argc, char* argv[]) {
-    // if (argc != 2) {
-    //     std::cerr << "Usage: ./app <port>" << std::endl;
-    //     return 1;
-    // }
+    if (argc < 4) {
+        return 1;
+    }
     std::string combinedArgs;
     for (int i = 2; i < argc; ++i) {
         combinedArgs += argv[i];
