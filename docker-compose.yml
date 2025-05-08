@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server.Dockerfile
+    ports:
+      - "12345:12345"  # או כל פורט שהשרת שלך מאזין עליו
+    networks:
+      - mynet
+
+  client:
+    build:
+      context: .
+      dockerfile: client.Dockerfile
+    depends_on:
+      - server
+    networks:
+      - mynet
+    command: >
+      bash -c "sleep 2 && python3 tcp_client.py"
+
+  tests:
+    build:
+      context: .
+      dockerfile: tests.Dockerfile
+    networks:
+      - mynet
+
+networks:
+  mynet:
