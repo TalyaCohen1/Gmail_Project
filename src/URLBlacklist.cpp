@@ -34,7 +34,42 @@ bool URLBlacklist::contains(const std::string& url) const {
 }
 
 // Saves the current blacklist to a file
-void URLBlacklist::saveToFile(const std::string& filename) const {
+// void URLBlacklist::saveToFile(const std::string& filename) const {
+//     std::filesystem::path path = filename;
+
+//     // Ensure the parent directory of the file exists
+//     if (!path.parent_path().empty()) {
+//         std::filesystem::create_directories(path.parent_path());
+//     }
+
+//     std::unordered_set<std::string> existingUrls; // Set to store existing URLs in the file
+//     std::ifstream inFile(path);  // Open the file for reading
+//     std::string line;
+    
+//     // Read the existing URLs from the file
+//     while (std::getline(inFile, line)) {
+//         if (!line.empty()) {
+//             existingUrls.insert(line);  // Add the URL to the set if it's not empty
+//         }
+//     }
+//     inFile.close();  // Close the input file
+
+//     std::ofstream outFile(path, std::ios::app); // Open the file for appending
+//     if (!outFile.is_open()) {
+//         std::cerr << "Unable to open file for writing: " << path << std::endl;
+//         return; // Exit if the file can't be opened
+//     }
+
+//     // Write any new URLs from the blacklist to the file
+//     for (const auto& bl_url : blacklist) {
+//         if (existingUrls.find(bl_url) == existingUrls.end()) {
+//             outFile << bl_url << std::endl; // Append the URL if it doesn't exist in the file
+//         }
+//     }
+//     outFile.close(); // Close the output file
+// }
+
+void URLBlacklist::writeToFile(const std::string& filename, std::ios_base::openmode mode) const {
     std::filesystem::path path = filename;
 
     // Ensure the parent directory of the file exists
@@ -42,32 +77,46 @@ void URLBlacklist::saveToFile(const std::string& filename) const {
         std::filesystem::create_directories(path.parent_path());
     }
 
-    std::unordered_set<std::string> existingUrls; // Set to store existing URLs in the file
-    std::ifstream inFile(path);  // Open the file for reading
-    std::string line;
+    std::unordered_set<std::string> existingUrls;
     
-    // Read the existing URLs from the file
-    while (std::getline(inFile, line)) {
-        if (!line.empty()) {
-            existingUrls.insert(line);  // Add the URL to the set if it's not empty
-        }
-    }
-    inFile.close();  // Close the input file
+    // Only read existing file contents if in append mode
+    if (mode == std::ios::app) {
+        std::ifstream inFile(path);  // Open the file for reading
+        std::string line;
 
-    std::ofstream outFile(path, std::ios::app); // Open the file for appending
+        while (std::getline(inFile, line)) {
+            if (!line.empty()) {
+                existingUrls.insert(line);
+            }
+        }
+        inFile.close();
+    }
+
+    std::ofstream outFile(path, mode); // Open the file in given mode
     if (!outFile.is_open()) {
         std::cerr << "Unable to open file for writing: " << path << std::endl;
-        return; // Exit if the file can't be opened
+        return;
     }
 
-    // Write any new URLs from the blacklist to the file
     for (const auto& bl_url : blacklist) {
-        if (existingUrls.find(bl_url) == existingUrls.end()) {
-            outFile << bl_url << std::endl; // Append the URL if it doesn't exist in the file
+        if (mode == std::ios::trunc || existingUrls.find(bl_url) == existingUrls.end()) {
+            outFile << bl_url << std::endl;
         }
     }
-    outFile.close(); // Close the output file
+
+    outFile.close();
 }
+
+
+void URLBlacklist::saveToFile(const std::string& filename) const {
+    writeToFile(filename, std::ios::app);  // append mode
+}
+
+void URLBlacklist::overwriteToFile(const std::string& filename) const {
+    writeToFile(filename, std::ios::trunc);  // overwrite mode
+}
+
+
 
 // Loads the blacklist from a file
 void URLBlacklist::loadFromFile(const std::string& filename) {
@@ -91,7 +140,7 @@ void URLBlacklist::deleteURL(const std::string& url, const std::string& filename
     if (it != blacklist.end()) {
         blacklist.erase(it); // Remove the URL from the blacklist
     }
-    saveToFile(filename); // Save the updated blacklist to the file
+    overwriteToFile(filename); // Save the updated blacklist to the file
 }
 
 

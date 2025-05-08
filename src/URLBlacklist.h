@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 
 class URLBlacklist {
 private:
@@ -25,6 +26,10 @@ public:
     void loadFromFile(const std::string& filename);
 
     void deleteURL(const std::string& url, const std::string& filename);
+
+    void writeToFile(const std::string& filename, std::ios_base::openmode mode) const;
+
+    void overwriteToFile(const std::string& filename) const;
 
     // Getter for the blacklist vector, returns a constant reference to the blacklist
     const std::vector<std::string>& getBlacklist() const;
