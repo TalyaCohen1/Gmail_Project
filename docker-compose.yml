@@ -9,6 +9,7 @@ services:
       - "12345:12345" 
     networks:
       - mynet
+    command: ["12345", "8", "1", "2"] 
 
   client:
     build:
@@ -19,7 +20,7 @@ services:
     networks:
       - mynet
     command: >
-      bash -c "sleep 2 && python3 tcp_client.py"
+      bash -c "sleep 2 && python3 tcp_client.py 127.0.0.1 12345"
 
   tests:
     build:

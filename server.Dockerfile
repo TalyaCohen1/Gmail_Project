@@ -16,4 +16,5 @@ RUN mkdir -p build && cd build && cmake .. && make
 RUN mkdir -p /usr/src/app/build/data
 
 # Set working directory to where runTests was generated
-CMD [ "./build/mainApp" ]
+ENTRYPOINT ["./build/mainApp"]
+CMD ["12345", "100", "2", "3"]
