@@ -1,5 +1,8 @@
 import socket
 import sys
+import time
+
+time.sleep(2)
 
 if len(sys.argv) != 3:
     print("Usage: python tcp_client.py <server_ip> <port>")
