@@ -40,38 +40,26 @@ protected:
 
 // Test deleting an existing URL
 TEST_F(DeleteCommandTest, DeleteExistingURL) {
-    // Redirect cout to capture output
-    RedirectCoutToBuffer();
-    
     // Create a DeleteCommand
     DeleteCommand deleteCmd(*blacklist);
     
     // Execute the command with a URL that exists in the blacklist
-    deleteCmd.execute( "www.example.com");
-    
-    // Restore cout
-    RestoreCout();
+    std::string result = deleteCmd.execute("www.example.com");
     
     // Verify the URL was removed from the blacklist
     EXPECT_FALSE(blacklist->contains("www.example.com"));
     
-    // Verify output contains success message
-    EXPECT_TRUE(outputBuffer.str().find("URL deleted from blacklist") != std::string::npos);
+    // Verify output indicates successful deletion
+    EXPECT_EQ(result, "204 No Content\n");
 }
 
 // Test deleting a non-existent URL
 TEST_F(DeleteCommandTest, DeleteNonExistentURL) {
-    // Redirect cout to capture output
-    RedirectCoutToBuffer();
-    
     // Create a DeleteCommand
     DeleteCommand deleteCmd(*blacklist);
     
     // Execute the command with a URL that doesn't exist in the blacklist
-    deleteCmd.execute("3 www.nonexistent.com");
-    
-    // Restore cout
-    RestoreCout();
+    std::string result = deleteCmd.execute("3 www.nonexistent.com");
     
     // Verify the blacklist still contains the original URLs
     EXPECT_TRUE(blacklist->contains("www.example.com"));
@@ -79,7 +67,7 @@ TEST_F(DeleteCommandTest, DeleteNonExistentURL) {
     EXPECT_TRUE(blacklist->contains("www.sample.com"));
     
     // Verify output contains not found message
-    EXPECT_TRUE(outputBuffer.str().find("URL not found in blacklist") != std::string::npos);
+    EXPECT_EQ(result, "404 Not Found\n");
 }
 
 // Test deleting all URLs
@@ -87,9 +75,9 @@ TEST_F(DeleteCommandTest, DeleteAllURLs) {
     DeleteCommand deleteCmd(*blacklist);
     
     // Delete all URLs one by one
-    deleteCmd.execute("3 www.example.com");
-    deleteCmd.execute("3 www.test.com");
-    deleteCmd.execute("3 www.sample.com");
+    deleteCmd.execute("www.example.com");
+    deleteCmd.execute("www.test.com");
+    deleteCmd.execute("www.sample.com");
     
     // Verify the blacklist is empty
     EXPECT_EQ(blacklist->getBlacklist().size(), 0);
@@ -99,7 +87,7 @@ TEST_F(DeleteCommandTest, DeleteAllURLs) {
 TEST_F(DeleteCommandTest, DeleteAndCheckURL) {
     // Delete a URL
     DeleteCommand deleteCmd(*blacklist);
-    deleteCmd.execute("3 www.example.com");
+    deleteCmd.execute("www.example.com");
     
     // Verify it was deleted
     EXPECT_FALSE(blacklist->contains("www.example.com"));
