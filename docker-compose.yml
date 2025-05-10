@@ -23,12 +23,12 @@ services:
     stdin_open: true   
     tty: true
 
-  # tests:
-  #   build:
-  #     context: .
-  #     dockerfile: tests.Dockerfile
-  #   networks:
-  #     - mynet
+  tests:
+    build:
+      context: .
+      dockerfile: tests.Dockerfile
+    networks:
+      - mynet
 
 networks:
   mynet:
