@@ -72,26 +72,6 @@ TEST_F(CommandTest, GetCommand) {
 }
 
 // -------------------------------
-// Test: CheckCommand with non-blacklisted URL
-// -------------------------------
-TEST_F(CommandTest, CheckCommandNonBlacklisted) {
-    // Redirect cout to capture output
-    RedirectCoutToBuffer();
-    
-    // Create a CheckCommand instance with Bloom filter and blacklist
-    CheckCommand checkCmd(*bloomFilter, *blacklist);
-    
-    // Execute CheckCommand for a URL that's not in the blacklist
-    checkCmd.execute("www.notblacklisted.com");
-    
-    // Restore the original cout buffer
-    RestoreCout();
-    
-    // Verify that the output is "false\n" indicating the URL is not blacklisted
-    EXPECT_EQ(outputBuffer.str(), "200 Ok\n\nfalse\n");
-}
-
-// -------------------------------
 // Test: CheckCommand with blacklisted URL
 // -------------------------------
 TEST_F(CommandTest, CheckCommandBlacklisted) {

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "../src/BloomFilter.h"
-#include "..src/GetCommand.h"
+#include "../src/GetCommand.h"
 #include "../src/PostCommand.h"
 #include "../src/URLBlacklist.h"
 #include "../src/HashFunc.h"
