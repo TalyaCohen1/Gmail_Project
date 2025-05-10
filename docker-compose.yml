@@ -19,15 +19,16 @@ services:
       - server
     networks:
       - mynet
-    command: >
-      bash -c "sleep 2 && python3 tcp_client.py 127.0.0.1 12345"
+    command: ["server", "12345"]
+    stdin_open: true   
+    tty: true
 
-  tests:
-    build:
-      context: .
-      dockerfile: tests.Dockerfile
-    networks:
-      - mynet
+  # tests:
+  #   build:
+  #     context: .
+  #     dockerfile: tests.Dockerfile
+  #   networks:
+  #     - mynet
 
 networks:
   mynet:

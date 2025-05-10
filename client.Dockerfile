@@ -8,4 +8,4 @@ COPY src/tcp_client.py .
 RUN pip install --no-cache-dir -r requirements.txt || true  # אם אין requirements, זה לא יכשיל
 
 ENTRYPOINT ["python3", "tcp_client.py"]
-CMD ["server", "12345"]
+CMD ["127.0.0.1", "12345"]
