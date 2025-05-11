@@ -59,9 +59,9 @@ protected:
 // -------------------------------
 // Test: AddCommand
 // -------------------------------
-TEST_F(CommandTest, GetCommand) {
+TEST_F(CommandTest, PostCommand) {
     // Create an AddCommand instance with Bloom filter and URL blacklist
-    GetCommand addCmd(*bloomFilter, *blacklist);
+    PostCommand addCmd(*bloomFilter, *blacklist);
     
     // Execute the AddCommand to add a URL
     addCmd.execute("www.example.com");
@@ -79,20 +79,13 @@ TEST_F(CommandTest, CheckCommandBlacklisted) {
     bloomFilter->add("www.blacklisted.com");
     blacklist->add("www.blacklisted.com");
     
-    // Redirect cout to capture output
-    RedirectCoutToBuffer();
-    
     // Create a CheckCommand instance with Bloom filter and blacklist
     GetCommand checkCmd(*bloomFilter, *blacklist);
     
     // Execute CheckCommand for the blacklisted URL
-    checkCmd.execute("www.blacklisted.com");
+    std::string result = checkCmd.execute("www.blacklisted.com");
     
-    // Restore the original cout buffer
-    RestoreCout();
-    
-    // Verify the output is "true true\n" indicating the URL is blacklisted
-    EXPECT_EQ(outputBuffer.str(), "200 Ok\n\ntrue true\n");
+    EXPECT_EQ(result, "200 Ok\n\ntrue true");
 }
 
 // -------------------------------
@@ -121,23 +114,10 @@ TEST_F(CommandTest, CheckCommandFalsePositive) {
         }
     }
     
-    // If a false positive URL is found
     if (!falsePositiveUrl.empty()) {
-        // Redirect cout to capture output
-        RedirectCoutToBuffer();
-        
-        // Create a CheckCommand with the small Bloom filter
         GetCommand checkCmd(smallFilter, *blacklist);
-        
-        // Execute CheckCommand for the false positive URL
-        checkCmd.execute("2 " + falsePositiveUrl);
-        
-        // Restore the original cout buffer
-        RestoreCout();
-        
-        // Verify the output is "true false\n" because the Bloom filter returns true (false positive)
-        // and the blacklist returns false
-        EXPECT_EQ(outputBuffer.str(), "200 Ok\n\ntrue false\n");
+        std::string result = checkCmd.execute(falsePositiveUrl);
+        EXPECT_EQ(result, "200 Ok\n\ntrue false");
     }
     
     // Clean up hash functions

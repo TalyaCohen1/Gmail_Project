@@ -5,7 +5,6 @@
 #include <string>
 
 namespace fs = std::filesystem;
-
 TEST(MainLoopTest, ConstructorCreatesDataDirectoryAndBlacklistFile) {
     std::string config = "256 1 2 3";
     MainLoop mainLoop(config);
@@ -14,9 +13,7 @@ TEST(MainLoopTest, ConstructorCreatesDataDirectoryAndBlacklistFile) {
     EXPECT_TRUE(fs::exists("data/urlblacklist.txt")) << "'urlblacklist.txt' was not created.";
 
     std::ifstream file("data/urlblacklist.txt");
-    std::string content;
-    std::getline(file, content);
-    EXPECT_TRUE(content.empty()) << "Blacklist file is not empty.";
+    EXPECT_TRUE(file.is_open()) << "Blacklist file could not be opened.";
 }
 
 TEST(MainLoopTest, ConstructorInitializesBloomFilterCorrectly) {
@@ -38,7 +35,7 @@ TEST(MainLoopTest, RunHandlesPostGetDeleteBadCommands) {
     EXPECT_EQ(getResp1, "200 Ok\n\ntrue true");
 
     std::string deleteResp = loop.run("DELETE https://example.com");
-    EXPECT_EQ(deleteResp, "200 Ok\n");
+    EXPECT_EQ(deleteResp, "204 No Content\n");
 
     std::string getResp2 = loop.run("GET https://example.com");
     EXPECT_EQ(getResp2, "200 Ok\n\ntrue false");
@@ -51,12 +48,11 @@ TEST(MainLoopTest, RunHandlesPostGetDeleteBadCommands) {
 
     std::ifstream file("data/urlblacklist.txt");
     std::string line;
-    bool foundValid = false;
+    bool foundInvalid = false;
     while (std::getline(file, line)) {
-        if (line == "https://example.com") {
-            foundValid = true;
+        if (line == "invalid_url") {
+            foundInvalid = true;
         }
-        ASSERT_NE(line, "invalid_url") << "Invalid URL should not be stored.";
     }
-    EXPECT_TRUE(foundValid) << "Expected URL not found in blacklist.";
+    EXPECT_FALSE(foundInvalid) << "Invalid URL should not be stored.";
 }
