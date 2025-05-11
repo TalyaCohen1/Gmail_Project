@@ -87,3 +87,19 @@ Run the tests with:
 ```
 docker run --rm bloomfilter-app ./runTests
 ```
+
+## Answers to the questions in the task:
+- Did we need to modify closed code to add a new command?
+No. We used the `ICommand` pattern, so to add a new command, we only had to create a new class that implements the `ICommand` interface and provides an `execute` method with the same signature.
+We also added a delete function to the `BloomFilter` class, which did not affect the rest of the class. Additionally, we added an option for the `DELETE` command (resulting in three options for `execute`).
+
+- Did we need to modify closed code to change the names of the commands?
+No. We only changed the class names (e.g., from `Add` to `Post` and from `Check` to `Get`). In the `ConfigParser` class, instead of checking command numbers, we extracted the first word of the input as the command. This change did not affect the rest of the code, and the modified part was necessary.
+
+- Did we need to modify closed code to change the output of the commands?
+No. We only needed to change the content of the output. For example, instead of printing `False` with `cout << "False"`, we changed it to `cout << "200 OK\n\n" << "False"`.
+Since the output was handled inside the command classes, we didn’t need to modify any other parts of the code — just the `execute` method in each command class.
+
+- Did we need to modify closed code to change the I/O sources?
+No. Instead of writing output directly to `cout` inside the `execute` functions, we changed those functions to return a `string`. Then, the server handled the actual output.
+As for the input, instead of reading from the terminal, we received input from the client via the server, and parsing the input string remained the same.
