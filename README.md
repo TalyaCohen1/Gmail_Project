@@ -34,7 +34,7 @@ docker-compose up server
 
 Run the client in another terminal:
 ```
-docker-compose run --rm client
+docker-compose run --rm client
 ```
 
 To stop all running containers:
@@ -152,7 +152,7 @@ docker-compose build
 
 the command for running the tests:
 ```
-docker-compose run --rm tests
+docker-compose run --rm tests
 ```
 
 by running those command, the output should be like this:
