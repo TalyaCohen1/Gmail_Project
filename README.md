@@ -102,14 +102,14 @@ POST <url>
 GET <url>
 ```
 
-3. Delete a url from the blacklist (doesn't change the bloomfilter):
+3. Delete a URL from the blacklist (doesn't change the bloomfilter):
 ```
 DELETE <url>
 ```
 
 ## Command Outputs
 
-- For command `POST` (Add URL): the output that is displayed after adding a URL is '201 Created'
+- For command `POST` (Add URL): the output that is displayed is '201 Created'
 - For command `GET` (Check URL): the output that is displayed is '200 Ok' followed by one of three possible outputs (with 1 empty line separating):
   - `true true` - The URL is definitely in the blacklist (found in both Bloom filter and actual blacklist)
   - `true false` - A false positive from the Bloom filter (URL appears to be in the Bloom filter but isn't in the actual blacklist)
