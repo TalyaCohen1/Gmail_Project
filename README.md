@@ -119,7 +119,7 @@ DELETE <url>
 - For invalid command: the output will be '400 Bad Request'.
 
 ## Stopping The Program
-To stop the program, press `ctrl + C`.
+To stop the program, press `ctrl + C` or `quit`.
 The program will save all blacklisted URLs to the data file. When you restart the container, it will load the previously saved blacklist from the persistent volume.
 
 ## Running Example
