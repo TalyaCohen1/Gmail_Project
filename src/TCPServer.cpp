@@ -36,27 +36,28 @@ void TCPServer::run(MainLoop& loop) {
         return;
     }
 
-    sockaddr_in client_addr{};
-    socklen_t client_len = sizeof(client_addr);
-    int client_sock = accept(server_sock, (sockaddr*)&client_addr, &client_len);
-    if (client_sock < 0) {
-        perror("accept");
-        close(server_sock);
-        return;
-    }
-
-    char buffer[4096];
-
     while (true) {
-        memset(buffer, 0, sizeof(buffer));
-        int bytes_read = recv(client_sock, buffer, sizeof(buffer) - 1, 0);
-        if (bytes_read <= 0) break;
+        sockaddr_in client_addr{};
+        socklen_t client_len = sizeof(client_addr);
+        int client_sock = accept(server_sock, (sockaddr*)&client_addr, &client_len);
+        if (client_sock < 0) {
+            perror("accept");
+            continue;
+        }
 
-        std::string request(buffer);
-        std::string response = loop.run(request);
-        send(client_sock, response.c_str(), response.length(), 0);
+        char buffer[4096];
+        while (true) {
+            memset(buffer, 0, sizeof(buffer));
+            int bytes_read = recv(client_sock, buffer, sizeof(buffer) - 1, 0);
+            if (bytes_read <= 0) break;
+
+            std::string request(buffer);
+            std::string response = loop.run(request);
+            send(client_sock, response.c_str(), response.length(), 0);
+        }
+
+        close(client_sock);
     }
 
-    close(client_sock);
     close(server_sock);
 }
