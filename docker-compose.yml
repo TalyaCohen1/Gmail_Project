@@ -1,4 +1,4 @@
-version: "3.9"
+# version: "3.9"
 
 services:
   server:
@@ -9,7 +9,9 @@ services:
       - "12345:12345" 
     networks:
       - mynet
-    command: ["12345", "8", "1", "2"] 
+    command: ["5555", "100", "1", "2", "3"] 
+    volumes:
+      - bloom_data:/usr/src/app/data
 
   client:
     build:
@@ -19,9 +21,11 @@ services:
       - server
     networks:
       - mynet
-    command: ["server", "12345"]
+    command: ["server", "5555"]
     stdin_open: true   
     tty: true
+    volumes:
+      - bloom_data:/usr/src/app/data
 
   tests:
     build:
@@ -32,3 +36,5 @@ services:
 
 networks:
   mynet:
+volumes:
+  bloom_data:
