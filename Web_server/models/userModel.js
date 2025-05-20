@@ -1,9 +1,11 @@
 const users = []; //for user data
 
-const createUser = (username, id, password) => {
+const createUser = (username, id,email, avater, password) => {
     const user = {
         username,
         id,
+        email,
+        avater,
         password
     };
     users.push(user);
