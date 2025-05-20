@@ -9,6 +9,7 @@
 #include "ICommand.h"
 #include <map>
 #include <vector>
+#include <mutex>
 #include "HashFunc.h"
 
 class MainLoop {

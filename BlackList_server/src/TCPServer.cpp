@@ -1,10 +1,13 @@
 #include "../include/TCPServer.h"
 #include "../include/MainLoop.h"
 #include <iostream>
+#include "ThreadPool.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <cstring>
+
+#define MAX_THREADS 4
 
 TCPServer::TCPServer(int port) : port(port) {}
 
@@ -30,11 +33,15 @@ void TCPServer::run(MainLoop& loop) {
         return;
     }
 
-    if (listen(server_sock, 1) < 0) {
+    if (listen(server_sock, 10) < 0) {
         perror("listen");
         close(server_sock);
         return;
     }
+
+    std::cout << "Server listening on port " << port << std::endl;
+
+    ThreadPool pool(MAX_THREADS, loop);
 
     while (true) {
         sockaddr_in client_addr{};
@@ -45,18 +52,10 @@ void TCPServer::run(MainLoop& loop) {
             continue;
         }
 
-        char buffer[4096];
-        while (true) {
-            memset(buffer, 0, sizeof(buffer));
-            int bytes_read = recv(client_sock, buffer, sizeof(buffer) - 1, 0);
-            if (bytes_read <= 0) break;
+        std::cout << "New connection accepted\n";
 
-            std::string request(buffer);
-            std::string response = loop.run(request);
-            send(client_sock, response.c_str(), response.length(), 0);
-        }
-
-        close(client_sock);
+        // שליחה לטיפול דרך ThreadPool
+        pool.addTask(client_sock);
     }
 
     close(server_sock);
