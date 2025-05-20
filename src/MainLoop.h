@@ -9,6 +9,7 @@
 #include "ICommand.h"
 #include <map>
 #include <vector>
+#include <mutex>
 #include "HashFunc.h"
 
 class MainLoop {
@@ -16,6 +17,7 @@ private:
     BloomFilter bloomFilter;  // Bloom Filter for storing blacklisted URLs
     URLBlacklist realBlacklist;  // Real URL blacklist (possibly persistent storage)
     std::map<std::string, ICommand*> commands;  // Map of command strings to command objects
+    std::mutex loopMutex;  // Mutex for thread safety
 
 public:
     MainLoop(std::string &line);  // Constructor: Initializes the main loop, Bloom filter, and blacklist
