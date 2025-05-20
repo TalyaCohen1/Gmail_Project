@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <utility> // for std::pair
+#include <mutex>
 
 using namespace std;
 
@@ -120,6 +121,7 @@ string MainLoop::run(string input) {
     if (!cmd) {
         return nullptr; // Skip if command is null
     }
+    lock_guard<mutex> guard(loopMutex);
     string response = cmd->execute(parser.getUrl());
-    return response; // Return the response from the command
+    return response;
 }
