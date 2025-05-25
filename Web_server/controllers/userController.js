@@ -1,4 +1,4 @@
-const userModel = require('../models/userModels');
+const userModel = require('../models/userModel');
 
 //Post /api/users
 const register = (req, res) => {

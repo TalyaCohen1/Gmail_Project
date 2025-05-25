@@ -5,10 +5,11 @@ const app = express();
 app.use(express.json());
 
 // Imports the files that define the paths for each part of the systemconst usersRoutes = require('./routes/usersRoutes');
-const mailsRoutes = require('./routes/mailsRoutes');
-const labelsRoutes = require('./routes/labelsRoutes');
+const mailsRoutes = require('./routes/mailRoutes');
+const labelsRoutes = require('./routes/labelRoutes');
 const blacklistRoutes = require('./routes/blacklistRoutes');
-const tokensRoutes = require('./routes/tokensRoutes');
+const tokensRoutes = require('./routes/tokenRoutes');
+const usersRoutes = require('./routes/userRoutes');
 
 // Connects each group of routes to the main API
 app.use('/api/users', usersRoutes);
