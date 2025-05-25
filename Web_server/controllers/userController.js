@@ -2,10 +2,10 @@ const userModel = require('../models/userModel');
 
 //Post /api/users
 const register = (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email, avatar } = req.body;
 
   // Validate input
-  if (!username || !password)
+  if (!username || !password || !email || !avatar)
     return res.status(400).json({ error: 'Missing username or password' });
 
   // Check if username already exists
@@ -13,7 +13,7 @@ const register = (req, res) => {
     return res.status(409).json({ error: 'Username already exists' });
 
   const id = Date.now().toString();
-  const newUser = usersModel.createUser(username, id, password);
+  const newUser = usersModel.createUser(username, id, email, avatar, password);
 
   res.status(201).location(`/api/users/${id}`).end();
 };
