@@ -5,16 +5,16 @@ const getAllLabels = () => labels
 
 const getLabel = (id) => labels.find(a => a.id === id)
 
-const createLabel = (title, content) => {
-     const newLabel = { id: ++idCounter, title, content } 
+const createLabel = (name) => {
+     const newLabel = { id: ++idCounter, name} 
      labels.push(newLabel) 
      return newLabel }
 
-const updateLabel = (id, title, content) => {
+const updateLabel = (id, name) => {
      const label = getLabel(id) 
      if (!label) return null
-     if (title) label.title = title
-     if (content) label.content = content
+     if (name) label.name = name
+     if (label.name === '') label.name = 'No Name'
      return label }
 
 const deleteLabel = (id) => {
