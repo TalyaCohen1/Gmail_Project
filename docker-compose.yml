@@ -1,40 +1,18 @@
-# version: "3.9"
-
 services:
-  server:
+  blacklist_server:
     build:
-      context: .
-      dockerfile: server.Dockerfile
+      context: ./BlackList_server   # matches your folder exactly (case-sensitive!)
+    container_name: blacklist_server
     ports:
-      - "12345:12345" 
-    networks:
-      - mynet
-    command: ["5555", "100", "1", "2", "3"] 
-    volumes:
-      - bloom_data:/usr/src/app/data
+      - "12345:12345"
+    restart: unless-stopped
 
-  client:
+  web_server:
     build:
-      context: .
-      dockerfile: client.Dockerfile
+      context: ./Web_server          # matches your folder exactly (case-sensitive!)
+    container_name: web_server
+    ports:
+      - "3000:3000"
     depends_on:
-      - server
-    networks:
-      - mynet
-    command: ["server", "5555"]
-    stdin_open: true   
-    tty: true
-    volumes:
-      - bloom_data:/usr/src/app/data
-
-  tests:
-    build:
-      context: .
-      dockerfile: tests.Dockerfile
-    networks:
-      - mynet
-
-networks:
-  mynet:
-volumes:
-  bloom_data:
+      - blacklist_server           # must match the service name above exactly (lowercase)
+    restart: unless-stopped
