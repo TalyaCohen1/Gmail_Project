@@ -1,4 +1,4 @@
-#include "../../BlackList_server/include/CommandParser.h"
+#include "../include/CommandParser.h"
 #include <gtest/gtest.h>
 
 TEST(CommandParserTest, ValidPostCommand) {

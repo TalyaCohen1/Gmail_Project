@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "../../BlackList_server/include/BloomFilter.h"
-#include "../../BlackList_server/include/MultiHash.h"
+#include "../include/BloomFilter.h"
+#include "../include/MultiHash.h"
 #include <vector>
 #include <string>
 #include <fstream>

@@ -6,8 +6,8 @@ function sendCommand(command, callback) {
     const client = new net.Socket();
     let responseData = '';
 
-    const host = 'localhost';
-    const port = 3001;
+    const host = 'blacklist_server'; // Replace with your blacklist server hostname or IP
+    const port = 12345;
 
     client.connect(port, host, () => {
         client.write(JSON.stringify(command) + '\n');

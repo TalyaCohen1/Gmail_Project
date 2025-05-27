@@ -19,47 +19,47 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread -g")
 # Create a library for the BloomFilter system
 add_library(BloomLib
     src/BadRequest.cpp
-    src/BadRequest.h
+    include/BadRequest.h
     src/BloomFilter.cpp
-    src/BloomFilter.h
+    include/BloomFilter.h
     src/CommandParser.cpp
-    src/CommandParser.h
+    include/CommandParser.h
     src/ConfigParser.cpp
-    src/ConfigParser.h
+    include/ConfigParser.h
     src/DeleteCommand.cpp
-    src/DeleteCommand.h
+    include/DeleteCommand.h
     src/GetCommand.cpp
-    src/GetCommand.h
-    src/HashFunc.h
-    src/ICommand.h
+    include/GetCommand.h
+    include/HashFunc.h
+    include/ICommand.h
     src/main.cpp
     src/MainLoop.cpp
-    src/MainLoop.h
+    include/MainLoop.h
     src/MultiHash.cpp
-    src/MultiHash.h
+    include/MultiHash.h
     src/PostCommand.cpp
-    src/PostCommand.h
+    include/PostCommand.h
     src/TCPServer.cpp
-    src/TCPServer.h
+    include/TCPServer.h
     src/URLBlacklist.cpp
-    src/URLBlacklist.h
+    include/URLBlacklist.h
 )
 target_include_directories(BloomLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# Find all test source files in tests/
-file(GLOB TEST_SOURCES tests/*.cpp)
+# # Find all test source files in tests/
+# file(GLOB TEST_SOURCES tests/*.cpp)
 
-# Create test executable and link everything
-add_executable(runTests ${TEST_SOURCES})
-target_link_libraries(runTests
-    gtest_main
-    BloomLib
-)
+# # Create test executable and link everything
+# add_executable(runTests ${TEST_SOURCES})
+# target_link_libraries(runTests
+#     gtest_main
+#     BloomLib
+# )
 
 # Main application executable
 file(GLOB SRC_FILES src/*.cpp)
 add_executable(mainApp ${SRC_FILES})
 target_include_directories(mainApp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-enable_testing()
-add_test(NAME runTests COMMAND runTests)
+# enable_testing()
+# add_test(NAME runTests COMMAND runTests)

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "../../BlackList_server/include/MultiHash.h"
-#include "../../BlackList_server/include/HashFunc.h"
+#include "../include/MultiHash.h"
+#include "../include/HashFunc.h"
 #include <string>
 #include <functional>
 
