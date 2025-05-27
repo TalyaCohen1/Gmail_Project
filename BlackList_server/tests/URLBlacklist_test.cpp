@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../../BlackList_server/include/URLBlacklist.h"
+#include "../include/URLBlacklist.h"
 #include <string>
 #include <vector>
 #include <filesystem>

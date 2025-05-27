@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../../BlackList_server/include/ConfigParser.h"
+#include "../include/ConfigParser.h"
 #include <string>
 #include <vector>
 

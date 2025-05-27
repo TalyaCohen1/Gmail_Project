@@ -3,8 +3,8 @@
 #include <vector>
 #include <atomic>
 #include <chrono>
-#include "../../BlackList_server/include/ThreadPool.h"
-#include "../../BlackList_server/include/MainLoop.h"
+#include "../include/ThreadPool.h"
+#include "../include/MainLoop.h"
 
 // عدל הגלובלי לספירת המשימות הפועלות כרגע
 static std::atomic<int> activeTasks{0};

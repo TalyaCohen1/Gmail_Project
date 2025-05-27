@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
-#include "../../BlackList_server/include/PostCommand.h"
-#include "../../BlackList_server/include/BloomFilter.h"
-#include "../../BlackList_server/include/URLBlacklist.h"
-#include "../../BlackList_server/include/MultiHash.h"
+#include "../include/PostCommand.h"
+#include "../include/BloomFilter.h"
+#include "../include/URLBlacklist.h"
+#include "../include/MultiHash.h"
 #include <fstream>
 
 TEST(PostCommandTest, AddsUrlAndReturnsCreated) {

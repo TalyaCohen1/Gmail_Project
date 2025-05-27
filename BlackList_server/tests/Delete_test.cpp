@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "../../BlackList_server/include/DeleteCommand.h"
-#include "../../BlackList_server/include/URLBlacklist.h"
+#include "../include/DeleteCommand.h"
+#include "../include/URLBlacklist.h"
 #include <vector>
 #include <string>
 #include <sstream>
