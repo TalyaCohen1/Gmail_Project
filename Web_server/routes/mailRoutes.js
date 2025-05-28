@@ -1,25 +1,24 @@
-// src/routes/mailsRoutes.js
-
 const express = require('express');
 const router = express.Router();
-const ctl = require('../controllers/mailController');
+const controller = require('../controllers/mailController');
+const { authenticateUser } = require('../middlewares/authMiddleware');
 
 // List up to 50 most recent mails
-router.get('/', ctl.listMails);
+router.get('/',authenticateUser, controller.listMails);
 
 // Create a new mail (with blacklist check)
-router.post('/', ctl.sendMail);
+router.post('/',authenticateUser, controller.sendMail);
 
 // Search mails by query string in subject or body must come before '/:id' to avoid routing conflicts
-router.get('/search/:query', ctl.searchMails);
+router.get('/search/:query',authenticateUser, controller.searchMails);
 
 // Retrieve a single mail by ID
-router.get('/:id', ctl.getMail);
+router.get('/:id',authenticateUser, controller.getMail);
 
 // Update an existing mail
-router.patch('/:id', ctl.updateMail);
+router.patch('/:id', controller.updateMail);
 
 // Delete a mail
-router.delete('/:id', ctl.deleteMail);
+router.delete('/:id',authenticateUser, controller.deleteMail);
 
 module.exports = router;
