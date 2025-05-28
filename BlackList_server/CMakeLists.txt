@@ -43,6 +43,8 @@ add_library(BloomLib
     include/TCPServer.h
     src/URLBlacklist.cpp
     include/URLBlacklist.h
+    src/MultiServer.cpp
+    include/MultiServer.h
 )
 target_include_directories(BloomLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
