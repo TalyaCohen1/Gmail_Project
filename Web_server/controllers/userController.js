@@ -21,11 +21,11 @@ const register = (req, res) => {
     return res.status(400).json({ error: "Gender must be either 'male' or 'female" });
   }
   // Check if username already exists
-  if (usersModel.findByEmail(emailAdress))
+  if (userModel.findByEmail(emailAdress))
     return res.status(409).json({ error: 'This email adress already exists' });
 
   const id = Date.now().toString();
-  const newUser = usersModel.createUser(fullName, id, emailAdress, birthDate,gender, password);
+  const newUser = userModel.createUser(fullName, id, emailAdress, birthDate,gender, password);
 
   res.status(201).location(`/api/users/${id}`).end();
 };
@@ -34,7 +34,7 @@ const register = (req, res) => {
 const login = (req, res) => {
   const { username, password } = req.body;
 
-  const user = usersModel.findByEmail(emailAdress);
+  const user = userModel.findByEmail(emailAdress);
   if (!user || user.password !== password)
     return res.status(400).json({ error: 'Invalid credentials' });
 
@@ -48,7 +48,7 @@ const getUser = (req, res) => {
   if (!token)
     return res.status(401).json({ error: 'Missing token' });
 
-  const user = usersModel.findById(token);
+  const user = userModel.findById(token);
   if (!user)
     return res.status(404).json({ error: 'User not found' });
 
@@ -57,7 +57,7 @@ const getUser = (req, res) => {
 
 //Get /api/users/:id
 const getUserById = (req, res) => {
-  const user = usersModel.findById(req.params.id);
+  const user = userModel.findById(req.params.id);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
   res.status(200).json({
