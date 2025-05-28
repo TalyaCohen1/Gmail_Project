@@ -1,19 +1,31 @@
 const userModel = require('../models/userModel');
+const { isValidGmail, isValidDate, isValidGender } = require('../models/validator');
 
 //Post /api/users
 const register = (req, res) => {
-  const { username, password, email, avatar } = req.body;
+  const { fullName, emailAdress, birthDate, gender, password } = req.body;
 
   // Validate input
-  if (!username || !password || !email || !avatar)
-    return res.status(400).json({ error: 'Missing username or password' });
+   if (!fullName || !password || !fullName || !emailAdress || !birthDate || !gender) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+   if (!isValidGmail(emailAdress)) {
+    return res.status(400).json({ error: "Email must be a valid @gmail.com address" });
+  }
 
+  if (!isValidDate(birthDate)) {
+    return res.status(400).json({ error: "Invalid birthDate format. Use YYYY-MM-DD" });
+  }
+
+  if (!isValidGender(gender)) {
+    return res.status(400).json({ error: "Gender must be either 'male' or 'female" });
+  }
   // Check if username already exists
-  if (usersModel.findByUsername(username))
-    return res.status(409).json({ error: 'Username already exists' });
+  if (usersModel.findByEmail(emailAdress))
+    return res.status(409).json({ error: 'This email adress already exists' });
 
   const id = Date.now().toString();
-  const newUser = usersModel.createUser(username, id, email, avatar, password);
+  const newUser = usersModel.createUser(fullName, id, emailAdress, birthDate,gender, password);
 
   res.status(201).location(`/api/users/${id}`).end();
 };
@@ -22,7 +34,7 @@ const register = (req, res) => {
 const login = (req, res) => {
   const { username, password } = req.body;
 
-  const user = usersModel.findByUsername(username);
+  const user = usersModel.findByEmail(emailAdress);
   if (!user || user.password !== password)
     return res.status(400).json({ error: 'Invalid credentials' });
 
@@ -40,7 +52,7 @@ const getUser = (req, res) => {
   if (!user)
     return res.status(404).json({ error: 'User not found' });
 
-  res.status(200).json({ id: user.id, username: user.username,email: user.email,avatar: user.avatar });
+  res.status(200).json({ id: user.id, fullName: user.fullName,emailAdress: user.emailAdress,birthDate: user.birthDate, gender: user.gender });
 };
 
 //Get /api/users/:id
@@ -50,9 +62,10 @@ const getUserById = (req, res) => {
 
   res.status(200).json({
     id: user.id,
-    username: user.username,
-    email: user.email,
-    avatar: user.avatar
+    fullName: user.fullName,
+    emailAdress: user.emailAdress,
+    birthDate: user.birthDate,
+    gender: user.gender
   });
 };
 
