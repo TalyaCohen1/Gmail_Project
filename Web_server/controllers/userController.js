@@ -21,6 +21,7 @@ const register = (req, res) => {
     return res.status(400).json({ error: "Gender must be either 'male' or 'female" });
   }
   // Check if username already exists
+
   if (userModel.findByEmail(emailAdress))
     return res.status(409).json({ error: 'This email adress already exists' });
 
@@ -35,6 +36,7 @@ const login = (req, res) => {
   const { username, password } = req.body;
 
   const user = userModel.findByEmail(emailAdress);
+
   if (!user || user.password !== password)
     return res.status(400).json({ error: 'Invalid credentials' });
 
