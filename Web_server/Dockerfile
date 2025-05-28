@@ -11,8 +11,8 @@ RUN npm install
 # Copy the rest of the app
 COPY . .
 
-# Expose port for API access
-EXPOSE 3000
+# # Expose port for API access
+# EXPOSE 3000
 
 # Start your web server
-CMD ["node", "server.js"]
+CMD ["node", "app.js"]

@@ -1,3 +1,2 @@
 Web_server/node_modules
-Web_server/package-lock.json
-Web_server/package.json
+node_modules
