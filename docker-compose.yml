@@ -3,6 +3,7 @@ services:
     build:
       context: ./BlackList_server   # matches your folder exactly (case-sensitive!)
     container_name: blacklist_server
+    init: true
     ports:
       - "12345:12345"
     restart: unless-stopped
@@ -11,6 +12,7 @@ services:
     build:
       context: ./Web_server          # matches your folder exactly (case-sensitive!)
     container_name: web_server
+    init: true
     ports:
       - "3000:3000"
     depends_on:
