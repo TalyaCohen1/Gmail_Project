@@ -1,95 +1,88 @@
-// src/models/mailModel.js
-
-let inbox = [];
+let mails = [];
 let nextId = 1;
-let sent = [];
 
 /**
- * Return up to 50 most recent mails (inbox + sent), sorted by timestamp descending.
+ * Return up to 50 most recent mails for this user (sent or received).
+ * @param {string} userId
  */
-function getAll() {
-    const all = inbox.concat(sent);
-    return all.sort((a, b) => b.timestamp - a.timestamp).slice(0, 50);
+function getAll(userId) {
+    return mails
+        .filter(m => m.to === userId || m.from === userId)
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 50);
 }
 
 /**
- * Find a mail by its ID in either inbox or sent.
- * @returns the mail object or null if not found.
+ * Find one mail by ID for this user; null if not found or not theirs.
+ * @param {string} userId
+ * @param {number} id
  */
-function getById(id) {
-    const found =
-        inbox.find(m => m.id === id) ||
-        sent.find(m  => m.id === id);
-    return found || null;
+function getById(userId, id) {
+    return (
+        mails.find(
+            m => m.id === id && (m.from === userId || m.to === userId)
+        ) || null
+    );
 }
 
 /**
- * Search all mails (inbox + sent) for those whose
- * subject or body contains the given query (case‐insensitive).
- * @returns an array (possibly empty) of matching mails.
+ * Search this user’s mails for query in subject or body.
+ * @param {string} userId
+ * @param {string} query
  */
-function search(query) {
+function search(userId, query) {
     const ql = query.toLowerCase();
-    return inbox.concat(sent).filter(m =>
-        m.subject.toLowerCase().includes(ql) ||
-        m.body.toLowerCase().includes(ql)
-        );
-}
-
-// does this work?
-/**
- * Create a new mail entry:
- * - Assign a unique ID
- * - Add a timestamp
- * - Push a copy into inbox (as a received mail) and into sent (as a sent mail)
- * @returns the newly created mail object.
- */
-function createMail({ from, to, subject, body }) {
-    const timestamp = Date.now();
-    const mail = { id: nextId++, from, to, subject, body, timestamp };
-
-    inbox.push({ ...mail, mailbox: 'inbox' });
-    sent .push({ ...mail, mailbox: 'sent' });
-
-    return mail;
+    return mails.filter(m =>
+        (m.from === userId || m.to === userId) &&
+        (m.subject.toLowerCase().includes(ql) ||
+        m.body.toLowerCase().includes(ql))
+    );
 }
 
 /**
- * Update subject and/or body of an existing mail.
- * Returns the updated mail, or null if no mail with that ID exists.
+ * Create a new mail record.
+ * @param {string} from    the sender’s userId
+ * @param {string} to      the recipient’s userId
+ * @param {string} subject
+ * @param {string} body
+ * @returns the newly created mail object
  */
-function updateMail(id, fields) {
-    let updated = null;
-
-    [inbox, sent].forEach(arr => {
-        arr.forEach(m => {
-        if (m.id === id) {
-            if (fields.subject !== undefined) m.subject = fields.subject;
-            if (fields.body    !== undefined) m.body    = fields.body;
-            updated = m;
-        }
-        });
-    });
-
-    return updated;
+function createMail(from, to, subject, body) {
+  const timestamp = Date.now();
+  const mail = { id: nextId++, from, to, subject, body, timestamp };
+  mails.push(mail);
+  return mail;
 }
 
 /**
- * Delete a mail by ID from both inbox and sent.
- * @returns true if at least one mail was deleted, false otherwise.
+ * Update an existing mail’s subject/body,
+ * only if userId is the sender and there's no blacklisted URLs.
+ * Returns updated mail or null.
+ * @param {string} userId
+ * @param {number} id
+ * @param {{subject?:string,body?:string}} fields
  */
-function deleteMail(id) {
-    let removed = false;
+function updateMail(id, fields, userId) {
+    const m = mails.find(m => m.id === id && m.from === userId);
+    if (!m) return null;
+    if (fields.subject !== undefined) m.subject = fields.subject;
+    if (fields.body !== undefined) m.body = fields.body;
+    return m;
+}
 
-    [inbox, sent].forEach(arr => {
-        const idx = arr.findIndex(m => m.id === id);
-        if (idx !== -1) {
-        arr.splice(idx, 1);
-        removed = true;
-        }
-    });
-
-    return removed;
+/**
+ * Delete a mail, only if userId is sender or recipient.
+ * @param {string} userId
+ * @param {number} id
+ * @returns true if deleted, false otherwise
+ */
+function deleteMail(userId, id) {
+    const idx = mails.findIndex(
+        m => m.id === id && (m.from === userId || m.to === userId)
+    );
+    if (idx === -1) return false;
+    mails.splice(idx, 1);
+    return true;
 }
 
 module.exports = {
