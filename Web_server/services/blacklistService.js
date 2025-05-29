@@ -2,106 +2,101 @@
 const net = require('net');
 
 /**
- * Send a JSON command over TCP to the blacklist server.
- * Returns a Promise that resolves to the parsed JSON response.
+ * Send a plain command string over TCP to the blacklist server.
+ * Returns a Promise that resolves to the string response.
  */
-function sendCommand(command) {
+function sendCommandString(commandStr) {
     return new Promise((resolve, reject) => {
         const client = new net.Socket();
         let responseData = '';
 
-        const host = 'blacklist_server'; // or 'localhost'
+        const host = 'blacklist_server'; // Docker service name
         const port = 12345;
 
         client.connect(port, host, () => {
-            client.write(JSON.stringify(command) + '\n');
+            console.log('[DEBUG] Sending:', commandStr);
+            client.write(commandStr + '\n');
         });
 
         client.on('data', (data) => {
-            responseData += data.toString();
-            try {
-                // try to parse full JSON
-                const response = JSON.parse(responseData);
-                client.destroy();
-                resolve(response);
-            } catch (_) {
-                // wait for more data
-            }
+            const chunk = data.toString();
+            console.log('[DEBUG] Received chunk:', chunk);
+            responseData += chunk;
         });
 
-        client.on('close', () => {
-            // connection closed, attempt final parse
-            try {
-                const response = JSON.parse(responseData);
-                resolve(response);
-            } catch (err) {
-                reject(new Error('Failed to parse server response'));
-            }
+        client.on('end', () => {
+            console.log('[DEBUG] Full response received:', responseData);
+            resolve(responseData);
         });
 
         client.on('error', (err) => {
+            console.error('[ERROR] Socket error:', err.message);
             reject(err);
+        });
+
+        client.setTimeout(3000, () => {
+            console.warn('[WARN] Forcing socket close after timeout');
+            client.end();
         });
     });
 }
 
 exports.checkUrl = async (req, res) => {
     const url = req.body.url;
-    if (!url) {
-        return res.status(400).json({ error: 'URL is required' });
-    }
+    if (!url) return res.status(400).json({ error: 'URL is required' });
 
     try {
-        // 1) get the raw string
-        const response = await sendCommand({ action: 'GET', url });
-        // 2) split into lines
+        const response = await sendCommandString(`GET ${url}`);
         const parts = response.split('\n');
-        // parts[0] should be "200 Ok"
-        // parts[2] should be " true true" or " true false"
         const statusLine = (parts[0] || '').trim();
-        const flagsLine  = (parts[2] || '').trim();
-        const flags      = flagsLine.split(/\s+/);
+        const flagsLine = (parts[2] || '').trim();
+        const flags = flagsLine.split(/\s+/);
 
-    // 3) only consider blacklisted if status OK AND both flags are "true"
-    const isBlacklisted =
-        statusLine === '200 Ok' &&
-        flags.length >= 2 &&
-        flags[0] === 'true' &&
-        flags[1] === 'true';
+        const isBlacklisted =
+            statusLine === '200 Ok' &&
+            flags.length >= 2 &&
+            flags[0] === 'true' &&
+            flags[1] === 'true';
 
-    return res.json({ isBlacklisted });
+        res.status(200).json({ isBlacklisted });
     } catch (err) {
         console.error('Error checking URL:', err);
-        return res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
 
 exports.addUrl = async (req, res) => {
     const url = req.body.url;
-    if (!url) {
-        return res.status(400).json({ error: 'URL is required' });
-    }
+    if (!url) return res.status(400).json({ error: 'URL is required' });
 
     try {
-        const response = await sendCommand({ action: 'POST', url });
-        return res.status(201).json(response);
+        const response = await sendCommandString(`POST ${url}`);
+        const statusLine = response.trim().split('\n')[0];
+        if (statusLine.startsWith('201')) {
+            res.status(201).send(statusLine);
+        } else {
+            res.status(400).send(statusLine);
+        }
     } catch (err) {
         console.error('Error adding URL:', err);
-        return res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
 
 exports.removeUrl = async (req, res) => {
-    const url = req.params.url;
-    if (!url) {
-        return res.status(400).json({ error: 'URL is required' });
-    }
+    const url = req.params.id;
+    if (!url) return res.status(400).json({ error: 'URL is required' });
 
     try {
-        const response = await sendCommand({ action: 'DELETE', url });
-        return res.status(200).json(response);
+        const response = await sendCommandString(`DELETE ${url}`);
+        const statusLine = response.trim().split('\n')[0];
+        if (statusLine.startsWith('200')) {
+            res.status(200).send(statusLine);
+        } else {
+            res.status(400).send(statusLine);
+        }
     } catch (err) {
         console.error('Error removing URL:', err);
-        return res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
