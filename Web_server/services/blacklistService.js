@@ -52,8 +52,24 @@ exports.checkUrl = async (req, res) => {
     }
 
     try {
+        // 1) get the raw string
         const response = await sendCommand({ action: 'GET', url });
-        return res.json({ isBlacklisted: Boolean(response.isBlacklisted) });
+        // 2) split into lines
+        const parts = response.split('\n');
+        // parts[0] should be "200 Ok"
+        // parts[2] should be " true true" or " true false"
+        const statusLine = (parts[0] || '').trim();
+        const flagsLine  = (parts[2] || '').trim();
+        const flags      = flagsLine.split(/\s+/);
+
+    // 3) only consider blacklisted if status OK AND both flags are "true"
+    const isBlacklisted =
+        statusLine === '200 Ok' &&
+        flags.length >= 2 &&
+        flags[0] === 'true' &&
+        flags[1] === 'true';
+
+    return res.json({ isBlacklisted });
     } catch (err) {
         console.error('Error checking URL:', err);
         return res.status(500).json({ error: 'Internal server error' });
