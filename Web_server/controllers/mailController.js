@@ -1,6 +1,7 @@
 const net = require('net');       
 const mailModel = require('../models/mailModel');
 const URL_REGEX = /https?:\/\/[^\s]+/g;
+const { checkURL } = require('../services/blacklistService');
 
 /**
  * Check a single URL against the C++ Blacklist server.
@@ -91,7 +92,7 @@ exports.sendMail = async (req, res) => {
     for (const url of urls) {
         let isBad;
         try {
-            isBad = await checkBlacklist(url);
+            isBad = await checkURL(url);
         } catch (e) {
             return res.status(500).json({ error: 'Blacklist service error' });
         }
@@ -135,7 +136,7 @@ exports.updateMail = async (req, res) => {
     for (const url of allUrls) {
         let isBlacklisted;
         try {
-            isBlacklisted = await checkBlacklist(url);
+            isBlacklisted = await checkURL(url);
         } catch (e) {
             return res.status(500).json({ error: 'Blacklist service error' });
         }
