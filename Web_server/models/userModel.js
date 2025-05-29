@@ -1,10 +1,10 @@
 const users = []; //for user data
 
-const createUser = (fullName, id,emailAdress,birthDate, gender, password) => {
+const createUser = (fullName, id,emailAddress,birthDate, gender, password) => {
     const user = {
         fullName,
         id,
-        emailAdress,
+        emailAddress,
         birthDate,
         gender,
         password
@@ -16,12 +16,16 @@ const createUser = (fullName, id,emailAdress,birthDate, gender, password) => {
 const findById =(id) => {
   return users.find(u => u.id === id);
 }
-const findByEmail = (emailAdress) => {
-    return users.find(u => u.emailAdress === emailAdress);
+const findByEmail = (emailAddress) => {
+    return users.find(u => u.emailAddress === emailAddress);
 }
-
+//for checking
+const getAllUsers = () => {
+    return users;
+}
 module.exports = {
     createUser,
     findById,
-    findByEmail
+    findByEmail,
+    getAllUsers
 };
