@@ -7,7 +7,8 @@ router.post('/', usersController.register);
 
 //login a user
 router.post('/login', usersController.login);
-
+//get all users (for checking)
+router.get('/', usersController.getAllUsers);
 //get a user by id
 router.get('/:id', usersController.getUserById);
 

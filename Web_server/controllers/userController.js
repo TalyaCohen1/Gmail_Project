@@ -3,13 +3,13 @@ const { isValidGmail, isValidDate, isValidGender } = require('../models/validato
 
 //Post /api/users
 const register = (req, res) => {
-  const { fullName, emailAdress, birthDate, gender, password } = req.body;
+  const { fullName, emailAddress, birthDate, gender, password } = req.body;
 
   // Validate input
-   if (!fullName || !password || !fullName || !emailAdress || !birthDate || !gender) {
+   if (!fullName || !password || !fullName || !emailAddress || !birthDate || !gender) {
     return res.status(400).json({ error: "Missing required fields" });
   }
-   if (!isValidGmail(emailAdress)) {
+   if (!isValidGmail(emailAddress)) {
     return res.status(400).json({ error: "Email must be a valid @gmail.com address" });
   }
 
@@ -22,23 +22,23 @@ const register = (req, res) => {
   }
   // Check if username already exists
 
-  if (userModel.findByEmail(emailAdress))
+  if (userModel.findByEmail(emailAddress))
     return res.status(409).json({ error: 'This email adress already exists' });
 
   const id = Date.now().toString();
-  const newUser = userModel.createUser(fullName, id, emailAdress, birthDate,gender, password);
+  const newUser = userModel.createUser(fullName, id, emailAddress, birthDate,gender, password);
 
   res.status(201).location(`/api/users/${id}`).end();
 };
 
 //Post /api/users/login
 const login = (req, res) => {
-  const { username, password } = req.body;
+  const { fullName, password } = req.body;
 
-  const user = userModel.findByEmail(emailAdress);
+  const user = userModel.findByEmail(emailAddress);
 
   if (!user || user.password !== password)
-    return res.status(400).json({ error: 'Invalid credentials' });
+    return res.status(400).json({ error: 'wrong password' });
 
   res.status(200).json({ token: user.id });
 };
@@ -54,7 +54,7 @@ const getUser = (req, res) => {
   if (!user)
     return res.status(404).json({ error: 'User not found' });
 
-  res.status(200).json({ id: user.id, fullName: user.fullName,emailAdress: user.emailAdress,birthDate: user.birthDate, gender: user.gender });
+  res.status(200).json({ id: user.id, fullName: user.fullName,emailAddress: user.emailAddress,birthDate: user.birthDate, gender: user.gender });
 };
 
 //Get /api/users/:id
@@ -65,10 +65,17 @@ const getUserById = (req, res) => {
   res.status(200).json({
     id: user.id,
     fullName: user.fullName,
-    emailAdress: user.emailAdress,
+    emailAddress: user.emailAddress,
     birthDate: user.birthDate,
     gender: user.gender
   });
+};
+
+//for checking
+//GET /api/users
+const getAllUsers = (req, res) => {
+  const users = userModel.getAllUsers();
+  res.status(200).json(users);
 };
 
 
@@ -76,5 +83,6 @@ module.exports = {
   register,
   login,
   getUser,
-  getUserById
+  getUserById,
+  getAllUsers
 };
