@@ -1,9 +1,7 @@
-// src/controllers/mailController.js
-
-const net = require('net');               // Node.js core TCP module
+const net = require('net');       
 const mailModel = require('../models/mailModel');
-
 const URL_REGEX = /https?:\/\/[^\s]+/g;
+const { checkURL } = require('../services/blacklistService');
 
 /**
  * Check a single URL against the C++ Blacklist server.
@@ -45,7 +43,7 @@ function checkBlacklist(url, host = '127.0.0.1', port = 4000) {
  * Return JSON list of up to 50 most recent mails.
  */
 exports.listMails = (req, res) => {
-    const mails = mailModel.getAll();
+    const mails = mailModel.getAll(req.userId);
     res.status(200).json(mails);
 };
 
@@ -55,8 +53,10 @@ exports.listMails = (req, res) => {
  */
 exports.getMail = (req, res) => {
     const id = Number(req.params.id);
-    const mail = mailModel.getById(id);
-    if (!mail) return res.status(404).json({ error: 'Mail not found' });
+    const mail = mailModel.getById(req.userId, id);
+    if (!mail) {
+        return res.status(404).json({ error: 'Mail not found' });
+    }
     res.status(200).json(mail);
 };
 
@@ -65,8 +65,8 @@ exports.getMail = (req, res) => {
  * Return all mails whose subject or body contains the query string.
  */
 exports.searchMails = (req, res) => {
-    const q = req.params.query;
-    const results = mailModel.search(q);
+    const query = req.params.query;
+    const results = mailModel.search(req.userId, query);
     res.status(200).json(results);
 };
 
@@ -77,10 +77,11 @@ exports.searchMails = (req, res) => {
  * or 500 if the blacklist check fails.
  */
 exports.sendMail = async (req, res) => {
-    const { from, to, subject, body } = req.body;
+    const from = req.userId;
+    const { to, subject, body } = req.body;
 
-    // Validate required fields
-    if (!from || !to || !subject || !body) {
+    // 1) Validate required fields
+    if (!to || !subject || !body) {
         return res.status(400).json({ error: 'Missing fields' });
     }
 
@@ -89,15 +90,20 @@ exports.sendMail = async (req, res) => {
 
     // Check each URL against the blacklist server
     for (const url of urls) {
-        let bad;
+        let isBad;
         try {
-            bad = await checkBlacklist(url);
+            isBad = await checkURL(url);
         } catch (e) {
             return res.status(500).json({ error: 'Blacklist service error' });
         }
-        if (bad) {
+        if (isBad) {
             return res.status(400).json({ error: 'Contains blacklisted link' });
         }
+    }
+    // Validate 'to' and field
+    const toUser = userModel.findById(to);
+    if (!toUser) {
+        return res.status(400).json({ error: 'Recipient does not exist' });
     }
 
     // All URLs are clean → create the mail
@@ -123,14 +129,14 @@ exports.updateMail = async (req, res) => {
 
     // 2) Collect any URLs in the new subject and/or body
     const subjectUrls = subject ? subject.match(URL_REGEX) || [] : [];
-    const bodyUrls    = body    ? body.match(URL_REGEX)    || [] : [];
-    const allUrls     = [...subjectUrls, ...bodyUrls];
+    const bodyUrls = body ? body.match(URL_REGEX) || [] : [];
+    const allUrls = [...subjectUrls, ...bodyUrls];
 
     // 3) Check each URL against the blacklist
     for (const url of allUrls) {
         let isBlacklisted;
         try {
-            isBlacklisted = await checkBlacklist(url);
+            isBlacklisted = await checkURL(url);
         } catch (e) {
             return res.status(500).json({ error: 'Blacklist service error' });
         }
@@ -140,7 +146,7 @@ exports.updateMail = async (req, res) => {
     }
 
     // 4) Perform the update in the model
-    const updated = mailModel.updateMail(id, { subject, body });
+    const updated = mailModel.updateMail(req.userId, id, { subject, body });
     if (!updated) {
         return res.status(404).json({ error: 'Mail not found' });
     }
@@ -156,7 +162,7 @@ exports.updateMail = async (req, res) => {
  */
 exports.deleteMail = (req, res) => {
     const id = Number(req.params.id);
-    const removed = mailModel.deleteMail(id);
+    const removed = mailModel.deleteMail(req.userId, id);
     if (!removed) {
         return res.status(404).json({ error: 'Mail not found' });
     }
