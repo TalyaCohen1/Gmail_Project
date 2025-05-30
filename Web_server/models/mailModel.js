@@ -9,7 +9,7 @@ function getAll(userId) {
     return mails
         .filter(m => m.to === userId || m.from === userId)
         .sort((a, b) => b.timestamp - a.timestamp)
-        .slice(0, 3);
+        .slice(0, 50);
 }
 
 /**
