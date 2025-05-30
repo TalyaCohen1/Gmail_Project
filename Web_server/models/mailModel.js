@@ -47,11 +47,13 @@ function search(userId, query) {
  * @param {string} body
  * @returns the newly created mail object
  */
-function createMail(from, to, subject, body) {
-  const timestamp = Date.now();
-  const mail = { id: nextId++, from, to, subject, body, timestamp };
-  mails.push(mail);
-  return mail;
+function createMail({ from, to, subject, body }) {
+    from = String(from);
+    to   = String(to);
+    const timestamp = Date.now();
+    const mail = { id: nextId++, from, to, subject, body, timestamp };
+    mails.push(mail);
+    return mail;
 }
 
 /**
@@ -62,7 +64,7 @@ function createMail(from, to, subject, body) {
  * @param {number} id
  * @param {{subject?:string,body?:string}} fields
  */
-function updateMail(id, fields, userId) {
+function updateMail(userId, id, fields) {
     const m = mails.find(m => m.id === id && m.from === userId);
     if (!m) return null;
     if (fields.subject !== undefined) m.subject = fields.subject;

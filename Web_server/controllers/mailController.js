@@ -81,6 +81,7 @@ exports.sendMail = async (req, res) => {
     const from = req.userId;
     const { to, subject, body } = req.body;
 
+
     // 1) Validate required fields
     if (!to || !subject || !body) {
         return res.status(400).json({ error: 'Missing fields' });
@@ -91,16 +92,32 @@ exports.sendMail = async (req, res) => {
 
     // Check each URL against the blacklist server
     for (const url of urls) {
-        let isBad;
-        try {
-            isBad = await checkURL(url);
-        } catch (e) {
-            return res.status(500).json({ error: 'Blacklist service error' });
-        }
-        if (isBad) {
-            return res.status(400).json({ error: 'Contains blacklisted link' });
-        }
+    // build a fake req/res to capture checkUrl’s output
+    const fakeReq = { body: { url } };
+    let fakeRes = {
+      statusCode: 200,
+      _json:      null,
+      status(code) { this.statusCode = code; return this; },
+      json(obj)   { this._json = obj;       return this; }
+    };
+
+    // call the existing handler
+    await checkUrl(fakeReq, fakeRes);
+
+    // if checkUrl decided it was a bad request or error, forward that
+    if (fakeRes.statusCode !== 200) {
+      return res
+        .status(fakeRes.statusCode)
+        .json(fakeRes._json);
     }
+
+    // now look at its JSON payload
+    if (fakeRes._json.isBlacklisted) {
+      return res
+        .status(400)
+        .json({ error: 'Contains blacklisted link' });
+    }
+  }
     // Validate 'to' and field
     const toUser = userModel.findById(to);
     if (!toUser) {
@@ -108,7 +125,7 @@ exports.sendMail = async (req, res) => {
     }
 
     // All URLs are clean → create the mail
-    const mail = mailModel.createMail({ from, to, subject, body });
+    const mail = mailModel.createMail({ from, to, subject, body })
 
     res.status(201).location(`/api/mails/${mail.id}`).json(mail);
 };
@@ -148,6 +165,7 @@ exports.updateMail = async (req, res) => {
 
     // 4) Perform the update in the model
     const updated = mailModel.updateMail(req.userId, id, { subject, body });
+
     if (!updated) {
         return res.status(404).json({ error: 'Mail not found' });
     }
