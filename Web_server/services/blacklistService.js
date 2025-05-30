@@ -41,29 +41,20 @@ function sendCommandString(commandStr) {
     });
 }
 
-exports.checkUrl = async (req, res) => {
-    const url = req.body.url;
-    if (!url) return res.status(400).json({ error: 'URL is required' });
+async function checkUrl(url) {
+    const response = await sendCommandString(`GET ${url}`);
+    const parts = response.split('\n');
+    const statusLine = (parts[0] || '').trim();
+    const flagsLine = (parts[2] || '').trim();
+    const flags = flagsLine.split(/\s+/);
 
-    try {
-        const response = await sendCommandString(`GET ${url}`);
-        const parts = response.split('\n');
-        const statusLine = (parts[0] || '').trim();
-        const flagsLine = (parts[2] || '').trim();
-        const flags = flagsLine.split(/\s+/);
-
-        const isBlacklisted =
-            statusLine === '200 Ok' &&
-            flags.length >= 2 &&
-            flags[0] === 'true' &&
-            flags[1] === 'true';
-
-        res.status(200).json({ isBlacklisted });
-    } catch (err) {
-        console.error('Error checking URL:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
+    return (
+        statusLine === '200 Ok' &&
+        flags.length >= 2 &&
+        flags[0] === 'true' &&
+        flags[1] === 'true'
+    );
+}
 
 exports.addUrl = async (req, res) => {
     const url = req.body.url;
@@ -90,13 +81,20 @@ exports.removeUrl = async (req, res) => {
     try {
         const response = await sendCommandString(`DELETE ${url}`);
         const statusLine = response.trim().split('\n')[0];
-        if (statusLine.startsWith('200')) {
-            res.status(200).send(statusLine);
+        if (statusLine.startsWith('204')) {
+            res.status(204).send(statusLine);
         } else {
-            res.status(400).send(statusLine);
+            res.status(404).send(statusLine);
         }
     } catch (err) {
         console.error('Error removing URL:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
+};
+
+module.exports = {
+    sendCommandString,
+    checkUrl,
+    addUrl: exports.addUrl,
+    removeUrl: exports.removeUrl
 };
