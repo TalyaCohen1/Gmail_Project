@@ -18,6 +18,6 @@ int main(int argc, char* argv[]) {
     
     int port = std::atoi(argv[1]);
     MultiServer server(port);  // Create server on given port
-    server.run(loop);            // Start handling client
+    server.run(loop);          // Start handling client
     return 0;
 }

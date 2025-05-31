@@ -1,9 +1,8 @@
 const mailModel = require('../models/mailModel');
 const userModel = require('../models/userModel');
+const { checkUrl } = require('../services/blacklistService');
 //const URL_REGEX = /https?:\/\/[^\s]+/g;
 const URL_REGEX = /\b(?:https?:\/\/)?(?:www\.)?[^\s]+\.[^\s]+\b/g;
-
-const { checkUrl } = require('../services/blacklistService');
 
 /**
  * GET /api/mails
@@ -53,14 +52,10 @@ exports.sendMail = async (req, res) => {
 
         const urls = body.match(URL_REGEX) || [];
         const urlsFromSubject = subject.match(URL_REGEX) || [];
-        console.log('[DEBUG] Extracted URLs from body:', urls);
+        
         for (const url of urls) {
             //const normalized = url.replace(/^https?:\/\//, '');
             const blacklisted = await checkUrl(url);
-            console.log('[DEBUG] Matched URL:', url);
-            //console.log('[DEBUG] Normalized URL:', normalized);
-            console.log('[DEBUG] Blacklisted result:', blacklisted);
-
             if (blacklisted) {
                 return res.status(400).json({ error: `Contains blacklisted link: ${url}` });
             }
@@ -68,16 +63,10 @@ exports.sendMail = async (req, res) => {
         for (const url of urlsFromSubject) {
             //const normalized = url.replace(/^https?:\/\//, '');
             const blacklisted = await checkUrl(url);
-            console.log('[DEBUG] Matched URL:', url);
-            //console.log('[DEBUG] Normalized URL:', normalized);
-            console.log('[DEBUG] Blacklisted result:', blacklisted);
-
             if (blacklisted) {
                 return res.status(400).json({ error: `Contains blacklisted link: ${url}` });
             }
         }
-
-
         const mail = await mailModel.createMail({ from, to, subject, body });
 
         res.status(201)
@@ -85,7 +74,6 @@ exports.sendMail = async (req, res) => {
             .json(mail);
 
     } catch (error) {
-        console.error('Error in sendMail:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };

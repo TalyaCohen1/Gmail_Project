@@ -4,21 +4,21 @@ const controller = require('../controllers/mailController');
 const { authenticateUser } = require('../middlewares/authMiddleware');
 
 // List up to 50 most recent mails
-router.get('/',authenticateUser, controller.listMails);
+router.get('/', authenticateUser, controller.listMails);
 
 // Create a new mail (with blacklist check)
-router.post('/',authenticateUser, controller.sendMail);
+router.post('/', authenticateUser, controller.sendMail);
 
 // Search mails by query string in subject or body must come before '/:id' to avoid routing conflicts
-router.get('/search/:query',authenticateUser, controller.searchMails);
+router.get('/search/:query', authenticateUser, controller.searchMails);
 
 // Retrieve a single mail by ID
-router.get('/:id',authenticateUser, controller.getMail);
+router.get('/:id', authenticateUser, controller.getMail);
 
 // Update an existing mail
-router.patch('/:id', controller.updateMail);
+router.patch('/:id', authenticateUser, controller.updateMail);
 
 // Delete a mail
-router.delete('/:id',authenticateUser, controller.deleteMail);
+router.delete('/:id', authenticateUser, controller.deleteMail);
 
 module.exports = router;

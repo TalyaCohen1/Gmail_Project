@@ -65,7 +65,7 @@ function createMail({ from, to, subject, body }) {
  * @param {{subject?:string,body?:string}} fields
  */
 function updateMail(userId, id, fields) {
-    const m = mails.find(m => m.id === id && m.from === userId);
+    const m = mails.find(m => String(m.id) === String(id) && String(m.from) === String(userId));
     if (!m) return null;
     if (fields.subject !== undefined) m.subject = fields.subject;
     if (fields.body !== undefined) m.body = fields.body;
