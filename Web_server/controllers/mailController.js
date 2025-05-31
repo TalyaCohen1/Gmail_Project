@@ -1,7 +1,6 @@
 const mailModel = require('../models/mailModel');
 const userModel = require('../models/userModel');
 const { checkUrl } = require('../services/blacklistService');
-//const URL_REGEX = /https?:\/\/[^\s]+/g;
 const URL_REGEX = /\b(?:https?:\/\/)?(?:www\.)?[^\s]+\.[^\s]+\b/g;
 
 /**
