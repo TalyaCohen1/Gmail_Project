@@ -7,7 +7,8 @@ const URL_REGEX = /\b(?:https?:\/\/)?(?:www\.)?[^\s]+\.[^\s]+\b/g;
  * GET /api/mails
  */
 exports.listMails = (req, res) => {
-    const mails = mailModel.getAll(req.userId);
+    const email = userModel.findById(req.userId).emailAddress;
+    const mails = mailModel.getAll(email);
     res.status(200).json(mails);
 };
 
@@ -16,7 +17,8 @@ exports.listMails = (req, res) => {
  */
 exports.getMail = (req, res) => {
     const id = Number(req.params.id);
-    const mail = mailModel.getById(req.userId, id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const mail = mailModel.getById(email, id);
     if (!mail) {
         return res.status(404).json({ error: 'Mail not found' });
     }
@@ -28,7 +30,8 @@ exports.getMail = (req, res) => {
  */
 exports.searchMails = (req, res) => {
     const query = req.params.query;
-    const results = mailModel.search(req.userId, query);
+    const email = userModel.findById(req.userId).emailAddress;
+    const results = mailModel.search(email, query);
     res.status(200).json(results);
 };
 
@@ -37,16 +40,21 @@ exports.searchMails = (req, res) => {
  */
 exports.sendMail = async (req, res) => {
     try {
-        const from = req.userId;
+        const fromId = req.userId;
+        const fromUser = await userModel.findById(fromId);
+        if (!fromUser) {
+            return res.status(400).json({ error: 'Sender does not exist' });
+        }
+        const from = fromUser.emailAddress;
         const { to, subject, body } = req.body;
 
         if (!to || !subject || !body) {
             return res.status(400).json({ error: 'Missing fields' });
         }
 
-        const toUser = await userModel.findById(to);
+        const toUser = await userModel.findByEmail(to);
         if (!toUser) {
-            return res.status(400).json({ error: 'Recipient does not exist' });
+            return res.status(400).json({ error: 'Recipient email does not exist' });
         }
 
         const urls = body.match(URL_REGEX) || [];
@@ -82,6 +90,9 @@ exports.sendMail = async (req, res) => {
  */
 exports.updateMail = async (req, res) => {
     const id = Number(req.params.id);
+    const fromId = req.userId;
+    const fromUser = await userModel.findById(fromId);
+    const from = fromUser.emailAddress;
     const { subject, body } = req.body;
 
     if (subject === undefined && body === undefined) {
@@ -106,7 +117,7 @@ exports.updateMail = async (req, res) => {
         }
     }
 
-    const updated = mailModel.updateMail(req.userId, id, { subject, body });
+    const updated = mailModel.updateMail(from, id, { subject, body });
 
     if (!updated) {
         return res.status(404).json({ error: 'Mail not found' });
@@ -120,7 +131,8 @@ exports.updateMail = async (req, res) => {
  */
 exports.deleteMail = (req, res) => {
     const id = Number(req.params.id);
-    const removed = mailModel.deleteMail(req.userId, id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const removed = mailModel.deleteMail(email, id);
     if (!removed) {
         return res.status(404).json({ error: 'Mail not found' });
     }

@@ -3,37 +3,37 @@ let nextId = 1;
 
 /**
  * Return up to 50 most recent mails for this user (sent or received).
- * @param {string} userId
+ * @param {string} email
  */
-function getAll(userId) {
+function getAll(email) {
     return mails
-        .filter(m => m.to === userId || m.from === userId)
+        .filter(m => m.to === email || m.from === email)
         .sort((a, b) => b.timestamp - a.timestamp)
         .slice(0, 50);
 }
 
 /**
  * Find one mail by ID for this user; null if not found or not theirs.
- * @param {string} userId
+ * @param {string} email
  * @param {number} id
  */
-function getById(userId, id) {
+function getById(email, id) {
     return (
         mails.find(
-            m => m.id === id && (m.from === userId || m.to === userId)
+            m => m.id === id && (m.from === email || m.to === email)
         ) || null
     );
 }
 
 /**
  * Search this user’s mails for query in subject or body.
- * @param {string} userId
+ * @param {string} email
  * @param {string} query
  */
-function search(userId, query) {
+function search(email, query) {
     const ql = query.toLowerCase();
     return mails.filter(m =>
-        (m.from === userId || m.to === userId) &&
+        (m.from === email || m.to === email) &&
         (m.subject.toLowerCase().includes(ql) ||
         m.body.toLowerCase().includes(ql))
     );
@@ -41,15 +41,13 @@ function search(userId, query) {
 
 /**
  * Create a new mail record.
- * @param {string} from    the sender’s userId
- * @param {string} to      the recipient’s userId
+ * @param {string} from    the sender’s email
+ * @param {string} to      the recipient’s email
  * @param {string} subject
  * @param {string} body
  * @returns the newly created mail object
  */
 function createMail({ from, to, subject, body }) {
-    from = String(from);
-    to   = String(to);
     const timestamp = Date.now();
     const mail = { id: nextId++, from, to, subject, body, timestamp };
     mails.push(mail);
@@ -58,14 +56,14 @@ function createMail({ from, to, subject, body }) {
 
 /**
  * Update an existing mail’s subject/body,
- * only if userId is the sender and there's no blacklisted URLs.
+ * only if email is the sender's email and there's no blacklisted URLs.
  * Returns updated mail or null.
- * @param {string} userId
+ * @param {string} email
  * @param {number} id
  * @param {{subject?:string,body?:string}} fields
  */
-function updateMail(userId, id, fields) {
-    const m = mails.find(m => String(m.id) === String(id) && String(m.from) === String(userId));
+function updateMail(email, id, fields) {
+    const m = mails.find(m => String(m.id) === String(id) && m.from === email);
     if (!m) return null;
     if (fields.subject !== undefined) m.subject = fields.subject;
     if (fields.body !== undefined) m.body = fields.body;
@@ -73,14 +71,14 @@ function updateMail(userId, id, fields) {
 }
 
 /**
- * Delete a mail, only if userId is sender or recipient.
- * @param {string} userId
+ * Delete a mail, only if email is the email of the sender or recipient.
+ * @param {string} email
  * @param {number} id
  * @returns true if deleted, false otherwise
  */
-function deleteMail(userId, id) {
+function deleteMail(email, id) {
     const idx = mails.findIndex(
-        m => m.id === id && (m.from === userId || m.to === userId)
+        m => m.id === id && (m.from === email || m.to === email)
     );
     if (idx === -1) return false;
     mails.splice(idx, 1);
