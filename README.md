@@ -39,9 +39,9 @@ To stop all running containers:
 docker-compose down
 ```
 
-Example of successful build:
+Example of a successful build + launch of the servers:
 
-![build](screenshots/build.png)
+![build](screenshots/build.jpg)
 
 ---
 
@@ -57,7 +57,7 @@ Content-Type: application/json
 
 {
   "fullName": "John Doe",
-  "emailAddress": "john.doe@example.com",
+  "emailAddress": "john.doe@gmail.com",
   "birthDate": "1990-01-15",
   "gender": "male",
   "password": "password123"
@@ -202,7 +202,6 @@ The API returns appropriate HTTP status codes:
 - **201 Created**: Successful POST requests (resource created)
 - **204 No Content**: Successful DELETE/PATCH requests
 - **400 Bad Request**: Malformed request or blacklisted URL detected
-- **401 Unauthorized**: Missing or invalid authentication
 - **404 Not Found**: Resource not found
 - **500 Internal Server Error**: Server error
 
@@ -227,6 +226,35 @@ The server uses a simple token-based authentication system:
 2. Login returns a user ID token
 3. Protected routes require the `Authorization: Bearer <user_id>` header
 4. The user ID is validated for each protected request
+
+### Public Endpoints (No Authentication Required):
+- `POST /api/users` - User registration
+- `POST /api/tokens` - User login
+
+**Blacklist Management:**
+- `POST /api/blacklist` - Add URL to blacklist
+- `DELETE /api/blacklist/:id` - Remove URL from blacklist
+
+### Protected Endpoints (Authentication Required):
+All other endpoints require the `Authorization: Bearer <user_id>` header:
+
+**User Management:**
+- `GET /api/users/:id` - Get user details
+
+**Email Management:**
+- `GET /api/mails` - Get inbox
+- `POST /api/mails` - Send email
+- `GET /api/mails/:id` - Get specific email
+- `PATCH /api/mails/:id` - Update email
+- `DELETE /api/mails/:id` - Delete email
+- `GET /api/mails/search/:query` - Search emails
+
+**Label Management:**
+- `GET /api/labels` - Get all labels
+- `POST /api/labels` - Create label
+- `GET /api/labels/:id` - Get specific label
+- `PATCH /api/labels/:id` - Update label
+- `DELETE /api/labels/:id` - Delete label
 
 --- 
 
