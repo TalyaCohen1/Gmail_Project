@@ -1,12 +1,18 @@
 const usersModel = require('../models/userModel');
 
-//POST /api/tokens
+/**
+ * Authenticate user and issue token
+ * POST /api/tokens
+ */
 const createToken = (req, res) => {
-  const { username, password } = req.body;
-  const user = usersModel.findByUsername(username);
+  const { emailAddress, password } = req.body;
+  const user = usersModel.findByEmail(emailAddress);
+  if (!emailAddress || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
 
   if (!user || user.password !== password) {
-    return res.status(400).json({ error: 'Invalid credentials' });
+    return res.status(400).json({ error: 'wrong password!' });
   }
 
   res.status(200).json({ id: user.id });
