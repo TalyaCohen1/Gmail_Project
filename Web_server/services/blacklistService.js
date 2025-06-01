@@ -1,9 +1,11 @@
-// blacklistService.js
 const net = require('net');
 
 /**
- * Send a plain command string over TCP to the blacklist server.
- * Returns a Promise that resolves to the string response.
+ * Sends a plain command string to the blacklist server over TCP.
+ * Resolves with the server's full response as a string.
+ *
+ * @param {string} commandStr - The command string to send (e.g., "GET url", "POST url").
+ * @returns {Promise<string>} - Resolves to the server's response string.
  */
 function sendCommandString(commandStr) {
     return new Promise((resolve, reject) => {
@@ -14,33 +16,35 @@ function sendCommandString(commandStr) {
         const port = 12345;
 
         client.connect(port, host, () => {
-            console.log('[DEBUG] Sending:', commandStr);
             client.write(commandStr + '\n');
         });
 
         client.on('data', (data) => {
-            const chunk = data.toString();
-            console.log('[DEBUG] Received chunk:', chunk);
-            responseData += chunk;
+            responseData += data.toString();
+            client.end();
         });
 
         client.on('end', () => {
-            console.log('[DEBUG] Full response received:', responseData);
             resolve(responseData);
         });
 
         client.on('error', (err) => {
-            console.error('[ERROR] Socket error:', err.message);
             reject(err);
         });
 
         client.setTimeout(3000, () => {
-            console.warn('[WARN] Forcing socket close after timeout');
-            client.end();
+            client.destroy();
+            reject(new Error('Socket timeout'));
         });
     });
 }
 
+/**
+ * Checks if a URL is blacklisted based on server response flags.
+ *
+ * @param {string} url - The URL to check.
+ * @returns {Promise<boolean>} - True if the URL is blacklisted; otherwise false.
+ */
 async function checkUrl(url) {
     const response = await sendCommandString(`GET ${url}`);
     const parts = response.split('\n');
@@ -56,6 +60,12 @@ async function checkUrl(url) {
     );
 }
 
+/**
+ * Express handler to add a URL to the blacklist.
+ *
+ * @param {Request} req - Express request containing `url` in the body.
+ * @param {Response} res - Express response object.
+ */
 exports.addUrl = async (req, res) => {
     const url = req.body.url;
     if (!url) return res.status(400).json({ error: 'URL is required' });
@@ -69,11 +79,16 @@ exports.addUrl = async (req, res) => {
             res.status(400).send(statusLine);
         }
     } catch (err) {
-        console.error('Error adding URL:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
 
+/**
+ * Express handler to remove a URL from the blacklist.
+ *
+ * @param {Request} req - Express request with URL as `id` parameter.
+ * @param {Response} res - Express response object.
+ */
 exports.removeUrl = async (req, res) => {
     const url = req.params.id;
     if (!url) return res.status(400).json({ error: 'URL is required' });
@@ -87,7 +102,6 @@ exports.removeUrl = async (req, res) => {
             res.status(404).send(statusLine);
         }
     } catch (err) {
-        console.error('Error removing URL:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
