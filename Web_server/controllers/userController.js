@@ -33,7 +33,7 @@ const register = (req, res) => {
 
 //Post /api/users/login
 const login = (req, res) => {
-  const { fullName, password } = req.body;
+  const { emailAddress, password } = req.body;
 
   const user = userModel.findByEmail(emailAddress);
 
