@@ -1,7 +1,12 @@
 const userModel = require('../models/userModel');
 const { isValidGmail, isValidDate, isValidGender } = require('../models/validator');
 
-//Post /api/users
+/**
+ * register a new user
+ * POST /api/users
+ * @param {*} req - The request object containing user data
+ * @param {*} res  - The response object to send back the result 
+ */
 const register = (req, res) => {
   const { fullName, emailAddress, birthDate, gender, password } = req.body;
 
@@ -20,18 +25,23 @@ const register = (req, res) => {
   if (!isValidGender(gender)) {
     return res.status(400).json({ error: "Gender must be either 'male' or 'female" });
   }
-  // Check if username already exists
-
+  // Check if emailAddress already exists
   if (userModel.findByEmail(emailAddress))
     return res.status(409).json({ error: 'This email adress already exists' });
 
-  const id = Date.now().toString();
+  const id = Date.now().toString(); // Generate a unique ID based on the current timestamp
   const newUser = userModel.createUser(fullName, id, emailAddress, birthDate,gender, password);
 
+  //response with the new user id 
   res.status(201).location(`/api/users/${id}`).end();
 };
 
-//Post /api/users/login
+/**
+ * Login a user
+ * Post /api/users/login
+ * @param {*} req - The request object containing email and password
+ * @param {*} res - The response object to send back the result
+ */
 const login = (req, res) => {
   const { emailAddress, password } = req.body;
 
@@ -43,7 +53,12 @@ const login = (req, res) => {
   res.status(200).json({ token: user.id });
 };
 
-//Get /api/users/me
+/**
+ * Get user info using token from header
+ * GET /api/users/me
+ * @param {*} req - request object containing the user token in the header
+ * @param {*} res - response object to send back the user information
+ */
 const getUser = (req, res) => {
     const token = req.header('X-User-Id');
 
@@ -57,7 +72,12 @@ const getUser = (req, res) => {
   res.status(200).json({ id: user.id, fullName: user.fullName,emailAddress: user.emailAddress,birthDate: user.birthDate, gender: user.gender });
 };
 
-//Get /api/users/:id
+/**
+ * Get user by ID from URL
+ * GET /api/users/:id
+ * @param {*} req - request object
+ * @param {*} res - response object
+ */
 const getUserById = (req, res) => {
   const user = userModel.findById(req.params.id);
   if (!user) return res.status(404).json({ error: 'User not found' });
@@ -71,14 +91,18 @@ const getUserById = (req, res) => {
   });
 };
 
-//for checking
-//GET /api/users
+/**
+ * Get all users (for admin/testing)
+ * GET /api/users
+ * @param {*} req - request object
+ * @param {*} res - response object
+ */
 const getAllUsers = (req, res) => {
   const users = userModel.getAllUsers();
   res.status(200).json(users);
 };
 
-
+// Export the functions to be used in routes
 module.exports = {
   register,
   login,
