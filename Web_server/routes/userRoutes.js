@@ -15,8 +15,5 @@ router.get('/', usersController.getAllUsers);
 //get a user by id
 //GET /api/users/:id
 router.get('/:id', usersController.getUserById);
-//get user info using token from header
-//GET /api/users/me
-router.get('/me', usersController.getUser);
 
 module.exports = router;
