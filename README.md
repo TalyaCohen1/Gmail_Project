@@ -95,7 +95,7 @@ Authorization: Bearer <user_id>
 Content-Type: application/json
 
 {
-  "to": "recipient@example.com",
+  "to": "recipient@gmail.com",
   "subject": "Email Subject",
   "body": "Email content with potential URLs"
 }
