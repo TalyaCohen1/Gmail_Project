@@ -54,25 +54,6 @@ const login = (req, res) => {
 };
 
 /**
- * Get user info using token from header
- * GET /api/users/me
- * @param {*} req - request object containing the user token in the header
- * @param {*} res - response object to send back the user information
- */
-const getUser = (req, res) => {
-    const token = req.header('X-User-Id');
-
-  if (!token)
-    return res.status(401).json({ error: 'Missing token' });
-
-  const user = userModel.findById(token);
-  if (!user)
-    return res.status(404).json({ error: 'User not found' });
-
-  res.status(200).json({ id: user.id, fullName: user.fullName,emailAddress: user.emailAddress,birthDate: user.birthDate, gender: user.gender });
-};
-
-/**
  * Get user by ID from URL
  * GET /api/users/:id
  * @param {*} req - request object
