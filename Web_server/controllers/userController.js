@@ -27,7 +27,7 @@ const register = (req, res) => {
   }
   // Check if emailAddress already exists
   if (userModel.findByEmail(emailAddress))
-    return res.status(409).json({ error: 'This email adress already exists' });
+    return res.status(400).json({ error: 'This email adress already exists' });
 
   const id = Date.now().toString(); // Generate a unique ID based on the current timestamp
   const newUser = userModel.createUser(fullName, id, emailAddress, birthDate,gender, password);
@@ -87,7 +87,6 @@ const getAllUsers = (req, res) => {
 module.exports = {
   register,
   login,
-  getUser,
   getUserById,
   getAllUsers
 };
