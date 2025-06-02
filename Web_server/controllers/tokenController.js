@@ -10,8 +10,10 @@ const createToken = (req, res) => {
   if (!emailAddress || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
-
-  if (!user || user.password !== password) {
+  if (!user){
+      return res.status(404).json({ error: 'email Address dont fit to any user' });
+  }
+  if (user.password !== password) {
     return res.status(400).json({ error: 'wrong password!' });
   }
 
