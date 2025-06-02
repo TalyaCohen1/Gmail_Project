@@ -75,7 +75,7 @@ POST http://localhost:3000/api/tokens
 Content-Type: application/json
 
 {
-  "emailAddress": "john.doe@example.com",
+  "emailAddress": "john.doe@gmail.com",
   "password": "password123"
 }
 ```
