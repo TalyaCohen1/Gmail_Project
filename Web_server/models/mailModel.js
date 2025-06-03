@@ -1,6 +1,5 @@
 let mails = [];
 let nextId = 1;
-let draftId = 1;
 let draftMails = [];
 
 /**
@@ -46,7 +45,7 @@ function search(email, query) {
 
 function createDraft({ from, to, subject, body}) {
     const timestamp = Date.now();
-    const draft = { id: draftId++, from, to, subject, body, timestamp };
+    const draft = { id: nextId++, from, to, subject, body, timestamp };
     draftMails.push(draft);
     return draft;
 }
@@ -60,9 +59,9 @@ function createDraft({ from, to, subject, body}) {
  * 
  * @returns the newly created mail object
  */
-function createMail({ from, to, subject, body}) {
+function createMail({ from, to, subject, body, id = nextId++ }) {
     const timestamp = Date.now();
-    const mail = { id: nextId++, from, to, subject, body, timestamp , deletedForSender: false, deletedForRecevier: false };
+    const mail = { id, from, to, subject, body, timestamp , deletedForSender: false, deletedForReceiver: false };
     mails.push(mail);
     return mail;
 }
@@ -82,8 +81,8 @@ function updateDraft(email, id, fields) {
     if (fields.body !== undefined) d.body = fields.body;
     if(fields.send === false){
         return d;
-    } else{
-        const mail = createMail(d.from, d.to, d.subject, d.body);
+    } else {
+        const mail = createMail(d.from, d.to, d.subject, d.body, id);
         draftMails = draftMails.filter(d => d.id !== id);
         return mail;
     }
@@ -101,7 +100,7 @@ function deleteMail(email, id) {
     if (mail.from === email) {
         mail.deletedForSender = true;
     } else {
-        mail.deletedForRecevier = true;
+        mail.deletedForReceiver = true;
     }
 }
 
