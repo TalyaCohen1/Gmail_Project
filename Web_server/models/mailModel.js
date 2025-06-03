@@ -72,20 +72,32 @@ function createMail({ from, to, subject, body, id = nextId++ }) {
  * Returns updated mail or null.
  * @param {string} email
  * @param {number} id
- * @param {{subject?:string,body?:string, send?: boolean}} fields
+ * @param {{subject?:string,body?:string,to?:string, send?: boolean}} fields
  */
 function updateDraft(email, id, fields) {
     const d = draftMails.find(d => String(d.id) === String(id) && d.from === email);
     if (!d) return null;
+
     if (fields.subject !== undefined) d.subject = fields.subject;
     if (fields.body !== undefined) d.body = fields.body;
+    if (fields.to !== undefined) d.to = fields.to;
+
     if(fields.send === false){
         return d;
     } else {
-        const mail = createMail(d.from, d.to, d.subject, d.body, id);
-        draftMails = draftMails.filter(d => d.id !== id);
+        const mail = createMail({ from: d.from, to: d.to, subject: d.subject, body: d.body, id });
+        // Remove the draft after sending
+        const idx = deleteFromDrafts(id);
+        if (!idx) return null;
         return mail;
     }
+}
+
+function deleteFromDrafts(id) {
+    const idx = draftMails.findIndex(d => d.id === id);
+    if (idx === -1) return false;
+    draftMails.splice(idx, 1);
+    return true;
 }
 
 /**
@@ -102,6 +114,7 @@ function deleteMail(email, id) {
     } else {
         mail.deletedForReceiver = true;
     }
+    return true;
 }
 
 module.exports = {
