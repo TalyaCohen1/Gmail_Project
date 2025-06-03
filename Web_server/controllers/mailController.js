@@ -48,8 +48,14 @@ exports.sendMail = async (req, res) => {
         const from = fromUser.emailAddress;
         const { to, subject, body } = req.body;
 
-        if (!to || !subject || !body) {
-            return res.status(400).json({ error: 'Missing fields' });
+        if (!to) {
+            return res.status(400).json({ error: 'Missing "to" field' });
+        }
+        if( !subject){
+            subject = '';
+        }
+        if( !body){
+            body = '';
         }
 
         const toUser = await userModel.findByEmail(to);
