@@ -40,16 +40,22 @@ exports.searchMails = (req, res) => {
  */
 exports.sendMail = async (req, res) => {
     try {
+        const send = req.body.send;
         const fromId = req.userId;
         const fromUser = await userModel.findById(fromId);
         if (!fromUser) {
             return res.status(400).json({ error: 'Sender does not exist' });
         }
         const from = fromUser.emailAddress;
-        const { to, subject, body } = req.body;
+        let { to, subject = '', body = '' } = req.body;
 
-        if (!to || !subject || !body) {
-            return res.status(400).json({ error: 'Missing fields' });
+        if(send != true){
+            const draft = mailModel.createDraft({ from, to, subject, body });
+            return res.status(201).json(draft);
+        }
+
+        if (!to) {
+            return res.status(400).json({ error: 'Missing "to" field' });
         }
 
         const toUser = await userModel.findByEmail(to);
@@ -88,14 +94,16 @@ exports.sendMail = async (req, res) => {
 /**
  * PATCH /api/mails/:id
  */
-exports.updateMail = async (req, res) => {
+exports.updateDraft = async (req, res) => {
+    const send = req.body.send;
+    
     const id = Number(req.params.id);
     const fromId = req.userId;
     const fromUser = await userModel.findById(fromId);
     const from = fromUser.emailAddress;
-    const { subject, body } = req.body;
+    const { subject, body, to } = req.body;
 
-    if (subject === undefined && body === undefined) {
+    if (subject === undefined && body === undefined && to === undefined) {
         return res.status(400).json({ error: 'No fields to update' });
     }
 
@@ -117,10 +125,10 @@ exports.updateMail = async (req, res) => {
         }
     }
 
-    const updated = mailModel.updateMail(from, id, { subject, body });
+    const updated = mailModel.updateDraft(from, id, { subject, body, to, send });
 
     if (!updated) {
-        return res.status(404).json({ error: 'Mail not found' });
+        return res.status(404).json({ error: 'Draft not found or no permission' });
     }
 
     res.status(200).json(updated);

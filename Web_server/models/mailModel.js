@@ -1,5 +1,6 @@
 let mails = [];
 let nextId = 1;
+let draftMails = [];
 
 /**
  * Return up to 50 most recent mails for this user (sent or received).
@@ -7,7 +8,10 @@ let nextId = 1;
  */
 function getAll(email) {
     return mails
-        .filter(m => m.to === email || m.from === email)
+        .filter(m => 
+            (m.to === email && !m.deletedForReceiver) || 
+            (m.from === email && !m.deletedForSender)
+        )
         .sort((a, b) => b.timestamp - a.timestamp)
         .slice(0, 50);
 }
@@ -18,11 +22,11 @@ function getAll(email) {
  * @param {number} id
  */
 function getById(email, id) {
-    return (
-        mails.find(
-            m => m.id === id && (m.from === email || m.to === email)
-        ) || null
-    );
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail || (mail.from === email && mail.deletedForSender) || (mail.to === email && mail.deletedForReceiver)) {
+        return null;
+    }
+    return mail;
 }
 
 /**
@@ -39,17 +43,25 @@ function search(email, query) {
     );
 }
 
+function createDraft({ from, to, subject, body}) {
+    const timestamp = Date.now();
+    const draft = { id: nextId++, from, to, subject, body, timestamp };
+    draftMails.push(draft);
+    return draft;
+}
+
 /**
  * Create a new mail record.
  * @param {string} from    the sender’s email
  * @param {string} to      the recipient’s email
  * @param {string} subject
  * @param {string} body
+ * 
  * @returns the newly created mail object
  */
-function createMail({ from, to, subject, body }) {
+function createMail({ from, to, subject, body, id = nextId++ }) {
     const timestamp = Date.now();
-    const mail = { id: nextId++, from, to, subject, body, timestamp };
+    const mail = { id, from, to, subject, body, timestamp , deletedForSender: false, deletedForReceiver: false };
     mails.push(mail);
     return mail;
 }
@@ -60,14 +72,32 @@ function createMail({ from, to, subject, body }) {
  * Returns updated mail or null.
  * @param {string} email
  * @param {number} id
- * @param {{subject?:string,body?:string}} fields
+ * @param {{subject?:string,body?:string,to?:string, send?: boolean}} fields
  */
-function updateMail(email, id, fields) {
-    const m = mails.find(m => String(m.id) === String(id) && m.from === email);
-    if (!m) return null;
-    if (fields.subject !== undefined) m.subject = fields.subject;
-    if (fields.body !== undefined) m.body = fields.body;
-    return m;
+function updateDraft(email, id, fields) {
+    const d = draftMails.find(d => String(d.id) === String(id) && d.from === email);
+    if (!d) return null;
+
+    if (fields.subject !== undefined) d.subject = fields.subject;
+    if (fields.body !== undefined) d.body = fields.body;
+    if (fields.to !== undefined) d.to = fields.to;
+
+    if(fields.send === false){
+        return d;
+    } else {
+        const mail = createMail({ from: d.from, to: d.to, subject: d.subject, body: d.body, id });
+        // Remove the draft after sending
+        const idx = deleteFromDrafts(id);
+        if (!idx) return null;
+        return mail;
+    }
+}
+
+function deleteFromDrafts(id) {
+    const idx = draftMails.findIndex(d => d.id === id);
+    if (idx === -1) return false;
+    draftMails.splice(idx, 1);
+    return true;
 }
 
 /**
@@ -77,11 +107,13 @@ function updateMail(email, id, fields) {
  * @returns true if deleted, false otherwise
  */
 function deleteMail(email, id) {
-    const idx = mails.findIndex(
-        m => m.id === id && (m.from === email || m.to === email)
-    );
-    if (idx === -1) return false;
-    mails.splice(idx, 1);
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return false;
+    if (mail.from === email) {
+        mail.deletedForSender = true;
+    } else {
+        mail.deletedForReceiver = true;
+    }
     return true;
 }
 
@@ -90,6 +122,7 @@ module.exports = {
     getById,
     createMail,
     search,
-    updateMail,
+    createDraft,
+    updateDraft,
     deleteMail
 };

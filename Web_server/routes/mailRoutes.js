@@ -16,7 +16,7 @@ router.get('/search/:query', authenticateUser, controller.searchMails);
 router.get('/:id', authenticateUser, controller.getMail);
 
 // Update an existing mail
-router.patch('/:id', authenticateUser, controller.updateMail);
+router.patch('/:id', authenticateUser, controller.updateDraft);
 
 // Delete a mail
 router.delete('/:id', authenticateUser, controller.deleteMail);
