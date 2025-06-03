@@ -9,7 +9,10 @@ let draftMails = [];
  */
 function getAll(email) {
     return mails
-        .filter(m => m.to === email || m.from === email)
+        .filter(m => 
+            (m.to === email && !m.deletedForReceiver) || 
+            (m.from === email && !m.deletedForSender)
+        )
         .sort((a, b) => b.timestamp - a.timestamp)
         .slice(0, 50);
 }
@@ -20,11 +23,11 @@ function getAll(email) {
  * @param {number} id
  */
 function getById(email, id) {
-    return (
-        mails.find(
-            m => m.id === id && (m.from === email || m.to === email)
-        ) || null
-    );
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail || (mail.from === email && mail.deletedForSender) || (mail.to === email && mail.deletedForReceiver)) {
+        return null;
+    }
+    return mail;
 }
 
 /**
@@ -93,12 +96,13 @@ function updateDraft(email, id, fields) {
  * @returns true if deleted, false otherwise
  */
 function deleteMail(email, id) {
-    const idx = mails.findIndex(
-        m => m.id === id && (m.from === email || m.to === email)
-    );
-    if (idx === -1) return false;
-    mails.splice(idx, 1);
-    return true;
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return false;
+    if (mail.from === email) {
+        mail.deletedForSender = true;
+    } else {
+        mail.deletedForRecevier = true;
+    }
 }
 
 module.exports = {
