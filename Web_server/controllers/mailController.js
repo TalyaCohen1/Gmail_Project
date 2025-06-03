@@ -41,9 +41,6 @@ exports.searchMails = (req, res) => {
 exports.sendMail = async (req, res) => {
     try {
         const send = req.body.send;
-        if(send != true){
-            return createDraft(req, res)
-        }
         const fromId = req.userId;
         const fromUser = await userModel.findById(fromId);
         if (!fromUser) {

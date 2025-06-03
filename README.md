@@ -8,7 +8,7 @@ This project implements a multi-threaded web server using MVC architecture that 
 The web server provides a RESTful API for a Gmail-like application with the following features:
 
 1. **User Management**: Registration and authentication
-2. **Email System**: Send, receive, and manage emails with URL blacklist validation
+2. **Email System**: Send, receive, manage, and draft emails with URL blacklist validation
 3. **Labels**: Create and manage email labels/categories
 4. **Blacklist Integration**: Integration with Exercise 2's URL blacklist filter
 5. **Multi-threading**: Handle multiple concurrent clients
@@ -88,18 +88,21 @@ GET http://localhost:3000/api/mails
 Authorization: Bearer <user_id>
 ```
 
-#### Send Email
+#### Send Email or Save as Draft 
 ```
 POST http://localhost:3000/api/mails
 Authorization: Bearer <user_id>
 Content-Type: application/json
-
 {
   "to": "recipient@gmail.com",
-  "subject": "Email Subject",
-  "body": "Email content with potential URLs"
+  "subject": "Subject Line",
+  "body": "Body content",
+  "send": true       // true = send now, false = save as draft
 }
 ```
+
+- If `"send": true` → Validates URLs and sends email
+- If `"send": false` or omitted → Saves email as draft
 
 #### Get Specific Email
 ```
@@ -115,15 +118,22 @@ Content-Type: application/json
 
 {
   "subject": "Updated Subject",
-  "body": "Updated email content"
+  "body": "Updated body",
+  "to": "newrecipient@gmail.com",
+  "send": true    // If true, converts draft to sent email
 }
 ```
+
+- Only draft emails can be updated.
+- If `"send": true`, the draft is deleted and the email is sent
 
 #### Delete Email
 ```
 DELETE http://localhost:3000/api/mails/:id
 Authorization: Bearer <user_id>
 ```
+
+- Emails are soft-deleted only for the requesting user.
 
 #### Search Emails
 ```
@@ -215,6 +225,7 @@ When sending emails, all URLs in the email body are automatically checked agains
 2. Each URL is validated against the blacklist server
 3. If any URL is blacklisted, the email creation fails with `400 Bad Request`
 4. Only emails with clean URLs are created and delivered
+5. Drafts are not validated until they are sent
 
 ---
 
@@ -279,7 +290,7 @@ curl -X POST http://localhost:3000/api/tokens \
 curl -X POST http://localhost:3000/api/mails \
   -H "Authorization: Bearer USER_ID" \
   -H "Content-Type: application/json" \
-  -d '{"to":"bob@gmail.com","subject":"Hello","body":"Hi Bob! Check out https://example.com"}'
+  -d '{"to":"bob@gmail.com","subject":"Hello","body":"Hi Bob! Check out https://example.com", "send":true}'
 
 # Get inbox
 curl -X GET http://localhost:3000/api/mails \
@@ -294,6 +305,6 @@ Example server output:
 
 ## Data Persistence
 
-This server uses in-memory storage. All data (users, emails, labels) is lost when the server restarts.
+This server uses in-memory storage. All data (users, emails, labels, drafts) is lost when the server restarts.
 
 The blacklist server maintains its own persistence for URL validation.
