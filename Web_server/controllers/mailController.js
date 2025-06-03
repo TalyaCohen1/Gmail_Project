@@ -40,6 +40,10 @@ exports.searchMails = (req, res) => {
  */
 exports.sendMail = async (req, res) => {
     try {
+        const send = req.body.send;
+        if(send != true){
+            createDraft(req, res);
+        }
         const fromId = req.userId;
         const fromUser = await userModel.findById(fromId);
         if (!fromUser) {
@@ -94,7 +98,9 @@ exports.sendMail = async (req, res) => {
 /**
  * PATCH /api/mails/:id
  */
-exports.updateMail = async (req, res) => {
+exports.updateDraft = async (req, res) => {
+    const send = req.body.send;
+    
     const id = Number(req.params.id);
     const fromId = req.userId;
     const fromUser = await userModel.findById(fromId);

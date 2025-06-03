@@ -1,5 +1,7 @@
 let mails = [];
 let nextId = 1;
+let draftId = 1;
+let draftMails = [];
 
 /**
  * Return up to 50 most recent mails for this user (sent or received).
@@ -39,17 +41,25 @@ function search(email, query) {
     );
 }
 
+function createDraft({ from, to, subject, body}) {
+    const timestamp = Date.now();
+    const draft = { id: draftId++, from, to, subject, body, timestamp };
+    draftMails.push(draft);
+    return draft;
+}
+
 /**
  * Create a new mail record.
  * @param {string} from    the sender’s email
  * @param {string} to      the recipient’s email
  * @param {string} subject
  * @param {string} body
+ * 
  * @returns the newly created mail object
  */
-function createMail({ from, to, subject, body }) {
+function createMail({ from, to, subject, body}) {
     const timestamp = Date.now();
-    const mail = { id: nextId++, from, to, subject, body, timestamp };
+    const mail = { id: nextId++, from, to, subject, body, timestamp , deletedForSender: false, deletedForRecevier: false };
     mails.push(mail);
     return mail;
 }
@@ -60,14 +70,20 @@ function createMail({ from, to, subject, body }) {
  * Returns updated mail or null.
  * @param {string} email
  * @param {number} id
- * @param {{subject?:string,body?:string}} fields
+ * @param {{subject?:string,body?:string, send?: boolean}} fields
  */
-function updateMail(email, id, fields) {
-    const m = mails.find(m => String(m.id) === String(id) && m.from === email);
-    if (!m) return null;
-    if (fields.subject !== undefined) m.subject = fields.subject;
-    if (fields.body !== undefined) m.body = fields.body;
-    return m;
+function updateDraft(email, id, fields) {
+    const d = draftMails.find(d => String(d.id) === String(id) && d.from === email);
+    if (!d) return null;
+    if (fields.subject !== undefined) d.subject = fields.subject;
+    if (fields.body !== undefined) d.body = fields.body;
+    if(fields.send === false){
+        return d;
+    } else{
+        const mail = createMail(d.from, d.to, d.subject, d.body);
+        draftMails = draftMails.filter(d => d.id !== id);
+        return mail;
+    }
 }
 
 /**
@@ -90,6 +106,7 @@ module.exports = {
     getById,
     createMail,
     search,
-    updateMail,
+    createDraft,
+    updateDraft,
     deleteMail
 };
