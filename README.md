@@ -299,7 +299,8 @@ curl -X GET http://localhost:3000/api/mails \
 
 Example server output:
 
-![Server Running](screenshots/server_running.png)
+![Server Running](screenshots/server_running1.jpg)
+![Server Running](screenshots/server_running2.jpg)
 
 ---
 
