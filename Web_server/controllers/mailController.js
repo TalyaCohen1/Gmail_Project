@@ -52,6 +52,10 @@ exports.sendMail = async (req, res) => {
         const from = fromUser.emailAddress;
         let { to, subject = '', body = '' } = req.body;
 
+        if(send != true){
+            const draft = mailModel.createDraft({ from, to, subject, body });
+            return res.status(201).json(draft);
+        }
 
         if (!to) {
             return res.status(400).json({ error: 'Missing "to" field' });
