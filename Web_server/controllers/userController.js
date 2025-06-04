@@ -1,5 +1,5 @@
 const userModel = require('../models/userModel');
-const { isValidGmail, isValidDateFormat,isPastDate, isAgeOver13, isValidGender } = require('../models/validator');
+const { isValidGmail, isValidDateFormat,isPastDate, isAgeOver13, isValidGender, isValidPassword } = require('../models/validator');
 
 /**
  * register a new user
