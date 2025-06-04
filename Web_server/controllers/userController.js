@@ -1,5 +1,5 @@
 const userModel = require('../models/userModel');
-const { isValidGmail, isValidDate, isValidGender } = require('../models/validator');
+const { isValidGmail, isValidDateFormat,isPastDate, isAgeOver13, isValidGender } = require('../models/validator');
 
 /**
  * register a new user
@@ -18,8 +18,17 @@ const register = (req, res) => {
     return res.status(400).json({ error: "Email must be a valid @gmail.com address" });
   }
 
-  if (!isValidDate(birthDate)) {
-    return res.status(400).json({ error: "Invalid birthDate format. Use YYYY-MM-DD" });
+  if (!isValidDateFormat(birthDate)) {
+    return res.status(400).json({ error: "Birth date must be in the format YYYY-MM-DD" });
+  }
+  if (!isPastDate(birthDate)) {
+    return res.status(400).json({ error: "Birth date must be in the past" });
+  }
+  if (!isAgeOver13(birthDate)) {
+    return res.status(400).json({ error: "User must be over 13 years old" });
+  }
+  if (!isValidPassword(password)) {
+    return res.status(400).json({ error: "Password must be at least 8 characters long, contain at least one digit and one uppercase letter" });
   }
 
   if (!isValidGender(gender)) {
