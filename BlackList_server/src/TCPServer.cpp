@@ -1,7 +1,6 @@
 #include "../include/TCPServer.h"
 #include "../include/MainLoop.h"
 #include <iostream>
-#include "../include/ThreadPool.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
@@ -39,10 +38,6 @@ void TCPServer::run(MainLoop& loop) {
         return;
     }
 
-    std::cout << "Server listening on port " << port << std::endl;
-
-    ThreadPool pool(MAX_THREADS, loop);
-
     while (true) {
         sockaddr_in client_addr{};
         socklen_t client_len = sizeof(client_addr);
@@ -52,10 +47,6 @@ void TCPServer::run(MainLoop& loop) {
             continue;
         }
 
-        std::cout << "New connection accepted\n";
-
-        // שליחה לטיפול דרך ThreadPool
-        pool.addTask(client_sock);
     }
 
     close(server_sock);
