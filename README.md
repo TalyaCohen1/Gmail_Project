@@ -60,9 +60,20 @@ Content-Type: application/json
   "emailAddress": "john.doe@gmail.com",
   "birthDate": "1990-01-15",
   "gender": "male",
-  "password": "password123"
+  "password": "Password123"
 }
 ```
+
+**Registration Requirements**
+Passwords must meet the following criteria:
+- At least 8 characters long
+- Contain at least one uppercase letter and one digit
+- Can include letters, digits, and special characters
+
+Users must be 13 years old or older (based on the birthDate field).
+
+If the user is younger than 13, the server will respond with 400 Bad Request.
+
 #### User Details
 ```
 GET http://localhost:3000/api/users/:id
@@ -76,7 +87,7 @@ Content-Type: application/json
 
 {
   "emailAddress": "john.doe@gmail.com",
-  "password": "password123"
+  "password": "Password123"
 }
 ```
 
@@ -97,7 +108,7 @@ Content-Type: application/json
   "to": "recipient@gmail.com",
   "subject": "Subject Line",
   "body": "Body content",
-  "send": true       // true = send now, false = save as draft
+  "send": true      
 }
 ```
 
@@ -120,7 +131,7 @@ Content-Type: application/json
   "subject": "Updated Subject",
   "body": "Updated body",
   "to": "newrecipient@gmail.com",
-  "send": true    // If true, converts draft to sent email
+  "send": true    
 }
 ```
 
@@ -242,10 +253,6 @@ The server uses a simple token-based authentication system:
 - `POST /api/users` - User registration
 - `POST /api/tokens` - User login
 
-**Blacklist Management:**
-- `POST /api/blacklist` - Add URL to blacklist
-- `DELETE /api/blacklist/:id` - Remove URL from blacklist
-
 ### Protected Endpoints (Authentication Required):
 All other endpoints require the `Authorization: Bearer <user_id>` header:
 
@@ -266,6 +273,10 @@ All other endpoints require the `Authorization: Bearer <user_id>` header:
 - `GET /api/labels/:id` - Get specific label
 - `PATCH /api/labels/:id` - Update label
 - `DELETE /api/labels/:id` - Delete label
+
+**Blacklist Management:**
+- `POST /api/blacklist` - Add URL to blacklist
+- `DELETE /api/blacklist/:id` - Remove URL from blacklist
 
 --- 
 
@@ -294,6 +305,60 @@ curl -X POST http://localhost:3000/api/mails \
 
 # Get inbox
 curl -X GET http://localhost:3000/api/mails \
+  -H "Authorization: Bearer USER_ID"
+
+# Get a specific email (replace MAIL_ID)
+curl -X GET http://localhost:3000/api/mails/MAIL_ID \
+  -H "Authorization: Bearer USER_ID"
+
+# Update a draft email (replace MAIL_ID)
+curl -X PATCH http://localhost:3000/api/mails/MAIL_ID \
+  -H "Authorization: Bearer USER_ID" \
+  -H "Content-Type: application/json" \
+  -d '{"subject":"Updated Subject","body":"Updated body","to":"newrecipient@gmail.com","send":true}'
+
+# Delete an email (replace MAIL_ID)
+curl -X DELETE http://localhost:3000/api/mails/MAIL_ID \
+  -H "Authorization: Bearer USER_ID"
+
+# Search emails by keyword
+curl -X GET http://localhost:3000/api/mails/search/urgent \
+  -H "Authorization: Bearer USER_ID"
+```
+
+### Create, Update, Delete and Get all labels
+```bash
+# Create label (replace USER_ID with actual ID from login)
+curl -X POST http://localhost:3000/api/labels \
+  -H "Authorization: Bearer USER_ID" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Work"}'
+
+# Get all labels
+curl -X GET http://localhost:3000/api/labels \
+  -H "Authorization: Bearer USER_ID"
+
+# Update a label (replace LABEL_ID)
+curl -X PATCH http://localhost:3000/api/labels/LABEL_ID \
+  -H "Authorization: Bearer USER_ID" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Personal"}'
+
+# Delete a label (replace LABEL_ID)
+curl -X DELETE http://localhost:3000/api/labels/LABEL_ID \
+  -H "Authorization: Bearer USER_ID"
+```
+
+### Manage Blacklist
+```bash
+# Add a URL to the blacklist
+curl -X POST http://localhost:3000/api/blacklist \
+  -H "Authorization: Bearer USER_ID" \
+  -H "Content-Type: application/json" \
+  -d '{"url":"http://malicious-site.com"}'
+
+# Remove a URL from the blacklist (replace BLACKLIST_ID)
+curl -X DELETE http://localhost:3000/api/blacklist/BLACKLIST_ID \
   -H "Authorization: Bearer USER_ID"
 ```
 
