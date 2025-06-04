@@ -76,7 +76,7 @@ exports.addUrl = async (req, res) => {
         if (statusLine.startsWith('201')) {
             res.status(201).send(statusLine);
         } else {
-            res.status(400).send(statusLine);
+            res.status(400).json({error: 'url is not valid'});
         }
     } catch (err) {
         res.status(500).json({ error: 'Internal server error' });
@@ -99,7 +99,7 @@ exports.removeUrl = async (req, res) => {
         if (statusLine.startsWith('204')) {
             res.status(204).send(statusLine);
         } else {
-            res.status(404).send(statusLine);
+            res.status(404).json({ error: 'URL not found' });
         }
     } catch (err) {
         res.status(500).json({ error: 'Internal server error' });
