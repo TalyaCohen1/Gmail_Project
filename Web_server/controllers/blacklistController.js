@@ -23,9 +23,9 @@ exports.addToBlacklist = (req, res) => {
  * @param {Response} res - Express response object.
  */
 exports.deleteFromBlacklist = (req, res) => {
-    const { url } = req.body;
-    if (!url || typeof url !== 'string') {
-        return res.status(400).json({ error: 'Valid URL is required in request body' });
+    const { id } = req.params;
+    if (!id || typeof id !== 'string') {
+        return res.status(400).json({ error: 'Valid URL is required in request' });
     }
 
     service.removeUrl(req, res);
