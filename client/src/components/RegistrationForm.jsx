@@ -57,7 +57,7 @@ const RegistrationForm = () => {
         if (!validateForm()) return;
 
         try {
-            const response = await fetch('/api/users', {
+            const response = await fetch('http://localhost:3000/api/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -80,6 +80,7 @@ const RegistrationForm = () => {
                 setErrors({});
             }
         } catch (error) {
+            console.error('Fetch error:', error);
             setErrors({ general: 'An error occurred. Please try again later.' });
         }
     };

@@ -11,7 +11,7 @@ const register = (req, res) => {
   const { fullName, emailAddress, birthDate, gender, password } = req.body;
 
   // Validate input
-   if (!fullName || !password || !fullName || !emailAddress || !birthDate || !gender) {
+   if (!fullName || !password|| !emailAddress || !birthDate || !gender) {
     return res.status(400).json({ error: "Missing required fields" });
   }
    if (!isValidGmail(emailAddress)) {
