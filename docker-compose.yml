@@ -18,3 +18,15 @@ services:
     depends_on:
       - blacklist_server           # must match the service name above exactly (lowercase)
     restart: unless-stopped
+
+  react_server:
+    build:
+      context: ./client       # matches your folder exactly (case-sensitive!)
+      dockerfile: ../client_frontend.Dockerfile
+    container_name: react_frontend
+    init: true
+    ports:
+      - "8080:80"
+    depends_on:
+      - web_server
+    restart: unless-stopped
