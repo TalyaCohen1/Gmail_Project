@@ -1,0 +1,35 @@
+.App {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Roboto', sans-serif; /* Gmail uses Roboto */
+  color: #202124; /* dark grey text */
+  background-color: #fff; /* white background */
+}
+
+.app-container {
+  display: flex;        
+  height: calc(100vh - 64px); /* header usually ~64px in Gmail */
+  width: 100vw;         
+  overflow: hidden;     
+}
+
+.sidebar {
+  width: 280px;         
+  height: 100%;        
+  background-color: #fff;  /* solid white, no gradient */
+  border-right: 1px solid #e0e0e0; /* light grey border */
+  padding: 24px 16px; /* comfortable padding */
+  box-sizing: border-box;
+  flex-shrink: 0;       
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.main-content {
+  flex-grow: 1;         
+  padding: 24px;
+  overflow-y: auto;
+  background-color: #f5f7fa; /* subtle light grey background */
+}

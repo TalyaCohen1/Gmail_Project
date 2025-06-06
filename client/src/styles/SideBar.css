@@ -1,0 +1,27 @@
+.sidebar {
+    width: 280px;
+    background-color: #fff;
+    border-right: 1px solid #e0e0e0;
+    box-shadow: none; /* Gmail sidebar usually doesn’t have shadow */
+    padding: 24px 16px;
+    min-height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sidebar h1 {
+    font-size: 20px;
+    font-weight: 500;
+    color: #202124;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.2;
+}
+
+.sidebar h1::before {
+    content: '📧'; /* Use a clean icon for mail */
+    font-size: 24px;
+}
