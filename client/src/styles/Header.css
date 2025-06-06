@@ -1,0 +1,69 @@
+.mailblossom-header {
+    background-color: #fff; /* solid white */
+    border-bottom: 1px solid #e0e0e0; /* subtle bottom border */
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* subtle shadow */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.flower-icon {
+    font-size: 28px;
+    color: #1a73e8; /* Gmail’s primary blue */
+    /* Remove bounce animation for a cleaner look */
+    animation: none;
+}
+
+.mailblossom-header h1 {
+    font-size: 20px;
+    font-weight: 500;
+    color: #202124; /* Gmail’s dark grey */
+    margin: 0;
+    letter-spacing: normal;
+}
+
+.header-search-form {
+    flex-grow: 1;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.header-search-input {
+    flex-grow: 1;
+    padding: 10px 12px;
+    border: 1px solid #dfe1e5;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: box-shadow 0.2s ease;
+    background-color: #f1f3f4;
+    color: #202124;
+}
+
+.header-search-input:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 3px #1a73e8;
+    background-color: #fff;
+}
+
+.header-search-button {
+    padding: 8px 16px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.header-search-button:hover {
+    background-color: #155ab6;
+}

@@ -1,11 +1,19 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import Register from './pages/Register';
+import './styles/App.css'; // main design file
+import Header from './components/Header';
+import SideBar from './components/Sidebar';
 
 function App() {
   return (
     <div className="App">
-      <Register />
+      <Header />
+      <div className="app-container">
+        <SideBar />
+        <main className="main-content">
+          {/* Your main content goes here */}
+          <h1>Welcome to your Gmail-like app!</h1>
+        </main>
+      </div>
     </div>
   );
 }
