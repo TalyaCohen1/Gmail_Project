@@ -67,7 +67,7 @@ const RegistrationForm = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                setErrors({ general: data.error || 'Registration failed' });
+                setErrors({ general: errorData.error || 'Registration failed' });
             } else {
                 setSuccessMessage('Registration successful! You can now log in.');
                 setFormData({
