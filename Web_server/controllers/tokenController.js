@@ -1,4 +1,8 @@
 const usersModel = require('../models/userModel');
+const jwt = require('jsonwebtoken');
+// Ensure that the SECRET_KEY is set in your environment variables
+const SECRET_KEY = 'my_super_secret_key';
+
 
 /**
  * Authenticate user and issue token
@@ -17,7 +21,12 @@ const createToken = (req, res) => {
     return res.status(400).json({ error: 'wrong password!' });
   }
 
-  res.status(200).json({ id: user.id });
+  const token = jwt.sign(
+    { id: user.id, emailAddress: user.emailAddress },
+    SECRET_KEY,
+    { expiresIn: '1h' } // Token expires in 1 hour
+  );
+  res.status(200).json({token}); // Respond with the token
 };
 
 module.exports = { createToken };
