@@ -30,7 +30,7 @@ const SECRET_KEY = process.env.JWT_SECRET || 'my_super_secret_key';
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']; // Get the Authorization header
-    const token = authHeader && authHeader.split(' ')[1]; // Get the token from the header - we expect it to be in the format "Bearer <token>"
+    const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
 
     if (!token) {
         return res.status(401).json({ error: 'Token is required' });
