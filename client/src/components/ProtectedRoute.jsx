@@ -1,11 +1,12 @@
 // src/components/ProtectedRoute.jsx
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
   const [isValid, setIsValid] = useState(null); // null indicates loading state
   // isValid will be true if the token is valid, false if invalid or not present
-
+    const[expired, setExpired] = useState(false);
+    const location = useLocation();
   useEffect(() => {
     const token = localStorage.getItem('token');
 
