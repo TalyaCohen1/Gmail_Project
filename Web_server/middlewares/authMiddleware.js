@@ -26,7 +26,7 @@ const authenticateUser = (req, res, next) => {
 };
 
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = 'my_super_secret_key';
+const SECRET_KEY = process.env.JWT_SECRET || 'my_super_secret_key';
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']; // Get the Authorization header
