@@ -1,19 +1,24 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './styles/App.css'; // main design file
-import Header from './components/Header';
-import SideBar from './components/Sidebar';
+import Register from './pages/Register';
+import Login from './pages/Login';
+
 
 function App() {
   return (
     <div className="App">
-      <Header />
-      <div className="app-container">
-        <SideBar />
-        <main className="main-content">
-          {/* Your main content goes here */}
-          <h1>Welcome to your Gmail-like app!</h1>
-        </main>
-      </div>
+      <Router>
+      <nav>
+        <Link to="/login" style={{ marginRight: '10px' }}>Login</Link>
+        <Link to="/register">Register</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Router>
     </div>
   );
 }
