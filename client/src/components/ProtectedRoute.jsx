@@ -22,6 +22,7 @@ const ProtectedRoute = ({ children }) => {
 
       if (payload.exp && currentTime > payload.exp) { //the token is expired
         localStorage.removeItem('token');
+        setExpired(true);
         setIsValid(false);
       } else {
         setIsValid(true);
@@ -35,7 +36,12 @@ const ProtectedRoute = ({ children }) => {
 
   if (isValid === null) return null; // still loading
 
-  return isValid ? children : <Navigate to="/login" replace />;
+  if (!isValid) {
+    const redirectUrl = `/login?expired=${expired ? '1' : '0'}&from=${location.pathname}`;
+    return <Navigate to={redirectUrl} replace />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;
