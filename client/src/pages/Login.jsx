@@ -1,12 +1,13 @@
 // Login.jsx
 import React from "react";
-import LoginForm
- from "../components/LoginForm";
+import {useNavigate} from "react-router-dom";
+import LoginForm from "../components/LoginForm";
 //screen to display the registration form
 const Login = () => {
     const handleLoginSuccess = (token) => {
+    localStorage.setItem("token", token); // Save the token to localStorage
     console.log("Login successful! Token:", token);
-    // Here you can handle the token, e.g., save it to localStorage or context
+    // navigate("inbox"); // Redirect to the inbox page
     };
     return (
         <div style={{ padding: "20px" }}>
