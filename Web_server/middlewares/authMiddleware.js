@@ -25,4 +25,24 @@ const authenticateUser = (req, res, next) => {
     next();
 };
 
-module.exports = { authenticateUser };
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = 'my_super_secret_key';
+
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization']; // Get the Authorization header
+    const token = authHeader && authHeader.split(' ')[1]; // Get the token from the header - we expect it to be in the format "Bearer <token>"
+
+    if (!token) {
+        return res.status(401).json({ error: 'Token is required' });
+    }
+
+    try{
+        const decoded = jwt.verify(token, SECRET_KEY); // Verify the token using the secret key
+        req.user = decoded; // Attach the decoded user information to the request object
+        next(); // Call the next middleware or route handler
+    } catch (err) {
+        return res.status(401).json({ error: 'Invalid token' });
+    }
+}
+
+module.exports = { authenticateUser, authenticateToken }; // Export the middleware functions
