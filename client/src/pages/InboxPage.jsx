@@ -51,10 +51,12 @@ export default function InboxPage() {
         }
     };
 
+
   if (loading) return <div>Loading emails...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
+
         <div className="inbox-page">
         {selectedIds.length > 0 && (
             <BatchActionsBar
@@ -72,3 +74,4 @@ export default function InboxPage() {
         </div>
     );
 }
+
