@@ -4,7 +4,8 @@ import './styles/App.css'; // main design file
 import Register from './pages/Register';
 import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
-
+import Profile from './pages/Profile';
+import Header from './components/Header';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Link to="/register">Register</Link>
       </nav>
 
+      <Header /> 
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -26,6 +28,13 @@ function App() {
               <p>This is a protected route. You must be logged in to view this page.</p>
             </ProtectedRoute>
           } /> */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+             <Profile />
+            </ProtectedRoute>
+          } />
       </Routes>
     </Router>
     </div>
