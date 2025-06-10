@@ -8,6 +8,7 @@ const RegistrationForm = () => {
         emailAddress: '',
         birthDate: '',
         gender: '',
+        profileImage: '',
         password: '',
         confirmPassword: ''
     });
@@ -29,7 +30,7 @@ const RegistrationForm = () => {
     //validate form data
     const validateForm = () => {
         const newErrors = {};
-        const { fullName, emailAddress, birthDate, gender, password, confirmPassword } = formData;
+        const { fullName, emailAddress, birthDate, gender, password,  profileImage, confirmPassword } = formData;
 
         if (!fullName.trim()) newErrors.fullName = 'Full name is required';
         if (!emailAddress.endsWith('@gmail.com')) newErrors.emailAddress = 'Email must be a @gmail.com address';
@@ -103,9 +104,14 @@ const RegistrationForm = () => {
         <option value="male">Male</option>
       </select>
 
+        <label>Profile Image URL (optional)</label>
+        <input type="url" name="profileImage" value={formData.profileImage} onChange={handleChange} />
+
       <label>Password</label>
       <input type="password" name="password" value={formData.password} onChange={handleChange} required />
 
+        <label>Confirm Password</label>
+        <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
       <button type="submit">Register</button>
     </form>
   );
