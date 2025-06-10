@@ -1,10 +1,13 @@
+// src/components/LogOut.jsx
 import {useNavigate} from 'react-router-dom';
 
 const LogOut = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Remove the token from localStorage
+        localStorage.removeItem('token'); // Remove data from localStorage
+        localStorage.removeItem('fullName');
+        localStorage.removeItem('profileImage');
         console.log("Logged out successfully");
         navigate('/login'); // Redirect to the login page
     };

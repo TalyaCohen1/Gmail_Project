@@ -8,7 +8,7 @@ const { isValidGmail, isValidDateFormat,isPastDate, isAgeOver13, isValidGender, 
  * @param {*} res  - The response object to send back the result 
  */
 const register = (req, res) => {
-  const { fullName, emailAddress, birthDate, gender, password } = req.body;
+  const { fullName, emailAddress, birthDate, gender, password , profileImage } = req.body;
 
   // Validate input
    if (!fullName || !password|| !emailAddress || !birthDate || !gender) {
@@ -39,7 +39,7 @@ const register = (req, res) => {
     return res.status(400).json({ error: 'This email adress already exists' });
 
   const id = Date.now().toString(); // Generate a unique ID based on the current timestamp
-  const newUser = userModel.createUser(fullName, id, emailAddress, birthDate,gender, password);
+  const newUser = userModel.createUser(fullName, id, emailAddress, birthDate,gender, password , profileImage);
 
   //response with the new user id 
   res.status(201).location(`/api/users/${id}`).end();
@@ -59,7 +59,7 @@ const login = (req, res) => {
   if (!user || user.password !== password)
     return res.status(400).json({ error: 'wrong password' });
 
-  res.status(200).json({ token: user.id });
+  res.status(200).json({ token: user.id , fullName: user.fullName, profileImage: user.profileImage || null });
 };
 
 /**

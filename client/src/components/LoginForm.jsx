@@ -1,3 +1,4 @@
+//src/components/LoginForm.jsx
 import React from "react";
 
 function LoginForm({onLoginSuccess }) {
@@ -30,6 +31,8 @@ function LoginForm({onLoginSuccess }) {
 
             const data = await response.json();
             onLoginSuccess(data.token); // Assuming the response contains a token
+            localStorage.setItem('fullName', data.fullName);
+            localStorage.setItem('profileImage', data.profileImage);
         } catch (err) {
             setError(err.message);
         }

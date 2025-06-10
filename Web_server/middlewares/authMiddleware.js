@@ -1,3 +1,4 @@
+//middleware/authMiddleware.js
 const { findById } = require('../models/userModel');
 
 /**
