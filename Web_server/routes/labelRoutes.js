@@ -23,4 +23,9 @@ router.route('/:id')
     .patch(authenticateUser, controller.updateLabel)
     .delete(authenticateUser, controller.deleteLabel);
 
+router.route('/:id/mails')
+    .post(authenticateUser, controller.addMailToLabel)
+    .delete(authenticateUser, controller.removeMailFromLabel)
+    .get(authenticateUser, controller.getMailsByLabel);
+
 module.exports = router;

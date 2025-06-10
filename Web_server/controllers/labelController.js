@@ -100,3 +100,60 @@ exports.deleteLabel = (req, res) => {
     Label.deleteLabel(label.id, req.userId);
     res.status(204).end();
 };
+
+
+exports.addMailToLabel = (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid label ID' });
+    }
+    const label = Label.getLabel(parseInt(req.params.id), req.userId);
+    
+    if (!label) {
+        return res.status(404).json({ error: 'Label not found' });
+    }
+    const { mailId } = req.body;
+    if (!mailId) {
+        return res.status(400).json({ error: 'Mail ID is required and must be a string' });
+    }
+    Label.addMailToLabel(label.id, mailId, req.userId);
+    res.status(204).end();
+};
+
+exports.removeMailFromLabel = (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid label ID' });
+    }
+    const label = Label.getLabel(parseInt(req.params.id), req.userId);
+    
+    if (!label) {
+        return res.status(404).json({ error: 'Label not found' });
+    }
+    const { mailId } = req.body;
+    if (!mailId) {
+        return res.status(400).json({ error: 'Mail Id is required and must be a string' });
+    }
+    Label.removeMailFromLabel(label.id, mailId, req.userId);
+    res.status(204).end();
+}
+
+/**
+ * Get all mails associated with a label for the authenticated user.
+ *
+ * @param {Request} req - Express request object.
+ * @param {Response} res - Express response object.
+ */
+exports.getMailsByLabel = (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid label ID' });
+    }
+    const label = Label.getLabel(parseInt(req.params.id), req.userId);
+    
+    if (!label) {
+        return res.status(404).json({ error: 'Label not found' });
+    }
+    const mails = Label.getMailsByLabel(label.id, req.userId);
+    res.json(mails);
+}

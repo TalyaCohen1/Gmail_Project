@@ -1,3 +1,6 @@
+//const { addMailToLabel, removeMailFromLabel, getMailsByLabel} = require("../controllers/labelController");
+const Mail = require('./mailModel'); // Assuming you have a mail model to fetch mails by IDs
+
 let idCounter = 0;
 const labels = [];
 
@@ -25,7 +28,7 @@ const getLabel = (id, userId) =>
  * @returns {Object} The newly created label object.
  */
 const createLabel = (name, userId) => {
-    const newLabel = { id: ++idCounter, name, userId };
+    const newLabel = { id: ++idCounter, name, userId, mails: [] };
     labels.push(newLabel);
     return newLabel;
 };
@@ -57,10 +60,39 @@ const deleteLabel = (id, userId) => {
     return labels.splice(index, 1)[0];
 };
 
+const addMailToLabel = (labelId, mailId, userId) => {
+    const label = getLabel(labelId, userId);
+    if (!label) return null;
+    if (!label.mails) label.mails = [];
+    if (Mail.getById(mailId, userId) === null) return null; // Ensure mail exists
+    if (!label.mails.includes(mailId)) {
+        label.mails.push(mailId);
+    }
+    return label;
+};
+
+const removeMailFromLabel = (labelId, mailId, userId) => {
+    const label = getLabel(labelId, userId);
+    if (!label || !label.mails) return null;
+    label.mails = label.mails.filter(id => id !== mailId);
+    return label;
+};
+
+const getMailsByLabel = (labelId, userId) => {
+    const label = getLabel(labelId, userId);
+    if (!label || !label.mails) return [];
+    // Assuming we have a mail model to fetch mails by IDs
+    const mails = label.mails.map(mailId => Mail.getById(mailId, userId));
+    return mails.filter(mail => mail !== null); // Filter out any null results
+}       
+
 module.exports = {
     getAllLabels,
     getLabel,
     createLabel,
     updateLabel,
-    deleteLabel
+    deleteLabel,
+    addMailToLabel,
+    removeMailFromLabel,
+    getMailsByLabel
 };

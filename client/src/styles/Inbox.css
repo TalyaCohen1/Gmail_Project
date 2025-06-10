@@ -1,0 +1,10 @@
+.inbox-container {
+  display: flex;
+  height: 100vh;
+}
+
+.inbox-main {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
