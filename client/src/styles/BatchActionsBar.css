@@ -1,0 +1,49 @@
+.batch-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background-color: #f1f3f4;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.selected-count {
+  font-weight: 500;
+  color: #202124;
+}
+.delete-all-btn {
+  background: none;
+  border: none;
+  color: #d93025;
+  font-size: 0.875rem;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.delete-all-btn:hover {
+  background-color: rgba(217, 48, 37, 0.1);
+}
+
+.label-select {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+.apply-label-btn {
+  background-color: #1a73e8;
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.apply-label-btn:disabled {
+  background-color: #e8eaed;
+  cursor: not-allowed;
+}
