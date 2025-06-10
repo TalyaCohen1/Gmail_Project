@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useState} from "react";
+import '../styles/AuthForm.css';
 
 const RegistrationForm = () => {
     //state to hold form data
@@ -86,31 +87,24 @@ const RegistrationForm = () => {
     };
 
     return (
-    <form onSubmit={handleSubmit}>
-      {errors.general && <p className="error">{errors.general}</p>}
-      {successMessage && <p className="success">{successMessage}</p>}
+     <form className="auth-form" onSubmit={handleSubmit}>
+      <label>Full Name</label>
+      <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
 
-      <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} />
-      {errors.fullName && <p className="error">{errors.fullName}</p>}
+      <label>Email Address</label>
+      <input type="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} required />
 
-      <input type="email" name="emailAddress" placeholder="Email Address" value={formData.emailAddress} onChange={handleChange} />
-      {errors.emailAddress && <p className="error">{errors.emailAddress}</p>}
+      <label>Birth Date</label>
+      <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} required />
 
-      <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} />
-      {errors.birthDate && <p className="error">{errors.birthDate}</p>}
-
+      <label>Gender</label>
       <select name="gender" value={formData.gender} onChange={handleChange}>
-        <option value="">Select Gender</option>
-        <option value="male">Male</option>
         <option value="female">Female</option>
+        <option value="male">Male</option>
       </select>
-      {errors.gender && <p className="error">{errors.gender}</p>}
 
-      <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
-      {errors.password && <p className="error">{errors.password}</p>}
-
-      <input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} />
-      {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
+      <label>Password</label>
+      <input type="password" name="password" value={formData.password} onChange={handleChange} required />
 
       <button type="submit">Register</button>
     </form>
