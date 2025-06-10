@@ -1,7 +1,7 @@
 const usersModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 // Ensure that the SECRET_KEY is set in your environment variables
-const SECRET_KEY = 'my_super_secret_key';
+const SECRET_KEY = process.env.JWT_SECRET || 'my_super_secret_key';
 
 
 /**
