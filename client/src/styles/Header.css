@@ -1,4 +1,4 @@
-.mailblossom-header {
+.gmail-header {
     background-color: #fff; /* solid white */
     border-bottom: 1px solid #e0e0e0; /* subtle bottom border */
     padding: 0 24px;
@@ -19,7 +19,7 @@
     animation: none;
 }
 
-.mailblossom-header h1 {
+.gmail-header h1 {
     font-size: 20px;
     font-weight: 500;
     color: #202124; /* Gmail’s dark grey */
@@ -66,4 +66,106 @@
 
 .header-search-button:hover {
     background-color: #155ab6;
+}
+
+.gmail-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  gap: 20px; /* Space between logo/title and search bar */
+}
+
+.gmail-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and "Gmail" text */
+}
+
+.gmail-icon {
+  /* Adjust width and height for your image */
+  width: 120px; /* */
+  height: 70px; /* */
+  /* Remove font-size and color properties that were for the emoji */
+}
+
+.gmail-header h1 {
+  font-size: 22px;
+  font-weight: 500;
+  color: #3c4043; /* Darker text for Gmail title */
+  margin: 0; /* Remove default margin */
+}
+
+
+.header-search-form {
+  display: flex;
+  flex-grow: 1; /* Allows the search bar to take up available space */
+  max-width: 600px; /* Limit search bar width */
+  background-color: #f1f3f4;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.header-search-input {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  padding: 0 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+.header-search-button {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.header-search-button:hover {
+  background-color: #155ab6;
+}
+
+.search-results {
+  position: absolute; /* Position results relative to the header or body */
+  top: 70px; /* Adjust based on header height */
+  left: 20px;
+  right: 20px;
+  background: #fff;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100; /* Ensure it's above other content */
+}
+
+.search-results h3 {
+  margin-top: 0;
+  font-size: 16px;
+  color: #202124;
+}
+
+.search-results ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.search-results li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.search-results li:last-child {
+  border-bottom: none;
 }
