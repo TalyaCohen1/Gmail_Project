@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './styles/App.css'; // main design file
 import Register from './pages/Register';
 import Login from './pages/Login';
-import Inbox from './pages/Inbox';
+import Inbox from './pages/InboxPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 

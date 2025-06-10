@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../style/BatchActionsBar.css';
+import '../styles/BatchActionsBar.css';
 
 export default function BatchActionsBar({ selectedCount, labels, onAction }) {
     const [selectedLabel, setSelectedLabel] = useState('');

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../style/EmailListItem.css';
+import '../styles/EmailListItem.css';
 
 export default function EmailListItem({ email, isSelected, onToggleSelect, onDelete }) {
     return (

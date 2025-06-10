@@ -1,18 +1,19 @@
 // Inbox.jsx
 
 import React, { useEffect, useState, useContext } from 'react';
-import { getEmails, deleteEmail, updateEmail } from '../services/emailService';
-import { LabelsContext } from '../context/LabelsContext';
-import EmailList from './EmailList';
-import BatchActionsBar from './BatchActionsBar';
-import '../style/InboxPage.css';
+import { getEmails, deleteEmail, updateEmail } from '../services/mailService';
+//import { LabelsContext } from '../context/LabelsContext';
+import LabelManager from '../components/LabelManager.jsx'; 
+import EmailList from '../components/EmailList.jsx';
+import BatchActionsBar from '../components/BatchActionsBar.jsx';
+import '../styles/InboxPage.css';
 
 export default function InboxPage() {
     const [emails, setEmails] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
-    const { labels } = useContext(LabelsContext);
+    /* const { labels } = useContext(LabelsContext); */
 
     useEffect(() => {
     getEmails()
@@ -35,6 +36,7 @@ export default function InboxPage() {
         setSelectedIds(ids => ids.filter(x => x !== id));
     };
 
+    
     // batch update/delete passed into BatchActionsBar
     const performBatchAction = ({ type, labelId }) => {
         if (type === 'delete') {
@@ -42,10 +44,10 @@ export default function InboxPage() {
         } else if (type === 'addLabel') {
             selectedIds.forEach(id => {
                 const email = emails.find(e => e.id === id);
-                const newLabels = [...email.labels, labelId];
-                updateEmail(id, { labels: newLabels }).then(updated => {
+                /*const newLabels = [...email.labels, labelId]; */
+                /*updateEmail(id, { labels: newLabels }).then(updated => {
                     setEmails(emails.map(e => e.id === id ? updated : e));
-                });
+                });*/
             });
         setSelectedIds([]);
         }
@@ -61,7 +63,7 @@ export default function InboxPage() {
         {selectedIds.length > 0 && (
             <BatchActionsBar
             selectedCount={selectedIds.length}
-            labels={labels}
+            /*labels={labels}*/
             onAction={performBatchAction}
             />
         )}

@@ -1,6 +1,6 @@
 import React from 'react';
 import EmailListItem from './EmailListItem';
-import '../style/EmailList.css';
+import '../styles/EmailList.css';
 
 
 export default function EmailList({ emails, selectedIds, onToggleSelect, onDelete }) {
