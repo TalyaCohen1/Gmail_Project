@@ -17,8 +17,6 @@ function App() {
         <Link to="/login" style={{ marginRight: '10px' }}>Login</Link>
         <Link to="/register">Register</Link>
       </nav>
-
-      <Header /> 
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -27,7 +25,7 @@ function App() {
           element={
             <LabelProvider>
             <ProtectedRoute>
-              {/* <InboxPage /> */}
+              <Inbox />
             </ProtectedRoute>
           </LabelProvider>
           } /> 
