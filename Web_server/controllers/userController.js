@@ -8,7 +8,9 @@ const { isValidGmail, isValidDateFormat,isPastDate, isAgeOver13, isValidGender, 
  * @param {*} res  - The response object to send back the result 
  */
 const register = (req, res) => {
-  const { fullName, emailAddress, birthDate, gender, password , profileImage } = req.body;
+  const { fullName, emailAddress, birthDate, gender, password  } = req.body;
+  const profileImage = req.file ? /uploads/${req.file.filename} : '/default-profile.png';
+
 
   // Validate input
    if (!fullName || !password|| !emailAddress || !birthDate || !gender) {
