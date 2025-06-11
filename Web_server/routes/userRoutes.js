@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const usersController = require('../controllers/userController');
+const upload = require('../middlewares/upload');
 
 //create a new user
 //POST /api/users
-router.post('/', usersController.register);
+router.post('/', upload.single('profileImage') ,usersController.register);
 
 //login a user
 //POST /api/users/login

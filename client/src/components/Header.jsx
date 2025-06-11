@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import '../styles/Header.css';
+import LogOut from './LogOut';
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null); // or []
+
+  const fullName = localStorage.getItem('fullName');
+  const profileImage = localStorage.getItem('profileImage') || '/default-profile.png';
+
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -14,8 +19,8 @@ function Header() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },
-        // add auth headers here if needed
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
 
       if (!response.ok) {
@@ -52,7 +57,19 @@ function Header() {
         <button type="submit" className="header-search-button">Search</button>
       </form>
 
+      <div className="profile-section">
+        <img
+          src={profileImage}
+          alt="Profile"
+          width="40"
+          height="40"
+          style={{ borderRadius: '50%', marginRight: '10px' }}
+        />
+        <span className="profile-name">{fullName}</span>
+        <LogOut />
+      </div>
 
+      
       {searchResults && (
         <div className="search-results">
           <h3>Results:</h3>

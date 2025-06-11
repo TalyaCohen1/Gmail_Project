@@ -5,7 +5,8 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Inbox from './pages/InboxPage';
 import ProtectedRoute from './components/ProtectedRoute';
-
+import Profile from './pages/Profile';
+import Header from './components/Header';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Link to="/register">Register</Link>
       </nav>
 
+      <Header /> 
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -23,7 +25,7 @@ function App() {
           path="/inbox"
           element={
             <ProtectedRoute>
-              <Inbox />
+              {/* <InboxPage /> */}
             </ProtectedRoute>
           } /> 
       </Routes>
