@@ -1,4 +1,5 @@
-import React, {useState, useNavigate} from "react";
+import React, {useState} from "react";
+import { useNavigate } from 'react-router-dom';
 import '../styles/AuthForm.css';
 
 const RegistrationForm = () => {
@@ -8,9 +9,9 @@ const RegistrationForm = () => {
         emailAddress: '',
         birthDate: '',
         gender: '',
-        profileImage: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        profileImage: ''
     });
 
     //state to hold error messages
@@ -27,18 +28,18 @@ const RegistrationForm = () => {
         }));
     };
 
-    //handle image upload
-    const [selectedImage, setSelectedImage] = useState(null);
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setSelectedImage(file);
-        }
-    };
+    // //handle image upload
+    // const [selectedImage, setSelectedImage] = useState(null);
+    // const handleImageChange = (e) => {
+    //     const file = e.target.files[0];
+    //     if (file) {
+    //         setSelectedImage(file);
+    //     }
+    // };
     //validate form data
     const validateForm = () => {
         const newErrors = {};
-        const { fullName, emailAddress, birthDate, gender, password,  profileImage, confirmPassword } = formData;
+        const { fullName, emailAddress, birthDate, gender, password, confirmPassword , profileImage} = formData;
 
         if (!fullName.trim()) newErrors.fullName = 'Full name is required';
         if (!emailAddress.endsWith('@gmail.com')) newErrors.emailAddress = 'Email must be a @gmail.com address';
@@ -62,6 +63,7 @@ const RegistrationForm = () => {
 
     //handle form submission
     const handleSubmit = async (e) => {
+        console.log('Submitting form...');
         e.preventDefault();
         setSuccessMessage('');
         if (!validateForm()) return;
@@ -122,7 +124,7 @@ const RegistrationForm = () => {
         <option value="male">Male</option>
       </select>
 
-        <label>Upload Profile Picture (optional)</label>
+        {/* <label>Upload Profile Picture (optional)</label>
         <input type="file" name="profileImage" accept="image/*" onChange={handleImageChange} />
 
         {selectedImage && (
@@ -134,7 +136,9 @@ const RegistrationForm = () => {
                 style={{ borderRadius: '50%' }}
                 />
             </div>
-            )}
+            )} */}
+        <label>Profile Image (optional)</label>
+        <input type="url" name="profileImage" value={formData.profileImage} onChange={handleChange} placeholder="Enter image URL" />
 
       <label>Password</label>
       <input type="password" name="password" value={formData.password} onChange={handleChange} required />
