@@ -1,6 +1,7 @@
 import React from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import EmailList from "../components/EmailList"
 //import "../styles/Inbox.css";
 
 const Inbox = () => {
@@ -11,6 +12,7 @@ const Inbox = () => {
       <div className="inbox-main">
         <h2>Inbox</h2>
         {/* Later: Map through emails here */}
+        <EmailList />
       </div>
     </div>
   );
