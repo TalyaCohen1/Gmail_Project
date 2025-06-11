@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Inbox from './pages/InboxPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import { LabelProvider } from './context/LabelContext';
 import Profile from './pages/Profile';
 import Header from './components/Header';
 
@@ -24,9 +25,11 @@ function App() {
         <Route
           path="/inbox"
           element={
+            <LabelProvider>
             <ProtectedRoute>
               {/* <InboxPage /> */}
             </ProtectedRoute>
+          </LabelProvider>
           } /> 
       </Routes>
     </Router>
