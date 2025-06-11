@@ -27,7 +27,7 @@ function App() {
             <ProtectedRoute>
               <Inbox />
             </ProtectedRoute>
-          } /> */}
+          } /> 
       </Routes>
     </Router>
     </div>
