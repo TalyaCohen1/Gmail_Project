@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './styles/App.css'; // main design file
 import Register from './pages/Register';
 import Login from './pages/Login';
+import Inbox from './pages/Inbox';
 import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './pages/Profile';
 import Header from './components/Header';
@@ -20,21 +21,13 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        {/* <Route
+        <Route
           path="/inbox"
           element={
             <ProtectedRoute>
-              <h1>Inbox</h1>
-              <p>This is a protected route. You must be logged in to view this page.</p>
+              <Inbox />
             </ProtectedRoute>
           } /> */}
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-             <Profile />
-            </ProtectedRoute>
-          } />
       </Routes>
     </Router>
     </div>

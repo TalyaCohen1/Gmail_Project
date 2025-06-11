@@ -1,0 +1,13 @@
+.inbox-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* יתפוס את הגובה המלא של ההורה */
+  background-color: #ffffff;
+}
+.loading,
+.error {
+  padding: 16px;
+  text-align: center;
+  color: #5f6368;
+  font-size: 0.9rem;
+}

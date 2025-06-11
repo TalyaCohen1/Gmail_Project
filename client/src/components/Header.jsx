@@ -39,10 +39,11 @@ function Header() {
   };
 
   return (
-    <header className="mailblossom-header">
-      <div className="left-section">
-      <span role="img" aria-label="flower" className="flower-icon">🌸</span>
-      <h1>MailBlossom</h1>
+    <header className="gmail-header">
+      <div className="gmail-logo-container">
+        {/* Changed to use the actual image file */}
+        <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-icon" /> {/* */}
+        {/*<h1>Gmail</h1> */}
       </div>
 
       <form onSubmit={handleSearch} className="header-search-form">

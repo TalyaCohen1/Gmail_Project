@@ -159,3 +159,301 @@
 .label-list button:hover {
     color: #155ab6;
 }
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal Content */
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 90%;
+    max-width: 400px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content h3 {
+    font-size: 20px;
+    color: #202124;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.modal-content input:focus {
+    border-color: #1a73e8;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modal-actions button:first-child { /* Save button */
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+}
+
+.modal-actions button:first-child:hover {
+    background-color: #155ab6;
+}
+
+.modal-actions button:last-child { /* Cancel button */
+    background-color: #f1f3f4;
+    color: #202124;
+    border: 1px solid #dadce0;
+}
+
+.modal-actions button:last-child:hover {
+    background-color: #e8eaed;
+}
+
+/* Animation for modal */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ensure label list items align their content properly */
+.label-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Distribute space between name and buttons */
+    padding: 12px 16px;
+    background: #f1f3f4;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    transition: background-color 0.2s ease;
+    font-size: 14px;
+}
+
+.label-list li div { /* Container for buttons */
+    display: flex;
+    gap: 8px; /* Space between buttons */
+}
+
+/* Label list styles */
+.label-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.label-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f1f3f4;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    transition: background-color 0.2s ease;
+    font-size: 14px;
+}
+
+.label-list li:hover {
+    background-color: #e8f0fe;
+}
+
+.label-list span {
+    font-weight: 500;
+    color: #202124;
+    cursor: pointer; /* Indicate it's clickable */
+    flex-grow: 1; /* Allow name to take available space */
+}
+
+.label-list span:hover {
+    text-decoration: underline; /* Visual cue for clickability */
+}
+
+/* Container for actions (3 dots button and menu) */
+.label-actions-container {
+    position: relative; /* For positioning the dropdown menu */
+    display: flex;
+    align-items: center;
+}
+
+/* Three dots button */
+.three-dots-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 20px; /* Make dots larger for visibility */
+    color: #5f6368; /* Gmail-like grey */
+    transition: color 0.2s ease, background-color 0.2s ease;
+    border-radius: 50%; /* Make it round */
+    width: 32px; /* Fixed size for a clickable area */
+    height: 32px; /* Fixed size for a clickable area */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.three-dots-button:hover {
+    background-color: #e0e0e0;
+    color: #202124;
+}
+
+/* Dropdown menu for edit/delete */
+.label-action-menu {
+    position: absolute;
+    top: 100%; /* Position below the three-dots button */
+    right: 0;
+    background: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+    z-index: 10; /* Ensure it's above other elements */
+    margin-top: 5px; /* Small gap from the button */
+}
+
+.label-action-menu button {
+    background: transparent;
+    border: none;
+    padding: 10px 15px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    color: #202124;
+    transition: background-color 0.2s ease;
+    width: 100%;
+}
+
+.label-action-menu button:hover {
+    background-color: #f1f3f4;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal Content */
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 90%;
+    max-width: 400px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content h3 {
+    font-size: 20px;
+    color: #202124;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.modal-content input:focus {
+    border-color: #1a73e8;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modal-actions button:first-child { /* Save button */
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+}
+
+.modal-actions button:first-child:hover {
+    background-color: #155ab6;
+}
+
+.modal-actions button:last-child { /* Cancel button */
+    background-color: #f1f3f4;
+    color: #202124;
+    border: 1px solid #dadce0;
+}
+
+.modal-actions button:last-child:hover {
+    background-color: #e8eaed;
+}
+
+/* Animation for modal */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
