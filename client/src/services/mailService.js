@@ -1,16 +1,36 @@
 // mailService.js
-const API_BASE = process.env.REACT_APP_API_BASE_URL || '';
+
+// Helper function to decode JWT and extract user ID
+const getUserIdFromToken = (token) => {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.id;
+    } catch (error) {
+        console.error('Error decoding token:', error);
+        return null;
+    }
+}
 
 function getAuthHeaders() {
+    // Get token from localStorage
     const token = localStorage.getItem('token');
+    if (!token) {
+        throw new Error('No authentication token found');
+    }
+    // Extract user ID from JWT token
+    const userId = getUserIdFromToken(token);
+    if (!userId) {
+        throw new Error('Invalid token format');
+    }
+
     return {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }) // check if the word 'bearer' needed
+        ...(token && { Authorization: `${userId}` }) // check if the word 'bearer' needed
     };
 }
 
 export async function getEmails() {
-    const res = await fetch(`${API_BASE}/api/mails`, {
+    const res = await fetch('http://localhost:3000/api/mails', {
         headers: getAuthHeaders(), 
     });
     if (!res.ok) {
@@ -21,7 +41,7 @@ export async function getEmails() {
 }
 
 export async function getEmailById(id) {
-    const res = await fetch(`${API_BASE}/api/mails/${id}`, {
+    const res = await fetch(`http://localhost:3000/api/mails/${id}`, {
         headers: getAuthHeaders(), 
     });
     if (!res.ok) {
@@ -36,9 +56,12 @@ export async function getEmailById(id) {
  * @param {Object} data – { to, subject, body, labels: [id,…] }
  */
 export async function createEmail(data) {
-    const res = await fetch(`${API_BASE}/api/mails`, {
+    const res = await fetch('http://localhost:3000/api/mails', {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: {
+            ...getAuthHeaders(),
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify(data),
     });
     if (!res.ok) {
@@ -54,9 +77,12 @@ export async function createEmail(data) {
  * @param {Object} patchData – {subject, body, to}
  */
 export async function updateEmail(id, patchData) {
-    const res = await fetch(`${API_BASE}/api/mails/${id}`, {
+    const res = await fetch(`http://localhost:3000/api/mails/${id}`, {
         method: 'PATCH',
-        headers: getAuthHeaders(),
+        headers: {
+            ...getAuthHeaders(),
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify(patchData),
     });
     if (res.status === 409) {
@@ -73,7 +99,7 @@ export async function updateEmail(id, patchData) {
  * Delete an email
  */
 export async function deleteEmail(id) {
-    const res = await fetch(`${API_BASE}/api/mails/${id}`, {
+    const res = await fetch(`http://localhost:3000/api/mails/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
     });

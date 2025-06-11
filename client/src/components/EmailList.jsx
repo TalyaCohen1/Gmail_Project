@@ -3,18 +3,27 @@ import EmailListItem from './EmailListItem';
 import '../styles/EmailList.css';
 
 
-export default function EmailList({ emails, selectedIds, onToggleSelect, onDelete }) {
+export default function EmailList({ emails = [], selectedIds, onToggleSelect, onDelete }) {
+    if (emails.length === 0) {
+        return (
+        <div className="email-list-empty">
+            <p>No emails to display.</p>
+        </div>
+        );
+    }
+
     return (
         <ul className="email-list">
-        {emails.map(email => (
-            <EmailListItem
-            key={email.id}
-            email={email}
-            isSelected={selectedIds.includes(email.id)}
-            onToggleSelect={() => onToggleSelect(email.id)}
-            onDelete={() => onDelete(email.id)}
-            />
-        ))}
+            
+            {emails.map(email => (
+                <EmailListItem
+                key={email.id}
+                email={email}
+                isSelected={selectedIds.includes(email.id)}
+                onToggleSelect={() => onToggleSelect(email.id)}
+                onDelete={() => onDelete(email.id)}
+                />
+            ))}
         </ul>
     );
 }
