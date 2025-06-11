@@ -10,8 +10,7 @@ const RegistrationForm = () => {
         birthDate: '',
         gender: '',
         password: '',
-        confirmPassword: '',
-        profileImage: ''
+        confirmPassword: ''
     });
 
     //state to hold error messages
@@ -39,7 +38,7 @@ const RegistrationForm = () => {
     //validate form data
     const validateForm = () => {
         const newErrors = {};
-        const { fullName, emailAddress, birthDate, gender, password, confirmPassword , profileImage} = formData;
+        const { fullName, emailAddress, birthDate, gender, password, confirmPassword } = formData;
 
         if (!fullName.trim()) newErrors.fullName = 'Full name is required';
         if (!emailAddress.endsWith('@gmail.com')) newErrors.emailAddress = 'Email must be a @gmail.com address';
@@ -47,13 +46,21 @@ const RegistrationForm = () => {
         else {
         const birth = new Date(birthDate);
         const today = new Date();
-        const age = today.getFullYear() - birth.getFullYear();
-        if (age < 13) newErrors.birthDate = 'You must be at least 13 years old';
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+    
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        
+        if (age < 13) {
+            newErrors.birthDate = 'You must be at least 13 years old';
+        }
         }
 
-        if (!['male', 'female'].includes(gender)) newErrors.gender = 'Select gender';
+        if (!gender || !['male', 'female'].includes(gender)) newErrors.gender = 'Select gender';
         if (!password.match(/^(?=.*[A-Z])(?=.*\d).{8,}$/)) {
-        newErrors.password = 'Password must be at least 8 chars, 1 uppercase, 1 digit';
+            newErrors.password = 'Password must be at least 8 chars, 1 uppercase, 1 digit';
         }
         if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
 
@@ -63,90 +70,154 @@ const RegistrationForm = () => {
 
     //handle form submission
     const handleSubmit = async (e) => {
-        console.log('Submitting form...');
-        e.preventDefault();
-        setSuccessMessage('');
-        if (!validateForm()) return;
+    e.preventDefault();
+    setSuccessMessage('');
+    
+    const isValid = validateForm();
+    if (!validateForm()) {
+            return;
+    }
 
-        try {
-            const formDataToSend = new FormData();
-            formDataToSend.append('fullName', formData.fullName);
-            formDataToSend.append('emailAddress', formData.emailAddress);
-            formDataToSend.append('birthDate', formData.birthDate);
-            formDataToSend.append('gender', formData.gender);
-            formDataToSend.append('password', formData.password);
-            if (selectedImage) {
-                formDataToSend.append('profileImage', selectedImage);
-            }
-            const response = await fetch('http://localhost:3000/api/users', {
-                method: 'POST',
-                body: formDataToSend
+    const formDataToSend = new FormData();
+    formDataToSend.append('fullName', formData.fullName);
+    formDataToSend.append('emailAddress', formData.emailAddress);
+    formDataToSend.append('birthDate', formData.birthDate);
+    formDataToSend.append('gender', formData.gender);
+    formDataToSend.append('password', formData.password);
+    if (selectedImage) {
+        formDataToSend.append('profileImage', selectedImage);
+    }
+
+    try {
+        const response = await fetch('http://localhost:3000/api/users', {
+            method: 'POST',
+            body: formDataToSend
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            setErrors({ general: errorData.error || 'Registration failed' });
+        } else {
+            setSuccessMessage('Registration successful! You can now log in.');
+            setFormData({
+                fullName: '',
+                emailAddress: '',
+                birthDate: '',
+                gender: '',
+                password: '',
+                confirmPassword: ''
             });
+            setErrors({});
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                setErrors({ general: errorData.error || 'Registration failed' });
-            } else {
-                setSuccessMessage('Registration successful! You can now log in.');
-                setFormData({
-                    fullName: '',
-                    emailAddress: '',
-                    birthDate: '',
-                    gender: '',
-                    password: '',
-                    confirmPassword: '' });
-                setErrors({});
-
-                setTimeout(() => {
-                    navigate('/login');
-                }, 2000); // Redirect after 2 seconds
-            }
-        } catch (error) {
-            console.error('Fetch error:', error);
-            setErrors({ general: 'An error occurred. Please try again later.' });
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
         }
-    };
+    } catch (error) {
+        console.error('Fetch error:', error);
+        setErrors({ general: 'An error occurred. Please try again later.' });
+    }
+};
+
 
     return (
-     <form className="auth-form" onSubmit={handleSubmit}>
-      <label>Full Name</label>
-      <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
+    <div className="auth-container">
+        <div className="google-logo">
+                <h1>Our Mail!!</h1>
+            </div>
 
-      <label>Email Address</label>
-      <input type="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} required />
+        <div className="auth-subtitle">
+           Create your account 
+        </div>
 
-      <label>Birth Date</label>
-      <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} required />
+    <form onSubmit={handleSubmit}>
+    <div className="form-group">
+      <label htmlFor="fullName">Full Name</label>
+      <input type="text"  name="fullName" value={formData.fullName} onChange={handleChange} className={errors.fullName ? 'error' : ''} placeholder="Write your full name"  autoComplete="name" />
+       {errors.fullName && <div className="error-message">{errors.fullName}</div>}
+    </div>
 
-      <label>Gender</label>
-      <select name="gender" value={formData.gender} onChange={handleChange}>
+    <div className="form-group">
+      <label htmlFor="emailAddress">Email Address</label>
+      <input type="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} className={errors.emailAddress ? 'error' : ''} placeholder="your.name@gmail.com" autoComplete="email" />
+        {errors.emailAddress && <div className="error-message">{errors.emailAddress} </div>}
+        </div>
+
+      <div className="form-group">  
+      <label htmlFor="birthDate">Birth Date</label>
+      <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className={errors.birthDate ? 'error' : ''} autoComplete="bday" />
+        {errors.birthDate && <div className="error-message">{errors.birthDate}</div>}
+      </div>
+
+    <div className="form-group">
+      <label htmlFor="gender">Gender</label>
+      <select name="gender" value={formData.gender} onChange={handleChange} className={errors.gender ? 'error' : ''}>
+        <option value= ""> choose gender</option>
         <option value="female">Female</option>
         <option value="male">Male</option>
       </select>
+      {errors.gender && <div className="error-message">{errors.gender}</div>}
+    </div>
 
-        {/* <label>Upload Profile Picture (optional)</label>
-        <input type="file" name="profileImage" accept="image/*" onChange={handleImageChange} />
+    <div className="form-group">
+        <label >Upload Profile Picture (optional)</label>
+        <div className="file-input-wrapper">
+                        <div className="file-input">
+                            <input 
+                                type="file" 
+                                name="profileImage" 
+                                accept="image/*" 
+                                onChange={handleImageChange} 
+                            />
+                            📷 choose your profile picture
+                        </div>
+                    </div>
+                    {selectedImage && (
+                        <div className="image-preview">
+                            <img
+                                src={URL.createObjectURL(selectedImage)}
+                                alt="preview"
+                            />
+                        </div>
+                    )}
+                </div>
 
-        {selectedImage && (
-            <div style={{ marginBottom: '1rem' }}>
-                <img
-                src={URL.createObjectURL(selectedImage)}
-                alt="Preview"
-                width="100"
-                style={{ borderRadius: '50%' }}
-                />
-            </div>
-            )} */}
-        <label>Profile Image (optional)</label>
-        <input type="url" name="profileImage" value={formData.profileImage} onChange={handleChange} placeholder="Enter image URL" />
+    <div className="form-group">
+      <label htmlFor="password" >Password</label>
+      <input type="password" name="password" value={formData.password} onChange={handleChange} className={errors.password ? 'error' : ''}
+      placeholder="Password must be at least 8 chars, 1 uppercase, 1 digit" 
+      autoComplete="new-password"/>
+        {errors.password && <div className="error-message">{errors.password}</div>}
+    </div>
 
-      <label>Password</label>
-      <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+    <div className="form-group">
+    <label htmlFor="confirmPassword">Confirm Password</label>
+        <input 
+                        type="password" 
+                        id="confirmPassword"
+                        name="confirmPassword" 
+                        value={formData.confirmPassword} 
+                        onChange={handleChange} 
+                        className={errors.confirmPassword ? 'error' : ''}
+                        placeholder="write your password again"
+                        autoComplete="new-password"
+                    />
+                    {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
+                </div>
+                      
+    <button type="submit" className="auth-button">Register</button>
 
-        <label>Confirm Password</label>
-        <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
-      <button type="submit">Register</button>
+    {errors.general && <div className="general-error">{errors.general}</div>}
+    {successMessage && <div className="success-message">{successMessage}</div>}
+            
     </form>
+    <div className="form-footer">
+                <a href="/login"> already have accunt? login</a>
+            </div>
+        </div>
+    
   );
 };
 
