@@ -27,14 +27,14 @@ const RegistrationForm = () => {
         }));
     };
 
-    // //handle image upload - in case we want using multer
-    // const [selectedImage, setSelectedImage] = useState(null);
-    // const handleImageChange = (e) => {
-    //     const file = e.target.files[0];
-    //     if (file) {
-    //         setSelectedImage(file);
-    //     }
-    // };
+    //handle image upload
+    const [selectedImage, setSelectedImage] = useState(null);
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedImage(file);
+        }
+    };
     //validate form data
     const validateForm = () => {
         const newErrors = {};
@@ -67,12 +67,18 @@ const RegistrationForm = () => {
         if (!validateForm()) return;
 
         try {
+            const formDataToSend = new FormData();
+            formDataToSend.append('fullName', formData.fullName);
+            formDataToSend.append('emailAddress', formData.emailAddress);
+            formDataToSend.append('birthDate', formData.birthDate);
+            formDataToSend.append('gender', formData.gender);
+            formDataToSend.append('password', formData.password);
+            if (selectedImage) {
+                formDataToSend.append('profileImage', selectedImage);
+            }
             const response = await fetch('http://localhost:3000/api/users', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
+                body: formDataToSend
             });
 
             if (!response.ok) {
@@ -116,12 +122,20 @@ const RegistrationForm = () => {
         <option value="male">Male</option>
       </select>
 
-        {/* <label>Upload Profile Picture (optional)</label>
-        <input type="file" name="profileImage" accept="image/*" onChange={handleImageChange} /> */}
+        <label>Upload Profile Picture (optional)</label>
+        <input type="file" name="profileImage" accept="image/*" onChange={handleImageChange} />
 
-        <label>Profile Image URL</label>
-        <input type="url" name="profileImage" value={formData.profileImage} onChange={handleChange} placeholder="https://example.com/image.jpg" />
-      
+        {selectedImage && (
+            <div style={{ marginBottom: '1rem' }}>
+                <img
+                src={URL.createObjectURL(selectedImage)}
+                alt="Preview"
+                width="100"
+                style={{ borderRadius: '50%' }}
+                />
+            </div>
+            )}
+
       <label>Password</label>
       <input type="password" name="password" value={formData.password} onChange={handleChange} required />
 
