@@ -9,7 +9,7 @@ const { isValidGmail, isValidDateFormat,isPastDate, isAgeOver13, isValidGender, 
  */
 const register = (req, res) => {
   const { fullName, emailAddress, birthDate, gender, password  } = req.body;
-  const profileImage = req.file ? /uploads/${req.file.filename} : '/default-profile.png';
+  const profileImage = req.file ? `/uploads/${req.file.filename}` : '/default-profile.png';
 
 
   // Validate input

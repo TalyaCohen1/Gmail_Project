@@ -29,13 +29,13 @@ const RegistrationForm = () => {
     };
 
     // //handle image upload
-    // const [selectedImage, setSelectedImage] = useState(null);
-    // const handleImageChange = (e) => {
-    //     const file = e.target.files[0];
-    //     if (file) {
-    //         setSelectedImage(file);
-    //     }
-    // };
+    const [selectedImage, setSelectedImage] = useState(null);
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedImage(file);
+        }
+    };
     //validate form data
     const validateForm = () => {
         const newErrors = {};
