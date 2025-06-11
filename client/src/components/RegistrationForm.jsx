@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useNavigate} from "react";
 import '../styles/AuthForm.css';
 
 const RegistrationForm = () => {
@@ -17,7 +17,7 @@ const RegistrationForm = () => {
     const [errors, setErrors] = React.useState({});
     //state to hold success message
     const [successMessage, setSuccessMessage] = React.useState('');
-
+    const navigate = useNavigate();
     //handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -27,6 +27,14 @@ const RegistrationForm = () => {
         }));
     };
 
+    // //handle image upload - in case we want using multer
+    // const [selectedImage, setSelectedImage] = useState(null);
+    // const handleImageChange = (e) => {
+    //     const file = e.target.files[0];
+    //     if (file) {
+    //         setSelectedImage(file);
+    //     }
+    // };
     //validate form data
     const validateForm = () => {
         const newErrors = {};
@@ -80,6 +88,10 @@ const RegistrationForm = () => {
                     password: '',
                     confirmPassword: '' });
                 setErrors({});
+
+                setTimeout(() => {
+                    navigate('/login');
+                }, 2000); // Redirect after 2 seconds
             }
         } catch (error) {
             console.error('Fetch error:', error);
@@ -104,9 +116,12 @@ const RegistrationForm = () => {
         <option value="male">Male</option>
       </select>
 
-        <label>Profile Image URL (optional)</label>
-        <input type="url" name="profileImage" value={formData.profileImage} onChange={handleChange} />
+        {/* <label>Upload Profile Picture (optional)</label>
+        <input type="file" name="profileImage" accept="image/*" onChange={handleImageChange} /> */}
 
+        <label>Profile Image URL</label>
+        <input type="url" name="profileImage" value={formData.profileImage} onChange={handleChange} placeholder="https://example.com/image.jpg" />
+      
       <label>Password</label>
       <input type="password" name="password" value={formData.password} onChange={handleChange} required />
 
