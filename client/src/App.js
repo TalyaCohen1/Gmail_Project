@@ -6,7 +6,8 @@ import Login from './pages/Login';
 import Inbox from './pages/InboxPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { LabelProvider } from './context/LabelContext';
-
+import Profile from './pages/Profile';
+import Header from './components/Header';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Link to="/register">Register</Link>
       </nav>
 
+      <Header /> 
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -25,7 +27,7 @@ function App() {
           element={
             <LabelProvider>
             <ProtectedRoute>
-              <Inbox />
+              {/* <InboxPage /> */}
             </ProtectedRoute>
           </LabelProvider>
           } /> 
