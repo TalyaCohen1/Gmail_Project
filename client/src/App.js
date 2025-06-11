@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Inbox from './pages/InboxPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import { LabelProvider } from './context/LabelContext';
 
 
 function App() {
@@ -22,9 +23,11 @@ function App() {
         <Route
           path="/inbox"
           element={
+            <LabelProvider>
             <ProtectedRoute>
               <Inbox />
             </ProtectedRoute>
+          </LabelProvider>
           } /> 
       </Routes>
     </Router>

@@ -1,7 +1,10 @@
+// src/components/LabelManager.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/LabelManager.css'; // design file
+import { useLabels } from '../context/LabelContext'; // Import useLabels hook
 
-// Reusable Modal Component
+// Reusable Modal Component (remains the same)
 const LabelModal = ({ show, onClose, onSubmit, initialValue = '', title }) => {
     const [value, setValue] = useState(initialValue);
 
@@ -38,9 +41,8 @@ const LabelModal = ({ show, onClose, onSubmit, initialValue = '', title }) => {
 };
 
 const LabelManager = () => {
-    const [labels, setLabels] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const { labels, loading, error, addLabel, editLabel, deleteLabel, fetchMailsForLabel } = useLabels(); // Use the hook to get state and actions
+
     const [showAddLabelModal, setShowAddLabelModal] = useState(false);
     const [showEditLabelModal, setShowEditLabelModal] = useState(false);
     const [editingLabel, setEditingLabel] = useState(null); // Stores the label being edited
@@ -48,11 +50,6 @@ const LabelManager = () => {
 
     // Ref to detect clicks outside the menu
     const menuRef = useRef(null);
-
-    // fetch labels when component mounts
-    useEffect(() => {
-        fetchLabels();
-    }, []);
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -68,133 +65,18 @@ const LabelManager = () => {
         };
     }, [menuRef]);
 
-    // Helper function to decode JWT and extract user ID
-    const getUserIdFromToken = (token) => {
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            return payload.id;
-        } catch (error) {
-            console.error('Error decoding token:', error);
-            return null;
-        }
-    };
-
-    const fetchLabels = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            // Get token from localStorage
-            const token = localStorage.getItem('token');
-            
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
-
-            // Extract user ID from JWT token
-            const userId = getUserIdFromToken(token);
-            if (!userId) {
-                throw new Error('Invalid token format');
-            }
-
-            const response = await fetch('http://localhost:3000/api/labels', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `${userId}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            // Ensure data is an array
-            if (Array.isArray(data)) {
-                setLabels(data);
-            } else {
-                console.error('Expected array but got:', data);
-                setLabels([]);
-                setError('Invalid data format received from server');
-            }
-        } catch (error) {
-            console.error('Could not fetch labels:', error);
-            setLabels([]); // Set empty array to prevent map error
-            setError(`Failed to fetch labels: ${error.message}`);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const addLabel = async (name) => {
+    const handleAddLabel = async (name) => {
         if (name.trim() === '') return;
-
-        try {
-            const token = localStorage.getItem('token');
-            
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
-
-            const userId = getUserIdFromToken(token);
-            if (!userId) {
-                throw new Error('Invalid token format');
-            }
-
-            const response = await fetch('http://localhost:3000/api/labels', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `${userId}`
-                },
-                body: JSON.stringify({ name }),
-            });
-
-            if (response.ok) {
-                setShowAddLabelModal(false);
-                fetchLabels();
-            } else {
-                setError(`Failed to add label: ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Error adding label:', error);
-            setError(`Error adding label: ${error.message}`);
+        const success = await addLabel(name);
+        if (success) {
+            setShowAddLabelModal(false);
         }
+        // Error handling is managed by the context
     };
 
-    const deleteLabel = async (id) => {
-        try {
-            const token = localStorage.getItem('token');
-            
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
-
-            const userId = getUserIdFromToken(token);
-            if (!userId) {
-                throw new Error('Invalid token format');
-            }
-
-            const response = await fetch(`http://localhost:3000/api/labels/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `${userId}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                fetchLabels();
-            } else {
-                setError(`Failed to delete label: ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Error deleting label:', error);
-            setError(`Error deleting label: ${error.message}`);
-        } finally {
-            setActiveLabelMenuId(null); // Close menu after action
-        }
+    const handleDeleteLabel = async (id) => {
+        await deleteLabel(id);
+        setActiveLabelMenuId(null); // Close menu after action
     };
 
     const startEditing = (label) => {
@@ -203,73 +85,20 @@ const LabelManager = () => {
         setActiveLabelMenuId(null); // Close menu after action
     };
 
-    const saveEdit = async (id, newName) => {
-        try {
-            const token = localStorage.getItem('token');
-            
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
-
-            const userId = getUserIdFromToken(token);
-            if (!userId) {
-                throw new Error('Invalid token format');
-            }
-
-            const response = await fetch(`http://localhost:3000/api/labels/${id}`, {
-                method: 'PATCH',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `${userId}`
-                },
-                body: JSON.stringify({ name: newName }),
-            });
-
-            if (response.ok) {
-                setShowEditLabelModal(false);
-                setEditingLabel(null);
-                fetchLabels();
-            } else {
-                setError(`Failed to update label: ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Error updating label:', error);
-            setError(`Error updating label: ${error.message}`);
+    const handleSaveEdit = async (id, newName) => {
+        const success = await editLabel(id, newName);
+        if (success) {
+            setShowEditLabelModal(false);
+            setEditingLabel(null);
         }
+        // Error handling is managed by the context
     };
 
     const showMailsByLabel = async (id) => {
-        try {
-            const token = localStorage.getItem('token');
-            
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
-
-            const userId = getUserIdFromToken(token);
-            if (!userId) {
-                throw new Error('Invalid token format');
-            }
-
-            const response = await fetch(`http://localhost:3000/api/labels/${id}/mails`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `${userId}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (response.ok) {
-                const mails = await response.json();
-                console.log('Mails for label:', mails);
-                // Here you can handle the mails as needed, e.g., display them in a modal or another component
-            } else {
-                setError(`Failed to fetch mails for label: ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Error fetching mails by label:', error);
-            setError(`Error fetching mails by label: ${error.message}`);
-        }
-    }
+        const mails = await fetchMailsForLabel(id);
+        // Here you can handle the mails as needed, e.g., display them in a modal or another component
+        // console.log('Mails for label:', mails);
+    };
 
     const toggleMenu = (id) => {
         setActiveLabelMenuId(activeLabelMenuId === id ? null : id);
@@ -304,7 +133,7 @@ const LabelManager = () => {
                                 {activeLabelMenuId === label.id && (
                                     <div className="label-action-menu" ref={menuRef}>
                                         <button onClick={() => startEditing(label)}>Edit</button>
-                                        <button onClick={() => deleteLabel(label.id)}>Delete</button>
+                                        <button onClick={() => handleDeleteLabel(label.id)}>Delete</button>
                                     </div>
                                 )}
                             </div>
@@ -316,7 +145,7 @@ const LabelManager = () => {
             <LabelModal
                 show={showAddLabelModal}
                 onClose={() => setShowAddLabelModal(false)}
-                onSubmit={addLabel}
+                onSubmit={handleAddLabel}
                 title="Create New Label"
             />
 
@@ -324,7 +153,7 @@ const LabelManager = () => {
                 <LabelModal
                     show={showEditLabelModal}
                     onClose={() => setShowEditLabelModal(false)}
-                    onSubmit={(newName) => saveEdit(editingLabel.id, newName)}
+                    onSubmit={(newName) => handleSaveEdit(editingLabel.id, newName)}
                     initialValue={editingLabel.name}
                     title="Edit Label"
                 />
