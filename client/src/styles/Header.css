@@ -1,81 +1,26 @@
 .gmail-header {
-    background-color: #fff; /* solid white */
-    border-bottom: 1px solid #e0e0e0; /* subtle bottom border */
-    padding: 0 24px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* subtle shadow */
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.flower-icon {
-    font-size: 28px;
-    color: #1a73e8; /* Gmail’s primary blue */
-    /* Remove bounce animation for a cleaner look */
-    animation: none;
-}
-
-.gmail-header h1 {
-    font-size: 20px;
-    font-weight: 500;
-    color: #202124; /* Gmail’s dark grey */
-    margin: 0;
-    letter-spacing: normal;
-}
-
-.header-search-form {
-    flex-grow: 1;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.header-search-input {
-    flex-grow: 1;
-    padding: 10px 12px;
-    border: 1px solid #dfe1e5;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    transition: box-shadow 0.2s ease;
-    background-color: #f1f3f4;
-    color: #202124;
-}
-
-.header-search-input:focus {
-    border-color: #1a73e8;
-    box-shadow: 0 0 3px #1a73e8;
-    background-color: #fff;
-}
-
-.header-search-button {
-    padding: 8px 16px;
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.2s ease;
-}
-
-.header-search-button:hover {
-    background-color: #155ab6;
-}
-
-.gmail-header {
   display: flex;
   align-items: center;
-  padding: 10px 20px;
+  padding: 10px 24px; /* Adjusted padding */
+  height: 64px; /* Consistent height */
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  gap: 20px; /* Space between logo/title and search bar */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Subtle shadow */
+  /* Changed from space-between to center to help with search bar positioning */
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  /* Removed gap from here as margin-right on logo-wrapper will handle spacing */
+}
+
+/* New style for the clickable logo wrapper */
+.gmail-logo-wrapper {
+    cursor: pointer; /* Indicate it's clickable */
+    display: flex; /* Ensure it stays a flex container */
+    align-items: center; /* Align items vertically */
+    /* Add space between logo and search bar */
+    margin-right: 40px; /* Adjust this value for desired spacing */
 }
 
 .gmail-logo-container {
@@ -85,10 +30,8 @@
 }
 
 .gmail-icon {
-  /* Adjust width and height for your image */
-  width: 120px; /* */
-  height: 70px; /* */
-  /* Remove font-size and color properties that were for the emoji */
+  width: 130px; /* Logo width */
+  height: 55px; /* Logo height, same as search bar input */
 }
 
 .gmail-header h1 {
@@ -98,14 +41,16 @@
   margin: 0; /* Remove default margin */
 }
 
-
 .header-search-form {
   display: flex;
-  flex-grow: 1; /* Allows the search bar to take up available space */
-  max-width: 600px; /* Limit search bar width */
+  flex-grow: 0; /* No longer growing to fill space */
+  width: 650px; /* Explicit width for the search bar */
   background-color: #f1f3f4;
-  border-radius: 8px;
+  border-radius: 24px; /* More round */
   padding: 8px;
+  margin: 0 auto; /* Keep auto margins for initial centering */
+  /* Shift left from its centered position */
+  transform: translateX(-50px); /* Adjust -50px for desired left shift */
 }
 
 .header-search-input {
@@ -121,7 +66,7 @@
   background-color: #1a73e8;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 20px; /* Make button more round */
   padding: 8px 15px;
   cursor: pointer;
   font-size: 14px;
@@ -133,8 +78,8 @@
 }
 
 .search-results {
-  position: absolute; /* Position results relative to the header or body */
-  top: 70px; /* Adjust based on header height */
+  position: absolute;
+  top: 70px;
   left: 20px;
   right: 20px;
   background: #fff;
@@ -144,7 +89,7 @@
   padding: 15px;
   max-height: 300px;
   overflow-y: auto;
-  z-index: 100; /* Ensure it's above other content */
+  z-index: 100;
 }
 
 .search-results h3 {
