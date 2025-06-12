@@ -58,14 +58,14 @@ function Header() {
       </form>
 
       <div className="profile-section">
-        <img
+        {/* <img
           src={profileImage}
           alt="Profile"
           width="40"
           height="40"
           style={{ borderRadius: '50%', marginRight: '10px' }}
         />
-        <span className="profile-name">{fullName}</span>
+        <span className="profile-name">{fullName}</span> */}
         <LogOut />
       </div>
 

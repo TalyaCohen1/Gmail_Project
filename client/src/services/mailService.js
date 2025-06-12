@@ -25,7 +25,7 @@ function getAuthHeaders() {
 
     return {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `${userId}` }) // check if the word 'bearer' needed
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
     };
 }
 
@@ -56,11 +56,11 @@ export async function getEmailById(id) {
  * @param {Object} data – { to, subject, body, labels: [id,…] }
  */
 export async function createEmail(data) {
+    console.log('Creating email with data:', data);
     const res = await fetch('http://localhost:3000/api/mails', {
         method: 'POST',
         headers: {
-            ...getAuthHeaders(),
-            'Content-Type': 'application/json'
+            ...getAuthHeaders()
         },
         body: JSON.stringify(data),
     });
@@ -77,11 +77,13 @@ export async function createEmail(data) {
  * @param {Object} patchData – {subject, body, to}
  */
 export async function updateEmail(id, patchData) {
+    console.log('Updating email:', id);
+    console.log('Patch data:', patchData);
+
     const res = await fetch(`http://localhost:3000/api/mails/${id}`, {
         method: 'PATCH',
         headers: {
-            ...getAuthHeaders(),
-            'Content-Type': 'application/json'
+            ...getAuthHeaders()
         },
         body: JSON.stringify(patchData),
     });
