@@ -85,6 +85,30 @@ export const LabelProvider = ({ children }) => {
         }
     };
 
+    const deleteMailFromLabel = async (labelId, mailId) => {
+        try {
+            await labelService.removeMailFromLabel(labelId, mailId);
+            fetchLabels(); // Re-fetch labels to update UI
+            return true;
+        } catch (err) {
+            setError(`Error removing mail from label: ${err.message}`);
+            console.error('Error removing mail from label:', err);
+            return false;
+        }
+    }
+
+    const addMailToLabel = async (labelId, mailId) => { 
+        try {
+            await labelService.addMailToLabel(labelId, mailId);
+            fetchLabels(); // Re-fetch labels to update UI
+            return true;
+        } catch (err) {
+            setError(`Error adding mail to label: ${err.message}`);
+            console.error('Error adding mail to label:', err);
+            return false;
+        }
+    }
+
     return (
         <LabelContext.Provider
             value={{
@@ -96,6 +120,8 @@ export const LabelProvider = ({ children }) => {
                 editLabel,
                 deleteLabel: removeLabel, // Rename to avoid conflict if needed, or just use deleteLabel
                 fetchMailsForLabel,
+                deleteMailFromLabel,
+                addMailToLabel
             }}
         >
             {children}
