@@ -88,11 +88,15 @@ export default function CreateMail({ onSend, onClose }) {
 
 
     return (
-    <div className="compose-popup">
-        <div className="header">
-            <h2 className="text-lg font-semibold">New Message</h2>
-            <button onClick={onClose} className="close-btn">X</button>
-        </div>
+        <div className="compose-popup">
+            <div className="header">
+                <h2>New Message</h2>
+                <div className="window-controls">
+                    <button onClick={handleNewMail}>_</button>
+                    <button disabled>□</button>
+                    <button onClick={onClose}>✕</button>
+                </div>
+            </div>
             <input
                 type="email"
                 placeholder="To:"
@@ -120,8 +124,8 @@ export default function CreateMail({ onSend, onClose }) {
             {error && <div style={{ color: 'red', marginBottom: '12px' }}>{error}</div>}
             {success && <div style={{ color: 'green', marginBottom: '12px' }}>{success}</div>}
 
-             <div className="actions">
-            <button onClick={handleSend}>Send</button>
+            <div className="actions">
+                <button onClick={handleSend}>Send</button>
             </div>
 
             {isSaving && <div style={{ color: '#888', fontSize: '12px', marginTop: '8px' }}>Saving...</div>}
