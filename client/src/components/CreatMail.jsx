@@ -10,9 +10,8 @@ export default function CreateMail({ onSend }) {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    // Create a new draft when the component mounts
-    useEffect(() => {
-        const createDraft = async () => {
+    // Initialize a new draft
+    const createDraft = async () => {
            try {
                 const data = await createEmail({ to: " ", subject: " ", body: " ", send: false });
                 setDraft(data);
@@ -20,8 +19,12 @@ export default function CreateMail({ onSend }) {
                 setError(err.message);
             }
         };
+
+    // Create a new draft when the component mounts
+    useEffect(() => {
         createDraft();
     }, []);
+        
 
     // Save changes to the draft
     useEffect(() => {
@@ -43,9 +46,7 @@ export default function CreateMail({ onSend }) {
 
     // Send the mail
     const handleSend = async () => {
-        console.log(draft);
-        console.log(draft?.id);
-
+        // Check if draft is created
         if (!draft) {
             setError('Draft not created yet');
             return;
@@ -62,9 +63,24 @@ export default function CreateMail({ onSend }) {
             const sentMail = await updateEmail(draft.id, { to, subject, body, send: true });
             setSuccess('Mail sent successfully!');
             onSend && onSend(sentMail); // callback
+
+            //init all the fields
+            setTo('');
+            setSubject('');
+            setBody('');
+            await createDraft(); // Create a new draft for the next mail
         } catch (err) {
             setError(err.message);
         }
+    };
+
+    const handleNewMail = async () => {
+        setTo('');
+        setSubject('');
+        setBody('');
+        setError('');
+        setSuccess('');
+        await createDraft();
     };
 
 
@@ -100,13 +116,14 @@ export default function CreateMail({ onSend }) {
             {success && <div className="text-green-600 mb-2">{success}</div>}
 
             <div className="flex justify-end">
+
                 <button
                     onClick={handleSend}
-                    className="px-4 py-2 bg-blue-600 text-white rounded mr-2"
+                    className="px-4 py-2 bg-blue-600 text-white rounded"
                 >
                     Send
                 </button>
-        </div>
+            </div>
         </div>
     );
 }
