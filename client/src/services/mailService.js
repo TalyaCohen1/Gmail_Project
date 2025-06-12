@@ -25,7 +25,7 @@ function getAuthHeaders() {
 
     return {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `${userId}` }) // check if the word 'bearer' needed
+        ...(token && { Authorization: `${userId}` })
     };
 }
 

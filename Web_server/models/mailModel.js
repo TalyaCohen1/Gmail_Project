@@ -45,7 +45,8 @@ function search(email, query) {
 
 function createDraft({ from, to, subject, body}) {
     const timestamp = Date.now();
-    const draft = { id: nextId++, from, to, subject, body, timestamp };
+    const date = new Date().toISOString()
+    const draft = { id: nextId++, from, to, subject, body, date, timestamp };
     draftMails.push(draft);
     return draft;
 }
@@ -61,7 +62,8 @@ function createDraft({ from, to, subject, body}) {
  */
 function createMail({ from, to, subject, body, id = nextId++ }) {
     const timestamp = Date.now();
-    const mail = { id, from, to, subject, body, timestamp , deletedForSender: false, deletedForReceiver: false };
+    const date = new Date().toISOString()
+    const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labels: [] };
     mails.push(mail);
     return mail;
 }
