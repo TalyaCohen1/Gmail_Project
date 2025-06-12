@@ -56,7 +56,6 @@ export async function getEmailById(id) {
  * @param {Object} data – { to, subject, body, labels: [id,…] }
  */
 export async function createEmail(data) {
-    console.log('Creating email with data:', data);
     const res = await fetch('http://localhost:3000/api/mails', {
         method: 'POST',
         headers: {
@@ -77,9 +76,6 @@ export async function createEmail(data) {
  * @param {Object} patchData – {subject, body, to}
  */
 export async function updateEmail(id, patchData) {
-    console.log('Updating email:', id);
-    console.log('Patch data:', patchData);
-
     const res = await fetch(`http://localhost:3000/api/mails/${id}`, {
         method: 'PATCH',
         headers: {

@@ -14,8 +14,7 @@ export default function CreateMail({ onSend }) {
     useEffect(() => {
         const createDraft = async () => {
            try {
-                const data = await createEmail({ to: "", subject: "", body: "", send: false });
-                console.log("Created draft:", data); // ודאי ש־data.id קיים
+                const data = await createEmail({ to: " ", subject: " ", body: " ", send: false });
                 setDraft(data);
             } catch (err) {
                 setError(err.message);
@@ -30,8 +29,7 @@ export default function CreateMail({ onSend }) {
             return;
         }
         const timeout = setTimeout(() => {
-            console.log("Auto-saving draft:", draft.id)
-            updateEmail(draft.id, { to, subject, body })
+            updateEmail(draft.id, { to, subject, body, send :false })
                 .then(updated => setDraft(updated))
                 .catch(err => {
                 console.error("Failed to auto-save draft", err);
@@ -48,7 +46,6 @@ export default function CreateMail({ onSend }) {
         console.log(draft);
         console.log(draft?.id);
 
-         console.log("Sending..."); // ← האם זה מופיע בקונסול?
         if (!draft) {
             setError('Draft not created yet');
             return;
@@ -64,7 +61,7 @@ export default function CreateMail({ onSend }) {
         try {
             const sentMail = await updateEmail(draft.id, { to, subject, body, send: true });
             setSuccess('Mail sent successfully!');
-            onSend && onSend(sentMail); // callback לשימוש חיצוני
+            onSend && onSend(sentMail); // callback
         } catch (err) {
             setError(err.message);
         }
