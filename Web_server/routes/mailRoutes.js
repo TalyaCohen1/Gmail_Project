@@ -26,4 +26,14 @@ router.post('/:id/labels', authenticateUser, controller.addLabel);
 router.delete('/:id/labels/:labelId', authenticateUser, controller.removeLabel);
 router.get('/:id/labels', authenticateUser, controller.getLabels);
 
+// GET all drafts
+router.get('/drafts', authenticateToken, controller.getDrafts);
+
+// GET inbox mails
+router.get('/inbox', authenticateToken, controller.getInbox);
+
+// GET sent mails
+router.get('/sent', authenticateToken, controller.getSent);
+
+
 module.exports = router;

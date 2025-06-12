@@ -186,3 +186,30 @@ exports.getLabels = (req, res) => {
     }
     res.status(200).json(labels);
 };
+
+/**
+ * GET /api/mails/drafts
+ */
+exports.getDrafts = (req, res) => {
+    const email = userModel.findById(req.userId).emailAddress;
+    const drafts = mailModel.getDrafts(email);
+    res.status(200).json(drafts);
+};
+
+/**
+ * GET /api/mails/inbox
+ */
+exports.getInbox = (req, res) => {
+    const email = userModel.findById(req.userId).emailAddress;
+    const inbox = mailModel.getInbox(email);
+    res.status(200).json(inbox);
+};
+
+/**
+ * GET /api/mails/sent
+ */
+exports.getSent = (req, res) => {
+    const email = userModel.findById(req.userId).emailAddress;
+    const sent = mailModel.getSent(email);
+    res.status(200).json(sent);
+};

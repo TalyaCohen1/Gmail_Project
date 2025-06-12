@@ -13,7 +13,7 @@ function getAll(email) {
             (m.from === email && !m.deletedForSender)
         )
         .sort((a, b) => b.timestamp - a.timestamp)
-        .slice(0, 50);
+        .slice(0, 25);
 }
 
 /**
@@ -102,6 +102,10 @@ function deleteFromDrafts(id) {
     if (idx === -1) return false;
     draftMails.splice(idx, 1);
     return true;
+}
+
+function getDrafts(email) {
+    return draftMails.filter(d => d.from === email);
 }
 
 /**
