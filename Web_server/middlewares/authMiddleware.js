@@ -40,6 +40,7 @@ function authenticateToken(req, res, next) {
     try{
         const decoded = jwt.verify(token, SECRET_KEY); // Verify the token using the secret key
         req.user = decoded; // Attach the decoded user information to the request object
+        req.userId = decoded.id; // Store user ID for later use
         next(); // Call the next middleware or route handler
     } catch (err) {
         return res.status(401).json({ error: 'Invalid token' });
