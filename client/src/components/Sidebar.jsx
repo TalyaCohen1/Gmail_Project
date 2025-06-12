@@ -31,6 +31,20 @@ const SideBar = () => {
     { name: 'Promotions', icon: '/icons/promotions.svg', path: '/categories/promotions' },
   ];
 
+const SideBar = () => {
+    const [showCreateMail, setShowCreateMail] = React.useState(false);
+
+    const handleNewEmail = () => {
+        if (showCreateMail) {
+            // אם זה כבר פתוח, סגור ופתח מחדש (reset)
+            setShowCreateMail(false);
+            setTimeout(() => setShowCreateMail(true), 0);
+        } else {
+            // אם זה סגור, פתח
+            setShowCreateMail(true);
+        }
+    };
+
   return (
     <div className="sidebar">
       <button className="compose-button">
@@ -110,9 +124,28 @@ const SideBar = () => {
         />
         <span>{showMoreLabels ? 'Less' : 'More'}</span>
       </button>
-
       <LabelManager />
-    </div>
+
+      <div className="inbox-main p-4">
+                <div className="flex justify-between items-center mb-4">
+                    <button 
+                        onClick={handleNewEmail} 
+                        className="px-4 py-2 bg-blue-600 text-white rounded"
+                    >
+                        New Email
+                    </button>
+                </div>
+            </div>
+            
+            {showCreateMail && (
+                <CreateMail 
+                    onSend={() => {
+                        // אחרי שליחה, סגור את החלון
+                        setShowCreateMail(false);
+                    }} 
+                />
+            )}
+        </div>
   );
 };
 
