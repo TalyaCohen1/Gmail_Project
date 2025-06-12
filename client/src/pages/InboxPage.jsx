@@ -2,7 +2,9 @@ import React from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import EmailList from "../components/EmailList"
-//import "../styles/Inbox.css";
+import EmailListItem from "../components/EmailListItem";
+// import "../styles/InboxPage.css";
+
 
 const Inbox = () => {
   return (
