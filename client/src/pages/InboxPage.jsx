@@ -11,11 +11,7 @@ const Inbox = () => {
     <div className="inbox-container">
       <Header />
       <Sidebar />
-      <div className="inbox-main">
-        <h2>Inbox</h2>
-        {/* Later: Map through emails here */}
-        <EmailList />
-      </div>
+      <EmailList />
     </div>
   );
 };
