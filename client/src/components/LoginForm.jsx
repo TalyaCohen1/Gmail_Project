@@ -33,8 +33,12 @@ function LoginForm({onLoginSuccess }) {
             const data = await response.json();
             onLoginSuccess(data.token); // Assuming the response contains a token
             localStorage.setItem('fullName', data.fullName);
-            localStorage.setItem('profileImage', data.profileImage);
-        } catch (err) {
+                  if (data.profileImage) {
+                    localStorage.setItem('profileImage', data.profileImage);
+                  } else {
+                    localStorage.setItem('profileImage', '/uploads/default-profile.png');
+                  } 
+           } catch (err) {
             setError(err.message);
         }
     };

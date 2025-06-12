@@ -7,7 +7,10 @@ function Header() {
   const [searchResults, setSearchResults] = useState(null); // or []
 
   const fullName = localStorage.getItem('fullName');
-  const profileImage = localStorage.getItem('profileImage') || '/default-profile.png';
+  const rawImage = localStorage.getItem('profileImage');
+  const profileImage = (!rawImage || rawImage === 'undefined')
+    ? '/uploads/default-profile.png'
+    : rawImage;
 
 
   const handleSearch = async (e) => {
@@ -64,8 +67,8 @@ function Header() {
           width="40"
           height="40"
           style={{ borderRadius: '50%', marginRight: '10px' }}
-        />
-        <span className="profile-name">{fullName}</span> */}
+        /> */}
+        <span className="profile-name">{fullName}</span>
         <LogOut />
       </div>
 

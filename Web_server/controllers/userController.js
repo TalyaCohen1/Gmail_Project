@@ -9,8 +9,9 @@ const { isValidGmail, isValidDateFormat,isPastDate, isAgeOver13, isValidGender, 
  */
 const register = (req, res) => {
   const { fullName, emailAddress, birthDate, gender, password  } = req.body;
-  const profileImage = req.file ? `/upload/${req.file.filename}` : '/default-profile.png';
-
+  const profileImage = req.file
+    ? `/uploads/${req.file.filename}`
+    : '/uploads/default-profile.png';
 
   // Validate input
    if (!fullName || !password|| !emailAddress || !birthDate || !gender) {
@@ -61,7 +62,7 @@ const login = (req, res) => {
   if (!user || user.password !== password)
     return res.status(400).json({ error: 'wrong password' });
 
-  res.status(200).json({ token: user.id , fullName: user.fullName, profileImage: user.profileImage || null });
+  res.status(200).json({ token: user.id , fullName: user.fullName, profileImage: user.profileImage || '/uploads/default-profile.png' });
 };
 
 /**
