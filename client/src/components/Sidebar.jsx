@@ -1,11 +1,25 @@
 import React, { useState } from 'react';
 import LabelManager from './LabelManager';
+import CreateMail from "../components/CreateMail";
 import '../styles/SideBar.css';
 import { Link } from 'react-router-dom';
 
 const SideBar = () => {
   const [showMoreLabels, setShowMoreLabels] = useState(false);
   const [showCategoriesSubLabels, setShowCategoriesSubLabels] = useState(false);
+  const [showCreateMail, setShowCreateMail] = React.useState(false);
+
+  const handleNewEmail = () => {
+        if (showCreateMail) {
+          //reset
+            setShowCreateMail(false);
+            setTimeout(() => setShowCreateMail(true), 0);
+        } else {
+          //open
+            setShowCreateMail(true);
+        }
+    };
+
 
   const defaultLabels = [
     { name: 'Inbox', icon: '/icons/inbox.svg', path: '/inbox' },
@@ -31,32 +45,23 @@ const SideBar = () => {
     { name: 'Promotions', icon: '/icons/promotions.svg', path: '/categories/promotions' },
   ];
 
-const SideBar = () => {
-    const [showCreateMail, setShowCreateMail] = React.useState(false);
-
-    const handleNewEmail = () => {
-        if (showCreateMail) {
-            // אם זה כבר פתוח, סגור ופתח מחדש (reset)
-            setShowCreateMail(false);
-            setTimeout(() => setShowCreateMail(true), 0);
-        } else {
-            // אם זה סגור, פתח
-            setShowCreateMail(true);
-        }
-    };
-
   return (
     <div className="sidebar">
-      <button className="compose-button">
+      <button className="compose-button"  onClick={handleNewEmail}>
         <img
-          src="/icons/new_mail.svg"
+          src="/icons/all_mail.svg"
           alt="Compose"
           className="compose-icon"
           onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/20x20/cccccc/000000?text=P" }}
         />
         <span>Compose</span>
       </button>
-
+      {showCreateMail && (
+                      <CreateMail 
+                          onSend= {() => setShowCreateMail(false)}
+                          onClose= {() => setShowCreateMail(false)}
+                      />
+                  )}
       {/* Default Labels Section */}
       <div className="sidebar-section">
         {defaultLabels.map((item) => (
@@ -72,11 +77,11 @@ const SideBar = () => {
           {moreLabels.map((item) => (
             <React.Fragment key={item.name}>
               {item.type === 'category' ? (
-                // Removed 'category-toggle' class here
                 <button
                   onClick={() => setShowCategoriesSubLabels(!showCategoriesSubLabels)}
                   className={`sidebar-item ${showCategoriesSubLabels ? 'active' : ''} categories-button`}
                 >
+                  {/* Moved arrow icon to the beginning */}
                   <img
                     src={showCategoriesSubLabels ? '/icons/arrow_drop_down.svg' : '/icons/arrow_right.svg'}
                     alt={showCategoriesSubLabels ? 'Collapse' : 'Expand'}
@@ -85,18 +90,14 @@ const SideBar = () => {
                   />
                   <img src={item.icon} alt={item.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
                   <span>{item.name}</span>
-                  {/* Arrow icon for expand/collapse */}
-
                 </button>
               ) : (
-                // Render regular more labels
                 <Link to={item.path} key={item.name} className="sidebar-item">
                   <img src={item.icon} alt={item.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
                   <span>{item.name}</span>
                 </Link>
               )}
 
-              {/* Conditionally render sub-labels if Categories is expanded and visible */}
               {item.type === 'category' && showCategoriesSubLabels && (
                 <div className="category-sub-labels-container">
                   {categorySubLabels.map((subItem) => (
@@ -124,28 +125,9 @@ const SideBar = () => {
         />
         <span>{showMoreLabels ? 'Less' : 'More'}</span>
       </button>
-      <LabelManager />
 
-      <div className="inbox-main p-4">
-                <div className="flex justify-between items-center mb-4">
-                    <button 
-                        onClick={handleNewEmail} 
-                        className="px-4 py-2 bg-blue-600 text-white rounded"
-                    >
-                        New Email
-                    </button>
-                </div>
-            </div>
-            
-            {showCreateMail && (
-                <CreateMail 
-                    onSend={() => {
-                        // אחרי שליחה, סגור את החלון
-                        setShowCreateMail(false);
-                    }} 
-                />
-            )}
-        </div>
+      <LabelManager />
+    </div>
   );
 };
 
