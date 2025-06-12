@@ -63,7 +63,9 @@ function createDraft({ from, to, subject, body}) {
 function createMail({ from, to, subject, body, id = nextId++ }) {
     const timestamp = Date.now();
     const date = new Date().toISOString()
-    const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labels: [] };
+    const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labelsForSender: [],
+        labelsForReceiver: [] };
+    
     mails.push(mail);
     return mail;
 }
@@ -119,6 +121,52 @@ function deleteMail(email, id) {
     return true;
 }
 
+/**
+ * 
+ */
+function addLabel(email, id, labelId) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return false;
+    if (mail.from === email) {
+        if (!mail.labelsForSender.includes(labelId)) {
+            mail.labelsForSender.push(labelId);
+        }
+    } else if (mail.to === email) {
+        if (!mail.labelsForReceiver.includes(labelId)) {
+            mail.labelsForReceiver.push(labelId);
+        }
+        return true;
+    }
+    return false;
+}
+
+
+function removeLabel(email, id, labelId) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return false;
+    if (mail.from === email) {
+        mail.labelsForSender = mail.labelsForSender.filter(l => l !== labelId);
+    } else if (mail.to === email) {
+        mail.labelsForReceiver = mail.labelsForReceiver.filter(l => l !== labelId);
+    } else {
+        return false; // Not the owner of the mail
+    }
+    mail.labelsForSender = mail.labelsForSender.filter(l => l !== labelId);
+    mail.labelsForReceiver = mail.labelsForReceiver.filter(l => l !== labelId);
+    return true;
+}
+
+function getLabels(email, id) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return null;
+    if (mail.from === email) {
+        return mail.labelsForSender;
+    }
+    if (mail.to === email) {
+        return mail.labelsForReceiver;
+    }
+}
+
 module.exports = {
     getAll,
     getById,
@@ -126,5 +174,8 @@ module.exports = {
     search,
     createDraft,
     updateDraft,
-    deleteMail
+    deleteMail,
+    addLabel,
+    removeLabel,
+    getLabels
 };
