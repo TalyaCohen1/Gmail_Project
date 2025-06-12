@@ -128,3 +128,39 @@ export const getMailsByLabel = async (id) => {
 
     return handleResponse(response); // Use the new handler
 };
+
+export const addMailToLabel = async (labelId, mailId) => {
+    const token = localStorage.getItem('token');
+    if (!token) { throw new Error('No authentication token found'); }
+    const userId = getUserIdFromToken(token);
+    if (!userId) { throw new Error('Invalid token format'); }
+
+    const response = await fetch(`${BASE_URL}/${labelId}/mails`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${userId}`
+        },
+        body: JSON.stringify({ mailId }),
+    });
+
+    return handleResponse(response); // Use the new handler
+}
+
+export const removeMailFromLabel = async (labelId, mailId) => {
+    const token = localStorage.getItem('token');
+    if (!token) { throw new Error('No authentication token found'); }
+    const userId = getUserIdFromToken(token);
+    if (!userId) { throw new Error('Invalid token format'); }
+
+    const response = await fetch(`${BASE_URL}/${labelId}/mails`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${userId}`
+        },
+        body: JSON.stringify({ mailId }),
+    });
+
+    return handleResponse(response); // Use the new handler
+}
