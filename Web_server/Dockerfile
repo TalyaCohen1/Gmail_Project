@@ -10,6 +10,7 @@ RUN npm install
 
 # Copy the rest of the app
 COPY . .
+COPY uploads/ uploads/
 
 # # Expose port for API access
 # EXPOSE 3000

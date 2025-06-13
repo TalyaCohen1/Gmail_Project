@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/AuthForm.css';
 
 const RegistrationForm = () => {
@@ -214,7 +214,7 @@ const RegistrationForm = () => {
             
     </form>
     <div className="form-footer">
-                <a href="/login"> already have accunt? login</a>
+                <Link to="/login"> already have accunt? login</Link>
             </div>
         </div>
     

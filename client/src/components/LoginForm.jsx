@@ -1,5 +1,6 @@
 //src/components/LoginForm.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 
 function LoginForm({onLoginSuccess }) {
     const [emailAddress, setEmail] = React.useState('');
@@ -32,28 +33,57 @@ function LoginForm({onLoginSuccess }) {
             const data = await response.json();
             onLoginSuccess(data.token); // Assuming the response contains a token
             localStorage.setItem('fullName', data.fullName);
-            localStorage.setItem('profileImage', data.profileImage);
-        } catch (err) {
+                  if (data.profileImage) {
+                    localStorage.setItem('profileImage', data.profileImage);
+                  } else {
+                    localStorage.setItem('profileImage', '/uploads/default-profile.png');
+                  } 
+           } catch (err) {
             setError(err.message);
         }
     };
 
-    return(
-        <form onSubmit= {handleSubmit}>
-            <div>
-                <label>email</label>
-                <input type="email" value={emailAddress}  onChange={e => setEmail(e.target.value)} required/>
-            </div>
-
-             <div>
-        <label>password:</label>
-        <input type="password" value={password}  onChange={e => setPassword(e.target.value)} required />
+    return (
+    <form onSubmit={handleSubmit} className="auth-container">
+      <div className="google-logo">
+        <h1>Sign in to MyMail</h1>
       </div>
-        {error && <div style={{ color: 'red' }}>{error}</div>}
 
-        <button type="submit"> login</button>
-        </form> 
-    );
+      <p className="auth-subtitle">Use your MyMail account</p>
+
+      <div className="form-group">
+        <label htmlFor="email">Email address</label>
+        <input
+          id="email"
+          type="email"
+          value={emailAddress}
+          onChange={(e) => setEmail(e.target.value)}
+          className={error ? "error" : ""}
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className={error ? "error" : ""}
+          required
+        />
+      </div>
+
+      {error && <div className="general-error">{error}</div>}
+
+      <button type="submit" className="auth-button">Login</button>
+
+      <div className="form-footer">
+        <Link to="/register">Create account</Link>
+        </div>
+    </form>
+  );
 }
 
 export default LoginForm;
