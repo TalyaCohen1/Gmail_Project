@@ -1,18 +1,18 @@
+// src/components/Header.jsx
 import React, { useState } from 'react';
 import '../styles/Header.css';
 import LogOut from './LogOut';
 
-
-function Header() {
+// Receive toggleSidebar as a prop
+function Header({ toggleSidebar }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState(null); // or []
+  const [searchResults, setSearchResults] = useState(null);
 
   const fullName = localStorage.getItem('fullName');
   const rawImage = localStorage.getItem('profileImage');
   const profileImage = (!rawImage || rawImage === 'undefined')
     ? '/uploads/default-profile.png'
     : rawImage;
-
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -32,10 +32,8 @@ function Header() {
       }
 
       const data = await response.json();
-      const mail_ids = data.map(mail => mail.id); // Extract mail IDs
-      setSearchResults(data); // store results
-
-      // TODO: You can either display them here or lift state up via props
+      const mail_ids = data.map(mail => mail.id);
+      setSearchResults(data);
 
       console.log('Search results:', data);
     } catch (error) {
@@ -45,13 +43,13 @@ function Header() {
 
   return (
     <header className="gmail-header">
-      <button className="sidebar-toggle-button">
+      {/* New sidebar toggle button */}
+      <button onClick={toggleSidebar} className="sidebar-toggle-button">
         <img src="/icons/menu.svg" alt="Menu" className="menu-icon" /> {/* Make sure you have a menu.svg icon */}
       </button>
+
       <div className="gmail-logo-container">
-        {/* Changed to use the actual image file */}
-        <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-icon" /> {/* */}
-        {/*<h1>Gmail</h1> */}
+        <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-icon" />
       </div>
 
       <form onSubmit={handleSearch} className="header-search-form">
@@ -68,17 +66,9 @@ function Header() {
       </form>
 
       <div className="profile-section">
-        {/* <img
-          src={profileImage}
-          alt="Profile"
-          width="40"
-          height="40"
-          style={{ borderRadius: '50%', marginRight: '10px' }}
-        /> */}
         <span className="profile-name">{fullName}</span>
         <LogOut />
       </div>
-
 
       {searchResults && (
         <div className="search-results">
