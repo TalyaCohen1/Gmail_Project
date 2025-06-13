@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../styles/Header.css';
 import LogOut from './LogOut';
 
+
 function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null); // or []
@@ -31,6 +32,7 @@ function Header() {
       }
 
       const data = await response.json();
+      const mail_ids = data.map(mail => mail.id); // Extract mail IDs
       setSearchResults(data); // store results
 
       // TODO: You can either display them here or lift state up via props
@@ -43,6 +45,9 @@ function Header() {
 
   return (
     <header className="gmail-header">
+      <button className="sidebar-toggle-button">
+        <img src="/icons/menu.svg" alt="Menu" className="menu-icon" /> {/* Make sure you have a menu.svg icon */}
+      </button>
       <div className="gmail-logo-container">
         {/* Changed to use the actual image file */}
         <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-icon" /> {/* */}
@@ -50,6 +55,9 @@ function Header() {
       </div>
 
       <form onSubmit={handleSearch} className="header-search-form">
+        <button type="submit" className="header-search-button">
+          <img src="/icons/search.svg" alt="Search" className="search-icon" />
+        </button>
         <input
           type="text"
           placeholder="Search mails..."
@@ -57,7 +65,6 @@ function Header() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="header-search-input"
         />
-        <button type="submit" className="header-search-button">Search</button>
       </form>
 
       <div className="profile-section">
@@ -72,7 +79,7 @@ function Header() {
         <LogOut />
       </div>
 
-      
+
       {searchResults && (
         <div className="search-results">
           <h3>Results:</h3>

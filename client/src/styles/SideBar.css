@@ -140,3 +140,175 @@ button.sidebar-item {
     flex-direction: column;
     gap: 4px;
 }
+
+.sidebar {
+    width: 280px; /* Default open width */
+    background-color: #fff;
+    border-right: 1px solid #e0e0e0;
+    box-shadow: none;
+    padding: 24px 16px; /* Adjust padding for visual consistency when open */
+    min-height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: width 0.3s ease-in-out, padding 0.3s ease-in-out, align-items 0.3s ease-in-out; /* Smooth transitions */
+    flex-shrink: 0; /* Prevent sidebar from shrinking when content grows */
+}
+
+/* Styles for when the sidebar is closed */
+.sidebar--closed {
+    width: 70px; /* Width when closed, just enough for icons */
+    padding: 24px 8px; /* Reduced horizontal padding */
+    align-items: center; /* Center items horizontally when collapsed */
+    overflow-x: hidden; /* Hide horizontal overflow */
+}
+
+/* Hide text in sidebar items when closed */
+.sidebar--closed .sidebar-item span,
+.sidebar--closed h1, /* Hide the main sidebar title */
+.sidebar--closed .label-manager-header h3, /* Hide LabelManager header text */
+.sidebar--closed .label-manager button span /* Hide LabelManager button text (e.g., "New Label") */
+{
+    display: none;
+    /* You might need to adjust margin-left for icons if they had text-related margins */
+}
+
+/* Hide LabelManager component entirely when sidebar is closed */
+.sidebar--closed .label-manager {
+    display: none;
+}
+
+/* Adjust compose button for closed state */
+.compose-button {
+    /* Existing styles for open state */
+    background-color: #c2e7ff;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+    color: #202124;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 15px 28px 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease, width 0.3s ease-in-out, padding 0.3s ease-in-out, border-radius 0.3s ease-in-out, justify-content 0.3s ease-in-out;
+    width: auto;
+    justify-content: flex-start;
+    align-self: flex-start;
+    margin-left: 8px; /* Maintain small margin when open */
+}
+
+.compose-button--closed {
+    width: 50px; /* Make it square */
+    height: 50px; /* Make it square */
+    padding: 0; /* Remove padding */
+    border-radius: 50%; /* Make it round */
+    justify-content: center; /* Center the icon */
+    align-self: center; /* Center horizontally in the collapsed sidebar */
+    margin-left: 0; /* Remove left margin when closed */
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15); /* Keep shadow */
+}
+
+/* Ensure sidebar items adjust */
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    text-decoration: none;
+    color: #3c4043;
+    font-size: 14px;
+    transition: background-color 0.2s ease, color 0.2s ease, padding 0.3s ease-in-out;
+    width: 100%; /* Ensure they take full width when open */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.sidebar--closed .sidebar-item {
+    padding: 8px; /* Reduced padding for icons */
+    justify-content: center; /* Center the icon */
+    width: 50px; /* Fixed width for the clickable area */
+    height: 50px; /* Fixed height for the clickable area */
+    border-radius: 50%; /* Make it circular */
+}
+
+/* Hide the arrow icon for categories when sidebar is closed */
+.sidebar--closed .category-toggle-icon {
+    display: none;
+}
+
+/* Styles for individual sidebar items (Inbox, Starred, etc.) */
+.sidebar-item:hover {
+    background-color: #f0f0f0;
+}
+
+.sidebar-item.active {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+    font-weight: 500;
+}
+
+.sidebar-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+/* Ensure buttons with sidebar-item class match link styles */
+button.sidebar-item {
+    background: none;
+    border: none;
+    color: inherit;
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: left; /* Align text to left when open */
+}
+
+/* Adjust text alignment for buttons when closed */
+.sidebar--closed button.sidebar-item {
+    text-align: center; /* Center content when closed */
+}
+
+.more-button {
+    background: transparent;
+    border: none;
+}
+
+.category-toggle-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: auto;
+    transition: transform 0.2s ease;
+}
+
+.sidebar-item.active .category-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.category-sub-labels-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-item.sub-label-item {
+    padding-left: 48px;
+}
+
+/* Additional styling for the main content area if needed (in InboxPage.css) */
+.main-content-area {
+  display: flex;
+  height: calc(100vh - 64px); /* Full viewport height minus header height */
+}

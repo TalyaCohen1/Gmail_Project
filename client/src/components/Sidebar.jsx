@@ -49,7 +49,7 @@ const SideBar = () => {
     <div className="sidebar">
       <button className="compose-button"  onClick={handleNewEmail}>
         <img
-          src="/icons/all_mail.svg"
+          src="/icons/new_mail.svg"
           alt="Compose"
           className="compose-icon"
           onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/20x20/cccccc/000000?text=P" }}
