@@ -1,39 +1,52 @@
-/* Existing styles */
+/* src/styles/SideBar.css */
+
+/* Existing .sidebar styles */
 .sidebar {
-    width: 280px;
+    width: 280px; /* Default open width */
     background-color: #fff;
     border-right: 1px solid #e0e0e0;
     box-shadow: none;
-    padding: 24px 16px;
+    padding: 24px 16px; /* Adjust padding for visual consistency when open */
     min-height: 100vh;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    transition: width 0.3s ease-in-out, padding 0.3s ease-in-out, align-items 0.3s ease-in-out; /* Smooth transitions */
+    flex-shrink: 0; /* Prevent sidebar from shrinking when content grows */
 }
 
-.sidebar h1 {
-    font-size: 20px;
-    font-weight: 500;
-    color: #202124;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    line-height: 1.2;
-    margin-bottom: 20px;
+/* Styles for when the sidebar is closed */
+.sidebar--closed {
+    width: 70px; /* Width when closed, just enough for icons */
+    padding: 24px 8px; /* Reduced horizontal padding */
+    align-items: center; /* Center items horizontally when collapsed */
+    overflow-x: hidden; /* Hide horizontal overflow */
 }
 
-.sidebar h1::before {
-    content: '📧';
-    font-size: 24px;
+/* Hide text in sidebar items when closed */
+.sidebar--closed .sidebar-item span,
+.sidebar--closed h1, /* Hide the main sidebar title */
+.sidebar--closed .label-manager-header h3, /* Hide LabelManager header text */
+.sidebar--closed .label-manager button span /* Hide LabelManager button text (e.g., "New Label") */
+{
+    display: none;
+    /* You might need to adjust margin-left for icons if they had text-related margins */
 }
 
+/* Hide LabelManager component entirely when sidebar is closed */
+.sidebar--closed .label-manager {
+    display: none;
+}
+
+/* Adjust compose button for closed state */
 .compose-button {
+    /* Existing styles for open state */
     background-color: #c2e7ff;
     border: none;
     border-radius: 18px;
     box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-    color: #202124; /* Changed to dark grey for consistency with Gmail's compose button */
+    color: #202124;
     font-size: 16px;
     font-weight: 500;
     padding: 15px 28px 15px 20px;
@@ -41,27 +54,25 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    transition: box-shadow 0.2s ease, background-color 0.2s ease;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease, width 0.3s ease-in-out, padding 0.3s ease-in-out, border-radius 0.3s ease-in-out, justify-content 0.3s ease-in-out;
     width: auto;
     justify-content: flex-start;
     align-self: flex-start;
-    margin-left: 8px;
+    margin-left: 8px; /* Maintain small margin when open */
 }
 
-.compose-button:hover {
-    background-color: #aed1fd;
-    box-shadow: 0 1px 3px 0 rgba(60,64,67,0.4), 0 2px 6px 2px rgba(60,64,67,0.2);
+.compose-button--closed {
+    width: 50px; /* Make it square */
+    height: 50px; /* Make it square */
+    padding: 0; /* Remove padding */
+    border-radius: 50%; /* Make it round */
+    justify-content: center; /* Center the icon */
+    align-self: center; /* Center horizontally in the collapsed sidebar */
+    margin-left: 0; /* Remove left margin when closed */
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15); /* Keep shadow */
 }
 
-.compose-icon {
-    width: 24px; /* Larger icon size */
-    height: 24px;
-    object-fit: contain;
-    vertical-align: middle;
-    flex-shrink: 0;
-}
-
-/* Styles for individual sidebar items (Inbox, Starred, etc.) */
+/* Ensure sidebar items adjust */
 .sidebar-item {
     display: flex;
     align-items: center;
@@ -69,19 +80,31 @@
     padding: 8px 16px;
     border-radius: 9999px;
     text-decoration: none;
-    color: #202124;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    font-size: 16px;
-    width: 100%; /* Ensure items take full width for consistent padding */
-    box-sizing: border-box; /* Include padding in width calculation */
+    color: #3c4043;
+    font-size: 14px;
+    transition: background-color 0.2s ease, color 0.2s ease, padding 0.3s ease-in-out;
+    width: 100%; /* Ensure they take full width when open */
+    box-sizing: border-box; /* Include padding in width */
 }
 
-/* Hover effect for all sidebar items */
+.sidebar--closed .sidebar-item {
+    padding: 8px; /* Reduced padding for icons */
+    justify-content: center; /* Center the icon */
+    width: 50px; /* Fixed width for the clickable area */
+    height: 50px; /* Fixed height for the clickable area */
+    border-radius: 50%; /* Make it circular */
+}
+
+/* Hide the arrow icon for categories when sidebar is closed */
+.sidebar--closed .category-toggle-icon {
+    display: none;
+}
+
+/* Styles for individual sidebar items (Inbox, Starred, etc.) */
 .sidebar-item:hover {
     background-color: #f0f0f0;
 }
 
-/* Active (selected) item style */
 .sidebar-item.active {
     background-color: #e8f0fe;
     color: #1a73e8;
@@ -92,16 +115,17 @@
     width: 24px;
     height: 24px;
     object-fit: contain;
+    flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
 .sidebar-section {
     display: flex;
     flex-direction: column;
-    gap: 4px; /* Smaller gap between items within a section */
-    margin-bottom: 8px; /* Space between sections */
+    gap: 4px;
+    margin-bottom: 8px;
 }
 
-/* ADD THIS NEW RULE: Ensure buttons with sidebar-item class match link styles */
+/* Ensure buttons with sidebar-item class match link styles */
 button.sidebar-item {
     background: none;
     border: none;
@@ -109,34 +133,23 @@ button.sidebar-item {
     padding: 8px 16px;
     font-size: 16px;
     cursor: pointer;
+    text-align: left; /* Align text to left when open */
 }
 
-/* Style for the "More" button */
-.more-button {
-    background: transparent;
-    border: none;
-    /* Removed specific padding/font size for this button to make it a general sidebar-item */
-    /* It now inherits .sidebar-item styles */
-}
-
-/* Styles for the Categories toggle button */
-/* Removed .sidebar-item.category-toggle as it's no longer needed due to flex positioning */
-
-/* Styles for the arrow icon inside the Categories toggle */
-.category-toggle-icon {
-    width: 20px;
-    height: 20px;
-    transition: transform 0.2s ease;
-}
-
-/* Styles for the sub-labels under Categories */
-.sidebar-item.sub-label-item {
-    padding-left: 48px; /* Increased padding-left for indentation (e.g., 24px default + 24px more = 48px) */
-    padding-right: 16px;
+/* Adjust text alignment for buttons when closed */
+.sidebar--closed button.sidebar-item {
+    text-align: center; /* Center content when closed */
 }
 
 .category-sub-labels-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  /* This container helps group the sub-labels */
+}
+
+/* This rule targets the sub-label items specifically.
+  The :not(.sidebar--closed) ensures the indent only applies when the sidebar is open.
+*/
+.sidebar:not(.sidebar--closed) .sub-label-item {
+  /* Default sidebar-item padding is 8px 16px.
+     Increasing the left padding here creates the indent. */
+  padding-left: 40px; 
 }
