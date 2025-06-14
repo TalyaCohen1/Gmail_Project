@@ -94,13 +94,19 @@ const RegistrationForm = () => {
             body: formDataToSend
         });
 
-        console.log('Response status:', response.status);
+        const data = await response.json();
 
         if (!response.ok) {
-            const errorData = await response.json();
-            setErrors({ general: errorData.error || 'Registration failed' });
+            setErrors({ general: data.error || 'Registration failed' });
         } else {
             setSuccessMessage('Registration successful! You can now log in.');
+
+            // Store user data in localStorage
+            localStorage.setItem('fullName', data.fullName);
+            localStorage.setItem('profileImage', data.profileImage);
+            console.log("1:", localStorage.getItem('profileImage')); 
+
+            localStorage.setItem('token', data.token || ''); // Assuming the response contains a token
             setFormData({
                 fullName: '',
                 emailAddress: '',

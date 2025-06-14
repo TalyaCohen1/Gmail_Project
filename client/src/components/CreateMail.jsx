@@ -11,6 +11,20 @@ export default function CreateMail({ onSend, onClose }) {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+    const [isMinimized, setIsMinimized] = useState(false);
+    const [isMaximized, setIsMaximized] = useState(false);
+
+    // Function to toggle the minimized state
+    const handleMinimize = () => {
+        setIsMinimized(!isMinimized);
+        if (!isMinimized) setIsMaximized(false);
+    };
+
+    // Function to toggle the maximized state
+    const handleMaximize = () => {
+        setIsMaximized(!isMaximized);
+        if (!isMaximized) setIsMinimized(false);
+    };
 
     // Initialize a new draft
     const createDraft = async () => {
@@ -72,6 +86,7 @@ export default function CreateMail({ onSend, onClose }) {
             setSubject('');
             setBody('');
             await createDraft(); // Create a new draft for the next mail
+            onClose && onClose(); // Close the compose popup
         } catch (err) {
             setError(err.message);
         }
@@ -88,12 +103,12 @@ export default function CreateMail({ onSend, onClose }) {
 
 
     return (
-        <div className="compose-popup">
+        <div className={`compose-popup ${isMinimized ? 'minimized' : ''} ${isMaximized ? 'maximized' : ''}`}>
             <div className="header">
                 <h2>New Message</h2>
                 <div className="window-controls">
-                    <button onClick={handleNewMail}>_</button>
-                    <button disabled>□</button>
+                    <button onClick={handleMinimize}>_</button>
+                    <button onClick={handleMaximize}>□</button>
                     <button onClick={onClose}>✕</button>
                 </div>
             </div>

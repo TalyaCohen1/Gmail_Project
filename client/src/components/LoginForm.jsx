@@ -6,6 +6,7 @@ function LoginForm({onLoginSuccess }) {
     const [emailAddress, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [error, setError] = React.useState('');
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,19 +26,17 @@ function LoginForm({onLoginSuccess }) {
                 body: JSON.stringify({ emailAddress, password })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Login failed');
-            }
-
             const data = await response.json();
-            onLoginSuccess(data.token); // Assuming the response contains a token
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
+            }
+            localStorage.setItem('token', data.token);
             localStorage.setItem('fullName', data.fullName);
-                  if (data.profileImage) {
-                    localStorage.setItem('profileImage', data.profileImage);
-                  } else {
-                    localStorage.setItem('profileImage', '/uploads/default-profile.png');
-                  } 
+            localStorage.setItem('profileImage', data.profileImage || '/uploads/default-profile.png');
+
+            onLoginSuccess(data.token); // Assuming the response contains a token
+            
            } catch (err) {
             setError(err.message);
         }
