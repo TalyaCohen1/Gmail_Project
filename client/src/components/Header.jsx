@@ -1,21 +1,28 @@
-// src/components/Header.jsx
-import React, { useState, useContext } from 'react';
-import { ThemeContext } from '../context/ThemeContext'; // Import ThemeContext
-import '../styles/Header.css';
-import LogOut from './LogOut';
 
-// Receive toggleSidebar as a prop
-function Header({ toggleSidebar }) {
+// src/components/Header.jsx
+import { ThemeContext } from '../context/ThemeContext'; // Import ThemeContext
+import React, { useState, useEffect, useRef } from 'react';
+import '../styles/Header.css';
+import { useNavigate } from 'react-router-dom';
+
+function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [isSettingsMenuOpen, setSettingsMenuOpen] = useState(false); // State for settings menu
   const { theme, toggleTheme } = useContext(ThemeContext); // Use the theme context
+  const [showMenu, setShowMenu] = useState(false);
+
+  const menuRef = useRef(null);
+  const navigate = useNavigate();
 
   const fullName = localStorage.getItem('fullName');
-  const rawImage = localStorage.getItem('profileImage');
-  const profileImage = (!rawImage || rawImage === 'undefined')
-    ? '/uploads/default-profile.png'
-    : rawImage;
+  const profileImage = localStorage.getItem('profileImage')
+  ? `http://localhost:3000${localStorage.getItem('profileImage')}`
+  : 'http://localhost:3000/uploads/default-profile.png';
+
+  console.log("2: Profile Image:", profileImage);
+
+
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -35,11 +42,31 @@ function Header({ toggleSidebar }) {
       }
 
       const data = await response.json();
-      setSearchResults(data);
+      setSearchResults(data); // store results
+
+      // TODO: You can either display them here or lift state up via props
+
+      console.log('Search results:', data);
     } catch (error) {
       console.error('Search error:', error);
     }
   };
+   const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
+  const handleClickOutside = (e) => {
+    if (menuRef.current && !menuRef.current.contains(e.target)) {
+      setShowMenu(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
 
   return (
     <header className="gmail-header">
@@ -55,9 +82,6 @@ function Header({ toggleSidebar }) {
       </div>
 
       <form onSubmit={handleSearch} className="header-search-form">
-        <button type="submit" className="header-search-button">
-          <img src="/icons/search.svg" alt="Search" className="search-icon" />
-        </button>
         <input
           type="text"
           placeholder="Search mails..."
@@ -65,6 +89,7 @@ function Header({ toggleSidebar }) {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="header-search-input"
         />
+        <button type="submit" className="header-search-button">Search</button>
       </form>
 
       <div className="header-right-section">
@@ -81,12 +106,23 @@ function Header({ toggleSidebar }) {
             </div>
           )}
         </div>
-        <div className="profile-section">
-          <span className="profile-name">{fullName}</span>
-          <LogOut />
-        </div>
+         <div className="profile-section" ref={menuRef}>
+        <img
+          src={profileImage}
+          alt="Profile"
+          width="40"
+          height="40"
+          style={{ borderRadius: '50%', cursor: 'pointer' }}
+          onClick={() => setShowMenu(prev => !prev)}
+        />
+         {showMenu && (
+          <div className="dropdown-menu">
+            <div className="dropdown-item" onClick={() => navigate('/profile')}>Edit Profile</div>
+            <div className="dropdown-item" onClick={handleLogout}>Logout</div>
+          </div>
+        )}
       </div>
-
+      </div>
 
       {searchResults && (
         <div className="search-results">
