@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Header.css';
-import LogOut from './LogOut';
+import { useNavigate } from 'react-router-dom';
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null); // or []
+  const [showMenu, setShowMenu] = useState(false);
+
+  const menuRef = useRef(null);
+  const navigate = useNavigate();
 
   const fullName = localStorage.getItem('fullName');
   const profileImage = localStorage.getItem('profileImage')
@@ -42,6 +46,22 @@ function Header() {
       console.error('Search error:', error);
     }
   };
+   const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
+  const handleClickOutside = (e) => {
+    if (menuRef.current && !menuRef.current.contains(e.target)) {
+      setShowMenu(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
 
   return (
     <header className="gmail-header">
@@ -62,16 +82,21 @@ function Header() {
         <button type="submit" className="header-search-button">Search</button>
       </form>
 
-      <div className="profile-section">
+      <div className="profile-section" ref={menuRef}>
         <img
           src={profileImage}
           alt="Profile"
           width="40"
           height="40"
-          style={{ borderRadius: '50%', marginRight: '10px' }}
+          style={{ borderRadius: '50%', cursor: 'pointer' }}
+          onClick={() => setShowMenu(prev => !prev)}
         />
-        <span className="profile-name">{fullName}</span>
-        <LogOut />
+         {showMenu && (
+          <div className="dropdown-menu">
+            <div className="dropdown-item" onClick={() => navigate('/profile')}>Edit Profile</div>
+            <div className="dropdown-item" onClick={handleLogout}>Logout</div>
+          </div>
+        )}
       </div>
 
       
