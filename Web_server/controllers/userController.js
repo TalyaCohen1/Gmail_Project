@@ -45,7 +45,9 @@ const register = (req, res) => {
   const newUser = userModel.createUser(fullName, id, emailAddress, birthDate,gender, password , profileImage);
 
   //response with the new user id 
-  res.status(201).location(`/api/users/${id}`).end();
+    res.status(201)
+      .location(`/api/users/${id}`)
+      .json({ id, fullName, profileImage });
 };
 
 /**
