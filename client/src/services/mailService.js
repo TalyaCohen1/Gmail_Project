@@ -181,3 +181,48 @@ export async function removeLabelFromEmail(id, labelId) {
     }
     return res.json();
 }
+
+/**
+ * Get all drafts for the authenticated user
+ * @return {Promise<Array>} Array of draft emails
+ */
+export async function getDraftEmails() {
+    const res = await fetch('http://localhost:3000/api/mails/drafts', {
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to fetch draft emails');
+    }
+    return res.json();
+}
+
+/**
+ * Get all emails in the inbox for the authenticated user
+ * @return {Promise<Array>} Array of inbox emails
+ */
+export async function getInboxEmails() {
+    const res = await fetch('http://localhost:3000/api/mails/inbox', {
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to fetch inbox emails');
+    }
+    return res.json();
+}
+
+/**
+ * Get all sent emails for the authenticated user
+ * @return {Promise<Array>} Array of sent emails
+ */
+export async function getSentEmails() {
+    const res = await fetch('http://localhost:3000/api/mails/sent', {
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to fetch sent emails');
+    }
+    return res.json();
+}
