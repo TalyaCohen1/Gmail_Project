@@ -1,9 +1,23 @@
+/* InboxPage.css */
+
 .inbox-page {
   display: flex;
-  flex-direction: column;
-  height: 100%; /* יתפוס את הגובה המלא של ההורה */
+  flex-direction: column; /* Stacks header, then the main content area */
+  height: 100vh; /* Takes full viewport height */
   background-color: #ffffff;
 }
+
+.main-content-area {
+  display: flex; /* This is the key: sidebar and email list side-by-side */
+  flex-grow: 1; /* Allows this area to take up remaining vertical space */
+}
+
+.email-list-container {
+  flex-grow: 1; /* Allows email list to take up all available horizontal space */
+  overflow-y: auto; /* Adds scroll to email list if content overflows */
+  padding: 0px 20px; /* Example padding */
+}
+
 .loading,
 .error {
   padding: 16px;

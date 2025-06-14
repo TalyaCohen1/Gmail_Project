@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { createEmail, updateEmail } from "../services/mailService";
+import "../styles/Mail.css";
 
-export default function CreateMail({ onSend }) {
+export default function CreateMail({ onSend, onClose }) {
 
     const [draft, setDraft] = useState(null);
     const [to, setTo] = useState('');
@@ -9,6 +10,7 @@ export default function CreateMail({ onSend }) {
     const [body, setBody] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
 
     // Initialize a new draft
     const createDraft = async () => {
@@ -31,6 +33,7 @@ export default function CreateMail({ onSend }) {
         if (!draft || !draft.id) {
             return;
         }
+        setIsSaving(true);
         const timeout = setTimeout(() => {
             updateEmail(draft.id, { to, subject, body, send :false })
                 .then(updated => setDraft(updated))
@@ -85,12 +88,18 @@ export default function CreateMail({ onSend }) {
 
 
     return (
-        <div className="p-4 rounded shadow-md bg-white w-full max-w-md mx-auto">
-            <h2 className="text-xl font-bold mb-4"> New Mail</h2>
-
+        <div className="compose-popup">
+            <div className="header">
+                <h2>New Message</h2>
+                <div className="window-controls">
+                    <button onClick={handleNewMail}>_</button>
+                    <button disabled>□</button>
+                    <button onClick={onClose}>✕</button>
+                </div>
+            </div>
             <input
                 type="email"
-                placeholder="to:"
+                placeholder="To:"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
                 className="w-full border p-2 mb-2 rounded"
@@ -99,31 +108,28 @@ export default function CreateMail({ onSend }) {
 
             <input
                 type="text"
-                placeholder="subject:"
+                placeholder="Subject:"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 className="w-full border p-2 mb-2 rounded"
             />
 
             <textarea
-                placeholder=" body:"
+                placeholder="Message body:"
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 className="w-full border p-2 mb-2 rounded h-32"
             />
 
-            {error && <div className="text-red-600 mb-2">{error}</div>}
-            {success && <div className="text-green-600 mb-2">{success}</div>}
+            {error && <div style={{ color: 'red', marginBottom: '12px' }}>{error}</div>}
+            {success && <div style={{ color: 'green', marginBottom: '12px' }}>{success}</div>}
 
-            <div className="flex justify-end">
-
-                <button
-                    onClick={handleSend}
-                    className="px-4 py-2 bg-blue-600 text-white rounded"
-                >
-                    Send
-                </button>
+            <div className="actions">
+                <button onClick={handleSend}>Send</button>
             </div>
+
+            {isSaving && <div style={{ color: '#888', fontSize: '12px', marginTop: '8px' }}>Saving...</div>}
+            {!isSaving && draft && <div style={{ color: 'green', fontSize: '12px', marginTop: '8px' }}>Saved</div>}
         </div>
     );
 }

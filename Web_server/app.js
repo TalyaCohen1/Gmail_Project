@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-app.use(express.static('upload')); // Serve static files from the 'uploads' directory
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cors());
 
 // Middleware for decoding JSON in requests

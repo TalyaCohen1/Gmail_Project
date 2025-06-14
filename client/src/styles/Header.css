@@ -1,3 +1,5 @@
+/* src/styles/Header.css */
+
 .gmail-header {
   display: flex;
   align-items: center;
@@ -6,12 +8,35 @@
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Subtle shadow */
-  /* Changed from space-between to center to help with search bar positioning */
-  justify-content: center;
+  justify-content: space-between; /* This ensures elements are spread out */
   position: sticky;
   top: 0;
   z-index: 100;
-  /* Removed gap from here as margin-right on logo-wrapper will handle spacing */
+}
+
+/* New style for the sidebar toggle button */
+.sidebar-toggle-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%; /* Make it round */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px; /* Space between toggle button and logo/gmail text */
+  transition: background-color 0.2s ease;
+  flex-shrink: 0; /* Prevent it from shrinking */
+}
+
+.sidebar-toggle-button:hover {
+  background-color: #f0f0f0;
+}
+
+.menu-icon {
+  width: 24px; /* Standard icon size */
+  height: 24px;
+  /* If your menu icon is not already dark, you might need to apply a filter here */
 }
 
 /* New style for the clickable logo wrapper */
@@ -19,8 +44,8 @@
     cursor: pointer; /* Indicate it's clickable */
     display: flex; /* Ensure it stays a flex container */
     align-items: center; /* Align items vertically */
-    /* Add space between logo and search bar */
-    margin-right: 40px; /* Adjust this value for desired spacing */
+    /* Adjust space between logo and search bar */
+    margin-right: 16px; /* Reduced from 40px to 16px */
 }
 
 .gmail-logo-container {
@@ -32,13 +57,7 @@
 .gmail-icon {
   width: 130px; /* Logo width */
   height: 55px; /* Logo height, same as search bar input */
-}
-
-.gmail-header h1 {
-  font-size: 22px;
-  font-weight: 500;
-  color: #3c4043; /* Darker text for Gmail title */
-  margin: 0; /* Remove default margin */
+  object-fit: contain;
 }
 
 .header-search-form {
@@ -50,7 +69,7 @@
   padding: 8px;
   margin: 0 auto; /* Keep auto margins for initial centering */
   /* Shift left from its centered position */
-  transform: translateX(-50px); /* Adjust -50px for desired left shift */
+  transform: translateX(-50px); /* Keep this for fine-tuning position if needed */
 }
 
 .header-search-input {
@@ -63,18 +82,41 @@
 }
 
 .header-search-button {
-  background-color: #1a73e8;
-  color: white;
-  border: none;
-  border-radius: 20px; /* Make button more round */
-  padding: 8px 15px;
+  background: none; /* Removed blue background */
+  border: none; /* Removed border */
+  color: inherit; /* Inherit color from parent */
+  padding: 0; /* Remove padding */
   cursor: pointer;
-  font-size: 14px;
   transition: background-color 0.2s ease;
+  border-radius: 50%; /* Make it round for hover effect */
+  width: 36px; /* Set a fixed width for the button */
+  height: 36px; /* Set a fixed height for the button */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-search-button:hover {
-  background-color: #155ab6;
+  background-color: #e0e0e0; /* Subtle hover effect */
+}
+
+.search-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* Profile section styles */
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* margin-left: auto; No longer needed with space-between */
+}
+
+.profile-name {
+  font-size: 14px;
+  color: #5f6368; /* Gmail-like grey for text */
 }
 
 .search-results {
@@ -85,17 +127,17 @@
   background: #fff;
   border: 1px solid #dadce0;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  padding: 15px;
-  max-height: 300px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  padding: 16px;
+  z-index: 90;
+  max-height: 400px;
   overflow-y: auto;
-  z-index: 100;
 }
 
 .search-results h3 {
-  margin-top: 0;
   font-size: 16px;
   color: #202124;
+  margin-bottom: 10px;
 }
 
 .search-results ul {

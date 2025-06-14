@@ -2,7 +2,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'upload/'); // Specify the directory to save uploaded files
+    cb(null, 'uploads/'); // Specify the directory to save uploaded files
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -11,4 +11,4 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage });
-module.exports = upload;
+module.exports = upload;

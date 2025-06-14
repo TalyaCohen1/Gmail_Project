@@ -1,134 +1,125 @@
 // src/components/LabelManager.jsx
 
 import React, { useState, useEffect, useRef } from 'react';
-import '../styles/LabelManager.css'; // design file
-import { useLabels } from '../context/LabelContext'; // Import useLabels hook
-
-// Reusable Modal Component (remains the same)
-const LabelModal = ({ show, onClose, onSubmit, initialValue = '', title }) => {
-    const [value, setValue] = useState(initialValue);
-
-    useEffect(() => {
-        setValue(initialValue);
-    }, [initialValue]);
-
-    if (!show) {
-        return null;
-    }
-
-    const handleSubmit = () => {
-        onSubmit(value);
-        setValue(''); // Clear input after submission
-    };
-
-    return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <h3>{title}</h3>
-                <input
-                    type="text"
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    placeholder="Enter label name"
-                />
-                <div className="modal-actions">
-                    <button onClick={handleSubmit}>Save</button>
-                    <button onClick={onClose}>Cancel</button>
-                </div>
-            </div>
-        </div>
-    );
-};
+import LabelModal from './LabelModal';
+import '../styles/LabelManager.css';
+import { useLabels } from '../context/LabelContext';
 
 const LabelManager = () => {
-    const { labels, loading, error, addLabel, editLabel, deleteLabel, fetchMailsForLabel } = useLabels(); // Use the hook to get state and actions
-
+    const { labels, loading, error, addLabel, editLabel, deleteLabel, fetchMailsForLabel } = useLabels();
     const [showAddLabelModal, setShowAddLabelModal] = useState(false);
     const [showEditLabelModal, setShowEditLabelModal] = useState(false);
-    const [editingLabel, setEditingLabel] = useState(null); // Stores the label being edited
-    const [activeLabelMenuId, setActiveLabelMenuId] = useState(null); // State to control which label's menu is open
-
-    // Ref to detect clicks outside the menu
+    const [editingLabel, setEditingLabel] = useState(null);
+    const [activeLabelMenuId, setActiveLabelMenuId] = useState(null);
     const menuRef = useRef(null);
 
-    // Close menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
+            if (menuRef.current && !menuRef.current.contains(event.target) && !event.target.closest('.three-dots-button')) {
                 setActiveLabelMenuId(null);
             }
         };
-
-        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [menuRef]);
+    }, [activeLabelMenuId]);
+
 
     const handleAddLabel = async (name) => {
-        if (name.trim() === '') return;
-        const success = await addLabel(name);
-        if (success) {
+        try {
+            await addLabel(name);
             setShowAddLabelModal(false);
+        } catch (err) {
+            console.error("Error adding label:", err);
         }
-        // Error handling is managed by the context
+    };
+
+    const handleEditLabel = async (id, newName) => {
+        try {
+            await editLabel(id, newName);
+            setShowEditLabelModal(false);
+            setEditingLabel(null);
+        } catch (err) {
+            console.error("Error editing label:", err);
+        }
     };
 
     const handleDeleteLabel = async (id) => {
-        await deleteLabel(id);
-        setActiveLabelMenuId(null); // Close menu after action
+        try {
+            await deleteLabel(id);
+            setActiveLabelMenuId(null);
+        } catch (err) {
+            console.error("Error deleting label:", err);
+        }
     };
 
     const startEditing = (label) => {
         setEditingLabel(label);
         setShowEditLabelModal(true);
-        setActiveLabelMenuId(null); // Close menu after action
+        setActiveLabelMenuId(null);
     };
 
-    const handleSaveEdit = async (id, newName) => {
-        const success = await editLabel(id, newName);
-        if (success) {
-            setShowEditLabelModal(false);
-            setEditingLabel(null);
+    const toggleMenu = (labelId) => {
+        setActiveLabelMenuId(activeLabelMenuId === labelId ? null : labelId);
+    };
+
+    const handleShowMailsForLabel = async (labelId) => {
+        try {
+            const mails = await fetchMailsForLabel(labelId);
+            console.log(`Mails for label ${labelId}:`, mails);
+            // Implement UI update here to show mails for this label
+        } catch (err) {
+            console.error("Error fetching mails for label:", err);
         }
-        // Error handling is managed by the context
     };
 
-    const showMailsByLabel = async (id) => {
-        const mails = await fetchMailsForLabel(id);
-        // Here you can handle the mails as needed, e.g., display them in a modal or another component
-        // console.log('Mails for label:', mails);
-    };
 
-    const toggleMenu = (id) => {
-        setActiveLabelMenuId(activeLabelMenuId === id ? null : id);
-    };
+    if (loading) return <div>Loading labels...</div>;
+    if (error) return <div>Error: {error.message}</div>;
 
     return (
         <div className="label-manager">
-            <div className="label-header">
-                <h2>Labels</h2>
-                <button className="add-label-button" onClick={() => setShowAddLabelModal(true)} title="Add label">+</button>
+            <div className="label-manager-header">
+                <h3>
+                    {/* **UPDATED: Icon for Labels header now uses labels.svg** */}
+                    Labels
+                </h3>
+                <button
+                    className="add-label-button"
+                    onClick={() => setShowAddLabelModal(true)}
+                >
+                    <img
+                        src="/icons/plus.svg"
+                        alt="Add Label"
+                        className="button-icon"
+                        onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/20x20/cccccc/000000?text=+" }}
+                    />
+                </button>
             </div>
-
-            {error && (
-                <div className="error-message" style={{color: 'red', padding: '10px'}}>
-                    {error}
-                </div>
-            )}
-
-            {loading ? (
-                <div>Loading labels...</div>
+            {labels.length === 0 ? (
+                <p style={{ padding: '0 16px' }}>No custom labels yet.</p>
             ) : (
                 <ul className="label-list">
                     {labels.map((label) => (
                         <li key={label.id}>
-                            <span className="label-name-clickable" onClick={() => showMailsByLabel(label.id)}>
+                            <img
+                                src="/icons/labels.svg"
+                                alt="Custom Label Icon"
+                                className="button-icon"
+                                onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/20x20/cccccc/000000?text=L" }}
+                            />
+                            <span onClick={() => handleShowMailsForLabel(label.id)} className="label-name-clickable">
                                 {label.name}
                             </span>
                             <div className="label-actions-container">
                                 <button className="three-dots-button" onClick={() => toggleMenu(label.id)}>
-                                    &#x22EF; {/* Unicode for horizontal ellipsis */}
+                                    <img
+                                        src="/icons/3_dots.svg"
+                                        alt="Actions"
+                                        className="button-icon"
+                                        onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/20x20/cccccc/000000?text=..." }}
+                                    />
                                 </button>
                                 {activeLabelMenuId === label.id && (
                                     <div className="label-action-menu" ref={menuRef}>
@@ -153,7 +144,7 @@ const LabelManager = () => {
                 <LabelModal
                     show={showEditLabelModal}
                     onClose={() => setShowEditLabelModal(false)}
-                    onSubmit={(newName) => handleSaveEdit(editingLabel.id, newName)}
+                    onSubmit={(newName) => handleEditLabel(editingLabel.id, newName)}
                     initialValue={editingLabel.name}
                     title="Edit Label"
                 />

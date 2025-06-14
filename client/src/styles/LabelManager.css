@@ -1,330 +1,127 @@
+/* In src/styles/LabelManager.css */
+
+/* --- Overall Label Manager Container (now a section within Sidebar) --- */
 .label-manager {
-    background: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border: 1px solid #dadce0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.label-manager h2 {
-    font-size: 18px;
-    font-weight: 500;
-    color: #202124;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.label-header h2::before,
-.label-manager h2::before {
-  content: '🏷️';
-  font-size: 18px;
-}
-
-.label-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Reuse the same styles for label-header h2 as label-manager h2 */
-.label-header h2 {
-    font-size: 18px;
-    font-weight: 500;
-    color: #202124;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-
-/* Shared styles for get-label-by-id and new-label containers */
-.get-label-by-id,
-.new-label {
-    background: #f1f3f4;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #dadce0;
-    display: flex;
-    flex-wrap: nowrap; /* prevent wrapping so it stays in one line */
-    gap: 8px;
-    align-items: center;
-    width: 100%;
-    box-sizing: border-box;
-    flex-direction: row; /* force horizontal layout */
-    margin-bottom: 24px; /* keep margin from new-label */
-}
-
-/* Inputs inside get-label-by-id and new-label */
-.get-label-by-id input,
-.new-label input {
-    flex-grow: 1;      /* fill available space */
-    min-width: 0;      /* allow shrinking to prevent overflow */
-    padding: 10px 12px;
-    border: 2px solid #fed7d7;
-    border-radius: 8px;
-    outline: none;
-    transition: all 0.3s ease;
-    background: #fefcfc;
-    box-sizing: border-box;
-    max-width: 100%;
-    font-size: 14px;
-}
-
-.get-label-by-id input:focus,
-.new-label input:focus {
-    border-color: #1a73e8;
-    box-shadow: 0 0 3px #1a73e8;
-}
-
-/* Shared styles for buttons inside get-label-by-id and new-label */
-.get-label-by-id button,
-.new-label button,
-.add-label-button {
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    align-self: flex-start;
-    box-shadow: none;
-}
-
-/* Button font-size and padding overrides */
-.get-label-by-id button,
-.new-label button {
-    padding: 10px 16px;
-    font-size: 14px;
-}
-
-.add-label-button {
-    padding: 6px 14px;
-    font-size: 18px;
-}
-
-.get-label-by-id button:hover,
-.new-label button:hover,
-.add-label-button:hover {
-    background-color: #155ab6;
-}
-
-/* Label list styles */
-.label-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.label-list li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: #f1f3f4;
-    border-radius: 8px;
-    border: 1px solid #dadce0;
-    transition: background-color 0.2s ease;
-    font-size: 14px;
-}
-
-.label-list li:hover {
-    background-color: #e8f0fe;
-}
-
-.label-list span {
-    font-weight: 500;
-    color: #202124;
-}
-
-.label-list button {
+    /* Removed box-like styling to blend into sidebar */
     background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
     border: none;
-    cursor: pointer;
-    padding: 4px 8px;
-    font-size: 12px;
-    color: #1a73e8;
-    font-weight: 600;
-    transition: color 0.2s ease;
+    
+    display: flex;
+    flex-direction: column;
+    /* Gap between header and list, etc. within LabelManager */
+    gap: 16px; 
 }
 
-.label-list button:hover {
-    color: #155ab6;
+/* --- Labels Header --- */
+.label-manager-header {
+    display: flex;
+    justify-content: space-between; /* Pushes 'Labels' to left, '+' to right */
+    align-items: center;
+    /* Add horizontal padding to align with sidebar content */
+    padding: 0 16px; 
+    margin-bottom: 8px; /* Space below the header before the list */
 }
 
-/* Modal Overlay */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+.label-manager-header h3 { /* Using h3 as in JSX */
+    font-size: 16px; /* Smaller font size for sub-sections */
+    font-weight: 500;
+    color: #202124; /* Darker color for section headers, matching default labels */
+    margin: 0; /* Remove default margin */
+    display: flex; /* For possible icon next to 'Labels' */
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+}
+
+/* --- Add Label Button (the plus icon) --- */
+.add-label-button {
+    background: transparent; /* No background */
+    border: none;
+    border-radius: 50%; /* Round shape */
+    width: 28px; /* Smaller clickable area for the icon */
+    height: 28px;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-}
-
-/* Modal Content */
-.modal-content {
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 90%;
-    max-width: 400px;
-    animation: fadeIn 0.3s ease-out;
-}
-
-.modal-content h3 {
-    font-size: 20px;
-    color: #202124;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.modal-content input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    font-size: 16px;
-    box-sizing: border-box;
-}
-
-.modal-content input:focus {
-    border-color: #1a73e8;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.modal-actions button {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.modal-actions button:first-child { /* Save button */
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-}
-
-.modal-actions button:first-child:hover {
-    background-color: #155ab6;
-}
-
-.modal-actions button:last-child { /* Cancel button */
-    background-color: #f1f3f4;
-    color: #202124;
-    border: 1px solid #dadce0;
-}
-
-.modal-actions button:last-child:hover {
-    background-color: #e8eaed;
-}
-
-/* Animation for modal */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Ensure label list items align their content properly */
-.label-list li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Distribute space between name and buttons */
-    padding: 12px 16px;
-    background: #f1f3f4;
-    border-radius: 8px;
-    border: 1px solid #dadce0;
     transition: background-color 0.2s ease;
-    font-size: 14px;
+    box-shadow: none;
+    flex-shrink: 0; /* Prevent it from shrinking */
 }
 
-.label-list li div { /* Container for buttons */
-    display: flex;
-    gap: 8px; /* Space between buttons */
+.add-label-button:hover {
+    background-color: #f1f3f4; /* Light grey on hover */
 }
 
-/* Label list styles */
+/* --- Custom Label List --- */
 .label-list {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 2px; /* Very small gap between list items */
 }
 
+/* Styling for each custom label item to mimic sidebar default labels */
 .label-list li {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: #f1f3f4;
-    border-radius: 8px;
-    border: 1px solid #dadce0;
+    justify-content: space-between; /* Pushes name/icon to left, 3-dots to right */
+    gap: 8px; /* Space between icon, name, and 3-dots if they were in one group */
+    padding: 8px 16px; /* **UPDATED: Matches default sidebar item padding (10px vertical)** */
+    background-color: transparent !important; /* **NEW: Force transparent background** */
+    border: none !important; /* **NEW: Force no border** */
+    outline: none !important; /* **NEW: Ensure no outline** */
+    box-shadow: none !important; /* **NEW: Ensure no box shadow** */
+    border-radius: 9999px; /* Makes it pill-shaped */
     transition: background-color 0.2s ease;
-    font-size: 14px;
+    font-size: 16px;
+    color: #202124; /* Default text color */
 }
 
 .label-list li:hover {
-    background-color: #e8f0fe;
+    background-color: #f1f3f4; /* Light grey on hover, matching sidebar */
 }
 
-.label-list span {
-    font-weight: 500;
+/* --- Label Name (Clickable) --- */
+.label-list span.label-name-clickable {
+    font-weight: 400; /* Regular weight, not bold */
     color: #202124;
-    cursor: pointer; /* Indicate it's clickable */
-    flex-grow: 1; /* Allow name to take available space */
+    cursor: pointer;
+    flex-grow: 1; /* Allows name to take available space */
+    padding: 2px 0; /* Adjust vertical padding */
+    display: block; /* Ensure it's a block for click area */
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+    text-decoration: none; /* Ensure no underline */
 }
 
-.label-list span:hover {
-    text-decoration: underline; /* Visual cue for clickability */
+.label-list span.label-name-clickable:hover {
+    text-decoration: none; /* Explicitly ensure no underline on hover */
 }
 
-/* Container for actions (3 dots button and menu) */
+/* --- Three Dots Button & Menu (Actions) --- */
 .label-actions-container {
-    position: relative; /* For positioning the dropdown menu */
+    position: relative;
     display: flex;
     align-items: center;
+    flex-shrink: 0; /* Prevent the container from shrinking */
 }
 
-/* Three dots button */
 .three-dots-button {
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 4px 8px;
-    font-size: 20px; /* Make dots larger for visibility */
-    color: #5f6368; /* Gmail-like grey */
+    padding: 4px;
+    color: #5f6368;
     transition: color 0.2s ease, background-color 0.2s ease;
-    border-radius: 50%; /* Make it round */
-    width: 32px; /* Fixed size for a clickable area */
-    height: 32px; /* Fixed size for a clickable area */
+    border-radius: 50%;
+    width: 28px; /* Smaller clickable area for icon */
+    height: 28px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -335,10 +132,9 @@
     color: #202124;
 }
 
-/* Dropdown menu for edit/delete */
 .label-action-menu {
     position: absolute;
-    top: 100%; /* Position below the three-dots button */
+    top: 100%;
     right: 0;
     background: #fff;
     border: 1px solid #dadce0;
@@ -347,8 +143,8 @@
     display: flex;
     flex-direction: column;
     min-width: 120px;
-    z-index: 10; /* Ensure it's above other elements */
-    margin-top: 5px; /* Small gap from the button */
+    z-index: 10;
+    margin-top: 5px;
 }
 
 .label-action-menu button {
@@ -361,13 +157,24 @@
     color: #202124;
     transition: background-color 0.2s ease;
     width: 100%;
+    border-radius: 0;
+}
+
+.label-action-menu button:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.label-action-menu button:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 .label-action-menu button:hover {
     background-color: #f1f3f4;
 }
 
-/* Modal Overlay */
+/* --- Modal Styles (Unchanged) --- */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -381,7 +188,6 @@
     z-index: 1000;
 }
 
-/* Modal Content */
 .modal-content {
     background: #fff;
     padding: 30px;
@@ -432,7 +238,7 @@
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.modal-actions button:first-child { /* Save button */
+.modal-actions button:first-child {
     background-color: #1a73e8;
     color: white;
     border: none;
@@ -442,7 +248,7 @@
     background-color: #155ab6;
 }
 
-.modal-actions button:last-child { /* Cancel button */
+.modal-actions button:last-child {
     background-color: #f1f3f4;
     color: #202124;
     border: 1px solid #dadce0;
@@ -452,8 +258,15 @@
     background-color: #e8eaed;
 }
 
-/* Animation for modal */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+.button-icon { /* Used for all icons in buttons and list items */
+    width: 24px; 
+    height: 24px;
+    object-fit: contain;
+    vertical-align: middle;
+    flex-shrink: 0; /* Prevent icon from shrinking */
 }

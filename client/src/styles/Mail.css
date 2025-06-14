@@ -1,0 +1,112 @@
+.compose-popup {
+  position: fixed;
+  bottom: 0;
+  right: 60px;
+  width: 500px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.25s ease-out;
+  font-family: 'Arial', sans-serif;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.compose-popup .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f2f6fc;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ccc;
+  border-radius: 8px 8px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.compose-popup .header h2 {
+  font-size: 14px;
+  margin: 0;
+}
+
+.compose-popup .window-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.compose-popup .window-controls button {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #5f6368;
+  cursor: pointer;
+}
+
+.compose-popup .window-controls button:hover {
+  color: #202124;
+}
+
+.compose-popup input,
+.compose-popup textarea {
+  font-size: 14px;
+  padding: 10px;
+  margin: 6px 12px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  outline: none;
+}
+
+.compose-popup textarea {
+  resize: vertical;
+  height: 120px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.compose-popup .actions {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px 12px;
+}
+
+.compose-popup .actions button {
+  background-color: #1a73e8;
+  color: white;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.compose-popup .actions button:hover {
+  background-color: #185abc;
+}
+
+.compose-popup .status-message {
+  margin: 0 12px 8px;
+  font-size: 12px;
+}
+
+.status-message.error {
+  color: red;
+}
+
+.status-message.success {
+  color: green;
+}
