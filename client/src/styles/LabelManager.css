@@ -125,6 +125,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    filter: var(--icon-filter); /* Use theme variable for icon filter */
 }
 
 .three-dots-button:hover {
@@ -174,51 +175,55 @@
     background-color: #f1f3f4;
 }
 
-/* --- Modal Styles (Unchanged) --- */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay for dark mode */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
 }
 
 .modal-content {
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 90%;
-    max-width: 400px;
-    animation: fadeIn 0.3s ease-out;
+    background-color: var(--background-primary); /* Use theme variable */
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px var(--shadow-color); /* Use theme variable */
+    width: 100%;
+    max-width: 450px;
+    transform: translateY(-20px);
+    animation: slideIn 0.3s ease-out forwards;
+    box-sizing: border-box;
+    color: var(--text-primary); /* Ensure text within modal is themed */
+    border: 1px solid var(--border-color); /* Add a border for separation in dark mode */
 }
 
 .modal-content h3 {
     font-size: 20px;
-    color: #202124;
-    margin-bottom: 10px;
+    color: var(--text-primary); /* Use theme variable */
+    margin-bottom: 15px; /* Increased margin for better spacing */
     text-align: center;
 }
 
 .modal-content input {
     width: 100%;
     padding: 12px;
-    border: 1px solid #dadce0;
+    border: 1px solid var(--border-color); /* Use theme variable */
     border-radius: 8px;
     font-size: 16px;
     box-sizing: border-box;
+    background-color: var(--background-secondary); /* Use theme variable for input background */
+    color: var(--text-primary); /* Use theme variable for input text */
 }
 
 .modal-content input:focus {
-    border-color: #1a73e8;
+    border-color: #1a73e8; /* You can keep this specific blue or define a --accent-color variable */
     outline: none;
     box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
 }
@@ -227,7 +232,7 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 20px; /* Increased margin for better spacing */
 }
 
 .modal-actions button {
@@ -236,31 +241,38 @@
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
+    border: none; /* Ensure no default border */
 }
 
+/* Style for the "Cancel" button (first child) */
 .modal-actions button:first-child {
-    background-color: #1a73e8;
-    color: white;
-    border: none;
+    background-color: var(--background-secondary); /* Neutral background */
+    color: var(--text-primary); /* Primary text color */
 }
 
 .modal-actions button:first-child:hover {
-    background-color: #155ab6;
+    background-color: var(--hover-background); /* Hover effect */
 }
 
+/* Style for the "Create Label" / "Save" button (last child) */
 .modal-actions button:last-child {
-    background-color: #f1f3f4;
-    color: #202124;
-    border: 1px solid #dadce0;
+    background-color: var(--compose-button-background); /* Blueish for light, dark grey for dark */
+    color: var(--compose-button-text); /* Ensure text is visible on button */
 }
 
 .modal-actions button:last-child:hover {
-    background-color: #e8eaed;
+    background-color: var(--compose-button-hover); /* Darker blueish for light, lighter dark grey for dark */
 }
 
+
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .button-icon { /* Used for all icons in buttons and list items */
@@ -269,4 +281,5 @@
     object-fit: contain;
     vertical-align: middle;
     flex-shrink: 0; /* Prevent icon from shrinking */
+    filter: var(--icon-filter); /* If you use SVG directly, you might need a filter for dark mode */
 }

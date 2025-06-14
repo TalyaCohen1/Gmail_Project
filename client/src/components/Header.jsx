@@ -1,5 +1,6 @@
 // src/components/Header.jsx
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext'; // Import ThemeContext
 import '../styles/Header.css';
 import LogOut from './LogOut';
 
@@ -7,6 +8,8 @@ import LogOut from './LogOut';
 function Header({ toggleSidebar }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
+  const [isSettingsMenuOpen, setSettingsMenuOpen] = useState(false); // State for settings menu
+  const { theme, toggleTheme } = useContext(ThemeContext); // Use the theme context
 
   const fullName = localStorage.getItem('fullName');
   const rawImage = localStorage.getItem('profileImage');
@@ -32,10 +35,7 @@ function Header({ toggleSidebar }) {
       }
 
       const data = await response.json();
-      const mail_ids = data.map(mail => mail.id);
       setSearchResults(data);
-
-      console.log('Search results:', data);
     } catch (error) {
       console.error('Search error:', error);
     }
@@ -43,13 +43,15 @@ function Header({ toggleSidebar }) {
 
   return (
     <header className="gmail-header">
-      {/* New sidebar toggle button */}
-      <button onClick={toggleSidebar} className="sidebar-toggle-button">
-        <img src="/icons/menu.svg" alt="Menu" className="menu-icon" /> {/* Make sure you have a menu.svg icon */}
-      </button>
-
-      <div className="gmail-logo-container">
-        <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-icon" />
+      <div className="header-left-section">
+        <button onClick={toggleSidebar} className="sidebar-toggle-button">
+          <img src="/icons/menu.svg" alt="Menu" className="menu-icon" />
+        </button>
+        {/* Moved after the menu button */}
+        <div className="header-logo">
+          {/* Changed className from gmail-icon to gmail-logo-icon */}
+          <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-logo-icon" />
+        </div>
       </div>
 
       <form onSubmit={handleSearch} className="header-search-form">
@@ -65,10 +67,26 @@ function Header({ toggleSidebar }) {
         />
       </form>
 
-      <div className="profile-section">
-        <span className="profile-name">{fullName}</span>
-        <LogOut />
+      <div className="header-right-section">
+        {/* Moved before profile-section */}
+        <div className="settings-container">
+          <button onClick={() => setSettingsMenuOpen(!isSettingsMenuOpen)} className="settings-button">
+            <img src="/icons/settings.svg" alt="Settings" className="settings-icon" />
+          </button>
+          {isSettingsMenuOpen && (
+            <div className="settings-menu">
+              <button onClick={toggleTheme} className="theme-toggle-button">
+                {theme === 'light' ? 'Enable Dark Mode' : 'Disable Dark Mode'}
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="profile-section">
+          <span className="profile-name">{fullName}</span>
+          <LogOut />
+        </div>
       </div>
+
 
       {searchResults && (
         <div className="search-results">

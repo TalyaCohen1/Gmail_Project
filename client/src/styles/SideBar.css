@@ -3,8 +3,8 @@
 /* Existing .sidebar styles */
 .sidebar {
     width: 280px; /* Default open width */
-    background-color: #fff;
-    border-right: 1px solid #e0e0e0;
+    background-color: var(--background-primary); /* Use theme variable */
+    border-right: 1px solid var(--border-color); /* Use theme variable */
     box-shadow: none;
     padding: 24px 16px; /* Adjust padding for visual consistency when open */
     min-height: 100vh;
@@ -14,6 +14,7 @@
     gap: 16px;
     transition: width 0.3s ease-in-out, padding 0.3s ease-in-out, align-items 0.3s ease-in-out; /* Smooth transitions */
     flex-shrink: 0; /* Prevent sidebar from shrinking when content grows */
+    color: var(--text-primary); /* Ensure text color changes with theme */
 }
 
 /* Styles for when the sidebar is closed */
@@ -28,71 +29,24 @@
 .sidebar--closed .sidebar-item span,
 .sidebar--closed h1, /* Hide the main sidebar title */
 .sidebar--closed .label-manager-header h3, /* Hide LabelManager header text */
-.sidebar--closed .label-manager button span /* Hide LabelManager button text (e.g., "New Label") */
-{
-    display: none;
-    /* You might need to adjust margin-left for icons if they had text-related margins */
-}
-
-/* Hide LabelManager component entirely when sidebar is closed */
-.sidebar--closed .label-manager {
+.sidebar--closed .label-manager-header button:not(.add-label-button), /* Hide buttons in LabelManager header except add */
+.sidebar--closed .compose-button-text { /* Hide compose button text */
     display: none;
 }
 
-/* Adjust compose button for closed state */
-.compose-button {
-    /* Existing styles for open state */
-    background-color: #c2e7ff;
-    border: none;
-    border-radius: 18px;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-    color: #202124;
-    font-size: 16px;
-    font-weight: 500;
-    padding: 15px 28px 15px 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: box-shadow 0.2s ease, background-color 0.2s ease, width 0.3s ease-in-out, padding 0.3s ease-in-out, border-radius 0.3s ease-in-out, justify-content 0.3s ease-in-out;
-    width: auto;
-    justify-content: flex-start;
-    align-self: flex-start;
-    margin-left: 8px; /* Maintain small margin when open */
-}
-
-.compose-button--closed {
-    width: 50px; /* Make it square */
-    height: 50px; /* Make it square */
-    padding: 0; /* Remove padding */
-    border-radius: 50%; /* Make it round */
-    justify-content: center; /* Center the icon */
-    align-self: center; /* Center horizontally in the collapsed sidebar */
-    margin-left: 0; /* Remove left margin when closed */
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15); /* Keep shadow */
-}
-
-/* Ensure sidebar items adjust */
-.sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 8px 16px;
-    border-radius: 9999px;
-    text-decoration: none;
-    color: #3c4043;
-    font-size: 14px;
-    transition: background-color 0.2s ease, color 0.2s ease, padding 0.3s ease-in-out;
-    width: 100%; /* Ensure they take full width when open */
-    box-sizing: border-box; /* Include padding in width */
-}
-
-.sidebar--closed .sidebar-item {
-    padding: 8px; /* Reduced padding for icons */
-    justify-content: center; /* Center the icon */
-    width: 50px; /* Fixed width for the clickable area */
-    height: 50px; /* Fixed height for the clickable area */
+/* Adjust compose button when sidebar is closed */
+.sidebar--closed .compose-button {
+    width: 50px; /* Make it circular */
+    height: 50px; /* Make it circular */
     border-radius: 50%; /* Make it circular */
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar--closed .compose-button .compose-icon {
+    margin-right: 0; /* Remove margin when closed */
 }
 
 /* Hide the arrow icon for categories when sidebar is closed */
@@ -101,21 +55,41 @@
 }
 
 /* Styles for individual sidebar items (Inbox, Starred, etc.) */
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px;
+    border-radius: 24px; /* Pill shape */
+    text-decoration: none;
+    color: var(--text-primary); /* Use theme variable */
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
 .sidebar-item:hover {
-    background-color: #f0f0f0;
+    background-color: var(--hover-background); /* Use theme variable */
 }
 
 .sidebar-item.active {
-    background-color: #e8f0fe;
-    color: #1a73e8;
+    background-color: #e8f0fe; /* Google Blue background for active */
+    color: #1a73e8; /* Google Blue text for active */
     font-weight: 500;
 }
+
+body.dark .sidebar-item.active {
+  background-color: #2c3c5b; /* Darker blue for active in dark mode */
+  color: #8ab4f8; /* Lighter blue text for active in dark mode */
+}
+
 
 .sidebar-icon {
     width: 24px;
     height: 24px;
     object-fit: contain;
     flex-shrink: 0; /* Prevent icon from shrinking */
+    filter: var(--icon-filter); /* If you use SVG directly, you might need a filter for dark mode */
 }
 
 .sidebar-section {
@@ -138,18 +112,107 @@ button.sidebar-item {
 
 /* Adjust text alignment for buttons when closed */
 .sidebar--closed button.sidebar-item {
-    text-align: center; /* Center content when closed */
+    text-align: center; /* Center text/icons when closed */
 }
 
-.category-sub-labels-container {
-  /* This container helps group the sub-labels */
+/* Compose button specific styles */
+.compose-button {
+    background-color: var(--compose-button-background); /* Use theme variable */
+    color: var(--compose-button-text); /* Use theme variable */
+    padding: 15px 15px 15px 15px;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.30), 0 1px 3px 1px rgba(60,64,67,0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 16px;
+    width: 130px; /* Fixed width as per Gmail */
 }
 
-/* This rule targets the sub-label items specifically.
-  The :not(.sidebar--closed) ensures the indent only applies when the sidebar is open.
-*/
-.sidebar:not(.sidebar--closed) .sub-label-item {
-  /* Default sidebar-item padding is 8px 16px.
-     Increasing the left padding here creates the indent. */
-  padding-left: 40px; 
+.compose-button:hover {
+    background-color: var(--compose-button-hover); /* Use theme variable */
+    box-shadow: 0 1px 3px 0 rgba(60,64,67,0.30), 0 4px 8px 3px rgba(60,64,67,0.15);
+}
+
+.compose-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px; /* Space between icon and text */
+    filter: var(--icon-filter); /* If you use SVG directly, you might need a filter for dark mode */
+}
+
+/* Label Manager styles */
+.label-manager {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color); /* Use theme variable */
+}
+
+.label-manager-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.label-manager-header h3 {
+    font-size: 0.875rem;
+    color: var(--text-secondary); /* Use theme variable */
+    margin: 0;
+}
+
+.label-manager-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    color: var(--text-secondary); /* Use theme variable */
+}
+
+.label-manager-header button:hover {
+    background-color: var(--hover-background); /* Use theme variable */
+}
+
+.add-label-icon {
+    width: 20px;
+    height: 20px;
+    filter: var(--icon-filter); /* If you use SVG directly, you might need a filter for dark mode */
+}
+
+.label-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.label-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    text-decoration: none;
+    color: var(--text-primary); /* Use theme variable */
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.label-item:hover {
+    background-color: var(--hover-background); /* Use theme variable */
+}
+
+.label-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ccc; /* Default color, should be dynamic based on label */
+    flex-shrink: 0;
 }
