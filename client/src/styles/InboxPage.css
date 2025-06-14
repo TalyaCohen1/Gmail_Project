@@ -3,8 +3,9 @@
 .inbox-page {
   display: flex;
   flex-direction: column; /* Stacks header, then the main content area */
-  height: 100vh; /* Takes full viewport height */
-  background-color: #ffffff;
+  height: 100vh;
+  background-color: var(--background-secondary); /* This uses theme variable */
+  color: var(--text-primary); /* Ensure text color changes with theme */
 }
 
 .main-content-area {
@@ -22,6 +23,6 @@
 .error {
   padding: 16px;
   text-align: center;
-  color: #5f6368;
+  color: var(--text-secondary); /* This uses theme variable */
   font-size: 0.9rem;
 }

@@ -1,15 +1,63 @@
+/* App.css */
+
+/* Define global theme variables that components can use */
+/* Light Theme Variables (Default for Login/Register, and initial state for Inbox) */
+body.light, /* These rules will still be defined, and can be used by themed components */
+:root { /* Using :root to define global variables for components even when body.light/dark isn't directly on body */
+  --background-primary: #fff;
+  --background-secondary: #f5f7fa;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --border-color: #e0e0e0;
+  --header-background: #fff;
+  --search-bar-background: #f1f3f4;
+  --hover-background: #f0f0f0;
+  --shadow-color: rgba(0,0,0,0.1);
+  --compose-button-background: #c2e7ff;
+  --compose-button-text: #001d35;
+  --compose-button-hover: #b0d8f7;
+}
+
+/* Dark Theme Variables - these will ONLY apply when body.dark is present (i.e., on Inbox) */
+body.dark {
+  --background-primary: #1f1f1f;
+  --background-secondary: #121212;
+  --text-primary: #e8eaed;
+  --text-secondary: #bdc1c6;
+  --border-color: #3c4043;
+  --header-background: #202124;
+  --search-bar-background: #303134;
+  --hover-background: #3c4043;
+  --shadow-color: rgba(0,0,0,0.5);
+  --compose-button-background: #303134;
+  --compose-button-text: #e8eaed;
+  --compose-button-hover: #3c4043;
+  --icon-filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(285deg) brightness(100%) contrast(100%);
+}
+
+/* Default body styles (primarily for Login/Register/Home pages) */
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  /* Default background for pages not covered by ThemeProvider */
+  background-color: #fafaFA; /* A very light grey for login/register pages */
+  color: #202124; /* Default text color */
+}
+
 .App {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: 'Roboto', sans-serif; /* Gmail uses Roboto */
-  color: #202124; /* dark grey text */
-  background-color: #fff; /* white background */
+  /* Removed specific background/color here, as body or individual pages will handle it */
 }
 
-.app-container {
+/* These specific App container styles should only be active when ThemeProvider applies the theme */
+/* So they should probably be moved into a themed component like InboxPage.css or a wrapper within Inbox */
+/* For now, let's keep them here but understand they will affect all pages unless very specific */
+
+/* .app-container {
   display: flex;        
-  height: calc(100vh - 64px); /* header usually ~64px in Gmail */
+  height: calc(100vh - 64px); 
   width: 100vw;         
   overflow: hidden;     
 }
@@ -17,9 +65,9 @@
 .sidebar {
   width: 280px;         
   height: 100%;        
-  background-color: #fff;  /* solid white, no gradient */
-  border-right: 1px solid #e0e0e0; /* light grey border */
-  padding: 24px 16px; /* comfortable padding */
+  background-color: #fff;  
+  border-right: 1px solid #e0e0e0; 
+  padding: 24px 16px; 
   box-sizing: border-box;
   flex-shrink: 0;       
   display: flex;
@@ -31,5 +79,5 @@
   flex-grow: 1;         
   padding: 24px;
   overflow-y: auto;
-  background-color: #f5f7fa; /* subtle light grey background */
-}
+  background-color: #f5f7fa; 
+} */

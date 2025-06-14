@@ -1,10 +1,15 @@
+
+// src/components/Header.jsx
+import { ThemeContext } from '../context/ThemeContext'; // Import ThemeContext
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Header.css';
 import { useNavigate } from 'react-router-dom';
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState(null); // or []
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSettingsMenuOpen, setSettingsMenuOpen] = useState(false); // State for settings menu
+  const { theme, toggleTheme } = useContext(ThemeContext); // Use the theme context
   const [showMenu, setShowMenu] = useState(false);
 
   const menuRef = useRef(null);
@@ -65,10 +70,15 @@ function Header() {
 
   return (
     <header className="gmail-header">
-      <div className="gmail-logo-container">
-        {/* Changed to use the actual image file */}
-        <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-icon" /> {/* */}
-        {/*<h1>Gmail</h1> */}
+      <div className="header-left-section">
+        <button onClick={toggleSidebar} className="sidebar-toggle-button">
+          <img src="/icons/menu.svg" alt="Menu" className="menu-icon" />
+        </button>
+        {/* Moved after the menu button */}
+        <div className="header-logo">
+          {/* Changed className from gmail-icon to gmail-logo-icon */}
+          <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-logo-icon" />
+        </div>
       </div>
 
       <form onSubmit={handleSearch} className="header-search-form">
@@ -82,7 +92,21 @@ function Header() {
         <button type="submit" className="header-search-button">Search</button>
       </form>
 
-      <div className="profile-section" ref={menuRef}>
+      <div className="header-right-section">
+        {/* Moved before profile-section */}
+        <div className="settings-container">
+          <button onClick={() => setSettingsMenuOpen(!isSettingsMenuOpen)} className="settings-button">
+            <img src="/icons/settings.svg" alt="Settings" className="settings-icon" />
+          </button>
+          {isSettingsMenuOpen && (
+            <div className="settings-menu">
+              <button onClick={toggleTheme} className="theme-toggle-button">
+                {theme === 'light' ? 'Enable Dark Mode' : 'Disable Dark Mode'}
+              </button>
+            </div>
+          )}
+        </div>
+         <div className="profile-section" ref={menuRef}>
         <img
           src={profileImage}
           alt="Profile"
@@ -98,8 +122,8 @@ function Header() {
           </div>
         )}
       </div>
+      </div>
 
-      
       {searchResults && (
         <div className="search-results">
           <h3>Results:</h3>

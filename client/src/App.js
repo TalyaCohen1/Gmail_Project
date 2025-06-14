@@ -1,13 +1,21 @@
 // App.js
 
-import React, { useState } from 'react'; // 1. Import useState
+import React, { useState } from 'react';
 import { BrowserRouter as Router, useNavigate, Routes, Route } from 'react-router-dom';
-import './styles/HomePage.css';
+// IMPORTANT: Remove App.css import here, we'll import it conditionally or handle body defaults differently.
+import './styles/App.css'; // <-- REMOVE THIS LINE HERE
+import './styles/HomePage.css'; // This is for the pre-login landing page
+import './styles/AuthForm.css'; // For Login/Register forms
+import './styles/Header.css'; // Header will always use its own default styles unless explicitly themed by its parent
+import './styles/InboxPage.css'; // This will be themed
+import './styles/SideBar.css'; // This will be themed
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Inbox from './pages/InboxPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { LabelProvider } from './context/LabelContext';
+import { ThemeProvider } from './context/ThemeContext'; // Import ThemeProvider
 
 function HomeContent() {
   const navigate = useNavigate();
@@ -27,26 +35,27 @@ function HomeContent() {
 }
 
 export default function App() {
-  // 2. Add state for the sidebar
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default to open
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const toggleSidebar = () => {
     setIsSidebarOpen(prevState => !prevState);
   };
 
   return (
-    <div className="App">
+    <div className="App"> {/* This 'App' div will now act as the default background for non-themed pages */}
       <Router>
         <Routes>
           <Route path="/" element={<HomeContent />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/inbox" element={
-            <LabelProvider>
-              <ProtectedRoute>
-                {/* 3. Pass the state and function as props */}
-                <Inbox isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-              </ProtectedRoute>
-            </LabelProvider>
+            // Move ThemeProvider inside ProtectedRoute/Inbox for conditional theming
+            <ThemeProvider> {/* THEME PROVIDER MOVED HERE */}
+              <LabelProvider>
+                <ProtectedRoute>
+                  <Inbox isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+                </ProtectedRoute>
+              </LabelProvider>
+            </ThemeProvider>
           } />
         </Routes>
       </Router>
