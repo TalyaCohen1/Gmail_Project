@@ -1,11 +1,11 @@
 
 // src/components/Header.jsx
 import { ThemeContext } from '../context/ThemeContext'; // Import ThemeContext
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import '../styles/Header.css';
 import { useNavigate } from 'react-router-dom';
 
-function Header() {
+function Header({ toggleSidebar }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [isSettingsMenuOpen, setSettingsMenuOpen] = useState(false); // State for settings menu
