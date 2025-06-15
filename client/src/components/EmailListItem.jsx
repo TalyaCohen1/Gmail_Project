@@ -6,6 +6,7 @@ export default function EmailListItem({ email, isSelected, onToggleSelect, onDel
         <li className={`email-item ${isSelected ? 'selected' : ''}`}>  
         <input
             type="checkbox"
+            className="email-checkbox"
             checked={isSelected}
             onChange={onToggleSelect}
         />
@@ -15,9 +16,9 @@ export default function EmailListItem({ email, isSelected, onToggleSelect, onDel
             <span className="date">{new Date(email.date).toLocaleString()}</span>
         </div>
         <div className="labels">
-            {email.labels.map(label => (
-            <span key={label.id} className="tag">{label.name}</span>
-            ))}
+            {(email.labels || []).map(label => (
+          <span key={label.id} className="tag">{label.name}</span>
+        ))}
         </div>
         <button onClick={onDelete}>Delete</button>
         </li>

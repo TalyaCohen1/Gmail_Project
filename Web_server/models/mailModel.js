@@ -1,3 +1,5 @@
+const { get } = require("../routes/mailRoutes");
+
 let mails = [];
 let nextId = 1;
 let draftMails = [];
@@ -171,6 +173,20 @@ function getLabels(email, id) {
     }
 }
 
+function getInbox(email) {
+  return mails
+    .filter(m => m.to === email && !m.deletedForReceiver)
+    .sort((a,b) => b.timestamp - a.timestamp)
+    .slice(0,25);
+}
+
+function getSent(email) {
+  return mails
+    .filter(m => m.from === email && !m.deletedForSender)
+    .sort((a,b) => b.timestamp - a.timestamp)
+    .slice(0,25);
+}
+
 module.exports = {
     getAll,
     getById,
@@ -178,8 +194,11 @@ module.exports = {
     search,
     createDraft,
     updateDraft,
+    getDrafts,
     deleteMail,
     addLabel,
     removeLabel,
-    getLabels
+    getLabels,
+    getInbox,
+    getSent
 };

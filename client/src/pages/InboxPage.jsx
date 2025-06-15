@@ -11,12 +11,16 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
     const [error, setError] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
 
-    useEffect(() => {
+    const fetchData = () => {
       setLoading(true);
       getInboxEmails()
         .then(data => setEmails(data))
         .catch(err => setError(err.message))
         .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+      fetchData();
     }, []);
 
     const toggleSelect = id =>

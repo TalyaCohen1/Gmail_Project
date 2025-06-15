@@ -119,7 +119,7 @@ exports.updateDraft = async (req, res) => {
 
             if (blacklisted) {
                 // return res.status(400).json({ error: `Contains blacklisted link: ${url}` });
-                // if its blacklisted, we would like the mail whan sent to go to spam of the reciever
+                // if its blacklisted, we would like the mail when sent to go to spam of the receiver
             }
         } catch (e) {
             return res.status(500).json({ error: 'Blacklist service error' });
