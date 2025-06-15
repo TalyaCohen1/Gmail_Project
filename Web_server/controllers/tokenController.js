@@ -26,7 +26,7 @@ const createToken = (req, res) => {
     SECRET_KEY,
     { expiresIn: '1h' } // Token expires in 1 hour
   );
-  res.status(200).json({token}); // Respond with the token
+  res.status(200).json({ token, fullName: user.fullName, profileImage: user.profileImage, userId: user.id });
 };
 
 module.exports = { createToken };

@@ -30,10 +30,8 @@ export default function CreateMail({ onSend, onClose }) {
 
     // Initialize a new draft
     const createDraft = async () => {
-        console.log("🔵 Creating a new draft");
            try {
                 const data = await createEmail({ to: " ", subject: " ", body: " ", send: false });
-                    console.log("Created draft with id:", data.id); // לוודא
                 setDraft(data);
             } catch (err) {
                 setError(err.message);
@@ -43,7 +41,6 @@ export default function CreateMail({ onSend, onClose }) {
     // Create a new draft when the component mounts
     useEffect(() => {
     if (!hasCreatedDraft.current) {
-        console.log("🟢 useEffect triggered for createDraft");
         createDraft();
         hasCreatedDraft.current = true;
     }

@@ -4,6 +4,7 @@ import { ThemeContext } from '../context/ThemeContext'; // Import ThemeContext
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import '../styles/Header.css';
 import { useNavigate } from 'react-router-dom';
+import EditProfilePopup from './Profile'; // Import the EditProfilePopup component
 
 function Header({ toggleSidebar }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,6 +12,11 @@ function Header({ toggleSidebar }) {
   const [isSettingsMenuOpen, setSettingsMenuOpen] = useState(false); // State for settings menu
   const { theme, toggleTheme } = useContext(ThemeContext); // Use the theme context
   const [showMenu, setShowMenu] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
+
+  // const [fullName, setFullName] = useState('');
+  // const [profileImage, setProfileImage] = useState('http://localhost:3000/uploads/default-profile.png');
+
 
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -21,7 +27,6 @@ function Header({ toggleSidebar }) {
   : 'http://localhost:3000/uploads/default-profile.png';
 
   console.log("2: Profile Image:", profileImage);
-
 
 
   const handleSearch = async (e) => {
@@ -117,11 +122,19 @@ function Header({ toggleSidebar }) {
           style={{ borderRadius: '50%', cursor: 'pointer' }}
           onClick={() => setShowMenu(prev => !prev)}
         />
+        <div className="profile-greeting">Hello, {fullName}</div>
          {showMenu && (
           <div className="dropdown-menu">
-            <div className="dropdown-item" onClick={() => navigate('/profile')}>Edit Profile</div>
+            <div className="dropdown-item" onClick={() => setShowEditPopup(true)}>Edit Profile</div>
             <div className="dropdown-item" onClick={handleLogout}>Logout</div>
           </div>
+        )}
+        {showEditPopup && (
+          <EditProfilePopup
+            currentName={localStorage.getItem('fullName')}
+            currentImage={localStorage.getItem('profileImage')}
+            onClose={() => setShowEditPopup(false)}
+          />
         )}
       </div>
       </div>

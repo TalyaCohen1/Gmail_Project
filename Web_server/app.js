@@ -1,9 +1,18 @@
 const express = require('express');
 const cors = require('cors');
+
 const app = express();
 const path = require('path');
+
+const corsOptions = {
+  origin: 'http://localhost:8080',
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Middleware for decoding JSON in requests
 app.use(express.json());
