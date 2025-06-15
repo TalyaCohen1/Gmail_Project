@@ -31,9 +31,9 @@ router.patch('/:id', authenticateToken, controller.updateDraft);
 router.delete('/:id', authenticateToken, controller.deleteMail);
 
 // POST DELETE and GET to labels
-router.post('/:id/labels', authenticateUser, controller.addLabel);
-router.delete('/:id/labels/:labelId', authenticateUser, controller.removeLabel);
-router.get('/:id/labels', authenticateUser, controller.getLabels);
+router.post('/:id/labels', authenticateToken, controller.addLabel);
+router.delete('/:id/labels/:labelId', authenticateToken, controller.removeLabel);
+router.get('/:id/labels', authenticateToken, controller.getLabels);
 
 
 module.exports = router;

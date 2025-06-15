@@ -3,7 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import EmailList from "../components/EmailList";
 import BatchActionsBar from '../components/BatchActionsBar';
-import { getInboxEmails, deleteEmail } from '../services/mailService';
+import { getInboxEmails, deleteEmail, addLabelToEmail, removeLabelFromEmail } from '../services/mailService';
 import { useDisplayEmails } from '../context/DisplayEmailsContext'; // NEW: Import DisplayEmailsContext hook
 import "../styles/InboxPage.css";
 import { LabelContext } from '../context/LabelContext';
@@ -11,27 +11,35 @@ import { LabelContext } from '../context/LabelContext';
 export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
     // Use the new context for displayed emails and their loading/error states
     const { displayedEmails, setDisplayedEmails, displayLoading, setDisplayLoading, displayError, setDisplayError } = useDisplayEmails();
+    const [loading, setLoading]         = useState(true);
+    const [error, setError]             = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
+    const [emails, setEmails] = useState([]);
     const { labels } = useContext(LabelContext);
     // This useEffect will now use the context's setters to update displayed emails
-    useEffect(() => {
-        const fetchData = async () => {
-            setDisplayLoading(true); // Set loading state from context
-            setDisplayError(null);   // Clear any previous errors
-            try {
-                const newEmails = await getInboxEmails();
-                setDisplayedEmails(newEmails); // Update the displayed emails using the context setter
-            } catch (err) {
-                setDisplayError(err.message); // Set error state from context
-            } finally {
-                setDisplayLoading(false); // Set loading state from context
-            }
-        };
+    const fetchData = async () => {
+    setLoading(true);
+    try {
+      const newEmails = await getInboxEmails();
+      setError(null);
+      setEmails(prev => {
+        const same =
+          prev.length === newEmails.length &&
+          prev.every((e, i) => e.id === newEmails[i].id);
+        return same ? prev : newEmails;
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        fetchData();
-        const interval = setInterval(fetchData, 3000);
-        return () => clearInterval(interval);
-    }, [setDisplayedEmails, setDisplayLoading, setDisplayError]); // Depend on setters from context
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
     const toggleSelect = id =>
         setSelectedIds(prev =>
@@ -51,7 +59,7 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
         selectedIds.forEach(id => handleDelete(id));
       } else if (type === 'addLabel') {
         selectedIds.forEach(id =>
-          updateEmail(id, { labels: [...(emails.find(e=>e.id===id).labels||[]), labelId] })
+          addLabelToEmail(id, { labels: [...(emails.find(e=>e.id===id).labels||[]), labelId] })
         );
       }
       setSelectedIds([]); 
@@ -78,7 +86,7 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
                 <BatchActionsBar
                   selectedCount={selectedIds.length}
                   labels={labels}
-                  onAction={performBatchAction}
+                  onRefresh={fetchData}
                 />
             )}
             <EmailList
