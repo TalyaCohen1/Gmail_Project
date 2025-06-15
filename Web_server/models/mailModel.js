@@ -59,12 +59,16 @@ function createDraft({ from, to, subject, body}) {
  * 
  * @returns the newly created mail object
  */
-function createMail({ from, to, subject, body, id = nextId++ }) {
+function createMail({ from, to, subject, body, id }) {
+    if (id === undefined || id === null) {
+        id = nextId++;
+    }
     const timestamp = Date.now();
     const mail = { id, from, to, subject, body, timestamp , deletedForSender: false, deletedForReceiver: false };
     mails.push(mail);
     return mail;
 }
+
 
 /**
  * Update an existing mail’s subject/body,
