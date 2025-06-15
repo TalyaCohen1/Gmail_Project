@@ -1,6 +1,6 @@
 const mailModel = require('../models/mailModel');
 const userModel = require('../models/userModel');
-const { checkUrl, deleteFromBlacklist, addUrl, removeUrl } = require('../services/blacklistService'); // Import deleteFromBlacklist
+const { checkUrl, addUrl, removeUrl } = require('../services/blacklistService'); // Import deleteFromBlacklist
 const URL_REGEX = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:\/\S*)?/gi;
 
 /**
@@ -290,4 +290,12 @@ exports.unmarkMailAsSpam = (req, res) => {
         return res.status(404).json({ error: 'Mail not found or no permission' });
     }
     res.status(200).json(updatedMail);
+};
+
+exports.getDeletedMails = (req, res) => {
+    const email = userModel.findById(req.userId).emailAddress;
+    console.log('Fetching deleted mails for:', email); // Add this
+    const deletedMails = mailModel.getDeletedMails(email);
+    console.log('Found deleted mails:', deletedMails.length); // Add this
+    res.status(200).json(deletedMails);
 };

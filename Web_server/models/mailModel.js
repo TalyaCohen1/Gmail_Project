@@ -240,6 +240,14 @@ function unmarkAsSpam(email, id) {
 }
 
 
+function getDeletedMails(email) {
+    console.log('Filtering mails for deleted for:', email); // Add this
+    console.log('Total mails in array:', mails.length); // Add this
+    const filtered = mails.filter(m => (m.from === email && m.deletedForSender) || (m.to === email && m.deletedForReceiver));
+    console.log('Filtered deleted mails count:', filtered.length); // Add this
+    return filtered;
+}
+
 module.exports = {
     getAll,
     getById,
@@ -256,5 +264,6 @@ module.exports = {
     getSent,
     getSpam,
     markAsSpam,
-    unmarkAsSpam
+    unmarkAsSpam,
+    getDeletedMails
 };

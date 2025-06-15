@@ -273,3 +273,18 @@ export async function unmarkEmailAsSpam(id) {
     }
     return res.json();
 }
+
+/**
+ * Get all deleted emails for the authenticated user
+ * @return {Promise<Array>} Array of deleted emails
+ */
+export async function getDeletedEmails() {
+    const res = await fetch('http://localhost:3000/api/mails/deleted', {
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to fetch deleted emails');
+    }
+    return res.json();
+}

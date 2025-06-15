@@ -24,6 +24,8 @@ router.get('/sent', authenticateToken, controller.getSent);
 // GET spam mails
 router.get('/spam', authenticateToken, controller.getSpamMails); // New route for spam mails
 
+router.get('/deleted', authenticateToken, controller.getDeletedMails); // New route for deleted mails
+
 // Retrieve a single mail by ID
 router.get('/:id', authenticateToken, controller.getMail);
 
@@ -44,6 +46,5 @@ router.delete('/:id/spam', authenticateToken, controller.unmarkMailAsSpam); // N
 router.post('/:id/labels', authenticateUser, controller.addLabel);
 router.delete('/:id/labels/:labelId', authenticateUser, controller.removeLabel);
 router.get('/:id/labels', authenticateUser, controller.getLabels);
-
 
 module.exports = router;
