@@ -1,7 +1,8 @@
+// src/components/EmailList.jsx
+
 import React from 'react';
 import EmailListItem from './EmailListItem';
 import '../styles/EmailList.css';
-
 
 export default function EmailList({ emails = [], selectedIds, onToggleSelect, onDelete }) {
     if (emails.length === 0) {
@@ -14,7 +15,6 @@ export default function EmailList({ emails = [], selectedIds, onToggleSelect, on
 
     return (
         <ul className="email-list">
-            
             {emails.map(email => (
                 <EmailListItem
                 key={email.id}

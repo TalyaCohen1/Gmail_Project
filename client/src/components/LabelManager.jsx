@@ -5,7 +5,8 @@ import LabelModal from './LabelModal';
 import '../styles/LabelManager.css';
 import { useLabels } from '../context/LabelContext';
 
-const LabelManager = () => {
+// Accepts new props for managing displayed emails from Sidebar
+const LabelManager = ({ setDisplayedEmails, setDisplayLoading, setDisplayError }) => {
     const { labels, loading, error, addLabel, editLabel, deleteLabel, fetchMailsForLabel } = useLabels();
     const [showAddLabelModal, setShowAddLabelModal] = useState(false);
     const [showEditLabelModal, setShowEditLabelModal] = useState(false);
@@ -64,16 +65,22 @@ const LabelManager = () => {
         setActiveLabelMenuId(activeLabelMenuId === labelId ? null : labelId);
     };
 
+    // This function updates the displayed emails when a custom label is clicked
     const handleShowMailsForLabel = async (labelId) => {
+        setDisplayLoading(true); // Set loading via prop
+        setDisplayError(null);   // Clear previous errors via prop
         try {
-            const mails = await fetchMailsForLabel(labelId);
-            console.log(`Mails for label ${labelId}:`, mails);
-            // Implement UI update here to show mails for this label
+            const mails = await fetchMailsForLabel(labelId); // Fetch mails for the label
+            setDisplayedEmails(mails); // Update the emails displayed in EmailList via prop
+            setActiveLabelMenuId(null); // Close the menu after selection
         } catch (err) {
+            setDisplayError(`Error fetching mails for label: ${err.message}`); // Set error via prop
             console.error("Error fetching mails for label:", err);
+            setDisplayedEmails([]); // Clear emails on error
+        } finally {
+            setDisplayLoading(false); // Clear loading via prop
         }
     };
-
 
     if (loading) return <div>Loading labels...</div>;
     if (error) return <div>Error: {error.message}</div>;
@@ -82,7 +89,6 @@ const LabelManager = () => {
         <div className="label-manager">
             <div className="label-manager-header">
                 <h3>
-                    {/* **UPDATED: Icon for Labels header now uses labels.svg** */}
                     Labels
                 </h3>
                 <button
@@ -109,9 +115,10 @@ const LabelManager = () => {
                                 className="button-icon"
                                 onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/20x20/cccccc/000000?text=L" }}
                             />
-                            <span onClick={() => handleShowMailsForLabel(label.id)} className="label-name-clickable">
+                            {/* Changed span to button for better accessibility and click handling */}
+                            <button onClick={() => handleShowMailsForLabel(label.id)} className="label-name-clickable">
                                 {label.name}
-                            </span>
+                            </button>
                             <div className="label-actions-container">
                                 <button className="three-dots-button" onClick={() => toggleMenu(label.id)}>
                                     <img
