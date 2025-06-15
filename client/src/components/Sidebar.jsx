@@ -6,7 +6,7 @@ import CreateMail from "../components/CreateMail";
 import '../styles/SideBar.css';
 import { Link } from 'react-router-dom';
 // Import all necessary mail service functions
-import { getInboxEmails, getDraftEmails, getSentEmails, getEmails, getEmailLabels } from '../services/mailService'; // NEW: Added getSentEmails, getEmails, getEmailLabels
+import { getInboxEmails, getDraftEmails, getSentEmails, getEmails, getEmailLabels, getSpamEmails } from '../services/mailService'; // NEW: Added getSentEmails, getEmails, getEmailLabels
 
 const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisplayError }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -81,7 +81,7 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
     { name: 'Important', icon: '/icons/important.svg', handler: () => handleSystemLabelClick('filter', 'Important'), type: 'system' }, // NEW: Filtered
     { name: 'Scheduled', icon: '/icons/scheduled.svg', handler: () => handleSystemLabelClick('filter', 'Scheduled'), type: 'system' }, // NEW: Filtered
     { name: 'All Mail', icon: '/icons/all_mail.svg', handler: () => handleSystemLabelClick('filter', 'All Mail'), type: 'system' }, // NEW: Filtered (will show all mails regardless of other labels if mail has "All Mail" label, or if "All Mail" implies no filter)
-    { name: 'Spam', icon: '/icons/spam.svg', handler: () => handleSystemLabelClick('filter', 'Spam'), type: 'system' },       // NEW: Filtered
+    { name: 'Spam', icon: '/icons/spam.svg', handler: () => handleSystemLabelClick('api', getSpamEmails), type: 'system' },       // NEW: Filtered
     { name: 'Trash', icon: '/icons/trash.svg', handler: () => handleSystemLabelClick('filter', 'Trash'), type: 'system' },     // NEW: Filtered
     { name: 'Categories', icon: '/icons/categories.svg', path: '#', type: 'category' }
   ];
