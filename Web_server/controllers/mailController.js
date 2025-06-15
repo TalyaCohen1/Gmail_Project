@@ -107,10 +107,10 @@ exports.updateDraft = async (req, res) => {
         return res.status(400).json({ error: 'No fields to update' });
     }
 
-    const toUser = await userModel.findByEmail(to);
-        if (!toUser) {
-            return res.status(400).json({ error: 'Recipient email does not exist' });
-        }
+    // const toUser = await userModel.findByEmail(to);
+    //     if (!toUser) {
+    //         return res.status(400).json({ error: 'Recipient email does not exist' });
+    //     }
 
     const subjectUrls = subject ? subject.match(URL_REGEX) || [] : [];
     const bodyUrls = body ? body.match(URL_REGEX) || [] : [];
