@@ -123,10 +123,10 @@ function getDrafts(email) {
 function deleteMail(email, id) {
     const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
     if (!mail) return false;
-    if (mail.from === email) {
-        mail.deletedForSender = true;
-    } else {
+    if (mail.to === email) {
         mail.deletedForReceiver = true;
+    } else {
+        mail.deletedForSender = true;
     }
     return true;
 }

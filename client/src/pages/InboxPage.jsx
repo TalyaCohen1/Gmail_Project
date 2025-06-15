@@ -11,23 +11,28 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
     const [error, setError] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
 
-    const fetchData = () => {
-    setLoading(true);
-    getInboxEmails()
-      .then(data => {
-        setEmails(data);
-        setError(null);
-      })
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  };
 
   useEffect(() => {
-    // קריאה ראשונית
+      const fetchData = async () => {
+      try {
+        const newEmails = await getInboxEmails();
+        setError(null);
+
+        setEmails(prev => {
+          const same =
+            prev.length === newEmails.length &&
+            prev.every((e, i) => e.id === newEmails[i].id);
+          return same ? prev : newEmails;
+        });
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchData();
-    // polling כל 3 שניות
     const interval = setInterval(fetchData, 3000);
-    // ניקוי ה-interval כשקומפוננטה יורדת
     return () => clearInterval(interval);
   }, []);
 
