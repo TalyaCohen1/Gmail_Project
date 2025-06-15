@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import EmailList from "../components/EmailList"
+import BatchActionsBar from '../components/BatchActionsBar';
 import { getInboxEmails, deleteEmail, updateEmail } from '../services/mailService';
 import "../styles/InboxPage.css";
+import { LabelContext } from '../context/LabelContext';
 
 export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
     const [emails, setEmails] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
-
+    const { labels } = useContext(LabelContext);
 
   useEffect(() => {
       const fetchData = async () => {
@@ -46,6 +48,17 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
       setEmails(emails.filter(e => e.id !== id));
     };
     
+    const performBatchAction = ({ type, labelId }) => {
+      if (type === 'delete') {
+        selectedIds.forEach(id => handleDelete(id));
+      } else if (type === 'addLabel') {
+        selectedIds.forEach(id =>
+          updateEmail(id, { labels: [...(emails.find(e=>e.id===id).labels||[]), labelId] })
+        );
+      }
+      setSelectedIds([]); 
+    };
+
     return (
     <div className="inbox-page">
       <Header toggleSidebar={toggleSidebar} />
@@ -55,12 +68,22 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
           {loading && <p>Loading emails…</p>}
           {error   && <p style={{ color: 'red' }}>{error}</p>}
           {!loading && !error && (
+            <>
+            {/* ← כאן שמים את ה־BatchActionsBar */}
+            {selectedIds.length > 0 && (
+                <BatchActionsBar
+                  selectedCount={selectedIds.length}
+                  labels={labels}
+                  onAction={performBatchAction}
+                />
+            )}
             <EmailList
               emails={emails}
               selectedIds={selectedIds}
               onToggleSelect={toggleSelect}
               onDelete={handleDelete}
             />
+          </>
           )}
         </div>
       </div>
