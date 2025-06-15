@@ -28,7 +28,7 @@
 .label-manager-header h3 { /* Using h3 as in JSX */
     font-size: 16px; /* Smaller font size for sub-sections */
     font-weight: 500;
-    color: #202124; /* Darker color for section headers, matching default labels */
+    color: var(--text-primary) ;
     margin: 0; /* Remove default margin */
     display: flex; /* For possible icon next to 'Labels' */
     align-items: center;
@@ -79,7 +79,7 @@
     border-radius: 9999px; /* Makes it pill-shaped */
     transition: background-color 0.2s ease;
     font-size: 16px;
-    color: #202124; /* Default text color */
+    color: var(--text-primary)
 }
 
 .label-list li:hover {
@@ -89,7 +89,7 @@
 /* --- Label Name (Clickable) --- */
 .label-list span.label-name-clickable {
     font-weight: 400; /* Regular weight, not bold */
-    color: #202124;
+    color: var(--text-primary); /* Use theme variable for text color */
     cursor: pointer;
     flex-grow: 1; /* Allows name to take available space */
     padding: 2px 0; /* Adjust vertical padding */
@@ -117,7 +117,7 @@
     border: none;
     cursor: pointer;
     padding: 4px;
-    color: #5f6368;
+    color: var(--text-secondary); /* Use theme variable for text color */
     transition: color 0.2s ease, background-color 0.2s ease;
     border-radius: 50%;
     width: 28px; /* Smaller clickable area for icon */
@@ -129,18 +129,18 @@
 }
 
 .three-dots-button:hover {
-    background-color: #e0e0e0;
-    color: #202124;
+    background-color: var(--hover-background); /* Use theme variable for hover background */
+    color: var(--text-primary); /* Change text color on hover */
 }
 
 .label-action-menu {
     position: absolute;
     top: 100%;
     right: 0;
-    background: #fff;
-    border: 1px solid #dadce0;
+    background: var(--background-primary); /* Use theme variable for background */
+    border: 1px solid var(--border-color); /* Use theme variable for border */
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 6px var(--shadow-color); /* Use theme variable for shadow */
     display: flex;
     flex-direction: column;
     min-width: 120px;
@@ -155,7 +155,7 @@
     text-align: left;
     cursor: pointer;
     font-size: 14px;
-    color: #202124;
+    color: var(--text-primary); /* Use theme variable for text color */
     transition: background-color 0.2s ease;
     width: 100%;
     border-radius: 0;
@@ -172,7 +172,7 @@
 }
 
 .label-action-menu button:hover {
-    background-color: #f1f3f4;
+    background-color: var(--hover-background); /* Use theme variable for hover background */
 }
 
 .modal-overlay {
