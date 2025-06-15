@@ -114,6 +114,11 @@ const updateUser = (req, res) => {
   if (req.file) {
     userToUpdate.profileImage = `/uploads/${req.file.filename}`;
   }
+    return res.json({
+    message: 'User updated successfully',
+    fullName: userToUpdate.fullName,
+    profileImage: userToUpdate.profileImage,
+  });
 }
 
 // Export the functions to be used in routes

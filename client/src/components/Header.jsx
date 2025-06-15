@@ -70,68 +70,70 @@ function Header({ toggleSidebar }) {
 
 
   return (
-    <header className="gmail-header">
-      <div className="header-left-section">
-        <button onClick={toggleSidebar} className="sidebar-toggle-button">
-          <img src="/icons/menu.svg" alt="Menu" className="menu-icon" />
-        </button>
-        <div className="header-logo">
-          <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-logo-icon" />
-        </div>
-      </div>
-
-      <form onSubmit={handleSearch} className="header-search-form">
-        <button type="submit" className="header-search-button">
-          <img src="/icons/search.svg" alt="Search" className="search-icon" />
-        </button>
-        <input
-          type="text"
-          placeholder="Search mails..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="header-search-input"
-        />
-      </form>
-
-      <div className="header-right-section">
-        <div className="settings-container">
-          <button onClick={() => setSettingsMenuOpen(!isSettingsMenuOpen)} className="settings-button">
-            <img src="/icons/settings.svg" alt="Settings" className="settings-icon" />
+    <>
+      <header className="gmail-header">
+        <div className="header-left-section">
+          <button onClick={toggleSidebar} className="sidebar-toggle-button">
+            <img src="/icons/menu.svg" alt="Menu" className="menu-icon" />
           </button>
-          {isSettingsMenuOpen && (
-            <div className="settings-menu">
-              <button onClick={toggleTheme} className="theme-toggle-button">
-                {theme === 'light' ? 'Enable Dark Mode' : 'Disable Dark Mode'}
-              </button>
-            </div>
-          )}
-        </div>
-         <div className="profile-section" ref={menuRef}>
-        <img
-          src={profileImage}
-          alt="Profile"
-          width="40"
-          height="40"
-          style={{ borderRadius: '50%', cursor: 'pointer' }}
-          onClick={() => setShowMenu(prev => !prev)}
-        />
-        <div className="profile-greeting">Hello, {fullName}</div>
-         {showMenu && (
-          <div className="dropdown-menu">
-            <div className="dropdown-item" onClick={() => setShowEditPopup(true)}>Edit Profile</div>
-            <div className="dropdown-item" onClick={handleLogout}>Logout</div>
+          <div className="header-logo">
+            <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-logo-icon" />
           </div>
-        )}
-        {showEditPopup && (
-          <EditProfilePopup
-            currentName={localStorage.getItem('fullName')}
-            currentImage={localStorage.getItem('profileImage')}
-            onClose={() => setShowEditPopup(false)}
+        </div>
+
+        <form onSubmit={handleSearch} className="header-search-form">
+          <button type="submit" className="header-search-button">
+            <img src="/icons/search.svg" alt="Search" className="search-icon" />
+          </button>
+          <input
+            type="text"
+            placeholder="Search mails..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="header-search-input"
           />
-        )}
-      </div>
-      </div>
-    </header>
+        </form>
+
+        <div className="header-right-section">
+          <div className="settings-container">
+            <button onClick={() => setSettingsMenuOpen(!isSettingsMenuOpen)} className="settings-button">
+              <img src="/icons/settings.svg" alt="Settings" className="settings-icon" />
+            </button>
+            {isSettingsMenuOpen && (
+              <div className="settings-menu">
+                <button onClick={toggleTheme} className="theme-toggle-button">
+                  {theme === 'light' ? 'Enable Dark Mode' : 'Disable Dark Mode'}
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="profile-section" ref={menuRef}>
+            <img
+              src={profileImage}
+              alt="Profile"
+              width="40"
+              height="40"
+              style={{ borderRadius: '50%', cursor: 'pointer' }}
+              onClick={() => setShowMenu(prev => !prev)}
+            />
+            <div className="profile-greeting">Hello, {fullName}</div>
+            {showMenu && (
+              <div className="dropdown-menu">
+                <div className="dropdown-item" onClick={() => setShowEditPopup(true)}>Edit Profile</div>
+                <div className="dropdown-item" onClick={handleLogout}>Logout</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+      {showEditPopup && (
+        <EditProfilePopup
+          currentName={localStorage.getItem('fullName')}
+          currentImage={localStorage.getItem('profileImage')}
+          onClose={() => setShowEditPopup(false)}
+        />
+      )}
+    </>
   );
 }
 

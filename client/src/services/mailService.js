@@ -92,7 +92,7 @@ export async function updateEmail(id, patchData) {
     }
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || `Failed to update email ${id}`);
+        throw new Error(err.error || `Failed to update email ${id}`);
     }
     return res.json();
 }
