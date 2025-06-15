@@ -128,7 +128,11 @@ function deleteMail(email, id) {
 }
 
 /**
- * 
+ * Add a label to a mail.
+ * @param {string} email
+ * @param {number} id
+ * @param {string} labelId
+ * @returns true if added, false otherwise
  */
 function addLabel(email, id, labelId) {
     const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));

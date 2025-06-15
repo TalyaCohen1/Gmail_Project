@@ -12,16 +12,24 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
     const [selectedIds, setSelectedIds] = useState([]);
 
     const fetchData = () => {
-      setLoading(true);
-      getInboxEmails()
-        .then(data => setEmails(data))
-        .catch(err => setError(err.message))
-        .finally(() => setLoading(false));
-    };
+    setLoading(true);
+    getInboxEmails()
+      .then(data => {
+        setEmails(data);
+        setError(null);
+      })
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  };
 
-    useEffect(() => {
-      fetchData();
-    }, []);
+  useEffect(() => {
+    // קריאה ראשונית
+    fetchData();
+    // polling כל 3 שניות
+    const interval = setInterval(fetchData, 3000);
+    // ניקוי ה-interval כשקומפוננטה יורדת
+    return () => clearInterval(interval);
+  }, []);
 
     const toggleSelect = id =>
       setSelectedIds(prev =>
