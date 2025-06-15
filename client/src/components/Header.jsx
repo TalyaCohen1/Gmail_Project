@@ -82,6 +82,9 @@ function Header({ toggleSidebar }) {
       </div>
 
       <form onSubmit={handleSearch} className="header-search-form">
+        <button type="submit" className="header-search-button">
+          <img src="/icons/search.svg" alt="Search" className="search-icon" />
+        </button>
         <input
           type="text"
           placeholder="Search mails..."
@@ -89,7 +92,6 @@ function Header({ toggleSidebar }) {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="header-search-input"
         />
-        <button type="submit" className="header-search-button">Search</button>
       </form>
 
       <div className="header-right-section">
