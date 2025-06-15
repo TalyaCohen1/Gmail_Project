@@ -1,3 +1,5 @@
+const { get } = require("../routes/mailRoutes");
+
 let mails = [];
 let nextId = 1;
 let draftMails = [];
@@ -13,7 +15,7 @@ function getAll(email) {
             (m.from === email && !m.deletedForSender)
         )
         .sort((a, b) => b.timestamp - a.timestamp)
-        .slice(0, 50);
+        .slice(0, 25);
 }
 
 /**
@@ -45,7 +47,8 @@ function search(email, query) {
 
 function createDraft({ from, to, subject, body}) {
     const timestamp = Date.now();
-    const draft = { id: nextId++, from, to, subject, body, timestamp };
+    const date = new Date().toISOString()
+    const draft = { id: nextId++, from, to, subject, body, date, timestamp };
     draftMails.push(draft);
     return draft;
 }
@@ -59,12 +62,19 @@ function createDraft({ from, to, subject, body}) {
  * 
  * @returns the newly created mail object
  */
-function createMail({ from, to, subject, body, id = nextId++ }) {
+function createMail({ from, to, subject, body, id }) {
+    if (id === undefined || id === null) {
+        id = nextId++;
+    }
     const timestamp = Date.now();
-    const mail = { id, from, to, subject, body, timestamp , deletedForSender: false, deletedForReceiver: false };
+    const date = new Date().toISOString()
+    const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labelsForSender: [],
+        labelsForReceiver: [] };
+    
     mails.push(mail);
     return mail;
 }
+
 
 /**
  * Update an existing mail’s subject/body,
@@ -100,6 +110,10 @@ function deleteFromDrafts(id) {
     return true;
 }
 
+function getDrafts(email) {
+    return draftMails.filter(d => d.from === email);
+}
+
 /**
  * Delete a mail, only if email is the email of the sender or recipient.
  * @param {string} email
@@ -109,12 +123,76 @@ function deleteFromDrafts(id) {
 function deleteMail(email, id) {
     const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
     if (!mail) return false;
-    if (mail.from === email) {
-        mail.deletedForSender = true;
-    } else {
+    if (mail.to === email) {
         mail.deletedForReceiver = true;
+    } else {
+        mail.deletedForSender = true;
     }
     return true;
+}
+
+/**
+ * Add a label to a mail.
+ * @param {string} email
+ * @param {number} id
+ * @param {string} labelId
+ * @returns true if added, false otherwise
+ */
+function addLabel(email, id, labelId) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return false;
+    if (mail.from === email) {
+        if (!mail.labelsForSender.includes(labelId)) {
+            mail.labelsForSender.push(labelId);
+        }
+    } else if (mail.to === email) {
+        if (!mail.labelsForReceiver.includes(labelId)) {
+            mail.labelsForReceiver.push(labelId);
+        }
+        return true;
+    }
+    return false;
+}
+
+
+function removeLabel(email, id, labelId) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return false;
+    if (mail.from === email) {
+        mail.labelsForSender = mail.labelsForSender.filter(l => l !== labelId);
+    } else if (mail.to === email) {
+        mail.labelsForReceiver = mail.labelsForReceiver.filter(l => l !== labelId);
+    } else {
+        return false; // Not the owner of the mail
+    }
+    mail.labelsForSender = mail.labelsForSender.filter(l => l !== labelId);
+    mail.labelsForReceiver = mail.labelsForReceiver.filter(l => l !== labelId);
+    return true;
+}
+
+function getLabels(email, id) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return null;
+    if (mail.from === email) {
+        return mail.labelsForSender;
+    }
+    if (mail.to === email) {
+        return mail.labelsForReceiver;
+    }
+}
+
+function getInbox(email) {
+  return mails
+    .filter(m => m.to === email && !m.deletedForReceiver)
+    .sort((a,b) => b.timestamp - a.timestamp)
+    .slice(0,25);
+}
+
+function getSent(email) {
+  return mails
+    .filter(m => m.from === email && !m.deletedForSender)
+    .sort((a,b) => b.timestamp - a.timestamp)
+    .slice(0,25);
 }
 
 module.exports = {
@@ -124,5 +202,11 @@ module.exports = {
     search,
     createDraft,
     updateDraft,
-    deleteMail
+    getDrafts,
+    deleteMail,
+    addLabel,
+    removeLabel,
+    getLabels,
+    getInbox,
+    getSent
 };

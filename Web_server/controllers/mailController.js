@@ -118,7 +118,8 @@ exports.updateDraft = async (req, res) => {
             const blacklisted = await checkUrl(url);
 
             if (blacklisted) {
-                return res.status(400).json({ error: `Contains blacklisted link: ${url}` });
+                // return res.status(400).json({ error: `Contains blacklisted link: ${url}` });
+                // if its blacklisted, we would like the mail when sent to go to spam of the receiver
             }
         } catch (e) {
             return res.status(500).json({ error: 'Blacklist service error' });
@@ -145,4 +146,70 @@ exports.deleteMail = (req, res) => {
         return res.status(404).json({ error: 'Mail not found' });
     }
     res.sendStatus(204);
+};
+
+/**
+ * POST /api/mails/:id/labels
+ */
+exports.addLabel = (req, res) => {
+    const id = Number(req.params.id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const { label } = req.body;
+    const updated = mailModel.addLabel(email, id, label);
+    if (!updated) {
+        return res.status(404).json({ error: 'Mail not found' });
+    }
+    res.status(201).json(updated);
+};
+/**
+ * DELETE /api/mails/:id/labels/:labelId
+ */
+exports.removeLabel = (req, res) => {
+    const id = Number(req.params.id);
+    const labelId = Number(req.params.labelId);
+    const email = userModel.findById(req.userId).emailAddress;
+    const updated = mailModel.removeLabel(email, id, labelId);
+    if (!updated) {
+        return res.status(404).json({ error: 'Mail not found' });
+    }
+    res.sendStatus(204);
+};
+/**
+ * GET /api/mails/:id/labels
+ */
+exports.getLabels = (req, res) => {
+    const id = Number(req.params.id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const labels = mailModel.getLabels(email, id);
+    if (!labels) {
+        return res.status(404).json({ error: 'Mail not found' });
+    }
+    res.status(200).json(labels);
+};
+
+/**
+ * GET /api/mails/drafts
+ */
+exports.getDrafts = (req, res) => {
+    const email = userModel.findById(req.userId).emailAddress;
+    const drafts = mailModel.getDrafts(email);
+    res.status(200).json(drafts);
+};
+
+/**
+ * GET /api/mails/inbox
+ */
+exports.getInbox = (req, res) => {
+    const email = userModel.findById(req.userId).emailAddress;
+    const inbox = mailModel.getInbox(email);
+    res.status(200).json(inbox);
+};
+
+/**
+ * GET /api/mails/sent
+ */
+exports.getSent = (req, res) => {
+    const email = userModel.findById(req.userId).emailAddress;
+    const sent = mailModel.getSent(email);
+    res.status(200).json(sent);
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createEmail, updateEmail } from "../services/mailService";
 import "../styles/Mail.css";
 
@@ -13,6 +13,8 @@ export default function CreateMail({ onSend, onClose }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
     const [isMaximized, setIsMaximized] = useState(false);
+    const hasCreatedDraft = useRef(false);
+
 
     // Function to toggle the minimized state
     const handleMinimize = () => {
@@ -28,8 +30,10 @@ export default function CreateMail({ onSend, onClose }) {
 
     // Initialize a new draft
     const createDraft = async () => {
+        console.log("🔵 Creating a new draft");
            try {
                 const data = await createEmail({ to: " ", subject: " ", body: " ", send: false });
+                    console.log("Created draft with id:", data.id); // לוודא
                 setDraft(data);
             } catch (err) {
                 setError(err.message);
@@ -38,8 +42,12 @@ export default function CreateMail({ onSend, onClose }) {
 
     // Create a new draft when the component mounts
     useEffect(() => {
+    if (!hasCreatedDraft.current) {
+        console.log("🟢 useEffect triggered for createDraft");
         createDraft();
-    }, []);
+        hasCreatedDraft.current = true;
+    }
+}, []);
         
 
     // Save changes to the draft
@@ -85,7 +93,6 @@ export default function CreateMail({ onSend, onClose }) {
             setTo('');
             setSubject('');
             setBody('');
-            await createDraft(); // Create a new draft for the next mail
             onClose && onClose(); // Close the compose popup
         } catch (err) {
             setError(err.message);
