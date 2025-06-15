@@ -23,7 +23,6 @@ export default function EditProfilePopup({ onClose, currentName, currentImage })
       const res = await fetch(`http://localhost:3000/api/users/${localStorage.getItem('userId')}`, {
         method: "PATCH",
         body: formData,
-        credentials: "include",
       });
 
       if (!res.ok) throw new Error("Failed to update profile");

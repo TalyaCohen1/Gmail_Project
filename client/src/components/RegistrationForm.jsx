@@ -104,6 +104,7 @@ const RegistrationForm = () => {
             // Store user data in localStorage
             localStorage.setItem('fullName', data.fullName);
             localStorage.setItem('profileImage', data.profileImage);
+            localStorage.setItem('userId', data.userId); // Assuming the response contains a user ID
             console.log("1:", localStorage.getItem('profileImage')); 
 
             localStorage.setItem('token', data.token || ''); // Assuming the response contains a token

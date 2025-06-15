@@ -120,6 +120,7 @@ function Header({ toggleSidebar }) {
           style={{ borderRadius: '50%', cursor: 'pointer' }}
           onClick={() => setShowMenu(prev => !prev)}
         />
+        <div className="profile-greeting">Hello, {fullName}</div>
          {showMenu && (
           <div className="dropdown-menu">
             <div className="dropdown-item" onClick={() => setShowEditPopup(true)}>Edit Profile</div>
