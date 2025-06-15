@@ -10,7 +10,7 @@ const users = []; //for user data
  * @param {string} password - The user's password (should be hashed in production).
  * @returns {Object} The created user object.
  */
-const createUser = (fullName, id,emailAddress,birthDate, gender, password ,profileImage = '/default-profile.png' ) => {
+const createUser = (fullName, id, emailAddress, birthDate, gender, password, profileImage = '/uploads/default-profile.png') => {
     const user = {
         fullName,
         id,

@@ -13,6 +13,24 @@
   animation: slideUp 0.25s ease-out;
   font-family: 'Arial', sans-serif;
 }
+.compose-popup.minimized {
+  height: 40px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.compose-popup.maximized {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  height: auto;
+  width: auto;
+  z-index: 9999;
+  transition: all 0.3s ease;
+}
+
 
 @keyframes slideUp {
   from {
