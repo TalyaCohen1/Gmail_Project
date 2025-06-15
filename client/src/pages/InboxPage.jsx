@@ -1,9 +1,11 @@
 // src/pages/InboxPage.jsx
 
 import React, { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import EmailList from "../components/EmailList";
+import EmailDetail from '../components/EmailDetail';
 import { getInboxEmails, deleteEmail } from '../services/mailService';
 import { useDisplayEmails } from '../context/DisplayEmailsContext'; // NEW: Import DisplayEmailsContext hook
 import "../styles/InboxPage.css";
@@ -12,6 +14,8 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
     // Use the new context for displayed emails and their loading/error states
     const { displayedEmails, setDisplayedEmails, displayLoading, setDisplayLoading, displayError, setDisplayError } = useDisplayEmails();
     const [selectedIds, setSelectedIds] = useState([]);
+    const [openedEmail, setOpenedEmail] = useState(null);
+
 
     // This useEffect will now use the context's setters to update displayed emails
     useEffect(() => {
@@ -61,15 +65,20 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
                     {displayLoading && <p>Loading emails…</p>} {/* Use context's loading state */}
                     {displayError   && <p style={{ color: 'red' }}>{displayError}</p>} {/* Use context's error state */}
                     {!displayLoading && !displayError && (
+                    openedEmail ? (
+                        <EmailDetail email={openedEmail} onClose={() => setOpenedEmail(null)} />
+                    ) : (
                         <EmailList
-                            emails={displayedEmails} // Render emails from context
+                            emails={displayedEmails}
                             selectedIds={selectedIds}
                             onToggleSelect={toggleSelect}
                             onDelete={handleDelete}
+                            onOpenEmail={setOpenedEmail} //send to the func that shows the email detail
                         />
-                    )}
-                </div>
+                    )
+                )}
             </div>
         </div>
+    </div>
     );
 }
