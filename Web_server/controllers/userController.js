@@ -97,10 +97,30 @@ const getAllUsers = (req, res) => {
   res.status(200).json(users);
 };
 
+// Update user information
+const updateUser = (req, res) => {
+  const userId = req.params.id;
+  const { fullName } = req.body;
+
+  const users = userModel.getAllUsers();
+  const userToUpdate = userModel.findById(userId);
+  if (!userToUpdate) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  // Update the user information
+  if (fullName) {
+    userToUpdate.fullName = fullName;
+  }
+  if (req.file) {
+    userToUpdate.profileImage = `/uploads/${req.file.filename}`;
+  }
+}
+
 // Export the functions to be used in routes
 module.exports = {
   register,
   login,
   getUserById,
-  getAllUsers
+  getAllUsers,
+  updateUser
 };

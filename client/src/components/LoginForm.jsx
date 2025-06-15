@@ -34,7 +34,10 @@ function LoginForm({onLoginSuccess }) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('fullName', data.fullName);
             localStorage.setItem('profileImage', data.profileImage || '/uploads/default-profile.png');
-
+            localStorage.setItem('userId', data.userId); // Assuming the response contains a user ID
+            console.log("login: User ID:", localStorage.getItem('userId'));
+            console.log("login: Profile Image:", localStorage.getItem('profileImage'));
+            console.log("login: Full Name:", localStorage.getItem('fullName'));
             onLoginSuccess(data.token); // Assuming the response contains a token
             
            } catch (err) {
