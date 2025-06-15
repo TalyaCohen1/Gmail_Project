@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { getEmailById } from '../services/emailService';
+import { getEmailById } from '../services/mailService';
 
 // Context to manage fetching and storing mails by ID list
 export const SelectedMailsContext = createContext({

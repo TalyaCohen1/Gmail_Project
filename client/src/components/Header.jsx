@@ -1,25 +1,25 @@
-
 // src/components/Header.jsx
-import { ThemeContext } from '../context/ThemeContext'; // Import ThemeContext
+
+import { ThemeContext } from '../context/ThemeContext';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import '../styles/Header.css';
 import { useNavigate } from 'react-router-dom';
-import EditProfilePopup from './Profile'; // Import the EditProfilePopup component
+import EditProfilePopup from './Profile';
+import { searchEmails } from '../services/mailService'; // Import searchEmails
+import { useDisplayEmails } from '../context/DisplayEmailsContext'; // Import useDisplayEmails
 
 function Header({ toggleSidebar }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSettingsMenuOpen, setSettingsMenuOpen] = useState(false); // State for settings menu
-  const { theme, toggleTheme } = useContext(ThemeContext); // Use the theme context
+  const [isSettingsMenuOpen, setSettingsMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useContext(ThemeContext);
   const [showMenu, setShowMenu] = useState(false);
   const [showEditPopup, setShowEditPopup] = useState(false);
 
-  // const [fullName, setFullName] = useState('');
-  // const [profileImage, setProfileImage] = useState('http://localhost:3000/uploads/default-profile.png');
-
-
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Access display context functions
+  const { setDisplayedEmails, setDisplayLoading, setDisplayError } = useDisplayEmails();
 
   const fullName = localStorage.getItem('fullName');
   const profileImage = localStorage.getItem('profileImage')
@@ -33,30 +33,26 @@ function Header({ toggleSidebar }) {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
+    setDisplayLoading(true); // Indicate loading
+    setDisplayError(null);   // Clear previous errors
+
     try {
-      const response = await fetch(`http://localhost:3000/mails/search/${encodeURIComponent(searchQuery)}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const data = await searchEmails(searchQuery); // Use searchEmails to get mail objects
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      // Set the search results directly to be displayed
+      setDisplayedEmails(data);
 
-      const data = await response.json();
-      setSearchResults(data); // store results
-
-      // TODO: You can either display them here or lift state up via props
-
-      console.log('Search results:', data);
+      console.log('Search results (full objects from mailService):', data);
     } catch (error) {
       console.error('Search error:', error);
+      setDisplayError(`Error searching emails: ${error.message}`); // Set error
+      setDisplayedEmails([]); // Clear displayed emails on error
+    } finally {
+      setDisplayLoading(false); // End loading
     }
   };
-   const handleLogout = () => {
+
+  const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
   };
@@ -79,9 +75,7 @@ function Header({ toggleSidebar }) {
         <button onClick={toggleSidebar} className="sidebar-toggle-button">
           <img src="/icons/menu.svg" alt="Menu" className="menu-icon" />
         </button>
-        {/* Moved after the menu button */}
         <div className="header-logo">
-          {/* Changed className from gmail-icon to gmail-logo-icon */}
           <img src="/gmail_logo.png" alt="Gmail Logo" className="gmail-logo-icon" />
         </div>
       </div>
@@ -100,7 +94,6 @@ function Header({ toggleSidebar }) {
       </form>
 
       <div className="header-right-section">
-        {/* Moved before profile-section */}
         <div className="settings-container">
           <button onClick={() => setSettingsMenuOpen(!isSettingsMenuOpen)} className="settings-button">
             <img src="/icons/settings.svg" alt="Settings" className="settings-icon" />
@@ -138,20 +131,6 @@ function Header({ toggleSidebar }) {
         )}
       </div>
       </div>
-
-      {searchResults && (
-        <div className="search-results">
-          <h3>Results:</h3>
-          <ul>
-            {searchResults.length === 0 && <li>No mails found.</li>}
-            {searchResults.map(mail => (
-              <li key={mail.id}>
-                <strong>{mail.subject}</strong> - {mail.snippet || mail.body.slice(0, 100)}...
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </header>
   );
 }
