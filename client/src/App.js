@@ -17,6 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { LabelProvider } from './context/LabelContext';
 import { ThemeProvider } from './context/ThemeContext'; // Import ThemeProvider
 import { DisplayEmailsProvider } from './context/DisplayEmailsContext'; // NEW import for DisplayEmailsProvider
+import { ComposerProvider } from './context/ComposerContext';
 
 function HomeContent() {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/inbox/*" element={
             // Move ThemeProvider inside ProtectedRoute/Inbox for conditional theming
             <DisplayEmailsProvider>
+            <ComposerProvider>
             <ThemeProvider> {/* THEME PROVIDER MOVED HERE */}
               <LabelProvider>
                 <ProtectedRoute>
@@ -58,6 +60,7 @@ export default function App() {
                 </ProtectedRoute>
               </LabelProvider>
             </ThemeProvider>
+            </ComposerProvider>
             </DisplayEmailsProvider>
           } />
         </Routes>

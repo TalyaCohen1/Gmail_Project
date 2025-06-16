@@ -123,7 +123,10 @@ const LabelManager = ({ setDisplayedEmails, setDisplayLoading, setDisplayError }
                             />
                             {/* Changed span to button for better accessibility and click handling */}
                             <button onClick={() => handleShowMailsForLabel(label.id)} className="label-name-clickable">
-                                {label.name}
+                                <span>{label.name}</span>
+                                {label.mails && label.mails.length > 0 && (
+                                    <span className="mail-count">{label.mails.length}</span>
+                                )}
                             </button>
                             <div className="label-actions-container">
                                 <button className="three-dots-button" onClick={() => toggleMenu(label.id)}>
