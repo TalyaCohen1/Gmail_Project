@@ -10,12 +10,12 @@ import "../styles/InboxPage.css";
 import { LabelContext } from '../context/LabelContext';
 
 export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
-    // Use the new context for displayed emails and their loading/error states
-    const { displayedEmails, setDisplayedEmails, displayLoading, setDisplayLoading, displayError, setDisplayError } = useDisplayEmails();
-    const [loading, setLoading]         = useState(true);
-    const [error, setError]             = useState(null);
-    const [selectedIds, setSelectedIds] = useState([]);
-    const [emails, setEmails] = useState([]);
+  // Use the new context for displayed emails and their loading/error states
+  const { displayedEmails, setDisplayedEmails, displayLoading, setDisplayLoading, displayError, setDisplayError } = useDisplayEmails();
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [emails, setEmails] = useState([]);
   const { labels } = useContext(LabelContext);
   
   const fetchData = async () => {
@@ -118,6 +118,10 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
                 selectedIds={selectedIds}
                 onToggleSelect={toggleSelect}
                 onDelete={handleDelete}
+                onToggleStar={(id, v) => updateEmail(id, { starred: v })}
+                onToggleImportant={(id, v) => updateEmail(id, { important: v })}
+                onMarkRead={id => updateEmail(id, { read: true })}
+                onSnooze={id => snoozeEmail(id)}
               />
             </>
           )}
