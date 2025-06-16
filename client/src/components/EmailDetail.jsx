@@ -2,59 +2,63 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getEmailById } from '../services/mailService';
-import CreateMail from './CreateMail';
+import EmailActions from './EmailActions';
 import '../styles/EmailDetail.css';
 
 export default function EmailDetail({ email: inlineEmail, onClose }) {
     const { emailId } = useParams();
     const navigate = useNavigate();
     const [email, setEmail] = useState(inlineEmail || null);
-    const [action, setAction] = useState(null); // "reply" or "forward"
-    const [editingDraft, setEditingDraft] = useState(false);
+    const [loading, setLoading] = useState(!inlineEmail);
+    const [error, setError] = useState('');
     const isRouteMode = !!emailId;
 
-
     useEffect(() => {
-        if (isRouteMode) {
+        if (isRouteMode && !inlineEmail) {
             async function fetchData() {
                 try {
+                    setLoading(true);
                     const result = await getEmailById(emailId);
                     setEmail(result);
+                    setError('');
                 } catch (err) {
                     console.error("Failed to fetch email:", err);
+                    setError('Failed to load email');
+                } finally {
+                    setLoading(false);
                 }
             }
-
             fetchData();
         }
-    }, [emailId, isRouteMode]);
+    }, [emailId, isRouteMode, inlineEmail]);
 
-    if (!email) return <div className="email-detail loading">Loading...</div>;
+    if (loading) {
+        return <div className="email-detail loading">Loading email...</div>;
+    }
 
-     if (editingDraft) {
+    if (error) {
         return (
-            <CreateMail
-                existingEmail={email}
-                onClose={() => setEditingDraft(false)}
-                onSend={() => {
-                    setEditingDraft(false);
-                    if (onClose) onClose();
-                    if(isRouteMode) {
-                        navigate(-1);
-                    }
-                }}
-            />
+            <div className="email-detail error">
+                <p>Error: {error}</p>
+                <button onClick={() => isRouteMode ? navigate(-1) : onClose()}>
+                    Go Back
+                </button>
+            </div>
         );
     }
-    const isDraft = email.send === false;
 
-    const getQuotedBody = (label) => `\n\n--- ${label} ---\n${email.body}`;
+    if (!email) {
+        return <div className="email-detail loading">No email found</div>;
+    }
 
-    const defaultValues = action && {
-    to: action === 'reply' ? email.from : '',
-    subject: `${action === 'reply' ? 'RE' : 'FWD'}: ${email.subject}`,
-    body: getQuotedBody(action === 'reply' ? 'Original Message' : 'Forwarded Message'),
-  };
+    const handleEmailUpdate = (updatedEmail) => {
+        setEmail(updatedEmail);
+        if (onClose) onClose();
+        if (isRouteMode) {
+            navigate(-1);
+        }
+    };
+
     return (
         <div className="email-detail">
             <div className="email-detail-header">
@@ -63,50 +67,31 @@ export default function EmailDetail({ email: inlineEmail, onClose }) {
                 ) : (
                     <button onClick={onClose}>× Close</button>
                 )}
-                <h2 className="email-subject">{email.subject}</h2>
+                <h2 className="email-subject">{email.subject || '(No Subject)'}</h2>
             </div>
 
             <div className="email-meta">
                 <p><strong>From:</strong> {email.from}</p>
-                <p><strong>To:</strong> {email.to}</p>
+                <p><strong>To:</strong> {Array.isArray(email.to) ? email.to.join(', ') : email.to}</p>
                 <p><strong>Date:</strong> {new Date(email.date).toLocaleString()}</p>
             </div>
 
-            <div className="labels">
-                {(email.labels || []).map(label => (
-                    <span key={label.id} className="tag">{label.name}</span>
-                ))}
-            </div>
-
-            <hr />
+            {email.labels && email.labels.length > 0 && (
+                <div className="labels">
+                    {email.labels.map(label => (
+                        <span key={label.id} className="tag">{label.name}</span>
+                    ))}
+                </div>
+            )}
 
             <div className="email-body">
-                {email.body}
+                {email.body || '(No content)'}
             </div>
 
-            <hr />
-
-             <div className="email-actions">
-                {isDraft ? (
-                    <button onClick={() => setEditingDraft(true)}>✏️ Edit Draft</button>
-                ) : (
-                    <>
-                    <button>★ Star</button>
-                <button onClick={() => setAction('reply')}>↩️ Reply</button>
-                <button onClick={() => setAction('forward')}>↪️ Forward</button>
-            
-                    </>
-                )}
-             </div>
-        {action && (
-        <div className="inline-reply">
-          <CreateMail
-            defaultValues={defaultValues}
-            onSend={() => setAction(null)}
-            onClose={() => setAction(null)}
-          />
-        </div>
-      )}
+            <EmailActions 
+                email={email} 
+                onEmailUpdate={handleEmailUpdate}
+            />
         </div>
     );
 }

@@ -35,14 +35,23 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
     };
 
     useEffect(() => {
-        if (!existingEmail && !hasCreatedDraft.current) {
-            createDraft();
-            hasCreatedDraft.current = true;
+        if (existingEmail) {
+            setDraft(existingEmail);
+        } else if (!hasCreatedDraft.current) {
+            (async () => {
+                try {
+                    const data = await createEmail({ to: " ", subject: " ", body: " ", send: false });
+                    setDraft(data);
+                    hasCreatedDraft.current = true;
+                } catch (err) {
+                    setError(err.message);
+                }
+            })();
         }
     }, [existingEmail]);
 
     useEffect(() => {
-        if (!draft || !draft.id) return;
+        if (!draft || !draft.id || existingEmail) return;
         setIsSaving(true);
         const timeout = setTimeout(() => {
             updateEmail(draft.id, { to, subject, body, send: false })
