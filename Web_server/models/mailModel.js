@@ -183,6 +183,10 @@ function getSent(email) {
     return mails.filter(m => m.from === email && !m.deletedForSender);
 }
 
+function getSpam(email) {
+    return mails.filter(m => m.to === email && m.isSpam && !m.deletedForReceiver);
+}
+
 function markAsSpam(mail, id) {
     if (!mail) return null;
     mail.isSpam = true;
@@ -244,6 +248,7 @@ module.exports = {
     getDrafts,
     getInbox,
     getSent,
+    getSpam,
     markAsSpam,
     unmarkAsSpam,
     getDeletedMails,
