@@ -48,7 +48,7 @@ export default function App() {
           <Route path="/" element={<HomeContent />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/inbox" element={
+          <Route path="/inbox/*" element={
             // Move ThemeProvider inside ProtectedRoute/Inbox for conditional theming
             <DisplayEmailsProvider>
             <ThemeProvider> {/* THEME PROVIDER MOVED HERE */}
