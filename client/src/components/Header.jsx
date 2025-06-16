@@ -26,9 +26,6 @@ function Header({ toggleSidebar }) {
   ? `http://localhost:3000${localStorage.getItem('profileImage')}`
   : 'http://localhost:3000/uploads/default-profile.png';
 
-  console.log("2: Profile Image:", profileImage);
-
-
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
