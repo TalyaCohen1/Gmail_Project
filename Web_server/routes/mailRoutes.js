@@ -26,6 +26,21 @@ router.get('/spam', authenticateToken, controller.getSpamMails); // New route fo
 
 router.get('/deleted', authenticateToken, controller.getDeletedMails); // New route for deleted mails
 
+// Mark a mail as important
+router.post('/:id/important', authenticateToken, controller.markMailAsImportant);
+// Unmark a mail as important
+router.delete('/:id/important', authenticateToken, controller.unmarkMailAsImportant);
+// Get all important mails
+router.get('/important', authenticateToken, controller.getImportantMails);
+
+// Mark a mail as starred
+router.post('/:id/star', authenticateToken, controller.markMailAsStarred);
+// Unmark a mail as starred
+router.delete('/:id/star', authenticateToken, controller.unmarkMailAsStarred);
+// Get all starred mails
+router.get('/starred', authenticateToken, controller.getStarredMails);
+
+
 // Retrieve a single mail by ID
 router.get('/:id', authenticateToken, controller.getMail);
 
