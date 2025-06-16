@@ -5,6 +5,9 @@ import LabelModal from './LabelModal';
 import '../styles/LabelManager.css';
 import { useLabels } from '../context/LabelContext';
 
+// Define default label names (must match what you use in labelModel.js)
+const DEFAULT_LABEL_NAMES = ['Social', 'Updates', 'Forums', 'Promotions']; // Add any other default labels you create
+
 // Accepts new props for managing displayed emails from Sidebar
 const LabelManager = ({ setDisplayedEmails, setDisplayLoading, setDisplayError }) => {
     const { labels, loading, error, addLabel, editLabel, deleteLabel, fetchMailsForLabel } = useLabels();
@@ -85,6 +88,9 @@ const LabelManager = ({ setDisplayedEmails, setDisplayLoading, setDisplayError }
     if (loading) return <div>Loading labels...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
+    // Filter out default labels before mapping
+    const customLabels = labels.filter(label => !DEFAULT_LABEL_NAMES.includes(label.name));
+
     return (
         <div className="label-manager">
             <div className="label-manager-header">
@@ -103,11 +109,11 @@ const LabelManager = ({ setDisplayedEmails, setDisplayLoading, setDisplayError }
                     />
                 </button>
             </div>
-            {labels.length === 0 ? (
+            {customLabels.length === 0 ? (
                 <p style={{ padding: '0 16px' }}>No custom labels yet.</p>
             ) : (
                 <ul className="label-list">
-                    {labels.map((label) => (
+                    {customLabels.map((label) => (
                         <li key={label.id}>
                             <img
                                 src="/icons/labels.svg"

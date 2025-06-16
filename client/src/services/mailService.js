@@ -231,6 +231,11 @@ export async function getSentEmails() {
     return res.json();
 }
 
+export async function getStarredEmails() {
+    const emails = []
+    return emails;
+}
+
 /**
  * Get all spam emails for the authenticated user
  * @return {Promise<Array>} Array of spam emails
