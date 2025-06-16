@@ -218,7 +218,12 @@ exports.getDrafts = (req, res) => {
  * GET /api/mails/inbox
  */
 exports.getInbox = (req, res) => {
-    const email = userModel.findById(req.userId).emailAddress;
+    // Ensure the userId is set in the request object
+    const user = userModel.findById(userId);
+    if (!user) {
+    return res.status(404).json({ error: "User not found" });
+    }
+    const email = user.emailAddress;
     const inbox = mailModel.getInbox(email);
     res.status(200).json(inbox);
 };

@@ -68,37 +68,60 @@ export default function CreateMail({ onSend, onClose }) {
 
     // Send the mail
     const handleSend = async () => {
-        // Check if draft is created
-        if (!draft) {
-            setError('Draft not created yet');
-            return;
-        }
+    if (!draft) {
+        setError('Draft not created yet');
+        return;
+    }
 
-        setError('');
-        setSuccess('');
-        if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
-            setError('Invalid email address');
-            return;
-        }
+    setError('');
+    setSuccess('');
+    
+    const recipients = to.split(',').map(email => email.trim()).filter(Boolean);
 
-        try {
-            const sentMail = await updateEmail(draft.id, { to, subject, body, send: true });
-            setSuccess('Mail sent successfully!');
-            onSend && onSend(sentMail); // callback
+    if (!recipients.every(email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+        setError('One or more email addresses are invalid');
+        return;
+    }
 
-            //init all the fields
-            setTo('');
-            setSubject('');
-            setBody('');
-            onClose && onClose(); // Close the compose popup
-        } catch (err) {
-            if (err.message.includes('Recipient email does not exist')) {
-                setError('This email address is not registered in the system and cannot receive emails.');
-            } else {
-                setError(err.message);
+    try {
+        const sentMails = [];
+
+        for (let i = 0; i < recipients.length; i++) {
+            const recipient = recipients[i];
+
+            let mailIdToSend = draft.id;
+
+            // אם זה לא הראשון, צור טיוטה חדשה
+            if (i > 0) {
+                const newDraft = await createEmail({ to: " ", subject: " ", body: " ", send: false });
+                mailIdToSend = newDraft.id;
             }
+
+            const sentMail = await updateEmail(mailIdToSend, {
+                to: recipient,
+                subject,
+                body,
+                send: true,
+            });
+
+            sentMails.push(sentMail);
+            onSend && onSend(sentMail); // ✅ הוספת callback עבור כל שליחה
         }
-    };
+
+        setSuccess('Mail sent successfully!');
+        setTo('');
+        setSubject('');
+        setBody('');
+        onClose && onClose();
+    } catch (err) {
+        if (err.message.includes('Recipient email')) {
+            setError('One or more email addresses are not registered in the system.');
+        } else {
+            setError(err.message);
+        }
+    }
+};
+
 
     const handleNewMail = async () => {
         setTo('');
