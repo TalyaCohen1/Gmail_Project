@@ -59,7 +59,6 @@ export default function EditProfilePopup({ onClose, currentName, currentImage })
         </div>
       </div>
 
-      {!isMinimized && (
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -79,7 +78,6 @@ export default function EditProfilePopup({ onClose, currentName, currentImage })
           {error && <div style={{ color: 'red' }}>{error}</div>}
           {success && <div style={{ color: 'green' }}>{success}</div>}
         </form>
-      )}
     </div>
   );
 }

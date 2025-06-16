@@ -236,3 +236,21 @@
     min-width: 120px;
   }
 }
+.email-star-top {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 8px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s;
+}
+
+.star-btn.starred {
+  color: gold;
+}

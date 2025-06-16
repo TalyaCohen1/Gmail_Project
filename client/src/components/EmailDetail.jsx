@@ -1,7 +1,7 @@
 // src/components/EmailDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getEmailById } from '../services/mailService';
+import { getEmailById, markEmailAsRead } from '../services/mailService';
 import EmailActions from './EmailActions';
 import '../styles/EmailDetail.css';
 
@@ -31,6 +31,14 @@ export default function EmailDetail({ email: inlineEmail, onClose }) {
             fetchData();
         }
     }, [emailId, isRouteMode, inlineEmail]);
+
+    useEffect(() => {
+    if (email && email.id) {
+        markEmailAsRead(email.id).catch(err =>
+            console.error(`Failed to mark email ${email.id} as read:`, err)
+        );
+    }
+    }, [email]);
 
     if (loading) {
         return <div className="email-detail loading">Loading email...</div>;

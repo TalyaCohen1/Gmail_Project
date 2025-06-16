@@ -20,10 +20,6 @@
   box-shadow: 0 1px 2px rgba(60,64,67,0.1), 0 1px 3px 1px rgba(60,64,67,0.15);
 }
 
-/* Left icons and checkbox - ALWAYS VISIBLE */
-.email-item-left {
-
-/* פריט נבחר - בסגנון גימייל */
 .email-item.selected {
   background-color: #fce8e6;
   border-left: 4px solid #ea4335;
@@ -120,7 +116,7 @@
 }
 
 /* כפתור העוד (⋮) */
-.email-item-right .icon-btn { {
+.email-item-right .icon-btn { 
   background: none;
   border: none;
   padding: 4px;

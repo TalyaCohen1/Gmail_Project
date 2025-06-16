@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import CreateMail from "./CreateMail";
 import { useComposer } from "../context/ComposerContext";
+import { markEmailAsStarred } from "../services/mailService";
+import "../styles/EmailDetail.css";
 
 export default function EmailActions({ email, onEmailUpdate }) {
   const { openComposer } = useComposer();
   const [inlineAction, setInlineAction] = useState(null); // "reply" or "forward"
+  const [isStarred, setIsStarred] = useState(email.starred || false);
 
   const isDraft =
     email.send === false ||
@@ -17,7 +20,7 @@ export default function EmailActions({ email, onEmailUpdate }) {
   const handleForward = () => setInlineAction("forward");
 
   const handleEditDraft = () => {
-    openComposer({ existingEmail: email }); // קופץ
+    openComposer({ existingEmail: email }); 
   };
 
   const getDefaultValues = () => {
@@ -43,14 +46,27 @@ export default function EmailActions({ email, onEmailUpdate }) {
     if (sentEmail && onEmailUpdate) onEmailUpdate(sentEmail);
   };
 
+  const handleToggleStar = async () => {
+    try {
+      await markEmailAsStarred(email.id);
+      setIsStarred(prev => !prev);
+    } catch (err) {
+      console.error("Failed to star email", err);
+    }
+  };
+
   return (
     <>
+    <div className="email-star-top">
+      <button onClick={handleToggleStar} className={`star-btn ${isStarred ? 'starred' : ''}`}>
+        {isStarred ? '★' : '☆'}
+      </button>
+    </div>
       <div className="email-actions">
         {isDraft ? (
           <button onClick={handleEditDraft}>✏️ Edit Draft</button>
         ) : (
           <>
-            <button onClick={() => console.log("Star clicked")}>★ Star</button>
             <button onClick={handleReply}>↩️ Reply</button>
             <button onClick={handleForward}>↪️ Forward</button>
           </>
