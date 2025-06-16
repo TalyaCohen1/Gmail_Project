@@ -192,6 +192,7 @@ exports.removeLabel = (req, res) => {
     }
     res.sendStatus(204);
 };
+
 /**
  * GET /api/mails/:id/labels
  */
@@ -218,7 +219,13 @@ exports.getDrafts = (req, res) => {
  * GET /api/mails/inbox
  */
 exports.getInbox = (req, res) => {
-    const email = userModel.findById(req.userId).emailAddress;
+    const userId = req.userId; // Get the userId from the request object
+    // Ensure the userId is set in the request object
+    const user = userModel.findById(userId);
+    if (!user) {
+    return res.status(404).json({ error: "User not found" });
+    }
+    const email = user.emailAddress;
     const inbox = mailModel.getInbox(email);
     res.status(200).json(inbox);
 };
@@ -246,23 +253,23 @@ exports.getSpamMails = (req, res) => {
  */
 exports.markMailAsSpam = (req, res) => {
     const id = Number(req.params.id);
-    const mail = mailModel.getById(req.userId, id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const mail = mailModel.getById(email, id);
     if (!mail) {
         return res.status(404).json({ error: 'Mail not found' });
     }
-    const URL_REGEX = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:\/\S*)?/gi;
     const subjectUrls = mail.subject.match(URL_REGEX) || [];
     const bodyUrls = mail.body.match(URL_REGEX) || [];
     const allUrls = [...subjectUrls, ...bodyUrls];
 
     for (const url of allUrls) {
         try {
-            addUrl(url); // Call the new function in blacklistService
+            addUrl(url);
         } catch (e) {
             console.error(`Error adding URL to blacklist: ${url}`, e);
-            // Continue with deletion, but log the error
         }
     }
+
     const updatedMail = mailModel.markAsSpam(mail, id);
     if (!updatedMail) {
         return res.status(404).json({ error: 'Mail not found or no permission' });
@@ -270,27 +277,27 @@ exports.markMailAsSpam = (req, res) => {
     res.status(200).json(updatedMail);
 };
 
+
 /**
  * DELETE /api/mails/:id/spam (To unmark as spam)
  */
 exports.unmarkMailAsSpam = (req, res) => {
     const id = Number(req.params.id);
-    const mail = mailModel.getById(req.userId, id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const mail = mailModel.getById(email, id);
     if (!mail) {
         return res.status(404).json({ error: 'Mail not found' });
-    }  
+    }
 
-    const URL_REGEX = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:\/\S*)?/gi;
     const subjectUrls = mail.subject.match(URL_REGEX) || [];
     const bodyUrls = mail.body.match(URL_REGEX) || [];
     const allUrls = [...subjectUrls, ...bodyUrls];
 
     for (const url of allUrls) {
         try {
-            removeUrl(url); // Call the new function in blacklistService
+            removeUrl(url);
         } catch (e) {
-            console.error(`Error adding URL to blacklist: ${url}`, e);
-            // Continue with deletion, but log the error
+            console.error(`Error removing URL from blacklist: ${url}`, e);
         }
     }
 
@@ -300,6 +307,7 @@ exports.unmarkMailAsSpam = (req, res) => {
     }
     res.status(200).json(updatedMail);
 };
+
 
 exports.getDeletedMails = (req, res) => {
     const email = userModel.findById(req.userId).emailAddress;
