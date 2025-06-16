@@ -71,7 +71,7 @@ function createMail({ from, to, subject, body, id, isSpam = false }) {
     const timestamp = Date.now();
     const date = new Date().toISOString()
     const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labelsForSender: [],
-        labelsForReceiver: [], isSpam };
+        labelsForReceiver: [], isSpam, isRead: false };
 
     mails.push(mail);
     return mail;
@@ -130,7 +130,8 @@ function deleteMail(email, id) {
 
     if (mail.to === email) {
         mail.deletedForReceiver = true;
-    } else {
+    } 
+    if (mail.from === email) {
         mail.deletedForSender = true;
     }
     return mail;
@@ -150,13 +151,13 @@ function addLabel(email, id, labelId) {
         if (!mail.labelsForSender.includes(labelId)) {
             mail.labelsForSender.push(labelId);
         }
-    } else if (mail.to === email) {
+    }
+    if (mail.to === email) {
         if (!mail.labelsForReceiver.includes(labelId)) {
             mail.labelsForReceiver.push(labelId);
         }
-        return true;
     }
-    return false;
+    return true;
 }
 
 
@@ -165,13 +166,10 @@ function removeLabel(email, id, labelId) {
     if (!mail) return false;
     if (mail.from === email) {
         mail.labelsForSender = mail.labelsForSender.filter(l => l !== labelId);
-    } else if (mail.to === email) {
-        mail.labelsForReceiver = mail.labelsForReceiver.filter(l => l !== labelId);
-    } else {
-        return false; // Not the owner of the mail
     }
-    mail.labelsForSender = mail.labelsForSender.filter(l => l !== labelId);
-    mail.labelsForReceiver = mail.labelsForReceiver.filter(l => l !== labelId);
+    if (mail.to === email) {
+        mail.labelsForReceiver = mail.labelsForReceiver.filter(l => l !== labelId);
+    }
     return true;
 }
 
@@ -248,6 +246,32 @@ function getDeletedMails(email) {
     return filtered;
 }
 
+/**
+ * Mark a mail as read.
+ * @param {string} email
+ * @param {number} id
+ * @returns {object|null} The updated mail object if successful, null otherwise.
+ */
+function markAsRead(email, id) {
+    const mail = mails.find(m => m.id === id && m.to === email);
+    if (!mail) return null;
+    mail.isRead = true;
+    return mail;
+}
+
+/**
+ * Mark a mail as unread.
+ * @param {string} email
+ * @param {number} id
+ * @returns {object|null} The updated mail object if successful, null otherwise.
+ */
+function markAsUnread(email, id) {
+    const mail = mails.find(m => m.id === id && m.to === email);
+    if (!mail) return null;
+    mail.isRead = false;
+    return mail;
+}
+
 module.exports = {
     getAll,
     getById,
@@ -265,5 +289,7 @@ module.exports = {
     getSpam,
     markAsSpam,
     unmarkAsSpam,
-    getDeletedMails
+    getDeletedMails,
+    markAsRead,
+    markAsUnread,
 };

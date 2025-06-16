@@ -308,3 +308,29 @@ exports.getDeletedMails = (req, res) => {
     console.log('Found deleted mails:', deletedMails.length); // Add this
     res.status(200).json(deletedMails);
 };
+
+/**
+ * POST /api/mails/:id/read
+ */
+exports.markAsRead = (req, res) => {
+    const id = Number(req.params.id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const updatedMail = mailModel.markAsRead(email, id);
+    if (!updatedMail) {
+        return res.status(404).json({ error: 'Mail not found or no permission' });
+    }
+    res.status(200).json(updatedMail);
+}
+
+/**
+ * POST /api/mails/:id/unread
+ */
+exports.markAsUnread = (req, res) => {
+    const id = Number(req.params.id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const updatedMail = mailModel.markAsUnread(email, id);
+    if (!updatedMail) {
+        return res.status(404).json({ error: 'Mail not found or no permission' });
+    }
+    res.status(200).json(updatedMail);
+}

@@ -3,7 +3,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import * as labelService from '../services/labelService'; // Import the service
 
-const LabelContext = createContext();
+export const LabelContext = createContext();
 
 export const LabelProvider = ({ children }) => {
     const [labels, setLabels] = useState([]);
