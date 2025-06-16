@@ -1,6 +1,6 @@
 const userModel = require('../models/userModel');
 const { isValidGmail, isValidDateFormat,isPastDate, isAgeOver13, isValidGender, isValidPassword } = require('../models/validator');
-
+const labelModel = require('../models/labelModel');
 /**
  * register a new user
  * POST /api/users
@@ -43,6 +43,8 @@ const register = (req, res) => {
 
   const id = Date.now().toString(); // Generate a unique ID based on the current timestamp
   const newUser = userModel.createUser(fullName, id, emailAddress, birthDate,gender, password , profileImage);
+  const labels = labelModel.createDefaultLabels(id); // Create default labels for the new user
+  newUser.labels = labels.map(label => label.id); // Store only label IDs in the user object
 
   //response with the new user id 
     res.status(201)
