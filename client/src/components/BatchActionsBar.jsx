@@ -1,39 +1,65 @@
 import React, { useState } from 'react';
-import { removeLabelFromEmail, addLabelToEmail } from '../services/mailService'; 
+import { removeLabelFromEmail, addLabelToEmail, deleteEmail } from '../services/mailService'; 
 // import { addMailToLabel, deleteMailFromLabel } from '../services/labelService';
 import { useLabels } from '../context/LabelContext';
 import '../styles/BatchActionsBar.css';
 
 
-export default function BatchActionsBar({ selectedIds = [], onAction }) {
+export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction }) {
     const [selectedLabel, setSelectedLabel] = useState('');
     const { labels, addMailToLabel, deleteMailFromLabel } = useLabels();
-
+    const [loading, setLoading]             = useState(false);
+    const [error, setError]                 = useState(null);
 
     const handleDeleteAll = async () => {
-        onAction({ type: 'delete' });
+        setError(null);
+        setLoading(true);
+        try {
+            await Promise.all(selectedIds.map(id => deleteEmail(id)));
+            await onRefresh();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleApplyLabel = async () => {
         if (!selectedLabel) return;
-        await Promise.all(
-            selectedIds.map(id => addLabelToEmail(id, selectedLabel))
-        );
-        await Promise.all(
-            selectedIds.map(id => addMailToLabel(selectedLabel, id))
-        );
-        setSelectedLabel('');
+        setError(null);
+        setLoading(true);
+        try {
+            await Promise.all(
+                selectedIds.map(id => addLabelToEmail(id, selectedLabel))    
+            );
+            await Promise.all(
+                selectedIds.map(id => addMailToLabel(selectedLabel, id))
+            );
+            await onRefresh();
+            setSelectedLabel('');
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleRemoveLabel = async () => {
         if (!selectedLabel) return;
-        await Promise.all(
-            selectedIds.map(id => removeLabelFromEmail(id, selectedLabel))
-        );
-        await Promise.all(
-        selectedIds.map(id => deleteMailFromLabel(selectedLabel, id))
-        );
-        setSelectedLabel('');
+        setError(null);
+        setLoading(true);
+        try {
+            await Promise.all(
+                selectedIds.map(id => removeLabelFromEmail(id, selectedLabel))
+            );
+            await Promise.all(
+                selectedIds.map(id => deleteMailFromLabel(selectedLabel, id))
+            );
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -54,10 +80,10 @@ export default function BatchActionsBar({ selectedIds = [], onAction }) {
             </select>
             
             <button
-                disabled={!selectedLabel}
+                disabled={loading || !selectedLabel}                
                 onClick={handleApplyLabel}
             >
-                Apply Label
+                {loading ? 'Applying…' : 'Apply Label'}
             </button>
         </div>
     );

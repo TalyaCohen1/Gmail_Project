@@ -21,6 +21,7 @@ export default function EmailListItem({ email, isSelected, onToggleSelect, onDel
         ))}
         </div>
         <button onClick={onDelete}>Delete</button>
+        
         </li>
     );
 }

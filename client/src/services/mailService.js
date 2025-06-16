@@ -156,7 +156,7 @@ export async function addLabelToEmail(id, labelId) {
             ...getAuthHeaders(),
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ labelId }),
+        body: JSON.stringify({ label: labelId }),
     });
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -285,6 +285,38 @@ export async function getDeletedEmails() {
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || 'Failed to fetch deleted emails');
+    }
+    return res.json();
+}
+
+/**
+ * Mark an email as read
+ * @param {string|number} id of the email to mark as read
+ */
+export async function markEmailAsRead(id) {
+    const res = await fetch(`http://localhost:3000/api/mails/${id}/read`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed to mark email ${id} as read`);
+    }
+    return res.json();
+}
+
+/**
+ * Mark an email as unread
+ * @param {string|number} id of the email to mark as unread
+ */
+export async function markEmailAsUnread(id) {
+    const res = await fetch(`http://localhost:3000/api/mails/${id}/unread`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed to mark email ${id} as unread`);
     }
     return res.json();
 }

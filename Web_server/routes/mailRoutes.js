@@ -41,6 +41,11 @@ router.post('/:id/spam', authenticateToken, controller.markMailAsSpam); // New r
 // Unmark a mail as spam
 router.delete('/:id/spam', authenticateToken, controller.unmarkMailAsSpam); // New route to unmark as spam
 
+// Mark mail as read
+router.post('/:id/read', authenticateToken, controller.markAsRead);
+
+// Mark mail as unread
+router.post('/:id/unread', authenticateToken, controller.markAsUnread);
 
 // POST DELETE and GET to labels
 router.post('/:id/labels', authenticateToken, controller.addLabel);
