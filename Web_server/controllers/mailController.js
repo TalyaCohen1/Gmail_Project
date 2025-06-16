@@ -342,3 +342,68 @@ exports.markAsUnread = (req, res) => {
     }
     res.status(200).json(updatedMail);
 }
+
+/**
+ * POST /api/mails/:id/important
+ */
+exports.markMailAsImportant = (req, res) => {
+    const id = Number(req.params.id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const updatedMail = mailModel.markAsImportant(email, id);
+    if (!updatedMail) {
+        return res.status(404).json({ error: 'Mail not found or no permission' });
+    }
+    res.status(200).json(updatedMail);
+};
+/**
+ * DELETE /api/mails/:id/important
+ */
+exports.unmarkMailAsImportant = (req, res) => {
+    const id = Number(req.params.id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const updatedMail = mailModel.unmarkAsImportant(email, id);
+    if (!updatedMail) {
+        return res.status(404).json({ error: 'Mail not found or no permission' });
+    }
+    res.status(200).json(updatedMail);
+};
+/**
+ * GET /api/mails/important
+ */
+exports.getImportantMails = (req, res) => {
+    const email = userModel.findById(req.userId).emailAddress;
+    const importantMails = mailModel.getImportantMails(email);
+    res.status(200).json(importantMails);
+};
+/**
+ * POST /api/mails/:id/star
+ */
+exports.markMailAsStarred = (req, res) => {
+    const id = Number(req.params.id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const updatedMail = mailModel.markAsStarred(email, id);
+    if (!updatedMail) {
+        return res.status(404).json({ error: 'Mail not found or no permission' });
+    }
+    res.status(200).json(updatedMail);
+}
+/**
+ * DELETE /api/mails/:id/star
+ */
+exports.unmarkMailAsStarred = (req, res) => {
+    const id = Number(req.params.id);
+    const email = userModel.findById(req.userId).emailAddress;
+    const updatedMail = mailModel.unmarkAsStarred(email, id);
+    if (!updatedMail) {
+        return res.status(404).json({ error: 'Mail not found or no permission' });
+    }
+    res.status(200).json(updatedMail);
+}
+/**
+ * GET /api/mails/starred
+ */
+exports.getStarredMails = (req, res) => {
+    const email = userModel.findById(req.userId).emailAddress;
+    const starredMails = mailModel.getStarredMails(email);
+    res.status(200).json(starredMails);
+}

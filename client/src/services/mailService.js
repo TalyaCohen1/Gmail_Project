@@ -231,11 +231,6 @@ export async function getSentEmails() {
     return res.json();
 }
 
-export async function getStarredEmails() {
-    const emails = []
-    return emails;
-}
-
 /**
  * Get all spam emails for the authenticated user
  * @return {Promise<Array>} Array of spam emails
@@ -326,6 +321,100 @@ export async function markEmailAsUnread(id) {
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || `Failed to mark email ${id} as unread`);
+    }
+    return res.json();
+}
+
+/**
+ * Mark an email as important
+ * @param {string|number} id of the email to mark as important
+ */
+export async function markEmailAsImportant(id) {
+    const res = await fetch(`http://localhost:3000/api/mails/${id}/important`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed to mark email ${id} as important`);
+    }
+    return res.json();
+}
+
+/**
+ * Unmark an email as important
+ * @param {string|number} id of the email to unmark as important
+ */
+export async function unmarkEmailAsImportant(id) {
+    const res = await fetch(`http://localhost:3000/api/mails/${id}/important`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed to unmark email ${id} as important`);
+    }
+    return res.json();
+}
+
+/**
+ * Get all important emails for the authenticated user
+ * @return {Promise<Array>} Array of important emails
+ */
+export async function getImportantEmails() {
+    const res = await fetch('http://localhost:3000/api/mails/important', {
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to fetch important emails');
+    }
+    return res.json();
+}
+
+/**
+ * Mark an email as starred
+ * @param {string|number} id of the email to mark as starred
+ */
+export async function markEmailAsStarred(id) {
+    const res = await fetch(`http://localhost:3000/api/mails/${id}/star`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed to mark email ${id} as starred`);
+    }
+    return res.json();
+}
+
+/**
+ * Unmark an email as starred
+ * @param {string|number} id of the email to unmark as starred
+ */
+export async function unmarkEmailAsStarred(id) {
+    const res = await fetch(`http://localhost:3000/api/mails/${id}/star`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed to unmark email ${id} as starred`);
+    }
+    return res.json();
+}
+
+/**
+ * Get all starred emails for the authenticated user
+ * @return {Promise<Array>} Array of starred emails
+ */
+export async function getStarredEmails() {
+    const res = await fetch('http://localhost:3000/api/mails/starred', {
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to fetch starred emails');
     }
     return res.json();
 }

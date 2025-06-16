@@ -68,7 +68,7 @@ function createMail({ from, to, subject, body, id, isSpam = false }) {
     const timestamp = Date.now();
     const date = new Date().toISOString()
     const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labelsForSender: [],
-        labelsForReceiver: [], isSpam, isRead: false, send: true }; // Added send: true
+        labelsForReceiver: [], isSpam, isRead: false, isImportant: false, isStarred: false, send: true }; // Added send: true
 
     mails.push(mail);
     return mail;
@@ -183,6 +183,10 @@ function getSent(email) {
     return mails.filter(m => m.from === email && !m.deletedForSender);
 }
 
+function getSpam(email) {
+    return mails.filter(m => m.to === email && m.isSpam && !m.deletedForReceiver);
+}
+
 function markAsSpam(mail, id) {
     if (!mail) return null;
     mail.isSpam = true;
@@ -230,6 +234,81 @@ function markAsUnread(email, id) {
     return mail;
 }
 
+/**
+ * Mark a mail as important.
+ * @param {string} email
+ * @param {number} id
+ * @returns {object|null} The updated mail object if successful, null otherwise.
+ */
+function markAsImportant(email, id) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return null;
+    mail.isImportant = true;
+    return mail;
+}
+
+/**
+ * Unmark a mail as important.
+ * @param {string} email
+ * @param {number} id
+ * @returns {object|null} The updated mail object if successful, null otherwise.
+ */
+function unmarkAsImportant(email, id) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return null;
+    mail.isImportant = false;
+    return mail;
+}
+
+/**
+ * Get all important mails for a user.
+ * @param {string} email 
+ * @return {Array} Array of important mails
+ */
+function getImportantMails(email) {
+    return mails
+        .filter(m => ((m.from === email && !m.deletedForSender) || (m.to === email && !m.deletedForReceiver)) && m.isImportant)
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 25);
+}
+
+/**
+ * Mark a mail as starred.
+ * @param {string} email
+ * @param {number} id
+ * @returns {object|null} The updated mail object if successful, null otherwise.
+ */
+function markAsStarred(email, id) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return null;
+    mail.isStarred = true;
+    return mail;
+}
+
+/**
+ * Unmark a mail as starred.
+ * @param {string} email
+ * @param {number} id
+ * @returns {object|null} The updated mail object if successful, null otherwise.
+ */
+function unmarkAsStarred(email, id) {
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    if (!mail) return null;
+    mail.isStarred = false;
+    return mail;
+}
+
+/**
+ * Get all starred mails for a user.
+ * @param {string} email 
+ * @return {Array} Array of starred mails
+ */
+function getStarredMails(email) {
+    return mails
+        .filter(m => ((m.from === email && !m.deletedForSender) || (m.to === email && !m.deletedForReceiver)) && m.isStarred)
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 25);
+}
 
 module.exports = {
     getAll,
@@ -244,9 +323,16 @@ module.exports = {
     getDrafts,
     getInbox,
     getSent,
+    getSpam,
     markAsSpam,
     unmarkAsSpam,
     getDeletedMails,
     markAsRead,
-    markAsUnread
+    markAsUnread,
+    markAsImportant,
+    unmarkAsImportant,
+    getImportantMails,
+    markAsStarred,
+    unmarkAsStarred,
+    getStarredMails,
 };
