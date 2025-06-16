@@ -17,6 +17,7 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
         try {
             await Promise.all(selectedIds.map(id => deleteEmail(id)));
             await onRefresh();
+            onAction({ type: 'delete' });
         } catch (err) {
             setError(err.message);
         } finally {
@@ -36,6 +37,7 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
                 selectedIds.map(id => addMailToLabel(selectedLabel, id))
             );
             await onRefresh();
+            onAction({ type: 'addLabel', labelId: selectedLabel });
             setSelectedLabel('');
         } catch (err) {
             setError(err.message);

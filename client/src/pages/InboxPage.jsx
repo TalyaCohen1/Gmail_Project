@@ -22,6 +22,15 @@ import { useDisplayEmails } from '../context/DisplayEmailsContext';
 import { LabelContext } from '../context/LabelContext';
 import "../styles/InboxPage.css";
 
+// Helper function to sort emails by date (newest first)
+const sortEmailsByDate = (emails) => {
+  return [...emails].sort((a, b) => {
+    const dateA = new Date(a.timestamp || a.date);
+    const dateB = new Date(b.timestamp || b.date);
+    return dateB - dateA; // Newest first (descending order)
+  });
+};
+
 export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
   const {
     displayedEmails,
@@ -45,11 +54,12 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
     try {
       const newEmails = await getInboxEmails();
       setError(null);
+      const sortedEmails = sortEmailsByDate(newEmails);
       setEmails(prev => {
         const same =
-          prev.length === newEmails.length &&
-          prev.every((e, i) => e.id === newEmails[i].id);
-        return same ? prev : newEmails;
+          prev.length === sortedEmails.length &&
+          prev.every((e, i) => e.id === sortedEmails[i].id);
+        return same ? prev : sortedEmails;
       });
     } catch (err) {
       setError(err.message);
@@ -64,33 +74,133 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
     return () => clearInterval(interval);
   }, []);
 
+  // Helper function to update email in both states
+  const updateEmailInStates = (emailId, updates) => {
+    const updateFn = prevEmails => 
+      prevEmails.map(email => 
+        email.id === emailId 
+          ? { ...email, ...updates }
+          : email
+      );
+    
+    setEmails(updateFn);
+    setDisplayedEmails(updateFn);
+  };
+
   const toggleSelect = id =>
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
 
   const handleDelete = async id => {
-    await deleteEmail(id);
-    setDisplayedEmails(prev => prev.filter(e => e.id !== id));
-    setSelectedIds(prev => prev.filter(x => x !== id));
+    try {
+      await deleteEmail(id);
+      setDisplayedEmails(prev => prev.filter(e => e.id !== id));
+      // setEmails(prev => prev.filter(e => e.id !== id));
+      setSelectedIds(prev => prev.filter(x => x !== id));
+    } catch (error) {
+      console.error('Error deleting email:', error);
+    }
+  };
+
+  const handleToggleStar = async (id, isStarred) => {
+    try {
+      // Update local state immediately for instant UI feedback
+      updateEmailInStates(id, { isStarred: isStarred });
+      
+      // Then call the API
+      if (isStarred) {
+        await markEmailAsStarred(id);
+      } else {
+        await unmarkEmailAsStarred(id);
+      }
+    } catch (error) {
+      console.error('Error toggling star:', error);
+      // Revert on error
+      updateEmailInStates(id, { isStarred: !isStarred });
+    }
+  };
+
+  const handleToggleImportant = async (id, isImportant) => {
+    try {
+      // Update local state immediately for instant UI feedback
+      updateEmailInStates(id, { isImportant: isImportant });
+
+      // Then call the API
+      if (isImportant) {
+        await markEmailAsImportant(id);
+      } else {
+        await unmarkEmailAsImportant(id);
+      }
+    } catch (error) {
+      console.error('Error toggling important:', error);
+      // Revert on error
+      updateEmailInStates(id, { isImportant: !isImportant });
+    }
+  };
+
+  const handleToggleRead = async (id, isRead) => {
+    try {
+      // Update local state immediately for instant UI feedback
+      updateEmailInStates(id, { isRead: isRead });
+
+      // Then call the API
+      if (isRead) {
+        await markEmailAsRead(id);
+      } else {
+        await markEmailAsUnread(id);
+      }
+    } catch (error) {
+      console.error('Error toggling read status:', error);
+      // Revert on error
+      updateEmailInStates(id, { isRead: !isRead });
+    }
   };
 
   const handleMarkAllRead = async () => {
-    await Promise.all(displayedEmails.map(m => markEmailAsRead(m.id)));
-    await fetchData();
+    try {
+      await Promise.all(displayedEmails.map(m => markEmailAsRead(m.id)));
+      // Update all displayed emails to read status
+      const updateFn = prevEmails =>
+        prevEmails.map(email => ({ ...email, isRead: true }));
+      setEmails(updateFn);
+      setDisplayedEmails(updateFn);
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+      await fetchData(); // Refresh on error
+    }
   };
 
-  const performBatchAction = ({ type, labelId }) => {
-    if (type === 'delete') {
-      selectedIds.forEach(id => handleDelete(id));
-    } else if (type === 'addLabel') {
-      selectedIds.forEach(id => {
-        const current = emails.find(e => e.id === id);
-        addLabelToEmail(id, { labels: [...(current.labels || []), labelId] });
-      });
+  const performBatchAction = async ({ type, labelId }) => {
+    try {
+      if (type === 'delete') {
+        await Promise.all(selectedIds.map(id => deleteEmail(id)));
+        setDisplayedEmails(prev => prev.filter(e => !selectedIds.includes(e.id)));
+        setEmails(prev => prev.filter(e => !selectedIds.includes(e.id)));
+      } else if (type === 'addLabel') {
+        await Promise.all(selectedIds.map(id => {
+          const current = emails.find(e => e.id === id);
+          return addLabelToEmail(id, { labels: [...(current.labels || []), labelId] });
+        }));
+        // Update local state with new labels
+        const updateFn = prevEmails => 
+          prevEmails.map(email => 
+            selectedIds.includes(email.id)
+              ? { ...email, labels: [...(email.labels || []), labelId] }
+              : email
+          );
+        setEmails(updateFn);
+        setDisplayedEmails(updateFn);
+      }
+      setSelectedIds([]);
+    } catch (error) {
+      console.error('Error performing batch action:', error);
+      await fetchData(); // Refresh on error
     }
-    setSelectedIds([]);
   };
+
+  // Sort displayed emails for rendering
+  const sortedDisplayedEmails = sortEmailsByDate(displayedEmails);
 
   return (
     <div className="inbox-page">
@@ -119,13 +229,13 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
                 />
               ) : (
                 <EmailListToolbar
-                  emails={displayedEmails}
+                  emails={sortedDisplayedEmails}
                   selectedIds={selectedIds}
                   onToggleSelectAll={() => {
-                    if (selectedIds.length === displayedEmails.length) {
+                    if (selectedIds.length === sortedDisplayedEmails.length) {
                       setSelectedIds([]);
                     } else {
-                      setSelectedIds(displayedEmails.map(e => e.id));
+                      setSelectedIds(sortedDisplayedEmails.map(e => e.id));
                     }
                   }}
                   onRefresh={fetchData}
@@ -140,15 +250,15 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
                 />
               ) : (
                 <EmailList
-                  emails={displayedEmails}
+                  emails={sortedDisplayedEmails}
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelect}
                   onDelete={handleDelete}
                   onOpenEmail={setOpenedEmail}
-                  onToggleStar={(id, v) => v ? markEmailAsStarred(id) : unmarkEmailAsStarred(id)}
-                  onToggleImportant={(id, isImportant) => isImportant ? markEmailAsImportant(id) : unmarkEmailAsImportant(id)}
-                  onMarkRead={id => markEmailAsRead(id)}
-              />
+                  onToggleStar={handleToggleStar}
+                  onToggleImportant={handleToggleImportant}
+                  onToggleRead={handleToggleRead}
+                />
               )}
             </>
           )}

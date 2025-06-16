@@ -1,96 +1,101 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/EmailListItem.css';
-import{ useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-export default function EmailListItem({ 
-    email, 
-    isSelected, 
-    onToggleSelect, 
-    onDelete, 
-    onToggleStar,
-    onToggleImportant, 
-    onToggleRead, 
-    onOpenEmail }) {
-
-    const navigate = useNavigate();
-
-// import { ReactComponent as starred }       from '/icons/starred.svg';
-// import { ReactComponent as full_star }     from '/icons/full_star.svg';
-// import { ReactComponent as Important }    from '/icons/important.svg';
-// import { ReactComponent as UnImportant }  from '/icons/full_important.svg';
-// import { ReactComponent as MarkAsRead }   from '/icons/mark_as_read.svg';
-// import { ReactComponent as MarkAsUnread } from '/icons/mark_as_unread.svg';
-// import { ReactComponent as Trash }        from '/icons/trash.svg'; {
+export default function EmailListItem({
+  email,
+  isSelected,
+  onToggleSelect,
+  onDelete,
+  onToggleStar,
+  onToggleImportant,
+  onToggleRead,
+  onOpenEmail,
+}) {
+  const navigate = useNavigate();
+  
   // local UI state
-  const [starredState, setStarredState]         = useState(!!email.starred);
-  const [importantState, setImportantState]     = useState(!!email.important);
-  const [readState, setReadState]               = useState(!!email.read);
+//   const [starredState, setStarredState] = useState(!!email.starred);
+//   const [importantState, setImportantState] = useState(!!email.important);
+//   const [readState, setReadState] = useState(!!email.read);
 
-  // update local state when props change
-  useEffect(() => { setStarredState(!!email.starred);   }, [email.starred]);
-  useEffect(() => { setImportantState(!!email.important); }, [email.important]);
-  useEffect(() => { setReadState(!!email.read);         }, [email.read]);
+//   // update local state when props change
+//   useEffect(() => { setStarredState(!!email.starred); }, [email.starred]);
+//   useEffect(() => { setImportantState(!!email.important); }, [email.important]);
+//   useEffect(() => { setReadState(!!email.read); }, [email.read]);
 
-  // handle user actions
-  const handleStar = () => {
-    const next = !starredState;
-    setStarredState(next);
+  // handle user actions with stopPropagation to prevent email opening
+  const handleStar = (e) => {
+    e.stopPropagation();
+    const next = !email.isStarred;
+    //const next = !starredState;
+    //setStarredState(next);
     onToggleStar(email.id, next);
   };
 
-  const handleImportant = () => {
-    const next = !importantState;
-    setImportantState(next);
+  const handleImportant = (e) => {
+    e.stopPropagation();
+    const next = !email.isImportant;
+    //const next = !importantState;
+    //setImportantState(next);
     onToggleImportant(email.id, next);
   };
 
-  const handleRead = () => {
-    const next = !readState;
-    setReadState(next);
+  const handleRead = (e) => {
+    e.stopPropagation();
+    const next = !email.isRead;
+    //const next = !readState;
+    //setReadState(next);
     onToggleRead(email.id, next);
   };
 
-  
-  // choose icons
-//   const StarIcon       = starredState ? full_star : star;
-//   const ImportantIcon  = importantState ? UnImportant : Important;
-//   const ReadIcon       = readState ? MarkAsUnread : MarkAsRead;
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    onDelete(email.id);
+  };
+
+  const handleCheckboxChange = (e) => {
+    e.stopPropagation();
+    onToggleSelect(email.id);
+  };
 
   return (
-    <li
-      className={`email-item ${isSelected ? 'selected' : ''} ${readState ? 'read' : 'unread'}`}
-      onClick={handleItemClick}
+    <li 
+      className={`email-item ${isSelected ? 'selected' : ''} ${email.isRead ? 'read' : 'unread'}`}
+      onClick={() => onOpenEmail(email)}
       style={{ cursor: 'pointer' }}
     >
       <div className="email-item-left">
         <input
           type="checkbox"
-          className="email-checkbox"
           checked={isSelected}
-          onChange={e => { e.stopPropagation(); onToggleSelect(); }}
+          className="email-checkbox"
+          onClick={(e) => e.stopPropagation()}  // Prevent checkbox click from triggering the item click
+          onChange={() => onToggleSelect(email.id)}
+
         />
 
-        <button className="icon-btn" onClick={handleStar} title={starredState ? 'Unstar' : 'Star'}>
+        <button className="icon-btn" onClick={handleStar} title="Star">
           <img
-            src={`/icons/${starredState ? 'full_star' : 'starred'}.svg`}
-            alt={starredState ? 'Unstar' : 'Star'}
+            src={`/icons/${email.isStarred ? 'full_star' : 'starred'}.svg`}
+            alt={email.isStarred ? 'Unstar' : 'Star'}
             className="inline-icon"
           />
         </button>
 
-        <button className="icon-btn" onClick={handleImportant} title={importantState ? 'Unmark Important' : 'Important'}>
+        <button className="icon-btn" onClick={handleImportant} title="Important">
           <img
-            src={`/icons/${importantState ? 'full_important' : 'important'}.svg`}
-            alt={importantState ? 'Unmark Important' : 'Important'}
+            src={`/icons/${email.isImportant ? 'full_important' : 'important'}.svg`}
+            alt={email.isImportant ? 'Unmark important' : 'Important'}
             className="inline-icon"
           />
         </button>
       </div>
 
-      <div className="email-summary" onClick={handleReadToggle}>
+      <div className="email-summary">
         <span className="sender">{email.from}</span>
         <span className="subject">{email.subject}</span>
-        <span className="date">{new Date(email.timestamp).toLocaleString()}</span>
+        <span className="date">{new Date(email.timestamp || email.date).toLocaleString()}</span>
       </div>
 
       <div className="labels">
@@ -100,25 +105,17 @@ export default function EmailListItem({
       </div>
 
       <div className="email-item-right">
-        <button className="icon-btn" onClick={handleReadToggle} title={readState ? 'Mark as Unread' : 'Mark as Read'}>
+        <button className="icon-btn" onClick={handleRead} title="Toggle Read">
           <img
-            src={`/icons/${readState ? 'mark_as_unread' : 'mark_as_read'}.svg`}
-            alt={readState ? 'Mark as Unread' : 'Mark as Read'}
+            src={`/icons/${email.isRead ? 'mark_as_unread' : 'mark_as_read'}.svg`}
+            alt={email.isRead ? 'Mark as unread' : 'Mark as read'}
             className="inline-icon"
           />
         </button>
 
-        <button className="icon-btn" onClick={handleSnooze} title="Snooze">
+        <button className="icon-btn" onClick={handleDelete} title="Delete">
           <img
-            src={`/icons/snooze.svg`}
-            alt="Snooze"
-            className="inline-icon"
-          />
-        </button>
-
-        <button className="icon-btn" onClick={handleDeleteClick} title="Delete">
-          <img
-            src={`/icons/trash.svg`}
+            src={`${process.env.PUBLIC_URL}/icons/trash.svg`}
             alt="Delete"
             className="inline-icon"
           />
@@ -127,29 +124,3 @@ export default function EmailListItem({
     </li>
   );
 }
-
-
-// export default function EmailListItem({ email, isSelected, onToggleSelect, onDelete }) {
-//     return (
-//         <li className={`email-item ${isSelected ? 'selected' : ''}`}>  
-//         <input
-//             type="checkbox"
-//             className="email-checkbox"
-//             checked={isSelected}
-//             onChange={onToggleSelect}
-//         />
-//         <div className="email-summary">
-//             <span className="sender">{email.from}</span>
-//             <span className="subject">{email.subject}</span>
-//             <span className="date">{new Date(email.date).toLocaleString()}</span>
-//         </div>
-//         <div className="labels">
-//             {(email.labels || []).map(label => (
-//           <span key={label.id} className="tag">{label.name}</span>
-//         ))}
-//         </div>
-//         <button onClick={onDelete}>Delete</button>
-        
-//         </li>
-//     );
-// }
