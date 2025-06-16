@@ -1,23 +1,38 @@
-// src/components/Sidebar.jsx
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LabelManager from './LabelManager';
 import CreateMail from "../components/CreateMail";
 import '../styles/SideBar.css';
 import { Link } from 'react-router-dom';
 import { useLabels } from '../context/LabelContext';
 // Import all necessary mail service functions
-import { getEmails ,getInboxEmails, getDraftEmails, getSentEmails, getEmailLabels, getSpamEmails, getDeletedEmails } from '../services/mailService'; // NEW: Added getSentEmails, getEmails, getEmailLabels
+import { getEmails, getInboxEmails, getDraftEmails, getSentEmails, getEmailLabels, getSpamEmails, getDeletedEmails } from '../services/mailService';
 
 const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisplayError }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showMoreLabels, setShowMoreLabels] = useState(false);
   const [showCategoriesSubLabels, setShowCategoriesSubLabels] = useState(false);
   const [showCreateMail, setShowCreateMail] = useState(false);
+  const [inboxCount, setInboxCount] = useState(0); // State to hold inbox email count
+  const [draftsCount, setDraftsCount] = useState(0); // State to hold drafts count
+  const [sentCount, setSentCount] = useState(0); // State to hold sent emails count
 
   const { labels, fetchMailsForLabel } = useLabels();
 
   const isEffectivelyOpen = isSidebarOpen || isHovered;
+
+  // Fetch inbox count on component mount
+  useEffect(() => {
+    const fetchInboxCount = async () => {
+      try {
+        const emails = await getInboxEmails();
+        setInboxCount(emails.length);
+      } catch (err) {
+        console.error("Error fetching inbox count:", err);
+        setInboxCount(0); // Reset count on error
+      }
+    };
+    fetchInboxCount();
+  }, []); // Empty dependency array means this runs once on mount
 
   const handleNewEmail = () => {
     if (showCreateMail) {
@@ -42,14 +57,18 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
       if (type === 'api') {
         // Direct API call for labels like Inbox, Drafts, Sent
         emailsToDisplay = await param();
+        // If it's the Inbox, update the count
+        if (param === getInboxEmails) {
+          setInboxCount(emailsToDisplay.length);
+        }
       } else if (type === 'filter') {
         const targetLabel = labels.find(label => label.name === param);
         let filteredMails = [];
         if (targetLabel) {
-            filteredMails = await fetchMailsForLabel(targetLabel.id);
+          filteredMails = await fetchMailsForLabel(targetLabel.id);
         } else {
-            console.warn(`Label '${param}' not found in LabelContext for filter type.`);
-            filteredMails = [];
+          console.warn(`Label '${param}' not found in LabelContext for filter type.`);
+          filteredMails = [];
         }
         emailsToDisplay = filteredMails;
       }
@@ -64,27 +83,25 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
   };
 
   const defaultLabels = [
-    { name: 'Inbox', icon: '/icons/inbox.svg', handler: () => handleSystemLabelClick('api', getInboxEmails), type: 'system' },
-    { name: 'Starred', icon: '/icons/starred.svg', handler: () => handleSystemLabelClick('filter', 'Starred'), type: 'system' }, // NEW: Filtered
-    { name: 'Snoozed', icon: '/icons/snoozed.svg', handler: () => handleSystemLabelClick('filter', 'Snoozed'), type: 'system' }, // NEW: Filtered
-    { name: 'Sent', icon: '/icons/sent.svg', handler: () => handleSystemLabelClick('api', getSentEmails), type: 'system' }, // NEW: Added getSentEmails
+    { name: 'Inbox', icon: '/icons/inbox.svg', handler: () => handleSystemLabelClick('api', getInboxEmails), type: 'system', count: inboxCount }, // Added count property
+    { name: 'Starred', icon: '/icons/starred.svg', handler: () => handleSystemLabelClick('filter', 'Starred'), type: 'system' },
+    { name: 'Sent', icon: '/icons/sent.svg', handler: () => handleSystemLabelClick('api', getSentEmails), type: 'system' },
     { name: 'Drafts', icon: '/icons/drafts.svg', handler: () => handleSystemLabelClick('api', getDraftEmails), type: 'system' },
   ];
 
   const moreLabels = [
-    { name: 'Important', icon: '/icons/important.svg', handler: () => handleSystemLabelClick('filter', 'Important'), type: 'system' }, // NEW: Filtered
-    { name: 'Scheduled', icon: '/icons/scheduled.svg', handler: () => handleSystemLabelClick('filter', 'Scheduled'), type: 'system' }, // NEW: Filtered
-    { name: 'All Mail', icon: '/icons/all_mail.svg', handler: () => handleSystemLabelClick('api', getEmails), type: 'system' }, // NEW: Filtered (will show all mails regardless of other labels if mail has "All Mail" label, or if "All Mail" implies no filter)
-    { name: 'Spam', icon: '/icons/spam.svg', handler: () => handleSystemLabelClick('api', getSpamEmails), type: 'system' },       // NEW: Filtered
-    { name: 'Trash', icon: '/icons/trash.svg', handler: () => handleSystemLabelClick('api', getDeletedEmails), type: 'system' },     // NEW: Filtered
+    { name: 'Important', icon: '/icons/important.svg', handler: () => handleSystemLabelClick('filter', 'Important'), type: 'system' },
+    { name: 'All Mail', icon: '/icons/all_mail.svg', handler: () => handleSystemLabelClick('api', getEmails), type: 'system' },
+    { name: 'Spam', icon: '/icons/spam.svg', handler: () => handleSystemLabelClick('api', getSpamEmails), type: 'system' },
+    { name: 'Trash', icon: '/icons/trash.svg', handler: () => handleSystemLabelClick('api', getDeletedEmails), type: 'system' },
     { name: 'Categories', icon: '/icons/categories.svg', path: '#', type: 'category' }
   ];
 
   const categorySubLabels = [
-    { name: 'Social', icon: '/icons/social.svg', handler: () => handleSystemLabelClick('filter', 'Social'), type: 'system' },       // NEW: Filtered
-    { name: 'Updates', icon: '/icons/updates.svg', handler: () => handleSystemLabelClick('filter', 'Updates'), type: 'system' },     // NEW: Filtered
-    { name: 'Forums', icon: '/icons/forums.svg', handler: () => handleSystemLabelClick('filter', 'Forums'), type: 'system' },       // NEW: Filtered
-    { name: 'Promotions', icon: '/icons/promotions.svg', handler: () => handleSystemLabelClick('filter', 'Promotions'), type: 'system' }, // NEW: Filtered
+    { name: 'Social', icon: '/icons/social.svg', handler: () => handleSystemLabelClick('filter', 'Social'), type: 'system' },
+    { name: 'Updates', icon: '/icons/updates.svg', handler: () => handleSystemLabelClick('filter', 'Updates'), type: 'system' },
+    { name: 'Forums', icon: '/icons/forums.svg', handler: () => handleSystemLabelClick('filter', 'Forums'), type: 'system' },
+    { name: 'Promotions', icon: '/icons/promotions.svg', handler: () => handleSystemLabelClick('filter', 'Promotions'), type: 'system' },
   ];
 
   return (
@@ -103,12 +120,19 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
       <div className="sidebar-section main-labels">
         {defaultLabels.map((item) => (
           <React.Fragment key={item.name}>
-            {item.handler ? ( // Use handler if available
+            {item.handler ? (
               <button onClick={item.handler} className="sidebar-item sidebar-button-link">
                 <img src={item.icon} alt={item.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
-                {isEffectivelyOpen && <span>{item.name}</span>}
+                {isEffectivelyOpen && (
+                  <span>
+                    {item.name}
+                    {item.name === 'Inbox' && item.count > 0 && (
+                      <span className="mail-count"> ({item.count})</span>
+                    )}
+                  </span>
+                )}
               </button>
-            ) : ( // Fallback to Link if no handler (though all defaultLabels now have handlers)
+            ) : (
               <Link to={item.path} className="sidebar-item">
                 <img src={item.icon} alt={item.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
                 {isEffectivelyOpen && <span>{item.name}</span>}
@@ -152,36 +176,36 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
                   {showCategoriesSubLabels && (
                     <div className="category-sub-labels-container">
                       {categorySubLabels.map((subItem) => (
-                        <React.Fragment key={subItem.name}> {/* Use React.Fragment here */}
-                            {subItem.handler ? ( // Check for handler for category sub-labels
-                                <button onClick={subItem.handler} className="sidebar-item sub-label-item">
-                                    <img src={subItem.icon} alt={subItem.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
-                                    {isEffectivelyOpen && <span>{subItem.name}</span>}
-                                </button>
-                            ) : (
-                                <Link to={subItem.path} className="sidebar-item sub-label-item">
-                                    <img src={subItem.icon} alt={subItem.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
-                                    {isEffectivelyOpen && <span>{subItem.name}</span>}
-                                </Link>
-                            )}
+                        <React.Fragment key={subItem.name}>
+                          {subItem.handler ? (
+                            <button onClick={subItem.handler} className="sidebar-item sub-label-item">
+                              <img src={subItem.icon} alt={subItem.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
+                              {isEffectivelyOpen && <span>{subItem.name}</span>}
+                            </button>
+                          ) : (
+                            <Link to={subItem.path} className="sidebar-item sub-label-item">
+                              <img src={subItem.icon} alt={subItem.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
+                              {isEffectivelyOpen && <span>{subItem.name}</span>}
+                            </Link>
+                          )}
                         </React.Fragment>
                       ))}
                     </div>
                   )}
                 </>
               ) : (
-                <React.Fragment key={item.name}> {/* Use React.Fragment here */}
-                    {item.handler ? ( // Check for handler for more labels
-                        <button onClick={item.handler} className="sidebar-item">
-                            <img src={item.icon} alt={item.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
-                            {isEffectivelyOpen && <span>{item.name}</span>}
-                        </button>
-                    ) : (
-                        <Link to={item.path} className="sidebar-item">
-                            <img src={item.icon} alt={item.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
-                            {isEffectivelyOpen && <span>{item.name}</span>}
-                        </Link>
-                    )}
+                <React.Fragment key={item.name}>
+                  {item.handler ? (
+                    <button onClick={item.handler} className="sidebar-item">
+                      <img src={item.icon} alt={item.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
+                      {isEffectivelyOpen && <span>{item.name}</span>}
+                    </button>
+                  ) : (
+                    <Link to={item.path} className="sidebar-item">
+                      <img src={item.icon} alt={item.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
+                      {isEffectivelyOpen && <span>{item.name}</span>}
+                    </Link>
+                  )}
                 </React.Fragment>
               )}
             </React.Fragment>
@@ -190,9 +214,9 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
       )}
       {isEffectivelyOpen && (
         <LabelManager
-            setDisplayedEmails={setDisplayedEmails}
-            setDisplayLoading={setDisplayLoading}
-            setDisplayError={setDisplayError}
+          setDisplayedEmails={setDisplayedEmails}
+          setDisplayLoading={setDisplayLoading}
+          setDisplayError={setDisplayError}
         />
       )}
     </div>
