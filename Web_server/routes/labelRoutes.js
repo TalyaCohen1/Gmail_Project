@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/labelController');
-const { authenticateUser } = require('../middlewares/authMiddleware');
+const { authenticateUser, authenticateToken } = require('../middlewares/authMiddleware');
 
 /**
  * Route to get all labels for authenticated user or create a new label.
@@ -9,8 +9,8 @@ const { authenticateUser } = require('../middlewares/authMiddleware');
  * POST /api/labels
  */
 router.route('/')
-    .get(authenticateUser, controller.getAllLabels)
-    .post(authenticateUser, controller.createLabel);
+    .get(authenticateToken, controller.getAllLabels)
+    .post(authenticateToken, controller.createLabel);
 
 /**
  * Route to get, update, or delete a label by ID for authenticated user.
@@ -19,13 +19,13 @@ router.route('/')
  * DELETE /api/labels/:id
  */
 router.route('/:id')
-    .get(authenticateUser, controller.getLabelById)
-    .patch(authenticateUser, controller.updateLabel)
-    .delete(authenticateUser, controller.deleteLabel);
+    .get(authenticateToken, controller.getLabelById)
+    .patch(authenticateToken, controller.updateLabel)
+    .delete(authenticateToken, controller.deleteLabel);
 
 router.route('/:id/mails')
-    .post(authenticateUser, controller.addMailToLabel)
-    .delete(authenticateUser, controller.removeMailFromLabel)
-    .get(authenticateUser, controller.getMailsByLabel);
+    .post(authenticateToken, controller.addMailToLabel)
+    .delete(authenticateToken, controller.removeMailFromLabel)
+    .get(authenticateToken, controller.getMailsByLabel);
 
 module.exports = router;
