@@ -5,6 +5,7 @@ import LabelManager from './LabelManager';
 import CreateMail from "../components/CreateMail";
 import '../styles/SideBar.css';
 import { Link } from 'react-router-dom';
+import { useLabels } from '../context/LabelContext';
 // Import all necessary mail service functions
 import { getEmails ,getInboxEmails, getDraftEmails, getSentEmails, getEmailLabels, getSpamEmails, getDeletedEmails } from '../services/mailService'; // NEW: Added getSentEmails, getEmails, getEmailLabels
 
@@ -13,6 +14,8 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
   const [showMoreLabels, setShowMoreLabels] = useState(false);
   const [showCategoriesSubLabels, setShowCategoriesSubLabels] = useState(false);
   const [showCreateMail, setShowCreateMail] = useState(false);
+
+  const { labels, fetchMailsForLabel } = useLabels();
 
   const isEffectivelyOpen = isSidebarOpen || isHovered;
 
@@ -40,22 +43,13 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
         // Direct API call for labels like Inbox, Drafts, Sent
         emailsToDisplay = await param();
       } else if (type === 'filter') {
-        // Client-side filtering for labels like Starred, Important, All Mail, Categories
-        const allMails = await getEmails(); // Fetch all general mails
-        const filteredMails = [];
-
-        // Iterate through all mails and check their labels
-        for (const mail of allMails) {
-          try {
-            const mailLabels = await getEmailLabels(mail.id); // Fetch labels for each mail
-            // Check if any of the mail's labels match the target filter label name
-            if (mailLabels.some(label => label.name === param)) {
-              filteredMails.push(mail);
-            }
-          } catch (mailLabelError) {
-            console.warn(`Could not fetch labels for mail ${mail.id}:`, mailLabelError);
-            // Optionally, skip this mail or handle the error specifically
-          }
+        const targetLabel = labels.find(label => label.name === param);
+        let filteredMails = [];
+        if (targetLabel) {
+            filteredMails = await fetchMailsForLabel(targetLabel.id);
+        } else {
+            console.warn(`Label '${param}' not found in LabelContext for filter type.`);
+            filteredMails = [];
         }
         emailsToDisplay = filteredMails;
       }

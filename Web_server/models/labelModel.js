@@ -2,7 +2,7 @@
 const Mail = require('./mailModel'); // Assuming you have a mail model to fetch mails by IDs
 
 let idCounter = 0;
-const labels = [];
+const labels = []
 
 /**
  * Retrieves all labels belonging to a specific user.
@@ -31,6 +31,30 @@ const createLabel = (name, userId) => {
     const newLabel = { id: ++idCounter, name, userId, mails: [] };
     labels.push(newLabel);
     return newLabel;
+};
+
+/**
+ * Creates a set of default labels for a user if they don't already exist.
+ * This function should be called when a user is first created or initialized.
+ * @param {string|number} userId - The ID of the user.
+ * @returns {Array<Object>} An array of the created or existing default label objects.
+ */
+const createDefaultLabels = (userId) => {
+    const defaultLabelNames = ['Social', 'Updates', 'Forums', 'Promotions'];
+    const createdOrExistingLabels = [];
+
+    defaultLabelNames.forEach(name => {
+        // Check if a label with this name already exists for the user
+        const existingLabel = labels.find(label => label.name === name && label.userId === userId);
+        if (!existingLabel) {
+            // If not, create it
+            createdOrExistingLabels.push(createLabel(name, userId));
+        } else {
+            // Otherwise, add the existing one to the list
+            createdOrExistingLabels.push(existingLabel);
+        }
+    });
+    return createdOrExistingLabels;
 };
 
 /**
@@ -101,5 +125,6 @@ module.exports = {
     deleteLabel,
     addMailToLabel,
     removeMailFromLabel,
-    getMailsByLabel
+    getMailsByLabel,
+    createDefaultLabels
 };
