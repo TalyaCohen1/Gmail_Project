@@ -92,7 +92,11 @@ export default function CreateMail({ onSend, onClose }) {
             setBody('');
             onClose && onClose(); // Close the compose popup
         } catch (err) {
-            setError(err.message);
+            if (err.message.includes('Recipient email does not exist')) {
+                setError('This email address is not registered in the system and cannot receive emails.');
+            } else {
+                setError(err.message);
+            }
         }
     };
 
