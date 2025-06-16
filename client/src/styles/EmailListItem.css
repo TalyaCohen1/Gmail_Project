@@ -1,36 +1,122 @@
+
+/* הפריט הבסיסי של האימייל - משתמש ב-Grid Layout כמו הקוד המקורי */
 .email-item {
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #e8eaed; /* צבע גבול של גימייל */
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-size: 14px;
+  color: #202124;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: all 0.15s ease;
+  position: relative;
 }
 
-/* Left icons and checkbox - ALWAYS VISIBLE */
-.email-item-left {
+/* אפקט hover על הפריט - משופר בהשראת גימייל */
+.email-item:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 1px 2px rgba(60,64,67,0.1), 0 1px 3px 1px rgba(60,64,67,0.15);
+}
+
+.email-item.selected {
+  background-color: #fce8e6;
+  border-left: 4px solid #ea4335;
+  padding-left: 12px; /* מפצה על הגבול השמאלי */
+}
+
+/* עמודות כלליות */
+.col {
   display: flex;
   align-items: center;
   flex: 0 0 auto;
   margin-right: 16px;
 }
 
-.email-checkbox {
-  margin-right: 16px;
-  opacity: 1; /* Always visible */
+/* עמודת הצ'קבוקס */
+.col-checkbox {
+  justify-content: center;
 }
 
-/* Left side icons - always visible */
-.email-item-left .icon-btn {
+.email-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #1a73e8;
+  cursor: pointer;
+}
+
+/* עמודת הכוכב */
+.col-star {
+  justify-content: center;
+}
+
+.star-btn {
   background: none;
   border: none;
-  padding: 4px;
+  padding: 6px;
   margin-right: 8px;
   cursor: pointer;
-  opacity: 1; /* Always visible for left side buttons */
-  transition: opacity 0.2s ease;
+  fill: #5f6368;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Right side icons - hidden by default */
-.email-item-right .icon-btn {
+.star-btn:hover {
+  fill: #fbbc04;
+  background-color: rgba(251, 188, 4, 0.1);
+}
+
+.star-btn.starred {
+  fill: #fbbc04;
+}
+
+/* עמודת השולח */
+.col-sender {
+  font-weight: 500;
+  color: #202124;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* עמודת הנושא והתוכן */
+.col-subject {
+  display: flex;
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.subject-text {
+  font-weight: 400;
+  color: #202124;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.snippet-text {
+  color: #5f6368;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 300;
+}
+
+/* עמודת התاריך */
+.col-date {
+  justify-content: flex-end;
+  color: #5f6368;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* כפתור העוד (⋮) */
+.email-item-right .icon-btn { 
   background: none;
   border: none;
   padding: 4px;
@@ -67,7 +153,9 @@
 .date {
   flex: 0 0 120px;
   text-align: right;
+  justify-self: end;
   white-space: nowrap;
+  color: #5f6368;
   margin-left: 16px;
 }
 

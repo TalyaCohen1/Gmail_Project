@@ -131,9 +131,9 @@ const RegistrationForm = () => {
 
     return (
     <div className="auth-container">
-        <div className="google-logo">
-                <h1>Our Mail!!</h1>
-            </div>
+        <div className="logo-container">
+        <img src="/Smail_logo.png" alt="ReeMail logo" />
+      </div>
 
         <div className="auth-subtitle">
            Create your account 

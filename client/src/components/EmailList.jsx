@@ -17,16 +17,16 @@ export default function EmailList({ emails = [], selectedIds, onToggleSelect, on
         <ul className="email-list">
             {emails.map(email => (
                 <EmailListItem
-                key={email.id}
-                email={email}
-                isSelected={selectedIds.includes(email.id)}
-                onToggleSelect={onToggleSelect}
-                onDelete={onDelete}
-                onOpenEmail={onOpenEmail}
-                onToggleStar={onToggleStar}
-                onToggleImportant={onToggleImportant}
-                onToggleRead={onToggleRead}
-                />
+                    key={email.id}
+                    email={email}
+                    isSelected={selectedIds.includes(email.id)}
+                    onToggleSelect={onToggleSelect}
+                    onDelete={onDelete}
+                    onOpenEmail={onOpenEmail}
+                    onToggleStar={onToggleStar}
+                    onToggleImportant={onToggleImportant}
+                    onToggleRead={onToggleRead}
+                    />
             ))}
         </ul>
     );
