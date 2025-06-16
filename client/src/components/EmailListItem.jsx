@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/EmailListItem.css';
+import{ useNavigate} from 'react-router-dom';
+
+export default function EmailListItem({ 
+    email, 
+    isSelected, 
+    onToggleSelect, 
+    onDelete, 
+    onToggleStar,
+    onToggleImportant, 
+    onToggleRead, 
+    onOpenEmail }) {
+
+    const navigate = useNavigate();
 
 // import { ReactComponent as starred }       from '/icons/starred.svg';
 // import { ReactComponent as full_star }     from '/icons/full_star.svg';
@@ -7,17 +20,7 @@ import '../styles/EmailListItem.css';
 // import { ReactComponent as UnImportant }  from '/icons/full_important.svg';
 // import { ReactComponent as MarkAsRead }   from '/icons/mark_as_read.svg';
 // import { ReactComponent as MarkAsUnread } from '/icons/mark_as_unread.svg';
-// import { ReactComponent as Trash }        from '/icons/trash.svg';
-
-export default function EmailListItem({
-  email,
-  isSelected,
-  onToggleSelect,
-  onDelete,
-  onToggleStar,
-  onToggleImportant,
-  onToggleRead,
-}) {
+// import { ReactComponent as Trash }        from '/icons/trash.svg'; {
   // local UI state
   const [starredState, setStarredState]         = useState(!!email.starred);
   const [importantState, setImportantState]     = useState(!!email.important);
@@ -54,19 +57,20 @@ export default function EmailListItem({
 //   const ReadIcon       = readState ? MarkAsUnread : MarkAsRead;
 
   return (
-    <li className={`email-item ${readState ? 'read' : 'unread'}`}>
+    <li
+      className={`email-item ${isSelected ? 'selected' : ''} ${readState ? 'read' : 'unread'}`}
+      onClick={handleItemClick}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="email-item-left">
         <input
           type="checkbox"
-          checked={isSelected}
-          onChange={onToggleSelect}
           className="email-checkbox"
+          checked={isSelected}
+          onChange={e => { e.stopPropagation(); onToggleSelect(); }}
         />
 
-        {/* <button className="icon-btn" onClick={handleStar} title="Star">
-          <StarIcon />
-        </button> */}
-        <button className="icon-btn" onClick={handleStar} title="Star">
+        <button className="icon-btn" onClick={handleStar} title={starredState ? 'Unstar' : 'Star'}>
           <img
             src={`/icons/${starredState ? 'full_star' : 'starred'}.svg`}
             alt={starredState ? 'Unstar' : 'Star'}
@@ -74,45 +78,50 @@ export default function EmailListItem({
           />
         </button>
 
-        {/* <button className="icon-btn" onClick={handleImportant} title="Important">
-          <ImportantIcon />
-        </button> */}
-        <button className="icon-btn" onClick={handleImportant} title="Important">
+        <button className="icon-btn" onClick={handleImportant} title={importantState ? 'Unmark Important' : 'Important'}>
           <img
             src={`/icons/${importantState ? 'full_important' : 'important'}.svg`}
-            alt={importantState ? 'Unmark important' : 'Important'}
+            alt={importantState ? 'Unmark Important' : 'Important'}
             className="inline-icon"
           />
         </button>
       </div>
 
-      <div className="email-summary" onClick={handleRead}>
+      <div className="email-summary" onClick={handleReadToggle}>
         <span className="sender">{email.from}</span>
         <span className="subject">{email.subject}</span>
         <span className="date">{new Date(email.timestamp).toLocaleString()}</span>
       </div>
 
+      <div className="labels">
+        {(email.labels || []).map(label => (
+          <span key={label.id} className="tag">{label.name}</span>
+        ))}
+      </div>
+
       <div className="email-item-right">
-        {/* <button className="icon-btn" onClick={handleRead} title="Toggle Read">
-          <ReadIcon />
-        </button> */}
-        <button className="icon-btn" onClick={handleRead} title="Toggle Read">
-            <img
+        <button className="icon-btn" onClick={handleReadToggle} title={readState ? 'Mark as Unread' : 'Mark as Read'}>
+          <img
             src={`/icons/${readState ? 'mark_as_unread' : 'mark_as_read'}.svg`}
-            alt={readState ? 'Mark as unread' : 'Mark as read'}
+            alt={readState ? 'Mark as Unread' : 'Mark as Read'}
             className="inline-icon"
-            />
+          />
         </button>
 
-        {/* <button className="icon-btn" onClick={() => onDelete(email.id)} title="Delete">
-          <Trash />
-        </button> */}
-        <button className="icon-btn" onClick={() => onDelete(email.id)} title="Delete">
-            <img
-            src={`${process.env.PUBLIC_URL}/icons/trash.svg`}
+        <button className="icon-btn" onClick={handleSnooze} title="Snooze">
+          <img
+            src={`/icons/snooze.svg`}
+            alt="Snooze"
+            className="inline-icon"
+          />
+        </button>
+
+        <button className="icon-btn" onClick={handleDeleteClick} title="Delete">
+          <img
+            src={`/icons/trash.svg`}
             alt="Delete"
             className="inline-icon"
-            />
+          />
         </button>
       </div>
     </li>

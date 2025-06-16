@@ -1,9 +1,6 @@
-const { get } = require("../routes/mailRoutes");
-
 let mails = [];
 let nextId = 1;
 let draftMails = [];
-let blacklist = []; // Assuming you have a blacklist array here, or a separate service for it
 
 /**
  * Return up to 50 most recent mails for this user (sent or received).
@@ -49,7 +46,7 @@ function search(email, query) {
 function createDraft({ from, to, subject, body}) {
     const timestamp = Date.now();
     const date = new Date().toISOString()
-    const draft = { id: nextId++, from, to, subject, body, date, timestamp };
+    const draft = { id: nextId++, from, to, subject, body, date, timestamp, send: false }; // Added send: false
     draftMails.push(draft);
     return draft;
 }
@@ -71,7 +68,7 @@ function createMail({ from, to, subject, body, id, isSpam = false }) {
     const timestamp = Date.now();
     const date = new Date().toISOString()
     const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labelsForSender: [],
-        labelsForReceiver: [], isSpam, isRead: false, isImportant: false, isStarred: false };
+        labelsForReceiver: [], isSpam, isRead: false, isImportant: false, isStarred: false, send: true }; // Added send: true
 
     mails.push(mail);
     return mail;
@@ -113,7 +110,7 @@ function deleteFromDrafts(id) {
 }
 
 function getDrafts(email) {
-    return draftMails.filter(d => d.from === email);
+    return draftMails.filter(d => d.from === email && d.send === false); // Filter by send: false
 }
 
 /**
@@ -127,10 +124,9 @@ function getDrafts(email) {
 function deleteMail(email, id) {
     const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
     if (!mail) return null;
-
     if (mail.to === email) {
         mail.deletedForReceiver = true;
-    } 
+    }
     if (mail.from === email) {
         mail.deletedForSender = true;
     }
@@ -160,7 +156,13 @@ function addLabel(email, id, labelId) {
     return true;
 }
 
-
+/**
+ * Remove a label from a mail.
+ * @param {string} email
+ * @param {number} id
+ * @param {string} labelId
+ * @returns true if removed, false otherwise
+ */
 function removeLabel(email, id, labelId) {
     const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
     if (!mail) return false;
@@ -173,65 +175,21 @@ function removeLabel(email, id, labelId) {
     return true;
 }
 
-function getLabels(email, id) {
-    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
-    if (!mail) return null;
-    if (mail.from === email) {
-        return mail.labelsForSender;
-    }
-    if (mail.to === email) {
-        return mail.labelsForReceiver;
-    }
-}
-
 function getInbox(email) {
-  return mails
-    .filter(m => m.to === email && !m.deletedForReceiver && !m.isSpam)
-    .sort((a,b) => b.timestamp - a.timestamp)
-    .slice(0,25);
+    return mails.filter(m => m.to === email && !m.deletedForReceiver && !m.isSpam);
 }
 
 function getSent(email) {
-  return mails
-    .filter(m => m.from === email && !m.deletedForSender && !m.isSpam)
-    .sort((a,b) => b.timestamp - a.timestamp)
-    .slice(0,25);
+    return mails.filter(m => m.from === email && !m.deletedForSender);
 }
 
-/**
- * Get all spam mails for a user.
- * @param {string} email
- */
-function getSpam(email) {
-    return mails
-        .filter(m =>
-            ((m.to === email || m.from === email) && m.isSpam) && !m.deletedForReceiver && !m.deletedForSender
-        )
-        .sort((a, b) => b.timestamp - a.timestamp)
-        .slice(0, 25);
-}
-
-/**
- * Mark a mail as spam.
- * @param {string} email
- * @param {number} id
- * @returns {object|null} The updated mail object if successful, null otherwise.
- */
-function markAsSpam(email, id) {
-    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+function markAsSpam(mail, id) {
     if (!mail) return null;
     mail.isSpam = true;
     return mail;
 }
 
-/**
- * Unmark a mail as spam.
- * @param {string} email
- * @param {number} id
- * @returns {object|null} The updated mail object if successful, null otherwise.
- */
-function unmarkAsSpam(email, id) {
-    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+function unmarkAsSpam(mail, id) {
     if (!mail) return null;
     mail.isSpam = false;
     return mail;
@@ -351,18 +309,16 @@ function getStarredMails(email) {
 module.exports = {
     getAll,
     getById,
-    createMail,
     search,
     createDraft,
+    createMail,
     updateDraft,
-    getDrafts,
     deleteMail,
     addLabel,
     removeLabel,
-    getLabels,
+    getDrafts,
     getInbox,
     getSent,
-    getSpam,
     markAsSpam,
     unmarkAsSpam,
     getDeletedMails,

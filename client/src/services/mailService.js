@@ -60,12 +60,16 @@ export async function getEmailById(id) {
  * @param {Object} data – { to, subject, body, labels: [id,…] }
  */
 export async function createEmail(data) {
+    const dataToSend = {
+        ...data,
+        send: data.send !== undefined ? data.send : false, // Default to false if not provided
+    };
     const res = await fetch('http://localhost:3000/api/mails', {
         method: 'POST',
         headers: {
             ...getAuthHeaders()
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(dataToSend),
     });
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -225,6 +229,11 @@ export async function getSentEmails() {
         throw new Error(err.message || 'Failed to fetch sent emails');
     }
     return res.json();
+}
+
+export async function getStarredEmails() {
+    const emails = []
+    return emails;
 }
 
 /**

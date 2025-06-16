@@ -1,4 +1,5 @@
 const Label = require('../models/labelModel');
+const userModel = require('../models/userModel');
 
 /**
  * Get all labels for the authenticated user.
@@ -107,16 +108,29 @@ exports.addMailToLabel = (req, res) => {
     if (isNaN(id)) {
         return res.status(400).json({ error: 'Invalid label ID' });
     }
-    const label = Label.getLabel(parseInt(req.params.id), req.userId);
-    
+    const label = Label.getLabel(id, req.userId); // This correctly gets the label ID from the URL parameter
+
     if (!label) {
         return res.status(404).json({ error: 'Label not found' });
     }
     const { mailId } = req.body;
     if (!mailId) {
-        return res.status(400).json({ error: 'Mail ID is required and must be a string' });
+        return res.status(400).json({ error: 'Mail ID is required' });
     }
-    Label.addMailToLabel(label.id, mailId, req.userId);
+
+    // 2. Find the user and their email address
+    const user = userModel.findById(req.userId);
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+    const userEmail = user.emailAddress;
+
+    // 3. Pass the email to the model function
+    const updatedLabel = Label.addMailToLabel(label.id, mailId, req.userId, userEmail);
+
+    if (!updatedLabel) {
+        return res.status(404).json({ error: 'Mail not found for this user' });
+    }
     res.status(204).end();
 };
 
@@ -125,7 +139,7 @@ exports.removeMailFromLabel = (req, res) => {
     if (isNaN(id)) {
         return res.status(400).json({ error: 'Invalid label ID' });
     }
-    const label = Label.getLabel(parseInt(req.params.id), req.userId);
+    const label = Label.getLabel(id, req.userId);
     
     if (!label) {
         return res.status(404).json({ error: 'Label not found' });
@@ -149,11 +163,20 @@ exports.getMailsByLabel = (req, res) => {
     if (isNaN(id)) {
         return res.status(400).json({ error: 'Invalid label ID' });
     }
-    const label = Label.getLabel(parseInt(req.params.id), req.userId);
-    
+    const label = Label.getLabel(id, req.userId);
+
     if (!label) {
         return res.status(404).json({ error: 'Label not found' });
     }
-    const mails = Label.getMailsByLabel(label.id, req.userId);
+
+    // 4. Find the user and their email here as well
+    const user = userModel.findById(req.userId);
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+    const userEmail = user.emailAddress;
+
+    // 5. Pass the email to the model function
+    const mails = Label.getMailsByLabel(label.id, req.userId, userEmail);
     res.json(mails);
-}
+};
