@@ -9,6 +9,15 @@ export default function EditProfilePopup({ onClose, currentName, currentImage })
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
 
+  const handleMinimize = () => {
+        setIsMinimized(!isMinimized);
+        if (!isMinimized) setIsMaximized(false);
+    };
+
+    const handleMaximize = () => {
+        setIsMaximized(!isMaximized);
+        if (!isMaximized) setIsMinimized(false);
+    };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,8 +53,8 @@ export default function EditProfilePopup({ onClose, currentName, currentImage })
       <div className="header">
         <h2>Edit Profile</h2>
         <div className="window-controls">
-          <button onClick={() => setIsMinimized(!isMinimized)}>_</button>
-          <button onClick={() => setIsMaximized(!isMaximized)}>□</button>
+          <button onClick={handleMinimize}>_</button>
+          <button onClick={handleMaximize}>□</button>
           <button onClick={onClose}>✕</button>
         </div>
       </div>

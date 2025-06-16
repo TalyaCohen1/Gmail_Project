@@ -19,6 +19,7 @@
   --font-family: 'Google Sans', 'Roboto', arial, sans-serif;
 }
 
+/* Global Styles */
 body {
   background-color: var(--google-grey-50);
   font-family: var(--font-family);
@@ -32,6 +33,7 @@ body.dark-mode {
   color: var(--google-grey-200);
 }
 
+/* Auth Form Styles */
 .auth-container {
   max-width: 450px;
   margin: 40px auto;
@@ -337,4 +339,15 @@ body.dark-mode .form-footer a {
   flex-direction: column;
   animation: slideUp 0.25s ease-out;
   font-family: 'Arial', sans-serif;
+}
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.logo-container img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }

@@ -15,7 +15,6 @@ const Register = () => {
     return (
     <div className="auth-form-container">
         <div style={{ padding: "20px" }}>
-            <h1>User Registration</h1>
                   <RegistrationForm handleRegistrationSuccess = {handleRegistrationSuccess}/>
  
         </div>

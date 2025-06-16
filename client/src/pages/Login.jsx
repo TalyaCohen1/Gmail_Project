@@ -22,7 +22,6 @@ const Login = () => {
     const expired = new URLSearchParams(location.search).get("expired") === "1";
     return (
         <div className="auth-form-container">
-            <h1>Login</h1>
             {expired == "1" && (
                 <div style={{ color: "red" , fontSize: "16px", marginBottom: "20px" }}>
                     Your session has expired. Please log in again.

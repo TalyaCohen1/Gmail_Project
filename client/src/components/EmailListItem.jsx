@@ -3,14 +3,13 @@ import '../styles/EmailListItem.css';
 import{ useNavigate} from 'react-router-dom';
 
 export default function EmailListItem({ email, isSelected, onToggleSelect, onDelete, onOpenEmail }) {
-    const navigate = useNavigate();
-
      return (
         <li 
           className={`email-item ${isSelected ? 'selected' : ''}`}  
           onClick={() => onOpenEmail(email)}
           style={{ cursor: 'pointer' }}
         >
+        <div className="col col-checkbox">
             <input
                 type="checkbox"
                 className="email-checkbox"
@@ -19,10 +18,14 @@ export default function EmailListItem({ email, isSelected, onToggleSelect, onDel
                 onChange={() => onToggleSelect(email.id)}
             
             />
-            <div className="email-summary">
-                <span className="sender">{email.from}</span>
-                <span className="subject">{email.subject}</span>
-                <span className="date">{new Date(email.date).toLocaleString()}</span>
+        </div>
+            <div className="col col-subject">
+                <span className="subject-text">{email.subject}</span>
+                <span className="snippet-text"> - {email.body?.slice(0, 50)}...</span>
+            </div>
+
+            <div className="col col-date">
+                {new Date(email.date).toLocaleString()}
             </div>
             <div className="labels">
                 {(email.labels || []).map(label => (
