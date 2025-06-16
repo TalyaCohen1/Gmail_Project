@@ -5,7 +5,12 @@ import "../styles/Mail.css";
 
 export default function CreateMail({ onSend, onClose, existingEmail = null, defaultValues = null, readOnlyActions = false }) {
     const [draft, setDraft] = useState(null);
-    const [to, setTo] = useState(defaultValues?.to || existingEmail?.to?.join(', ') || '');
+    const [to, setTo] = useState(() => {
+        if (defaultValues?.to) return defaultValues.to;
+        if (Array.isArray(existingEmail?.to)) return existingEmail.to.join(', ');
+        if (typeof existingEmail?.to === 'string') return existingEmail.to;
+        return '';
+        });
     const [subject, setSubject] = useState(defaultValues?.subject || existingEmail?.subject || '');
     const [body, setBody] = useState(defaultValues?.body || existingEmail?.body || '');
     const [error, setError] = useState('');
@@ -51,7 +56,7 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
     }, [existingEmail]);
 
     useEffect(() => {
-        if (!draft || !draft.id || existingEmail) return;
+        if (!draft || !draft.id || existingEmail?.id) return;
         setIsSaving(true);
         const timeout = setTimeout(() => {
             updateEmail(draft.id, { to, subject, body, send: false })
@@ -101,6 +106,7 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
             setTo('');
             setSubject('');
             setBody('');
+            
             onClose && onClose();
         } catch (err) {
             if (err.message.includes('Recipient email')) {
@@ -110,7 +116,29 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
             }
         }
     };
+    // Update form values if existingEmail changes
+    useEffect(() => {
+    if (existingEmail) {
+        const safeTo = Array.isArray(existingEmail.to)
+            ? existingEmail.to.join(', ')
+            : (typeof existingEmail.to === 'string' ? existingEmail.to : '');
 
+        setTo(safeTo);
+        setSubject(existingEmail.subject || '');
+        setBody(existingEmail.body || '');
+    }
+}, [existingEmail]);
+
+    const handleCloseWithSave = async () => {
+        if (draft && draft.id) {
+            try {
+            await updateEmail(draft.id, { to, subject, body, send: false });
+            } catch (err) {
+            console.error("Failed to save draft on close:", err);
+            }
+        }
+        onClose && onClose();
+    }
     return (
         <div className={`compose-popup ${isMinimized ? 'minimized' : ''} ${isMaximized ? 'maximized' : ''}`}>
             <div className="header">
@@ -118,7 +146,7 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
                 <div className="window-controls">
                     <button onClick={handleMinimize}>_</button>
                     <button onClick={handleMaximize}>□</button>
-                    <button onClick={onClose}>✕</button>
+                    <button onClick={handleCloseWithSave}>✕</button>
                 </div>
             </div>
             <input
