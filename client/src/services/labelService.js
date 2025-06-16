@@ -51,7 +51,7 @@ export const getLabels = async () => {
     const response = await fetch(BASE_URL, {
         method: 'GET',
         headers: {
-            'Authorization': `${userId}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     });
@@ -69,7 +69,7 @@ export const createLabel = async (name) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `${userId}`
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ name }),
     });
@@ -87,7 +87,7 @@ export const updateLabel = async (id, newName) => {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `${userId}`
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ name: newName }),
     });
@@ -104,7 +104,7 @@ export const deleteLabel = async (id) => {
     const response = await fetch(`${BASE_URL}/${id}`, {
         method: 'DELETE',
         headers: {
-            'Authorization': `${userId}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     });
@@ -121,7 +121,7 @@ export const getMailsByLabel = async (id) => {
     const response = await fetch(`${BASE_URL}/${id}/mails`, {
         method: 'GET',
         headers: {
-            'Authorization': `${userId}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         }
     });
@@ -139,7 +139,7 @@ export const addMailToLabel = async (labelId, mailId) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `${userId}`
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ mailId }),
     });
@@ -157,7 +157,7 @@ export const removeMailFromLabel = async (labelId, mailId) => {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `${userId}`
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ mailId }),
     });
