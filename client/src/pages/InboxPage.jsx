@@ -4,10 +4,21 @@ import Header from "../components/Header";
 import EmailList from "../components/EmailList";
 import BatchActionsBar from '../components/BatchActionsBar';
 import EmailListToolbar from "../components/EmailListToolbar";
-import { getInboxEmails, deleteEmail, addLabelToEmail, removeLabelFromEmail, markEmailAsRead, markEmailAsUnread } from '../services/mailService';
-import { useDisplayEmails } from '../context/DisplayEmailsContext'; // NEW: Import DisplayEmailsContext hook
-import "../styles/InboxPage.css";
+import {
+  getInboxEmails,
+  deleteEmail,
+  markEmailAsRead,
+  markEmailAsUnread,
+  markEmailAsImportant,
+  markEmailAsStarred,
+  unmarkEmailAsImportant,
+  unmarkEmailAsStarred,
+  addLabelToEmail,
+  removeLabelFromEmail
+} from '../services/mailService';
+import { useDisplayEmails } from '../context/DisplayEmailsContext';
 import { LabelContext } from '../context/LabelContext';
+import "../styles/InboxPage.css";
 
 export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
   // Use the new context for displayed emails and their loading/error states
@@ -118,10 +129,9 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
                 selectedIds={selectedIds}
                 onToggleSelect={toggleSelect}
                 onDelete={handleDelete}
-                onToggleStar={(id, v) => updateEmail(id, { starred: v })}
-                onToggleImportant={(id, v) => updateEmail(id, { important: v })}
-                onMarkRead={id => updateEmail(id, { read: true })}
-                onSnooze={id => snoozeEmail(id)}
+                onToggleStar={(id, v) => v ? markEmailAsStarred(id) : unmarkEmailAsStarred(id)}
+                onToggleImportant={(id, isImportant) => isImportant ? markEmailAsImportant(id) : unmarkEmailAsImportant(id)}
+                onMarkRead={id => markEmailAsRead(id)}
               />
             </>
           )}

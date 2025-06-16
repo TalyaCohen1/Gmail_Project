@@ -1,26 +1,13 @@
-import React from 'react';
-import '../styles/EmailListItem.css';
-
-import { ReactComponent as starred } from '../icons/starred.svg';
-import { ReactComponent as full_star } from '../icons/full_star.svg';
-import { ReactComponent as Important } from '../icons/important.svg';
-import { ReactComponent as UnImportant } from '../icons/full_important.svg';
-import { ReactComponent as SnoozeIcon } from '../icons/snooze.svg';
-import { ReactComponent as MarkAsRead } from '../icons/mark_as_read.svg';
-import { ReactComponent as MarkAsUnread } from '../icons/mark_as_unread.svg';
-import { ReactComponent as Trash } from '../icons/trash.svg';
-
 import React, { useState, useEffect } from 'react';
 import '../styles/EmailListItem.css';
 
-import { ReactComponent as starred }       from '../icons/starred.svg';
-import { ReactComponent as full_star }     from '../icons/full_star.svg';
-import { ReactComponent as Important }    from '../icons/important.svg';
-import { ReactComponent as UnImportant }  from '../icons/full_important.svg';
-import { ReactComponent as SnoozeIcon }   from '../icons/snooze.svg';
-import { ReactComponent as MarkAsRead }   from '../icons/mark_as_read.svg';
-import { ReactComponent as MarkAsUnread } from '../icons/mark_as_unread.svg';
-import { ReactComponent as Trash }        from '../icons/trash.svg';
+// import { ReactComponent as starred }       from '/icons/starred.svg';
+// import { ReactComponent as full_star }     from '/icons/full_star.svg';
+// import { ReactComponent as Important }    from '/icons/important.svg';
+// import { ReactComponent as UnImportant }  from '/icons/full_important.svg';
+// import { ReactComponent as MarkAsRead }   from '/icons/mark_as_read.svg';
+// import { ReactComponent as MarkAsUnread } from '/icons/mark_as_unread.svg';
+// import { ReactComponent as Trash }        from '/icons/trash.svg';
 
 export default function EmailListItem({
   email,
@@ -30,7 +17,6 @@ export default function EmailListItem({
   onToggleStar,
   onToggleImportant,
   onToggleRead,
-  onSnooze
 }) {
   // local UI state
   const [starredState, setStarredState]         = useState(!!email.starred);
@@ -61,14 +47,11 @@ export default function EmailListItem({
     onToggleRead(email.id, next);
   };
 
-  const handleSnooze = () => {
-    onSnooze(email.id);
-  };
-
+  
   // choose icons
-  const StarIcon       = starredState ? full_star : starred;
-  const ImportantIcon  = importantState ? UnImportant : Important;
-  const ReadIcon       = readState ? MarkAsUnread : MarkAsRead;
+//   const StarIcon       = starredState ? full_star : star;
+//   const ImportantIcon  = importantState ? UnImportant : Important;
+//   const ReadIcon       = readState ? MarkAsUnread : MarkAsRead;
 
   return (
     <li className={`email-item ${readState ? 'read' : 'unread'}`}>
@@ -80,12 +63,26 @@ export default function EmailListItem({
           className="email-checkbox"
         />
 
-        <button className="icon-btn" onClick={handleStar} title="Star">
+        {/* <button className="icon-btn" onClick={handleStar} title="Star">
           <StarIcon />
+        </button> */}
+        <button className="icon-btn" onClick={handleStar} title="Star">
+          <img
+            src={`/icons/${starredState ? 'full_star' : 'starred'}.svg`}
+            alt={starredState ? 'Unstar' : 'Star'}
+            className="inline-icon"
+          />
         </button>
 
-        <button className="icon-btn" onClick={handleImportant} title="Important">
+        {/* <button className="icon-btn" onClick={handleImportant} title="Important">
           <ImportantIcon />
+        </button> */}
+        <button className="icon-btn" onClick={handleImportant} title="Important">
+          <img
+            src={`/icons/${importantState ? 'full_important' : 'important'}.svg`}
+            alt={importantState ? 'Unmark important' : 'Important'}
+            className="inline-icon"
+          />
         </button>
       </div>
 
@@ -96,16 +93,26 @@ export default function EmailListItem({
       </div>
 
       <div className="email-item-right">
-        <button className="icon-btn" onClick={handleRead} title="Toggle Read">
+        {/* <button className="icon-btn" onClick={handleRead} title="Toggle Read">
           <ReadIcon />
+        </button> */}
+        <button className="icon-btn" onClick={handleRead} title="Toggle Read">
+            <img
+            src={`/icons/${readState ? 'mark_as_unread' : 'mark_as_read'}.svg`}
+            alt={readState ? 'Mark as unread' : 'Mark as read'}
+            className="inline-icon"
+            />
         </button>
 
-        <button className="icon-btn" onClick={handleSnooze} title="Snooze">
-          <SnoozeIcon />
-        </button>
-
-        <button className="icon-btn" onClick={() => onDelete(email.id)} title="Delete">
+        {/* <button className="icon-btn" onClick={() => onDelete(email.id)} title="Delete">
           <Trash />
+        </button> */}
+        <button className="icon-btn" onClick={() => onDelete(email.id)} title="Delete">
+            <img
+            src={`${process.env.PUBLIC_URL}/icons/trash.svg`}
+            alt="Delete"
+            className="inline-icon"
+            />
         </button>
       </div>
     </li>
