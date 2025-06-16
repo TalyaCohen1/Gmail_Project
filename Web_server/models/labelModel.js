@@ -60,11 +60,16 @@ const deleteLabel = (id, userId) => {
     return labels.splice(index, 1)[0];
 };
 
-const addMailToLabel = (labelId, mailId, userId) => {
+const addMailToLabel = (labelId, mailId, userId, userEmail) => { // Added userEmail
     const label = getLabel(labelId, userId);
     if (!label) return null;
     if (!label.mails) label.mails = [];
-    if (Mail.getById(mailId, userId) === null) return null; // Ensure mail exists
+    
+    // Use the correct arguments (userEmail, mailId) for getById
+    if (Mail.getById(userEmail, mailId) === null) {
+        return null; // Ensure mail exists for this user
+    }
+    
     if (!label.mails.includes(mailId)) {
         label.mails.push(mailId);
     }
@@ -78,13 +83,15 @@ const removeMailFromLabel = (labelId, mailId, userId) => {
     return label;
 };
 
-const getMailsByLabel = (labelId, userId) => {
+const getMailsByLabel = (labelId, userId, userEmail) => { // Added userEmail
     const label = getLabel(labelId, userId);
     if (!label || !label.mails) return [];
-    // Assuming we have a mail model to fetch mails by IDs
-    const mails = label.mails.map(mailId => Mail.getById(mailId, userId));
+    
+    // Use the correct arguments (userEmail, mailId) here too
+    const mails = label.mails.map(mailId => Mail.getById(userEmail, mailId));
+    
     return mails.filter(mail => mail !== null); // Filter out any null results
-}       
+};    
 
 module.exports = {
     getAllLabels,

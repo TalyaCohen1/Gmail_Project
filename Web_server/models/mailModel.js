@@ -1,9 +1,6 @@
-const { get } = require("../routes/mailRoutes");
-
 let mails = [];
 let nextId = 1;
 let draftMails = [];
-let blacklist = []; // Assuming you have a blacklist array here, or a separate service for it
 
 /**
  * Return up to 50 most recent mails for this user (sent or received).
