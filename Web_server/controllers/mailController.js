@@ -218,6 +218,7 @@ exports.getDrafts = (req, res) => {
  * GET /api/mails/inbox
  */
 exports.getInbox = (req, res) => {
+    const userId = req.userId; // Get the userId from the request object
     // Ensure the userId is set in the request object
     const user = userModel.findById(userId);
     if (!user) {
