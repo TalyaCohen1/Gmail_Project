@@ -15,10 +15,9 @@ export default function EmailListItem({ email, isSelected, onToggleSelect, onDel
                 type="checkbox"
                 className="email-checkbox"
                 checked={isSelected}
-                onChange={e => {
-                  e.stopPropagation();
-                  onToggleSelect();
-                }}
+                onClick={(e) => e.stopPropagation()}  // Prevent checkbox click from triggering the item click
+                onChange={() => onToggleSelect(email.id)}
+            
             />
             <div className="email-summary">
                 <span className="sender">{email.from}</span>
@@ -32,7 +31,7 @@ export default function EmailListItem({ email, isSelected, onToggleSelect, onDel
             </div>
             <button onClick={e => {
                 e.stopPropagation();
-                onDelete();
+                onDelete(email.id);
             }}>Delete</button>
         </li>
     );
