@@ -73,7 +73,6 @@ function createMail({ from, to, subject, body, id, isSpam = false, isImportant =
     if (id === undefined || id === null) {
         id = nextId++;
     }
-    console.log(`mailMOdel ${isSpam}`);
     const timestamp = Date.now();
     const date = new Date().toISOString()
     const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labelsForSender: labels,
@@ -103,7 +102,7 @@ function updateDraft(email, id, fields) {
     if(fields.send === false){
         return d;
     } else {
-        const mail = createMail({ from: d.from, to: d.to, subject: d.subject, body: d.body, id, isSpam: d.isSpam, isImportant: d.isImportant, isStarred: d.isStarred, labels: d.labels });
+        const mail = createMail({ from: d.from, to: d.to, subject: d.subject, body: d.body, id, isSpam: fields.isSpam, isImportant: fields.isImportant, isStarred: fields.isStarred, labels: fields.labels });
         // Remove the draft after sending
         const idx = deleteFromDrafts(id);
         if (!idx) return null;

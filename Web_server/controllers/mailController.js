@@ -130,7 +130,6 @@ exports.updateDraft = async (req, res) => {
         try {
             const blacklisted = await checkUrl(url);
             if (blacklisted) {
-                console.log(`blacklisted url: ${url}`);
                 isSpam = true;
                 break;
             }
@@ -138,7 +137,6 @@ exports.updateDraft = async (req, res) => {
             return res.status(500).json({ error: 'Blacklist service error' });
         }
     }
-
     const updated = mailModel.updateDraft(from, id, { subject, body, to, send, isSpam, isImportant, isStarred, labels });
 
     if (!updated) {
