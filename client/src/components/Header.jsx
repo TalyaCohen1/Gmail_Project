@@ -74,7 +74,7 @@ function Header({ toggleSidebar }) {
             <img src="/icons/menu.svg" alt="Menu" className="menu-icon" />
           </button>
           <div className="header-logo">
-            <img src="/Smail_logo.png" alt="Gmail Logo" className="gmail-logo-icon" />
+            <img src="/Smail_logo.svg" alt="Gmail Logo" className="gmail-logo-icon" />
           </div>
         </div>
 

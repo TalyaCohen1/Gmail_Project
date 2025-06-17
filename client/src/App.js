@@ -25,7 +25,7 @@ function HomeContent() {
   return (
     <div className="home-container">
       <div className="logo-section">
-        <img src="/Smail_logo.png" alt="Gmail Logo" className="logo-img" />
+        <img src="/Smail_logo.svg" alt="Gmail Logo" className="logo-img" />
         <h1 className="title">Welcome to SMail :)</h1>
       </div>
 

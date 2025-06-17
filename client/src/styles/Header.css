@@ -56,8 +56,8 @@
 }
 
 .gmail-logo-icon { /* This class name is used for the <img> tag in Header.jsx */
-  width: 90px; /* Increased width for the logo */
-  height: 36px; /* Increased height for the logo */
+  width: 120px; /* Increased width for the logo */
+  height: 60px; /* Increased height for the logo */
   object-fit: contain; /* Ensures the image fits within the dimensions while maintaining aspect ratio */
   display: block; /* Helps with more consistent image rendering within flex containers */
 }

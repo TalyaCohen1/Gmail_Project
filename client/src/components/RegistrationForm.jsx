@@ -132,7 +132,7 @@ const RegistrationForm = () => {
     return (
     <div className="auth-container">
         <div className="logo-container">
-        <img src="/Smail_logo.png" alt="ReeMail logo" />
+        <img src="/Smail_logo.svg" alt="ReeMail logo" />
       </div>
 
         <div className="auth-subtitle">
