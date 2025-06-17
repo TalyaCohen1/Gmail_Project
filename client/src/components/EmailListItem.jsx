@@ -91,6 +91,9 @@ export default function EmailListItem({
           />
         </button>
       </div>
+      <div className="col col-sender">
+        <span className="sender-text">{email.from}</span>
+      </div>
 
       <div className="col col-subject">
                 <span className="subject-text">{email.subject}</span>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CreateMail from "./CreateMail";
 import { useComposer } from "../context/ComposerContext";
 import { markEmailAsStarred } from "../services/mailService";
@@ -54,6 +54,16 @@ export default function EmailActions({ email, onEmailUpdate }) {
       console.error("Failed to star email", err);
     }
   };
+
+  // Scroll to the inline reply section when it appears
+  useEffect(() => {
+    if (inlineAction) {
+      setTimeout(() => {
+        document.querySelector('.inline-reply')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100); 
+    }
+  }, [inlineAction]);
+
 
   return (
     <>

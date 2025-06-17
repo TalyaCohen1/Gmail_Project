@@ -1,9 +1,15 @@
 /* src/styles/EmailDetail.css */
 .email-detail {
-  max-width: 800px;
-  margin: 0 auto;
+  /* max-width: 800px;
+  margin: 0 auto; */
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;  
+  flex-direction: column;
+  margin: 0;
   background: white;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   overflow: hidden;
   font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -25,6 +31,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .email-detail-header button {
@@ -54,6 +61,10 @@
   padding: 16px 24px;
   background: #f8f9fa;
   border-bottom: 1px solid #e8eaed;
+  flex-shrink: 0; /* Prevent meta from shrinking */
+  margin: 0 0 16px 0; /* Add margin to separate from header */
+  border-radius: 8px 8px 0 0; /* Rounded corners on top */
+  box-shadow: 0 1px 3px rgba(60,64,67,0.3); /* צל עדין */
 }
 
 .email-meta p {
@@ -71,6 +82,8 @@
   padding: 12px 24px;
   background: #f8f9fa;
   border-bottom: 1px solid #e8eaed;
+  flex-shrink: 0;
+  margin: 0 16px;
 }
 
 .tag {
@@ -93,6 +106,12 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   min-height: 100px;
+   flex: 1; /* תופס את כל החלל הזמין */
+  overflow-y: auto; /* אם התוכן ארוך */
+  background: white; /* רקע לבן לתוכן המייל */
+  margin: 0 16px 16px 16px; /* מרווחים מהצדדים */
+  border-radius: 8px; /* פינות מעוגלות רק לתוכן */
+  box-shadow: 0 1px 3px rgba(60,64,67,0.3); /* צל עדין */
 }
 
 .email-actions {
@@ -103,7 +122,7 @@
   gap: 8px;
 }
 
-.email-actions button {
+/* .email-actions button {
   background: white;
   border: 1px solid #dadce0;
   color: #3c4043;
@@ -122,7 +141,24 @@
   background: #f8f9fa;
   border-color: #bdc1c6;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+} */
+ .email-actions button {
+  background: none;
+  border: 1px solid #dadce0;
+  border-radius: 18px;
+  padding: 6px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a73e8;
+  cursor: pointer;
+  margin: 0 6px;
+  transition: background-color 0.2s ease;
 }
+
+.email-actions button:hover {
+  background-color: rgba(26, 115, 232, 0.1);
+}
+
 
 .email-actions button:active {
   background: #e8eaed;
@@ -144,6 +180,7 @@
   border-top: 1px solid #e8eaed;
   background: #f8f9fa;
   padding: 16px;
+  
 }
 
 /* Override compose popup styling when inline */
@@ -216,6 +253,7 @@
     border-radius: 0;
     box-shadow: none;
     border: 1px solid #e8eaed;
+    height: calc(100vh - 16px); 
   }
   
   .email-detail-header,

@@ -15,8 +15,8 @@ import Register from './pages/Register';
 import Inbox from './pages/InboxPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { LabelProvider } from './context/LabelContext';
-import { ThemeProvider } from './context/ThemeContext'; // Import ThemeProvider
-import { DisplayEmailsProvider } from './context/DisplayEmailsContext'; // NEW import for DisplayEmailsProvider
+import { ThemeProvider } from './context/ThemeContext'; 
+import { DisplayEmailsProvider } from './context/DisplayEmailsContext';
 import { ComposerProvider } from './context/ComposerContext';
 
 function HomeContent() {
@@ -25,7 +25,8 @@ function HomeContent() {
   return (
     <div className="home-container">
       <div className="logo-section">
-        <h1 className="title">Welcome to MyMail</h1>
+        <img src="/Smail_logo.png" alt="Gmail Logo" className="logo-img" />
+        <h1 className="title">Welcome to SMail :)</h1>
       </div>
 
       <div className="auth-buttons">
