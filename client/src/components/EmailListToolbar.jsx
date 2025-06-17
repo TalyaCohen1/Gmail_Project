@@ -74,7 +74,9 @@ export default function EmailListToolbar({
         title="Refresh"
         disabled={loading}
       >
-        {loading ? 'Refreshing…' : '🔄'}
+        <img
+          src={"/icons/refresh.svg"} alt={"Refresh"} className="inline-icon"
+        />
       </button>
 
       <div className="toolbar-more" ref={menuRef}>
