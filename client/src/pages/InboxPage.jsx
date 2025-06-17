@@ -191,6 +191,8 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
           );
         setEmails(updateFn);
         setDisplayedEmails(updateFn);
+      } else if (type === 'clearSelection') {
+        setSelectedIds([]);
       }
       setSelectedIds([]);
     } catch (error) {

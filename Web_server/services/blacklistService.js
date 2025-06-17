@@ -51,7 +51,7 @@ async function checkUrl(url) {
     const statusLine = (parts[0] || '').trim();
     const flagsLine = (parts[2] || '').trim();
     const flags = flagsLine.split(/\s+/);
-
+    console.log(`answe: ${flags[0]} ${flags[1]}`);
     return (
         statusLine === '200 Ok' &&
         flags.length >= 2 &&
@@ -106,9 +106,38 @@ exports.removeUrl = async (req, res) => {
     }
 };
 
+async function addUrl_s(url) {
+    if (!url) throw new Error('URL is required');
+
+    try {
+        const response = await sendCommandString(`POST ${url}`);
+        const statusLine = response.trim().split('\n')[0];
+        console.log(`status add: ${statusLine}`);
+        return statusLine.startsWith('201');
+    } catch (err) {
+        console.error(`Error adding URL to blacklist: ${url}`, err);
+        throw err; // Re-throw to be handled by the caller
+    }
+}
+
+async function removeUrl_s(url) {
+        if (!url) throw new Error('URL is required');
+
+    try {
+        const response = await sendCommandString(`DELETE ${url}`);
+        const statusLine = response.trim().split('\n')[0];
+        return statusLine.startsWith('204');
+    } catch (err) {
+        console.error(`Error deleting URL from blacklist: ${url}`, err);
+        throw err; // Re-throw to be handled by the caller
+    }
+}
+
 module.exports = {
     sendCommandString,
     checkUrl,
     addUrl: exports.addUrl,
-    removeUrl: exports.removeUrl
+    removeUrl: exports.removeUrl,
+    addUrl_s,
+    removeUrl_s
 };
