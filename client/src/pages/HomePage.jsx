@@ -10,7 +10,7 @@ export default function HomePage() {
     <div className="home-container">
       <div className="logo-section">
         {/* <img src={logo} alt="Logo" className="logo-img" /> */}
-        <h1 className="title">Welcome to MyMail</h1>
+        <h1 className="title">Welcome to SMail</h1>
       </div>
 
       <div className="auth-buttons">

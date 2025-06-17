@@ -48,7 +48,7 @@ function LoginForm({onLoginSuccess }) {
   return (
     <>
       <div className="logo-container">
-        <img src="/Smail_logo.png" alt="ReeMail logo" />
+        <img src="/Smail_logo.svg" alt="ReeMail logo" />
       </div>
       <form onSubmit={handleSubmit} className="auth-container">
         <div className="google-logo">
