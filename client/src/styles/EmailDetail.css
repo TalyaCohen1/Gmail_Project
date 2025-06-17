@@ -1,16 +1,15 @@
-/* src/styles/EmailDetail.css */
+/* src/styles/EmailDetail.css with dark mode support using CSS variables */
+
 .email-detail {
-  /* max-width: 800px;
-  margin: 0 auto; */
   width: 100%;
   height: 100vh;
   overflow-y: auto;
-  display: flex;  
+  display: flex;
   flex-direction: column;
   margin: 0;
-  background: white;
+  background: var(--background-primary);
   border-radius: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px var(--shadow-color);
   overflow: hidden;
   font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
@@ -20,24 +19,24 @@
   justify-content: center;
   align-items: center;
   height: 200px;
-  color: #5f6368;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
 .email-detail-header {
-  background: #f8f9fa;
+  background: var(--background-secondary);
   padding: 16px 24px;
-  border-bottom: 1px solid #e8eaed;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-shrink: 0; /* Prevent header from shrinking */
+  flex-shrink: 0;
 }
 
 .email-detail-header button {
   background: none;
   border: none;
-  color: #5f6368;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 8px 12px;
   border-radius: 4px;
@@ -46,50 +45,50 @@
 }
 
 .email-detail-header button:hover {
-  background: #e8eaed;
+  background: var(--hover-background);
 }
 
 .email-subject {
   font-size: 20px;
   font-weight: 400;
-  color: #202124;
+  color: var(--text-primary);
   margin: 0;
   flex: 1;
 }
 
 .email-meta {
   padding: 16px 24px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e8eaed;
-  flex-shrink: 0; /* Prevent meta from shrinking */
-  margin: 0 0 16px 0; /* Add margin to separate from header */
-  border-radius: 8px 8px 0 0; /* Rounded corners on top */
-  box-shadow: 0 1px 3px rgba(60,64,67,0.3); /* צל עדין */
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+  margin: 0 0 16px 0;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 1px 3px var(--shadow-color);
 }
 
 .email-meta p {
   margin: 4px 0;
   font-size: 14px;
-  color: #5f6368;
+  color: var(--text-secondary);
 }
 
 .email-meta strong {
-  color: #202124;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .labels {
   padding: 12px 24px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e8eaed;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
   margin: 0 16px;
 }
 
 .tag {
   display: inline-block;
-  background: #e8f0fe;
-  color: #1a73e8;
+  background: var(--tag-background);
+  color: var(--tag-text);
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 12px;
@@ -101,74 +100,52 @@
 .email-body {
   padding: 24px;
   line-height: 1.6;
-  color: #202124;
+  color: var(--text-primary);
   font-size: 14px;
   white-space: pre-wrap;
   word-wrap: break-word;
   min-height: 100px;
-   flex: 1; /* תופס את כל החלל הזמין */
-  overflow-y: auto; /* אם התוכן ארוך */
-  background: white; /* רקע לבן לתוכן המייל */
-  margin: 0 16px 16px 16px; /* מרווחים מהצדדים */
-  border-radius: 8px; /* פינות מעוגלות רק לתוכן */
-  box-shadow: 0 1px 3px rgba(60,64,67,0.3); /* צל עדין */
+  flex: 1;
+  overflow-y: auto;
+  background: var(--background-primary);
+  margin: 0 16px 16px 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px var(--shadow-color);
 }
 
 .email-actions {
   padding: 16px 24px;
-  background: #f8f9fa;
-  border-top: 1px solid #e8eaed;
+  background: var(--background-secondary);
+  border-top: 1px solid var(--border-color);
   display: flex;
   gap: 8px;
 }
 
-/* .email-actions button {
-  background: white;
-  border: 1px solid #dadce0;
-  color: #3c4043;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.email-actions button:hover {
-  background: #f8f9fa;
-  border-color: #bdc1c6;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-} */
- .email-actions button {
+.email-actions button {
   background: none;
-  border: 1px solid #dadce0;
+  border: 1px solid var(--border-color);
   border-radius: 18px;
   padding: 6px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: #1a73e8;
+  color: var(--tag-text);
   cursor: pointer;
   margin: 0 6px;
   transition: background-color 0.2s ease;
 }
 
 .email-actions button:hover {
-  background-color: rgba(26, 115, 232, 0.1);
+  background-color: var(--hover-background);
 }
-
 
 .email-actions button:active {
-  background: #e8eaed;
+  background: var(--hover-background);
 }
 
-/* Special styling for draft edit button */
 .email-actions button:first-child:last-child {
-  background: #1a73e8;
-  color: white;
-  border-color: #1a73e8;
+  background: var(--tag-text);
+  color: var(--background-primary);
+  border-color: var(--tag-text);
 }
 
 .email-actions button:first-child:last-child:hover {
@@ -177,50 +154,49 @@
 }
 
 .inline-reply {
-  border-top: 1px solid #e8eaed;
-  background: #f8f9fa;
+  border-top: 1px solid var(--border-color);
+  background: var(--background-secondary);
   padding: 16px;
-  
 }
 
-/* Override compose popup styling when inline */
 .inline-reply .compose-popup {
   position: static;
   box-shadow: none;
-  border: 1px solid #dadce0;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: white;
+  background: var(--background-primary);
   max-width: none;
   width: 100%;
 }
 
 .inline-reply .compose-popup .header {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e8eaed;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--border-color);
   padding: 12px 16px;
 }
 
 .inline-reply .compose-popup .header h2 {
   font-size: 16px;
-  color: #202124;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .inline-reply .compose-popup input,
 .inline-reply .compose-popup textarea {
-  border: 1px solid #dadce0;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 8px 12px;
   font-size: 14px;
-  color: #202124;
+  color: var(--text-primary);
   margin: 8px 16px;
+  background: var(--background-primary);
   width: calc(100% - 32px);
 }
 
 .inline-reply .compose-popup input:focus,
 .inline-reply .compose-popup textarea:focus {
   outline: none;
-  border-color: #1a73e8;
+  border-color: var(--tag-text);
   box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
 }
 
@@ -231,7 +207,7 @@
 }
 
 .inline-reply .compose-popup .actions button {
-  background: #1a73e8;
+  background: var(--tag-text);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -246,16 +222,15 @@
   background: #1557b0;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .email-detail {
     margin: 8px;
     border-radius: 0;
     box-shadow: none;
-    border: 1px solid #e8eaed;
-    height: calc(100vh - 16px); 
+    border: 1px solid var(--border-color);
+    height: calc(100vh - 16px);
   }
-  
+
   .email-detail-header,
   .email-meta,
   .labels,
@@ -264,16 +239,17 @@
     padding-left: 16px;
     padding-right: 16px;
   }
-  
+
   .email-actions {
     flex-wrap: wrap;
   }
-  
+
   .email-actions button {
     flex: 1;
     min-width: 120px;
   }
 }
+
 .email-star-top {
   display: flex;
   justify-content: flex-end;
@@ -285,7 +261,7 @@
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #888;
+  color: var(--text-secondary);
   transition: color 0.2s;
 }
 
