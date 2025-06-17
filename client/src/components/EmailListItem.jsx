@@ -91,12 +91,18 @@ export default function EmailListItem({
           />
         </button>
       </div>
-
-      <div className="email-summary">
-        <span className="sender">{email.from}</span>
-        <span className="subject">{email.subject}</span>
-        <span className="date">{new Date(email.timestamp || email.date).toLocaleString()}</span>
+      <div className="col col-sender">
+        <span className="sender-text">{email.from}</span>
       </div>
+
+      <div className="col col-subject">
+                <span className="subject-text">{email.subject}</span>
+                <span className="snippet-text"> - {email.body?.slice(0, 50)}...</span>
+            </div>
+
+            <div className="col col-date">
+                {new Date(email.date).toLocaleString()}
+            </div>
 
       <div className="labels">
         {(email.labels || []).map(label => (

@@ -1,6 +1,6 @@
 const mailModel = require('../models/mailModel');
 const userModel = require('../models/userModel');
-const { checkUrl, addUrl, removeUrl } = require('../services/blacklistService'); // Import deleteFromBlacklist
+const { checkUrl, addUrl, removeUrl, removeUrl_s, addUrl_s } = require('../services/blacklistService'); // Import deleteFromBlacklist
 const URL_REGEX = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:\/\S*)?/gi;
 
 /**
@@ -69,6 +69,7 @@ exports.sendMail = async (req, res) => {
 
         for (const url of urls) {
             const blacklisted = await checkUrl(url);
+            console.log(`is blacklisted ${blacklisted}`);
             if (blacklisted) {
                 isSpam = true;
                 break; // No need to check further if one blacklisted URL is found
@@ -129,6 +130,7 @@ exports.updateDraft = async (req, res) => {
         try {
             const blacklisted = await checkUrl(url);
             if (blacklisted) {
+                console.log(`blacklisted url: ${url}`);
                 isSpam = true;
                 break;
             }
@@ -264,7 +266,8 @@ exports.markMailAsSpam = (req, res) => {
 
     for (const url of allUrls) {
         try {
-            addUrl(url);
+            addUrl_s(url);
+            console.log(`adding ${url}` );
         } catch (e) {
             console.error(`Error adding URL to blacklist: ${url}`, e);
         }
@@ -295,7 +298,7 @@ exports.unmarkMailAsSpam = (req, res) => {
 
     for (const url of allUrls) {
         try {
-            removeUrl(url);
+            removeUrl_s(url);
         } catch (e) {
             console.error(`Error removing URL from blacklist: ${url}`, e);
         }

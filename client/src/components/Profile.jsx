@@ -6,9 +6,12 @@ export default function EditProfilePopup({ onClose, currentName, currentImage })
   const [profileImage, setProfileImage] = useState(null);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [isMinimized, setIsMinimized] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
 
+
+  const handleMaximize = () => {
+      setIsMaximized(!isMaximized);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,17 +43,15 @@ export default function EditProfilePopup({ onClose, currentName, currentImage })
   };
 
    return (
-    <div className={`edit-profile-popup ${isMinimized ? 'minimized' : ''} ${isMaximized ? 'maximized' : ''}`}>
+    <div className={`edit-profile-popup ${isMaximized ? 'maximized' : ''}`}>
       <div className="header">
         <h2>Edit Profile</h2>
         <div className="window-controls">
-          <button onClick={() => setIsMinimized(!isMinimized)}>_</button>
-          <button onClick={() => setIsMaximized(!isMaximized)}>□</button>
+          <button onClick={handleMaximize}>□</button>
           <button onClick={onClose}>✕</button>
         </div>
       </div>
 
-      {!isMinimized && (
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -70,7 +71,6 @@ export default function EditProfilePopup({ onClose, currentName, currentImage })
           {error && <div style={{ color: 'red' }}>{error}</div>}
           {success && <div style={{ color: 'green' }}>{success}</div>}
         </form>
-      )}
     </div>
   );
 }

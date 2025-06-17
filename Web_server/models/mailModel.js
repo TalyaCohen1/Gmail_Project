@@ -73,6 +73,7 @@ function createMail({ from, to, subject, body, id, isSpam = false, isImportant =
     if (id === undefined || id === null) {
         id = nextId++;
     }
+    console.log(`mailMOdel ${isSpam}`);
     const timestamp = Date.now();
     const date = new Date().toISOString()
     const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labelsForSender: labels,

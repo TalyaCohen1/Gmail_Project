@@ -7,7 +7,7 @@ import '../styles/SideBar.css';
 import { Link } from 'react-router-dom';
 import { useLabels } from '../context/LabelContext';
 // Import all necessary mail service functions
-import { getEmails, getInboxEmails, getDraftEmails, getSentEmails, getEmailLabels, getSpamEmails, getDeletedEmails } from '../services/mailService';
+import { getEmails, getInboxEmails, getDraftEmails, getSentEmails, getEmailLabels, getSpamEmails, getDeletedEmails, getStarredEmails, getImportantEmails } from '../services/mailService';
 
 const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisplayError }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -18,6 +18,9 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
   const [draftsCount, setDraftsCount] = useState(0); // State to hold drafts count
   const [sentCount, setSentCount] = useState(0); // State to hold sent emails count
   const [spamCount, setSpamCount] = useState(0); // State to hold spam emails count
+  const [starredCount, setStarredCount] = useState(0); // State to hold starred emails count
+  const [importantCount, setImportantCount] = useState(0); // State to hold important emails count
+  const [deletedCount, setDeletedCount] = useState(0); // State to hold deleted emails count
   const [categoryCounts, setCategoryCounts] = useState({}); // State to hold counts for category labels
 
   const { labels, fetchMailsForLabel } = useLabels();
@@ -41,6 +44,15 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
         const spam = await getSpamEmails();
         setSpamCount(spam.length);
 
+        const starred = await getStarredEmails();
+        setStarredCount(starred.length);
+
+        const important = await getImportantEmails();
+        setImportantCount(important.length);
+
+        const deleted = await getDeletedEmails();
+        setDeletedCount(deleted.length);
+
         // Fetch counts for category labels if labels are available
         if (labels.length > 0) {
           const newCategoryCounts = {};
@@ -60,6 +72,9 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
         setDraftsCount(0);
         setSentCount(0);
         setSpamCount(0);
+        setStarredCount(0);
+        setImportantCount(0);
+        setDeletedCount(0);
         setCategoryCounts({});
       }
     };
@@ -98,6 +113,12 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
           setSentCount(emailsToDisplay.length);
         } else if (param === getSpamEmails) {
           setSpamCount(emailsToDisplay.length);
+        } else if (param === getStarredEmails) {
+          setStarredCount(emailsToDisplay.length);
+        } else if (param === getImportantEmails) {
+          setImportantCount(emailsToDisplay.length);
+        } else if (param === getDeletedEmails) {
+          setDeletedCount(emailsToDisplay.length);
         }
       } else if (type === 'filter') {
         const targetLabel = labels.find(label => label.name === param);
@@ -126,16 +147,16 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
 
   const defaultLabels = [
     { name: 'Inbox', icon: '/icons/inbox.svg', handler: () => handleSystemLabelClick('api', getInboxEmails), type: 'system', count: inboxCount },
-    { name: 'Starred', icon: '/icons/starred.svg', handler: () => handleSystemLabelClick('filter', 'Starred'), type: 'system' },
+    { name: 'Starred', icon: '/icons/starred.svg', handler: () => handleSystemLabelClick('api', getStarredEmails), type: 'system', count: starredCount },
     { name: 'Sent', icon: '/icons/sent.svg', handler: () => handleSystemLabelClick('api', getSentEmails), type: 'system', count: sentCount },
     { name: 'Drafts', icon: '/icons/drafts.svg', handler: () => handleSystemLabelClick('api', getDraftEmails), type: 'system', count: draftsCount },
   ];
 
   const moreLabels = [
-    { name: 'Important', icon: '/icons/important.svg', handler: () => handleSystemLabelClick('filter', 'Important'), type: 'system' },
-    { name: 'All Mail', icon: '/icons/all_mail.svg', handler: () => handleSystemLabelClick('api', getEmails), type: 'system' },
+    { name: 'Important', icon: '/icons/important.svg', handler: () => handleSystemLabelClick('api', getImportantEmails), type: 'system', count: importantCount },
+    { name: 'All Mail', icon: '/icons/all_mail.svg', handler: () => handleSystemLabelClick('api', getEmails), type: 'system', count: inboxCount + draftsCount + sentCount + spamCount },
     { name: 'Spam', icon: '/icons/spam.svg', handler: () => handleSystemLabelClick('api', getSpamEmails), type: 'system', count: spamCount },
-    { name: 'Trash', icon: '/icons/trash.svg', handler: () => handleSystemLabelClick('api', getDeletedEmails), type: 'system' },
+    { name: 'Trash', icon: '/icons/trash.svg', handler: () => handleSystemLabelClick('api', getDeletedEmails), type: 'system', count: deletedCount },
     { name: 'Categories', icon: '/icons/categories.svg', path: '#', type: 'category' }
   ];
 
@@ -154,7 +175,7 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
           {isEffectivelyOpen && (
             <span>
               {item.name}
-              {item.count !== undefined && item.count > 0 && (
+              {item.count !== undefined && item.count >= 0 && (
                 <span className="mail-count"> ({item.count})</span>
               )}
             </span>

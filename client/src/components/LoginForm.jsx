@@ -45,46 +45,51 @@ function LoginForm({onLoginSuccess }) {
         }
     };
 
-    return (
-    <form onSubmit={handleSubmit} className="auth-container">
-      <div className="google-logo">
-        <h1>Sign in to MyMail</h1>
+  return (
+    <>
+      <div className="logo-container">
+        <img src="/Smail_logo.png" alt="ReeMail logo" />
       </div>
-
-      <p className="auth-subtitle">Use your MyMail account</p>
-
-      <div className="form-group">
-        <label htmlFor="email">Email address</label>
-        <input
-          id="email"
-          type="email"
-          value={emailAddress}
-          onChange={(e) => setEmail(e.target.value)}
-          className={error ? "error" : ""}
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className={error ? "error" : ""}
-          required
-        />
-      </div>
-
-      {error && <div className="general-error">{error}</div>}
-
-      <button type="submit" className="auth-button">Login</button>
-
-      <div className="form-footer">
-        <Link to="/register">Create account</Link>
+      <form onSubmit={handleSubmit} className="auth-container">
+        <div className="google-logo">
+          <h1>Sign in to Smail :)</h1>
         </div>
-    </form>
+
+        <p className="auth-subtitle">Use your Smail account</p>
+
+        <div className="form-group">
+          <label htmlFor="email">Email address</label>
+          <input
+            id="email"
+            type="email"
+            value={emailAddress}
+            onChange={(e) => setEmail(e.target.value)}
+            className={error ? "error" : ""}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={error ? "error" : ""}
+            required
+          />
+        </div>
+
+        {error && <div className="general-error">{error}</div>}
+
+        <button type="submit" className="auth-button">Login</button>
+
+        <div className="form-footer">
+          <Link to="/register">Create account</Link>
+        </div>
+      </form>
+    </>
   );
 }
 
