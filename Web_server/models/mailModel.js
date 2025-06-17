@@ -29,6 +29,14 @@ function getById(email, id) {
     return mail;
 }
 
+function getDraftById(email, id) {
+    const draft = draftMails.find(d => d.id === id && d.from === email && !d.deleted);
+    if (!draft) {
+        return null;
+    }
+    return draft;
+}
+
 /**
  * Search this user’s mails for query in subject or body.
  * @param {string} email
@@ -43,10 +51,10 @@ function search(email, query) {
     );
 }
 
-function createDraft({ from, to, subject, body}) {
+function createDraft({ from, to, subject, body, isImportant = false, isStarred = false, isSpam = false, labels = []}) {
     const timestamp = Date.now();
     const date = new Date().toISOString()
-    const draft = { id: nextId++, from, to, subject, body, date, timestamp, send: false }; // Added send: false
+    const draft = { id: nextId++, from, to, subject, body, date, timestamp, send: false, isImportant, isStarred, isSpam, labels, deleted: false }; // Added send: false
     draftMails.push(draft);
     return draft;
 }
@@ -61,14 +69,14 @@ function createDraft({ from, to, subject, body}) {
  *
  * @returns the newly created mail object
  */
-function createMail({ from, to, subject, body, id, isSpam = false }) {
+function createMail({ from, to, subject, body, id, isSpam = false, isImportant = false, isStarred = false, labels = [] }) {
     if (id === undefined || id === null) {
         id = nextId++;
     }
     const timestamp = Date.now();
     const date = new Date().toISOString()
-    const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labelsForSender: [],
-        labelsForReceiver: [], isSpam, isRead: false, isImportant: false, isStarred: false, send: true }; // Added send: true
+    const mail = { id, from, to, subject, body, date, timestamp , deletedForSender: false, deletedForReceiver: false, labelsForSender: labels,
+        labelsForReceiver: [], isSpam, isRead: false, isImportant, isStarred, send: true }; // Added send: true
 
     mails.push(mail);
     return mail;
@@ -81,11 +89,11 @@ function createMail({ from, to, subject, body, id, isSpam = false }) {
  * Returns updated mail or null.
  * @param {string} email
  * @param {number} id
- * @param {{subject?:string,body?:string,to?:string, send?: boolean}} fields
+ * @param {{subject?:string,body?:string,to?:string, send?: boolean, isImportant?: boolean, isStarred?: boolean, labels?: string[]}} fields
  */
 function updateDraft(email, id, fields) {
     const d = draftMails.find(d => String(d.id) === String(id) && d.from === email);
-    if (!d) return null;
+    if (!d || d.deleted) return null;
 
     if (fields.subject !== undefined) d.subject = fields.subject;
     if (fields.body !== undefined) d.body = fields.body;
@@ -94,7 +102,7 @@ function updateDraft(email, id, fields) {
     if(fields.send === false){
         return d;
     } else {
-        const mail = createMail({ from: d.from, to: d.to, subject: d.subject, body: d.body, id });
+        const mail = createMail({ from: d.from, to: d.to, subject: d.subject, body: d.body, id, isSpam: d.isSpam, isImportant: d.isImportant, isStarred: d.isStarred, labels: d.labels });
         // Remove the draft after sending
         const idx = deleteFromDrafts(id);
         if (!idx) return null;
@@ -110,8 +118,9 @@ function deleteFromDrafts(id) {
 }
 
 function getDrafts(email) {
-    return draftMails.filter(d => d.from === email && d.send === false); // Filter by send: false
+    return draftMails.filter(d => d.from === email && d.send === false && !d.deleted); // Filter by send: false
 }
+
 
 /**
  * Delete a mail, only if email is the email of the sender or recipient.
@@ -124,13 +133,21 @@ function getDrafts(email) {
 function deleteMail(email, id) {
     const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
     if (!mail) return null;
-    if (mail.to === email) {
-        mail.deletedForReceiver = true;
+    if (mail) {
+        if (mail.to === email) {
+            mail.deletedForReceiver = true;
+        }
+        if (mail.from === email) {
+            mail.deletedForSender = true;
+        }
+        return mail;
     }
-    if (mail.from === email) {
-        mail.deletedForSender = true;
+    const draft = draftMails.find(d => d.id === id && d.from === email);
+    if (draft && !draft.deleted) {
+        draft.deleted = true;
+        return draft;
     }
-    return mail;
+    return null;
 }
 
 /**
@@ -143,17 +160,29 @@ function deleteMail(email, id) {
 function addLabel(email, id, labelId) {
     const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
     if (!mail) return false;
-    if (mail.from === email) {
-        if (!mail.labelsForSender.includes(labelId)) {
-            mail.labelsForSender.push(labelId);
+    if (mail) {
+        if (mail.from === email) {
+            if (!mail.labelsForSender.includes(labelId)) {
+                mail.labelsForSender.push(labelId);
+            }
         }
-    }
-    if (mail.to === email) {
-        if (!mail.labelsForReceiver.includes(labelId)) {
-            mail.labelsForReceiver.push(labelId);
+        if (mail.to === email) {
+            if (!mail.labelsForReceiver.includes(labelId)) {
+                mail.labelsForReceiver.push(labelId);
+            }
         }
+        return true;
     }
-    return true;
+    const draft = draftMails.find(d => d.id === id && d.from === email && !d.deleted);
+    if (draft) {
+        if (!draft.labels) draft.labels = [];
+        if (!draft.labels.includes(labelId)) {
+            draft.labels.push(labelId);
+        }
+        return true;
+    }
+
+    return false;
 }
 
 /**
@@ -166,13 +195,21 @@ function addLabel(email, id, labelId) {
 function removeLabel(email, id, labelId) {
     const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
     if (!mail) return false;
-    if (mail.from === email) {
-        mail.labelsForSender = mail.labelsForSender.filter(l => l !== labelId);
+    if (mail) {
+        if (mail.from === email) {
+            mail.labelsForSender = mail.labelsForSender.filter(l => l !== labelId);
+        }
+        if (mail.to === email) {
+            mail.labelsForReceiver = mail.labelsForReceiver.filter(l => l !== labelId);
+        }
+        return true;
     }
-    if (mail.to === email) {
-        mail.labelsForReceiver = mail.labelsForReceiver.filter(l => l !== labelId);
+    const draft = draftMails.find(d => d.id === id && d.from === email && !d.deleted);
+    if (draft && draft.labels) {
+        draft.labels = draft.labels.filter(l => l !== labelId);
+        return true;
     }
-    return true;
+    return false;
 }
 
 function getInbox(email) {
@@ -203,7 +240,9 @@ function unmarkAsSpam(mail, id) {
 function getDeletedMails(email) {
     console.log('Filtering mails for deleted for:', email); // Add this
     console.log('Total mails in array:', mails.length); // Add this
-    const filtered = mails.filter(m => (m.from === email && m.deletedForSender) || (m.to === email && m.deletedForReceiver));
+    const filteredMails = mails.filter(m => (m.from === email && m.deletedForSender) || (m.to === email && m.deletedForReceiver));
+    const filteredDrafts = draftMails.filter(d => d.from === email && d.deleted);
+    const filtered = [...filteredMails, ...filteredDrafts];
     console.log('Filtered deleted mails count:', filtered.length); // Add this
     return filtered;
 }
@@ -241,7 +280,8 @@ function markAsUnread(email, id) {
  * @returns {object|null} The updated mail object if successful, null otherwise.
  */
 function markAsImportant(email, id) {
-    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email))
+        || draftMails.find(d => d.id === id && d.from === email && !d.deleted);
     if (!mail) return null;
     mail.isImportant = true;
     return mail;
@@ -254,7 +294,8 @@ function markAsImportant(email, id) {
  * @returns {object|null} The updated mail object if successful, null otherwise.
  */
 function unmarkAsImportant(email, id) {
-    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email)) 
+        || draftMails.find(d => d.id === id && d.from === email && !d.deleted);
     if (!mail) return null;
     mail.isImportant = false;
     return mail;
@@ -266,8 +307,20 @@ function unmarkAsImportant(email, id) {
  * @return {Array} Array of important mails
  */
 function getImportantMails(email) {
-    return mails
-        .filter(m => ((m.from === email && !m.deletedForSender) || (m.to === email && !m.deletedForReceiver)) && m.isImportant)
+    const regularMails = mails.filter(
+        m =>
+            ((m.from === email && !m.deletedForSender) || (m.to === email && !m.deletedForReceiver)) &&
+            m.isImportant
+    );
+
+    const importantDrafts = draftMails.filter(
+        d => d.from === email && !d.deleted && d.isImportant
+    );
+
+    console.log('Regular mails found:', regularMails.length);
+    console.log('Important drafts found:', importantDrafts.length);
+    console.log('Total returned:', [...regularMails, ...importantDrafts].length);
+    return [...regularMails, ...importantDrafts]
         .sort((a, b) => b.timestamp - a.timestamp)
         .slice(0, 25);
 }
@@ -279,7 +332,8 @@ function getImportantMails(email) {
  * @returns {object|null} The updated mail object if successful, null otherwise.
  */
 function markAsStarred(email, id) {
-    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email))
+        || draftMails.find(d => d.id === id && d.from === email && !d.deleted);
     if (!mail) return null;
     mail.isStarred = true;
     return mail;
@@ -292,7 +346,8 @@ function markAsStarred(email, id) {
  * @returns {object|null} The updated mail object if successful, null otherwise.
  */
 function unmarkAsStarred(email, id) {
-    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email))
+        || draftMails.find(d => d.id === id && d.from === email && !d.deleted);
     if (!mail) return null;
     mail.isStarred = false;
     return mail;
@@ -304,8 +359,9 @@ function unmarkAsStarred(email, id) {
  * @return {Array} Array of starred mails
  */
 function getStarredMails(email) {
-    return mails
-        .filter(m => ((m.from === email && !m.deletedForSender) || (m.to === email && !m.deletedForReceiver)) && m.isStarred)
+    const regularStarred = mails.filter(m => ((m.from === email && !m.deletedForSender) || (m.to === email && !m.deletedForReceiver)) && m.isStarred);
+    const draftStarred = draftMails.filter(d => d.from === email && !d.deleted && d.isStarred);
+    return [...regularStarred, ...draftStarred]
         .sort((a, b) => b.timestamp - a.timestamp)
         .slice(0, 25);
 }

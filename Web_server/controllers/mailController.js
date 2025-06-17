@@ -47,10 +47,10 @@ exports.sendMail = async (req, res) => {
             return res.status(400).json({ error: 'Sender does not exist' });
         }
         const from = fromUser.emailAddress;
-        let { to, subject = '', body = '' } = req.body;
+        let { to, subject = '', body = '', isImportant = false, isStarred = false, labels = []} = req.body;
 
         if (send != true) {
-            const draft = mailModel.createDraft({ from, to, subject, body });
+            const draft = mailModel.createDraft({ from, to, subject, body, isImportant, isStarred, labels });
             return res.status(201).json(draft);
         }
 
@@ -83,7 +83,7 @@ exports.sendMail = async (req, res) => {
                 }
             }
         }
-        const mail = await mailModel.createMail({ from, to, subject, body, isSpam });
+        const mail = await mailModel.createMail({ from, to, subject, body, isSpam, isImportant, isStarred, labels });
 
 
         res.status(201)
@@ -105,7 +105,7 @@ exports.updateDraft = async (req, res) => {
     const fromId = req.userId;
     const fromUser = await userModel.findById(fromId);
     const from = fromUser.emailAddress;
-    const { subject, body, to } = req.body;
+    const { subject, body, to, isImportant, isStarred, labels } = req.body;
 
     if (subject === undefined && body === undefined && to === undefined) {
         return res.status(400).json({ error: 'No fields to update' });
@@ -137,7 +137,7 @@ exports.updateDraft = async (req, res) => {
         }
     }
 
-    const updated = mailModel.updateDraft(from, id, { subject, body, to, send, isSpam });
+    const updated = mailModel.updateDraft(from, id, { subject, body, to, send, isSpam, isImportant, isStarred, labels });
 
     if (!updated) {
         return res.status(404).json({ error: 'Draft not found or no permission' });
