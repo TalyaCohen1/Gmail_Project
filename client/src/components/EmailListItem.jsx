@@ -63,7 +63,7 @@ export default function EmailListItem({
     <li 
       className={`email-item ${isSelected ? 'selected' : ''} ${email.isRead ? 'read' : 'unread'}`}
       onClick={() => onOpenEmail(email)}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'pointer' ,    backgroundColor: email.isRead ? '#f6f6f6' : '#ffffff', }}
     >
       <div className="email-item-left">
         <input
