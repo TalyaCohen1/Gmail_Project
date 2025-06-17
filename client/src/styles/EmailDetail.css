@@ -180,8 +180,7 @@
   border-top: 1px solid #e8eaed;
   background: #f8f9fa;
   padding: 16px;
-  max-height: 400px; /* Maximum height for inline reply */
-  overflow-y: auto; /* Enable scrolling if content exceeds max height */
+  
 }
 
 /* Override compose popup styling when inline */
