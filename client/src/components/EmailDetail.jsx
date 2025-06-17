@@ -14,23 +14,27 @@ export default function EmailDetail({ email: inlineEmail, onClose }) {
     const isRouteMode = !!emailId;
 
     useEffect(() => {
-        if (isRouteMode && !inlineEmail) {
-            async function fetchData() {
-                try {
-                    setLoading(true);
-                    const result = await getEmailById(emailId);
-                    setEmail(result);
-                    setError('');
-                } catch (err) {
-                    console.error("Failed to fetch email:", err);
-                    setError('Failed to load email');
-                } finally {
-                    setLoading(false);
-                }
+        const shouldFetch = (isRouteMode && !inlineEmail) || (inlineEmail && !inlineEmail.fromUser);
+
+        if (!shouldFetch) return;
+
+        async function fetchEmail() {
+            try {
+            setLoading(true);
+            const result = await getEmailById(emailId || inlineEmail.id);
+            setEmail(result);
+            setError('');
+            } catch (err) {
+            console.error("Failed to fetch email:", err);
+            setError('Failed to load email');
+            } finally {
+            setLoading(false);
             }
-            fetchData();
         }
-    }, [emailId, isRouteMode, inlineEmail]);
+
+        fetchEmail();
+        }, [emailId, inlineEmail, isRouteMode]);
+
 
     useEffect(() => {
     if (email && email.id) {
@@ -78,10 +82,20 @@ export default function EmailDetail({ email: inlineEmail, onClose }) {
                 <h2 className="email-subject">{email.subject || '(No Subject)'}</h2>
             </div>
 
-            <div className="email-meta">
-                <p><strong>From:</strong> {email.from}</p>
-                <p><strong>To:</strong> {Array.isArray(email.to) ? email.to.join(', ') : email.to}</p>
-                <p><strong>Date:</strong> {new Date(email.date).toLocaleString()}</p>
+            <div className="email-header-gmail">
+            <div className="sender-avatar">
+                <img
+                    src={`http://localhost:3000${email.fromUser?.profileImage || '/uploads/default-profile.png'}`}
+                    alt={email.fromUser?.fullName || email.from}
+                    className="sender-profile-image"
+                />  
+          </div>
+            <div className="sender-info">
+                <div className="sender-name">{email.fromUser?.fullName || email.from}</div>
+                <div className="sender-email">{email.from}</div>
+                <div className="recipient-email">to {Array.isArray(email.to) ? email.to.join(', ') : email.to}</div>
+            </div>
+            <div className="email-date">{new Date(email.date).toLocaleString()}</div>
             </div>
 
             {email.labels && email.labels.length > 0 && (

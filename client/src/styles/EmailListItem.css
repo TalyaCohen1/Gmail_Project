@@ -60,10 +60,11 @@
 
 .email-item.unread {
   background-color: var(--background-primary);
+  font-weight: bold;
 }
 
 .email-item.unread .subject-text {
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
@@ -75,6 +76,16 @@
   font-weight: 400;
   color: var(--text-primary);
 }
+
+.email-item.read .sender-text {
+  font-weight: 400;
+  color: #202124;
+}
+.email-item.unread .sender-text {
+  font-weight: 800;
+  color: #202124;
+}
+
 
 .email-item.read .snippet-text {
   color: var(--text-secondary);
@@ -134,13 +145,23 @@
   align-items: center;
   padding: 8px 0;
 }
+.col-sender {
+  flex: 0 0 150px; 
+  padding-left: 16px;
+  padding-right: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 .col-subject {
   flex: 1;
   min-width: 0;
   display: flex;
   align-items: center;
-  padding: 8px 16px 8px 8px;
+  padding: 8px 16px;
+  gap: 8px;
   overflow: hidden;
 }
 

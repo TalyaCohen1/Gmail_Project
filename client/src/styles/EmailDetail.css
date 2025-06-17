@@ -268,3 +268,51 @@
 .star-btn.starred {
   color: gold;
 }
+
+.email-header-gmail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e8eaed;
+  background: #fff;
+}
+
+.sender-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.sender-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 10px;
+}
+
+.sender-name {
+  font-weight: 500;
+  color: #202124;
+  font-size: 16px;
+}
+
+.sender-email {
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.recipient-email {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 2px;
+}
+
+.email-date {
+  font-size: 12px;
+  color: #5f6368;
+  white-space: nowrap;
+}
