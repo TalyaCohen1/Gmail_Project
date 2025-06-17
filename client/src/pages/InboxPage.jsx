@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
@@ -8,6 +9,12 @@ import BatchActionsBar from '../components/BatchActionsBar';
 import EmailListToolbar from "../components/EmailListToolbar";
 import {
   getInboxEmails,
+  getSentEmails,
+  getDraftEmails,
+  getSpamEmails,
+  getDeletedEmails,
+  getImportantEmails,
+  getStarredEmails,
   deleteEmail,
   markEmailAsRead,
   markEmailAsUnread,
@@ -19,7 +26,7 @@ import {
   removeLabelFromEmail
 } from '../services/mailService';
 import { useDisplayEmails } from '../context/DisplayEmailsContext';
-import { LabelContext } from '../context/LabelContext';
+import { LabelContext, useLabels } from '../context/LabelContext';
 import "../styles/InboxPage.css";
 
 // Helper function to sort emails by date (newest first)
@@ -46,31 +53,75 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [openedEmail, setOpenedEmail] = useState(null);
   const [emails, setEmails] = useState([]);
+  const [currentView, setCurrentViewState] = useState(() => {
+    return sessionStorage.getItem('currentView') || 'inbox';
+  });
 
-  const { labels } = useContext(LabelContext);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const newEmails = await getInboxEmails();
-      setError(null);
-      const sortedEmails = sortEmailsByDate(newEmails);
-      setEmails(prev => {
-        const same =
-          prev.length === sortedEmails.length &&
-          prev.every((e, i) => e.id === sortedEmails[i].id);
-        return same ? prev : sortedEmails;
-      });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  const setCurrentView = (view) => {
+    sessionStorage.setItem('currentView', view);
+    setCurrentViewState(view);
   };
 
+  const { labels } = useContext(LabelContext);
+  const { fetchMailsForLabel } = useLabels();
+
+  const sidebarRef = useRef();
+const location = useLocation();
+
+const refreshAll = async () => {
+  setDisplayLoading(true);
+  try {
+    if (!currentView) {
+      setCurrentView('inbox');
+      return;
+    }
+    // Refresh sidebar counts
+    if (sidebarRef.current && sidebarRef.current.refreshCounts) {
+      await sidebarRef.current.refreshCounts();
+    }
+
+    // Refresh the currently displayed view
+    let emails = [];
+    switch (currentView) {
+      case 'sent':
+        emails = await getSentEmails(); break;
+      case 'drafts':
+        emails = await getDraftEmails(); break;
+      case 'spam':
+        emails = await getSpamEmails(); break;
+      case 'deleted':
+        emails = await getDeletedEmails(); break;
+      case 'important':
+        emails = await getImportantEmails(); break;
+      case 'starred':
+        emails = await getStarredEmails(); break;
+      case 'social':
+      case 'updates':
+      case 'forums':
+      case 'promotions':
+        const label = labels.find(l => l.name.toLowerCase() === currentView);
+        emails = label ? await fetchMailsForLabel(label.id) : [];
+        break;
+      default:
+        emails = await getInboxEmails(); break;
+    }
+
+    setDisplayedEmails(sortEmailsByDate(emails));
+    setDisplayError(null);
+  } catch (err) {
+    setDisplayError(err.message || 'Failed to refresh');
+  } finally {
+    setDisplayLoading(false);
+  }
+};
+
+
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 3000);
+    if (!sessionStorage.getItem('currentView')) {
+      setCurrentView('inbox'); 
+    }  
+    refreshAll();
+    const interval = setInterval(refreshAll, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -167,7 +218,7 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
       setDisplayedEmails(updateFn);
     } catch (error) {
       console.error('Error marking all as read:', error);
-      await fetchData(); // Refresh on error
+      await refreshAll(); // Refresh on error
     }
   };
 
@@ -197,7 +248,7 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
       setSelectedIds([]);
     } catch (error) {
       console.error('Error performing batch action:', error);
-      await fetchData(); // Refresh on error
+      await refreshAll(); // Refresh on error
     }
   };
 
@@ -210,24 +261,24 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
 
       <div className="main-content-area">
         <Sidebar
+          ref={sidebarRef}
           isSidebarOpen={isSidebarOpen}
           setDisplayedEmails={setDisplayedEmails}
           setDisplayLoading={setDisplayLoading}
           setDisplayError={setDisplayError}
+          setCurrentView={setCurrentView}
+          currentView={currentView}
         />
 
         <div className="email-list-container">
-          {displayLoading && <p>Loading emails…</p>}
           {displayError && <p style={{ color: 'red' }}>{displayError}</p>}
-
-          {!displayLoading && !displayError && (
             <>
               {selectedIds.length > 0 ? (
                 <BatchActionsBar
                   selectedIds={selectedIds}
                   onAction={performBatchAction}
                   labels={labels}
-                  onRefresh={fetchData}
+                  onRefresh={refreshAll}
                 />
               ) : (
                 <EmailListToolbar
@@ -240,8 +291,9 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
                       setSelectedIds(sortedDisplayedEmails.map(e => e.id));
                     }
                   }}
-                  onRefresh={fetchData}
+                  onRefresh={refreshAll}
                   onMarkAllRead={handleMarkAllRead}
+                  globalLoading={displayLoading}
                 />
               )}
 
@@ -263,7 +315,6 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
                 />
               )}
             </>
-          )}
         </div>
       </div>
     </div>
