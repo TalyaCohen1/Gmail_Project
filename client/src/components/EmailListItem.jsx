@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/EmailListItem.css';
 import { useNavigate } from 'react-router-dom';
+import{ getEmailById} from '../services/mailService';
 
 export default function EmailListItem({
   email,
@@ -13,6 +14,8 @@ export default function EmailListItem({
   onOpenEmail,
 }) {
   const navigate = useNavigate();
+  const [senderInfo, setSenderInfo] = useState(null);
+
   
   // local UI state
 //   const [starredState, setStarredState] = useState(!!email.starred);
@@ -25,6 +28,22 @@ export default function EmailListItem({
 //   useEffect(() => { setReadState(!!email.read); }, [email.read]);
 
   // handle user actions with stopPropagation to prevent email opening
+  useEffect(() => {
+    async function fetchSender(){
+      if (!senderInfo && email.from) {
+        try {
+          const mail = await getEmailById(email.id);
+          const sender = mail.from;
+          setSenderInfo(sender);
+        } catch (err) {
+          console.error("Failed to fetch sender info:", err);
+        }
+      }
+    }
+
+    fetchSender();
+  }, [email.from, senderInfo]);
+
   const handleStar = (e) => {
     e.stopPropagation();
     const next = !email.isStarred;
@@ -63,7 +82,7 @@ export default function EmailListItem({
     <li 
       className={`email-item ${isSelected ? 'selected' : ''} ${email.isRead ? 'read' : 'unread'}`}
       onClick={() => onOpenEmail(email)}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'pointer' ,    backgroundColor: email.isRead ? '#f6f6f6' : '#ffffff', }}
     >
       <div className="email-item-left">
         <input
@@ -92,7 +111,7 @@ export default function EmailListItem({
         </button>
       </div>
       <div className="col col-sender">
-        <span className="sender-text">{email.from}</span>
+        <span className="sender-text">{email.fromUser?.fullName || email.from}</span>
       </div>
 
       <div className="col col-subject">
