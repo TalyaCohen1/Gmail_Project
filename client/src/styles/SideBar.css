@@ -73,14 +73,14 @@
 }
 
 .sidebar-item.active {
-    background-color: #e8f0fe; /* Google Blue background for active */
-    color: #1a73e8; /* Google Blue text for active */
+    background-color: #fdf9db; /* Google Blue background for active */
+    color: #e2ba35; /* Google Blue text for active */
     font-weight: 500;
 }
 
 body.dark .sidebar-item.active {
-  background-color: #2c3c5b; /* Darker blue for active in dark mode */
-  color: #8ab4f8; /* Lighter blue text for active in dark mode */
+  background-color: #c69b0d; /* Darker blue for active in dark mode */
+  color: #efcc5a; /* Lighter blue text for active in dark mode */
 }
 
 

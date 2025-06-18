@@ -12,6 +12,7 @@ export default function EmailListItem({
   onToggleImportant,
   onToggleRead,
   onOpenEmail,
+  onRefresh
 }) {
   const navigate = useNavigate();
   const [senderInfo, setSenderInfo] = useState(null);
@@ -29,8 +30,12 @@ export default function EmailListItem({
 
   // handle user actions with stopPropagation to prevent email opening
   useEffect(() => {
+    if (email.send === false) {
+        setSenderInfo(null);
+        return;
+      }
     async function fetchSender(){
-      if (!senderInfo && email.from) {
+      if (!senderInfo && email.from && !email.fromUser) {
         try {
           const mail = await getEmailById(email.id);
           const sender = mail.from;
@@ -42,7 +47,7 @@ export default function EmailListItem({
     }
 
     fetchSender();
-  }, [email.from, senderInfo]);
+  }, [email.id, email.from, email.fromUser, senderInfo]);
 
   const handleStar = (e) => {
     e.stopPropagation();
@@ -111,7 +116,7 @@ export default function EmailListItem({
         </button>
       </div>
       <div className="col col-sender">
-        <span className="sender-text">{email.fromUser?.fullName || email.from}</span>
+        <span className="sender-text">  {email.fromUser?.fullName || senderInfo?.fullName || email.from}</span>
       </div>
 
       <div className="col col-subject">

@@ -291,7 +291,7 @@ const refreshAll = useCallback(async () => {
     <div className="inbox-page">
       <Header toggleSidebar={toggleSidebar} />
 
-      <div className="main-content-area">
+      <div className="main-layout">
         <Sidebar
           ref={sidebarRef}
           isSidebarOpen={isSidebarOpen}
@@ -300,6 +300,7 @@ const refreshAll = useCallback(async () => {
           setDisplayError={setDisplayError}
           setCurrentView={setCurrentView}
           currentView={currentView}
+          onRefresh={refreshAll}
         />
 
         <div className="email-list-container">
@@ -332,6 +333,7 @@ const refreshAll = useCallback(async () => {
                 <EmailDetail
                   email={openedEmail}
                   onClose={() => setOpenedEmail(null)}
+                  onRefresh={refreshAll}
                 />
               ) : (
                 <EmailList
@@ -343,6 +345,7 @@ const refreshAll = useCallback(async () => {
                   onToggleStar={handleToggleStar}
                   onToggleImportant={handleToggleImportant}
                   onToggleRead={handleToggleRead}
+                  onRefresh={refreshAll}
                 />
               )}
             </>
