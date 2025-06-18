@@ -99,13 +99,14 @@
 
 .email-body {
   padding: 24px;
-  line-height: 1.6;
+  line-height: 1.5;
   color: var(--text-primary);
   font-size: 14px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  min-height: 100px;
-  flex: 1;
+  min-height: 60px;
+  max-height: 300px ;
+  flex: 0 1 auto;
   overflow-y: auto;
   background: var(--background-primary);
   margin: 0 16px 16px 16px;
