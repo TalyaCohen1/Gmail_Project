@@ -130,6 +130,7 @@ export default function EmailDetail({ email: inlineEmail, onClose, onRefresh }) 
             <EmailActions 
                 email={email} 
                 onEmailUpdate={handleEmailUpdate}
+                onRefresh = {onRefresh}
             />
         </div>
     );

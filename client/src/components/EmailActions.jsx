@@ -4,7 +4,7 @@ import { useComposer } from "../context/ComposerContext";
 import { markEmailAsStarred } from "../services/mailService";
 import "../styles/EmailDetail.css";
 
-export default function EmailActions({ email, onEmailUpdate }) {
+export default function EmailActions({ email, onEmailUpdate, onRefresh }) {
   const { openComposer } = useComposer();
   const [inlineAction, setInlineAction] = useState(null); // "reply" or "forward"
   const [isStarred, setIsStarred] = useState(email.starred || false);
@@ -89,6 +89,7 @@ export default function EmailActions({ email, onEmailUpdate }) {
             defaultValues={getDefaultValues()}
             onSend={handleInlineDone}
             onClose={() => setInlineAction(null)}
+            onRefresh={onRefresh}
           />
         </div>
       )}
