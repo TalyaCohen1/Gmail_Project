@@ -312,6 +312,7 @@ const refreshAll = useCallback(async () => {
                   onAction={performBatchAction}
                   labels={labels}
                   onRefresh={refreshAll}
+                  currentView={currentView}
                 />
               ) : (
                 <EmailListToolbar
