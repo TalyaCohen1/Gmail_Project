@@ -95,6 +95,8 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction,
     }
   };
 
+  const isDeletedView = currentView.toLowerCase() === 'deleted';
+
   return (
     <div className="batch-bar">
       <span>{selectedIds.length} selected</span>
