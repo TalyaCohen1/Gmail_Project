@@ -94,7 +94,6 @@ exports.sendMail = async (req, res) => {
 
         for (const url of urls) {
             const blacklisted = await checkUrl(url);
-            console.log(`is blacklisted ${blacklisted}`);
             if (blacklisted) {
                 isSpam = true;
                 break; // No need to check further if one blacklisted URL is found
@@ -290,7 +289,6 @@ exports.markMailAsSpam = (req, res) => {
     for (const url of allUrls) {
         try {
             addUrl_s(url);
-            console.log(`adding ${url}` );
         } catch (e) {
             console.error(`Error adding URL to blacklist: ${url}`, e);
         }
@@ -337,9 +335,7 @@ exports.unmarkMailAsSpam = (req, res) => {
 
 exports.getDeletedMails = (req, res) => {
     const email = userModel.findById(req.userId).emailAddress;
-    console.log('Fetching deleted mails for:', email); // Add this
     const deletedMails = mailModel.getDeletedMails(email);
-    console.log('Found deleted mails:', deletedMails.length); // Add this
     res.status(200).json(deletedMails);
 };
 

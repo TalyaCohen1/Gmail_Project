@@ -238,12 +238,9 @@ function unmarkAsSpam(mail, id) {
 
 
 function getDeletedMails(email) {
-    console.log('Filtering mails for deleted for:', email); // Add this
-    console.log('Total mails in array:', mails.length); // Add this
     const filteredMails = mails.filter(m => (m.from === email && m.deletedForSender) || (m.to === email && m.deletedForReceiver));
     const filteredDrafts = draftMails.filter(d => d.from === email && d.deleted);
     const filtered = [...filteredMails, ...filteredDrafts];
-    console.log('Filtered deleted mails count:', filtered.length); // Add this
     return filtered;
 }
 
@@ -317,9 +314,6 @@ function getImportantMails(email) {
         d => d.from === email && !d.deleted && d.isImportant
     );
 
-    console.log('Regular mails found:', regularMails.length);
-    console.log('Important drafts found:', importantDrafts.length);
-    console.log('Total returned:', [...regularMails, ...importantDrafts].length);
     return [...regularMails, ...importantDrafts]
         .sort((a, b) => b.timestamp - a.timestamp)
         .slice(0, 25);
