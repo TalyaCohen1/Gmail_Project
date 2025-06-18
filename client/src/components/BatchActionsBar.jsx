@@ -145,7 +145,7 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
         <img src={'/icons/report_spam.svg'} alt={"Report Spam"} className="inline-icon" />
       </button>
 
-      {/* Labels with checkboxes */}
+      {/* Labels */}
       <div className="label-dropdown">
         <button title="Label As" onClick={() => setLabelMenuOpen(prev => !prev)}>
             <img src={'/icons/labels.svg'} alt={"Label As"} className="inline-icon" />
@@ -153,18 +153,27 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
 
         {labelMenuOpen && (
             <div className="label-menu" ref={menuRef}>
-            {labels.map(label => (
+              {console.log('Labels array:', labels)} {/* Debug */}
+              {labels.map(label => (
                 <div key={label.id} className="label-item">
                 <button
                     className="label-name-btn"
-                    onClick={() =>
-                    setActiveLabelId(activeLabelId === label.id ? null : label.id)
-                    }
+                    onClick={() => {
+                        console.log('--- Label Clicked ---'); // כדי לזהות בבירור אירוע לחיצה
+                        console.log('Clicked label ID:', label.id, 'Name:', label.name);
+                        console.log('Current activeLabelId BEFORE update:', activeLabelId);
+                        // setActiveLabelId(activeLabelId === label.id ? null : label.id);
+                        const newActiveLabelId = activeLabelId === label.id ? null : label.id;
+                        setActiveLabelId(newActiveLabelId);
+                        setTimeout(() => {
+                          console.log('activeLabelId AFTER update (async check):', newActiveLabelId); 
+                        }, 0); 
+                    }}
                 >
                     {label.name}
                 </button>
-
-                {activeLabelId === label.id && (
+                  {console.log(`Label <span class="math-inline">\{label\.name\}\: activeLabelId\=</span>{activeLabelId}, label.id=<span class="math-inline">\{label\.id\}, Condition\=</span>{activeLabelId === label.id}`)} {/* Debug */}
+                  {activeLabelId === label.id && (
                     <div className="label-submenu">
                     <button onClick={() => handleLabelAction(label.id, 'add')}>
                         Add to label

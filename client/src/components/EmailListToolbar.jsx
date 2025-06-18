@@ -7,7 +7,6 @@ export default function EmailListToolbar({
   selectedIds = [],
   onToggleSelectAll,
   onRefresh,
-  globalLoading = false,
 }) {
   const checkboxRef = useRef(null);
   const [menuOpen, setMenuOpen]   = useState(false);

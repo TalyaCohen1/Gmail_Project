@@ -125,7 +125,8 @@ useEffect(() => {
         } else if (param === getDeletedEmails) {
           setDeletedCount(emailsToDisplay.length);
           setCurrentView && setCurrentView('deleted');
-        }
+        } else if (param === getEmails) {
+          setCurrentView && setCurrentView('all');  
       } else if (type === 'filter') {
         const targetLabel = labels.find(label => label.name === param);
         let filteredMails = [];
@@ -139,10 +140,11 @@ useEffect(() => {
         } else {
             console.warn(`Label '${param}' not found in LabelContext for filter type.`);
             filteredMails = [];
+          }
+          emailsToDisplay = filteredMails;
         }
-        emailsToDisplay = filteredMails;
+        setDisplayedEmails(emailsToDisplay);
       }
-      setDisplayedEmails(emailsToDisplay);
     } catch (err) {
       setDisplayError(`Error fetching emails for ${param || 'label'}: ${err.message}`);
       console.error("Error in handleSystemLabelClick:", err);
@@ -161,7 +163,7 @@ useEffect(() => {
 
   const moreLabels = [
     { name: 'Important', icon: '/icons/important.svg', handler: () => handleSystemLabelClick('api', getImportantEmails), type: 'system', count: importantCount },
-    { name: 'All Mail', icon: '/icons/all_mail.svg', handler: () => handleSystemLabelClick('api', getEmails), type: 'system', count: inboxCount + draftsCount + sentCount + spamCount },
+    { name: 'All Mail', icon: '/icons/all_mail.svg', handler: () => handleSystemLabelClick('api', getEmails), type: 'system', count: inboxCount + sentCount },
     { name: 'Spam', icon: '/icons/spam.svg', handler: () => handleSystemLabelClick('api', getSpamEmails), type: 'system', count: spamCount },
     { name: 'Trash', icon: '/icons/trash.svg', handler: () => handleSystemLabelClick('api', getDeletedEmails), type: 'system', count: deletedCount },
     { name: 'Categories', icon: '/icons/categories.svg', path: '#', type: 'category' }
@@ -267,6 +269,7 @@ useEffect(() => {
             setDisplayedEmails={setDisplayedEmails}
             setDisplayLoading={setDisplayLoading}
             setDisplayError={setDisplayError}
+            setCurrentView={setCurrentView}
         />
       )}
     </div>

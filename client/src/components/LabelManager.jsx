@@ -9,7 +9,7 @@ import { useLabels } from '../context/LabelContext';
 const DEFAULT_LABEL_NAMES = ['Social', 'Updates', 'Forums', 'Promotions']; // Add any other default labels you create
 
 // Accepts new props for managing displayed emails from Sidebar
-const LabelManager = ({ setDisplayedEmails, setDisplayLoading, setDisplayError }) => {
+const LabelManager = ({ setDisplayedEmails, setDisplayLoading, setDisplayError, setCurrentView }) => {
     const { labels, loading, error, addLabel, editLabel, deleteLabel, fetchMailsForLabel } = useLabels();
     const [showAddLabelModal, setShowAddLabelModal] = useState(false);
     const [showEditLabelModal, setShowEditLabelModal] = useState(false);
@@ -72,6 +72,8 @@ const LabelManager = ({ setDisplayedEmails, setDisplayLoading, setDisplayError }
     const handleShowMailsForLabel = async (labelId) => {
         setDisplayLoading(true); // Set loading via prop
         setDisplayError(null);   // Clear previous errors via prop
+        const labelName = labels.find(l => l.id === labelId);
+        setCurrentView(`${labelName.name}`); // Set current view to 'label' for Sidebar
         try {
             const mails = await fetchMailsForLabel(labelId); // Fetch mails for the label
             setDisplayedEmails(mails); // Update the emails displayed in EmailList via prop

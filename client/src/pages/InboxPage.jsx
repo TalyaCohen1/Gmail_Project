@@ -54,7 +54,9 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
   const [openedEmail, setOpenedEmail] = useState(null);
   const [emails, setEmails] = useState([]);
   const [currentView, setCurrentViewState] = useState(() => {
-    return sessionStorage.getItem('currentView') || 'inbox';
+    //return sessionStorage.getItem('currentView') || 'inbox';
+    const storedView = sessionStorage.getItem('currentView');
+    return storedView || 'inbox';
   });
 
   const setCurrentView = (view) => {
@@ -66,7 +68,7 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
   const { fetchMailsForLabel } = useLabels();
 
   const sidebarRef = useRef();
-const location = useLocation();
+  const location = useLocation();
 
 const refreshAll = async () => {
   setDisplayLoading(true);
@@ -82,28 +84,34 @@ const refreshAll = async () => {
 
     // Refresh the currently displayed view
     let emails = [];
-    switch (currentView) {
-      case 'sent':
-        emails = await getSentEmails(); break;
-      case 'drafts':
-        emails = await getDraftEmails(); break;
-      case 'spam':
-        emails = await getSpamEmails(); break;
-      case 'deleted':
-        emails = await getDeletedEmails(); break;
-      case 'important':
-        emails = await getImportantEmails(); break;
-      case 'starred':
-        emails = await getStarredEmails(); break;
-      case 'social':
-      case 'updates':
-      case 'forums':
-      case 'promotions':
-        const label = labels.find(l => l.name.toLowerCase() === currentView);
-        emails = label ? await fetchMailsForLabel(label.id) : [];
-        break;
-      default:
-        emails = await getInboxEmails(); break;
+    const lowerCaseCurrentView = currentView.toLowerCase();
+    const foundLabel = labels.find(l => l.name.toLowerCase() === lowerCaseCurrentView);
+    if (foundLabel) {
+        emails = await fetchMailsForLabel(foundLabel.id);
+    } else {
+      switch (currentView) {
+        case 'sent':
+          emails = await getSentEmails(); break;
+        case 'drafts':
+          emails = await getDraftEmails(); break;
+        case 'spam':
+          emails = await getSpamEmails(); break;
+        case 'deleted':
+          emails = await getDeletedEmails(); break;
+        case 'important':
+          emails = await getImportantEmails(); break;
+        case 'starred':
+          emails = await getStarredEmails(); break;
+        case 'social':
+        case 'updates':
+        case 'forums':
+        case 'promotions':
+          const label = labels.find(l => l.name.toLowerCase() === currentView);
+          emails = label ? await fetchMailsForLabel(label.id) : [];
+          break;
+        default:
+          emails = await getInboxEmails(); break;
+      }
     }
 
     setDisplayedEmails(sortEmailsByDate(emails));
@@ -117,13 +125,17 @@ const refreshAll = async () => {
 
 
   useEffect(() => {
-    if (!sessionStorage.getItem('currentView')) {
-      setCurrentView('inbox'); 
-    }  
     refreshAll();
-    const interval = setInterval(refreshAll, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    // const interval = setInterval(refreshAll, 3000);
+    const interval = setInterval(() => {
+        refreshAll(); 
+    }, 10000);
+  //   return () => clearInterval(interval);
+  // }, []);
+  return () => {
+        clearInterval(interval);
+    };
+  }, [currentView]);
 
   // Helper function to update email in both states
   const updateEmailInStates = (emailId, updates) => {
@@ -293,7 +305,6 @@ const refreshAll = async () => {
                   }}
                   onRefresh={refreshAll}
                   onMarkAllRead={handleMarkAllRead}
-                  globalLoading={displayLoading}
                 />
               )}
 
