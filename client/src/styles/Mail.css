@@ -4,7 +4,7 @@
   bottom: 0;
   right: 60px;
   width: 500px;
-  background-color: var(--background-primary);
+  background-color: white;
   border: 1px solid var(--border-color);
   border-radius: 8px 8px 0 0;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
@@ -105,7 +105,7 @@
 }
 
 .compose-popup .actions button {
-  background-color: #1a73e8;
+  background-color: #e2ba35;
   color: white;
   padding: 10px 24px;
   border: none;
@@ -116,7 +116,7 @@
 }
 
 .compose-popup .actions button:hover {
-  background-color: #185abc;
+  background-color: #e7c659;
 }
 
 .compose-popup .status-message {

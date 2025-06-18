@@ -149,8 +149,8 @@
 }
 
 .email-actions button:first-child:last-child:hover {
-  background: #1557b0;
-  border-color: #1557b0;
+  background: #e2ba35;
+  border-color: #e2ba35;
 }
 
 .inline-reply {
@@ -190,14 +190,15 @@
   color: var(--text-primary);
   margin: 8px 16px;
   background: var(--background-primary);
-  width: calc(100% - 32px);
+  width: calc(100% - 56px);
+  box-sizing: border-box;
 }
 
 .inline-reply .compose-popup input:focus,
 .inline-reply .compose-popup textarea:focus {
   outline: none;
   border-color: var(--tag-text);
-  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+  box-shadow: 0 0 0 2px rgba(245, 214, 38, 0.45);
 }
 
 .inline-reply .compose-popup .actions {
@@ -219,7 +220,7 @@
 }
 
 .inline-reply .compose-popup .actions button:hover {
-  background: #1557b0;
+  background: #e7c659;
 }
 
 @media (max-width: 768px) {
