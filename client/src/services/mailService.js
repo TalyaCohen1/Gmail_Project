@@ -51,6 +51,7 @@ export async function getEmailById(id) {
     });
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
+        console.error(`Failed to fetch email ${id}:`, err);
         throw new Error(err.message || `Failed to fetch email ${id}`);
     }
     return res.json();

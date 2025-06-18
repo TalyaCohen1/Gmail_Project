@@ -22,9 +22,12 @@ function getAll(email) {
  * @param {number} id
  */
 function getById(email, id) {
-    const mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
+    let mail = mails.find(m => m.id === id && (m.from === email || m.to === email));
     if (!mail || (mail.from === email && mail.deletedForSender) || (mail.to === email && mail.deletedForReceiver)) {
-        return null;
+        mail = null;
+    }
+    if (!mail) {
+        mail = draftMails.find(d => d.id === id && d.from === email && !d.deleted);
     }
     return mail;
 }
@@ -385,4 +388,5 @@ module.exports = {
     markAsStarred,
     unmarkAsStarred,
     getStarredMails,
+    getDraftById
 };
