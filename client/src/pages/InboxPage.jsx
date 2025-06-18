@@ -326,6 +326,7 @@ const refreshAll = async () => {
                   onToggleImportant={handleToggleImportant}
                   onToggleRead={handleToggleRead}
                   onRefresh={refreshAll}
+                  currentView={currentView}
                 />
               )}
             </>
