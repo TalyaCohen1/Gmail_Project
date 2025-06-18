@@ -76,7 +76,6 @@ export const LabelProvider = ({ children }) => {
     const fetchMailsForLabel = async (id) => {
         try {
             const mails = await labelService.getMailsByLabel(id);
-            console.log('Mails for label:', mails);
             return mails; // Return mails for potential use in consuming components
         } catch (err) {
             setError(`Error fetching mails by label: ${err.message}`);

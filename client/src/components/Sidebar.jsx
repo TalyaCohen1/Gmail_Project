@@ -1,6 +1,6 @@
 // src/components/Sidebar.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import LabelManager from './LabelManager';
 import CreateMail from "../components/CreateMail";
 import '../styles/SideBar.css';
@@ -9,7 +9,7 @@ import { useLabels } from '../context/LabelContext';
 // Import all necessary mail service functions
 import { getEmails, getInboxEmails, getDraftEmails, getSentEmails, getEmailLabels, getSpamEmails, getDeletedEmails, getStarredEmails, getImportantEmails } from '../services/mailService';
 
-const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisplayError }) => {
+const SideBar = forwardRef(({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisplayError, setCurrentView }, ref) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showMoreLabels, setShowMoreLabels] = useState(false);
   const [showCategoriesSubLabels, setShowCategoriesSubLabels] = useState(false);
@@ -28,58 +28,57 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
   const isEffectivelyOpen = isSidebarOpen || isHovered;
 
   // Fetch counts on component mount and when labels change
-  useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        // Fetch system label counts
-        const inbox = await getInboxEmails();
-        setInboxCount(inbox.length);
+  const fetchCounts = async () => {
+  try {
+    const inbox = await getInboxEmails();
+    setInboxCount(inbox.length);
 
-        const drafts = await getDraftEmails();
-        setDraftsCount(drafts.length);
+    const drafts = await getDraftEmails();
+    setDraftsCount(drafts.length);
 
-        const sent = await getSentEmails();
-        setSentCount(sent.length);
+    const sent = await getSentEmails();
+    setSentCount(sent.length);
 
-        const spam = await getSpamEmails();
-        setSpamCount(spam.length);
+    const spam = await getSpamEmails();
+    setSpamCount(spam.length);
 
-        const starred = await getStarredEmails();
-        setStarredCount(starred.length);
+    const starred = await getStarredEmails();
+    setStarredCount(starred.length);
 
-        const important = await getImportantEmails();
-        setImportantCount(important.length);
+    const important = await getImportantEmails();
+    setImportantCount(important.length);
 
-        const deleted = await getDeletedEmails();
-        setDeletedCount(deleted.length);
+    const deleted = await getDeletedEmails();
+    setDeletedCount(deleted.length);
 
-        // Fetch counts for category labels if labels are available
-        if (labels.length > 0) {
-          const newCategoryCounts = {};
-          const categoryNames = ['Social', 'Updates', 'Forums', 'Promotions'];
-          for (const name of categoryNames) {
-            const label = labels.find(l => l.name === name);
-            if (label) {
-              const mails = await fetchMailsForLabel(label.id);
-              newCategoryCounts[name] = mails ? mails.length : 0;
-            }
-          }
-          setCategoryCounts(newCategoryCounts);
+    if (labels.length > 0) {
+      const newCategoryCounts = {};
+      const categoryNames = ['Social', 'Updates', 'Forums', 'Promotions'];
+      for (const name of categoryNames) {
+        const label = labels.find(l => l.name === name);
+        if (label) {
+          const mails = await fetchMailsForLabel(label.id);
+          newCategoryCounts[name] = mails ? mails.length : 0;
         }
-      } catch (err) {
-        console.error("Error fetching email counts:", err);
-        setInboxCount(0);
-        setDraftsCount(0);
-        setSentCount(0);
-        setSpamCount(0);
-        setStarredCount(0);
-        setImportantCount(0);
-        setDeletedCount(0);
-        setCategoryCounts({});
       }
-    };
-    fetchCounts();
-  }, [labels]); // Depend on 'labels' to re-run when labels context loads/changes
+      setCategoryCounts(newCategoryCounts);
+    }
+  } catch (err) {
+    console.error("Error fetching email counts:", err);
+    setInboxCount(0);
+    setDraftsCount(0);
+    setSentCount(0);
+    setSpamCount(0);
+    setStarredCount(0);
+    setImportantCount(0);
+    setDeletedCount(0);
+    setCategoryCounts({});
+  }
+};
+
+useEffect(() => {
+  fetchCounts();
+}, [labels]); // Depend on 'labels' to re-run when labels context loads/changes
 
   const handleNewEmail = () => {
     if (showCreateMail) {
@@ -107,19 +106,27 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
         // Update specific counts based on the function called
         if (param === getInboxEmails) {
           setInboxCount(emailsToDisplay.length);
+          setCurrentView && setCurrentView('inbox'); 
         } else if (param === getDraftEmails) {
           setDraftsCount(emailsToDisplay.length);
+          setCurrentView && setCurrentView('drafts');
         } else if (param === getSentEmails) {
           setSentCount(emailsToDisplay.length);
+          setCurrentView && setCurrentView('sent');
         } else if (param === getSpamEmails) {
           setSpamCount(emailsToDisplay.length);
+          setCurrentView && setCurrentView('spam');
         } else if (param === getStarredEmails) {
           setStarredCount(emailsToDisplay.length);
+          setCurrentView && setCurrentView('starred');
         } else if (param === getImportantEmails) {
           setImportantCount(emailsToDisplay.length);
+          setCurrentView && setCurrentView('important');
         } else if (param === getDeletedEmails) {
           setDeletedCount(emailsToDisplay.length);
-        }
+          setCurrentView && setCurrentView('deleted');
+        } else if (param === getEmails) {
+          setCurrentView && setCurrentView('all');  
       } else if (type === 'filter') {
         const targetLabel = labels.find(label => label.name === param);
         let filteredMails = [];
@@ -129,13 +136,15 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
             if (['Social', 'Updates', 'Forums', 'Promotions'].includes(param)) {
               setCategoryCounts(prev => ({ ...prev, [param]: filteredMails.length }));
             }
+            setCurrentView && setCurrentView(param.toLowerCase());
         } else {
             console.warn(`Label '${param}' not found in LabelContext for filter type.`);
             filteredMails = [];
+          }
+          emailsToDisplay = filteredMails;
         }
-        emailsToDisplay = filteredMails;
+        setDisplayedEmails(emailsToDisplay);
       }
-      setDisplayedEmails(emailsToDisplay);
     } catch (err) {
       setDisplayError(`Error fetching emails for ${param || 'label'}: ${err.message}`);
       console.error("Error in handleSystemLabelClick:", err);
@@ -154,7 +163,7 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
 
   const moreLabels = [
     { name: 'Important', icon: '/icons/important.svg', handler: () => handleSystemLabelClick('api', getImportantEmails), type: 'system', count: importantCount },
-    { name: 'All Mail', icon: '/icons/all_mail.svg', handler: () => handleSystemLabelClick('api', getEmails), type: 'system', count: inboxCount + draftsCount + sentCount + spamCount },
+    { name: 'All Mail', icon: '/icons/all_mail.svg', handler: () => handleSystemLabelClick('api', getEmails), type: 'system', count: inboxCount + sentCount },
     { name: 'Spam', icon: '/icons/spam.svg', handler: () => handleSystemLabelClick('api', getSpamEmails), type: 'system', count: spamCount },
     { name: 'Trash', icon: '/icons/trash.svg', handler: () => handleSystemLabelClick('api', getDeletedEmails), type: 'system', count: deletedCount },
     { name: 'Categories', icon: '/icons/categories.svg', path: '#', type: 'category' }
@@ -189,6 +198,10 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
       )}
     </React.Fragment>
   );
+
+  useImperativeHandle(ref, () => ({
+    refreshCounts: fetchCounts
+  }));
 
   return (
     <div
@@ -256,10 +269,11 @@ const SideBar = ({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisp
             setDisplayedEmails={setDisplayedEmails}
             setDisplayLoading={setDisplayLoading}
             setDisplayError={setDisplayError}
+            setCurrentView={setCurrentView}
         />
       )}
     </div>
   );
-};
+});
 
 export default SideBar;
