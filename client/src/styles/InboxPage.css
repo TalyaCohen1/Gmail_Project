@@ -26,3 +26,17 @@
   color: var(--text-secondary); /* This uses theme variable */
   font-size: 0.9rem;
 }
+
+.main-layout {
+  display: flex;
+  flex-direction: row;
+  min-height: calc(100vh - 64px); /* full viewport height minus header height */
+  background-color: var(--background-primary);
+}
+
+/* The email list container will flex-grow to fill remaining space */
+.email-list-container {
+  flex-grow: 1;
+  padding: 24px;
+  overflow-y: auto;
+}

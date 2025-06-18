@@ -271,7 +271,7 @@ const refreshAll = async () => {
     <div className="inbox-page">
       <Header toggleSidebar={toggleSidebar} />
 
-      <div className="main-content-area">
+      <div className="main-layout">
         <Sidebar
           ref={sidebarRef}
           isSidebarOpen={isSidebarOpen}

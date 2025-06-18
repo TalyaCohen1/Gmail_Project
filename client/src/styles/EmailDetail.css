@@ -143,9 +143,9 @@
 }
 
 .email-actions button:first-child:last-child {
-  background: var(--tag-text);
-  color: var(--background-primary);
-  border-color: var(--tag-text);
+  background: var(--background-primary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
 }
 
 .email-actions button:first-child:last-child:hover {
@@ -207,7 +207,7 @@
 }
 
 .inline-reply .compose-popup .actions button {
-  background: var(--tag-text);
+  background: #1557b0;
   color: white;
   border: none;
   padding: 8px 16px;

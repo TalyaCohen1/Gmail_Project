@@ -51,6 +51,25 @@ body {
   /* Removed specific background/color here, as body or individual pages will handle it */
 }
 
+
+/* Responsive card layout utility */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.card {
+  flex: 1 1 300px;
+}
+
+/* Optional: Full-width cards on mobile */
+@media (max-width: 600px) {
+  .card {
+    flex: 1 1 100%;
+  }
+}
+
+
 /* These specific App container styles should only be active when ThemeProvider applies the theme */
 /* So they should probably be moved into a themed component like InboxPage.css or a wrapper within Inbox */
 /* For now, let's keep them here but understand they will affect all pages unless very specific */
