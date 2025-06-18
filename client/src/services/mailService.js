@@ -46,6 +46,7 @@ export async function getEmails() {
  */
 export async function getEmailById(id) {
     const res = await fetch(`http://localhost:3000/api/mails/${id}`, {
+        method: 'GET',
         headers: getAuthHeaders(), 
     });
     if (!res.ok) {

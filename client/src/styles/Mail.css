@@ -1,10 +1,11 @@
+/*Mail.css*/
 .compose-popup {
   position: fixed;
   bottom: 0;
   right: 60px;
   width: 500px;
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: var(--background-primary);
+  border: 1px solid var(--border-color);
   border-radius: 8px 8px 0 0;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
   z-index: 1000;
@@ -12,6 +13,7 @@
   flex-direction: column;
   animation: slideUp 0.25s ease-out;
   font-family: 'Arial', sans-serif;
+  color: var(--text-primary);
 }
 .compose-popup.minimized {
   height: 40px;
@@ -31,7 +33,6 @@
   transition: all 0.3s ease;
 }
 
-
 @keyframes slideUp {
   from {
     transform: translateY(40px);
@@ -47,9 +48,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f2f6fc;
+  background-color: var(--header-background);
   padding: 8px 12px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--border-color);
   border-radius: 8px 8px 0 0;
   font-size: 14px;
   font-weight: 500;
@@ -69,12 +70,12 @@
   border: none;
   background: transparent;
   font-size: 14px;
-  color: #5f6368;
+  color: var(--icon-color);
   cursor: pointer;
 }
 
 .compose-popup .window-controls button:hover {
-  color: #202124;
+  color: var(--icon-hover-color);
 }
 
 .compose-popup input,
@@ -83,14 +84,16 @@
   padding: 10px;
   margin: 6px 12px;
   border: none;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--input-background);
+  color: var(--text-primary);
   outline: none;
 }
 
 .compose-popup textarea {
   resize: vertical;
   height: 120px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   margin-bottom: 8px;
 }
@@ -128,3 +131,4 @@
 .status-message.success {
   color: green;
 }
+

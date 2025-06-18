@@ -1,21 +1,50 @@
+/* EmailList.css */
+.email-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-primary);
+  font-family: 'Google Sans', Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  overflow-y: auto;
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.email-list-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  background-color: var(--background-primary);
+}
+
+.email-list-empty p {
+  color: var(--text-secondary);
+  font-size: 16px;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  margin: 0;
+}
+
 /* EmailListItem.css */
 .email-item {
   display: flex;
   align-items: center;
   padding: 0;
   border: none;
-  border-bottom: 1px solid #e8eaed;
+  border-bottom: 1px solid var(--border-color);
   cursor: pointer;
-  background-color: #ffffff;
+  background-color: var(--background-primary);
   transition: all 0.15s ease;
   position: relative;
   min-height: 40px;
   font-family: 'Google Sans', Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+  color: var(--text-primary);
 }
 
 .email-item:hover {
-  background-color: rgba(242, 245, 245, 0.8);
-  box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 
+  background-color: var(--hover-background);
+  box-shadow: inset 1px 0 0 var(--border-color), inset -1px 0 0 var(--border-color), 
               0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
 }
 
@@ -23,37 +52,45 @@
   border-bottom: none;
 }
 
-/* Selection state */
 .email-item.selected {
-  background-color: #fce8e6;
-  border-left: 4px solid #d93025;
-  box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0;
+  background-color: var(--selection-background);
+  border-left: 4px solid var(--selection-border);
+  box-shadow: inset 1px 0 0 var(--border-color), inset -1px 0 0 var(--border-color);
 }
 
-/* Read/Unread states */
 .email-item.unread {
-  background-color: #ffffff;
+  background-color: var(--background-primary);
+  font-weight: bold;
 }
 
 .email-item.unread .subject-text {
-  font-weight: 700;
-  color: #202124;
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .email-item.read {
-  background-color: #ffffff;
+  background-color: var(--background-primary);
 }
 
 .email-item.read .subject-text {
   font-weight: 400;
+  color: var(--text-primary);
+}
+
+.email-item.read .sender-text {
+  font-weight: 400;
+  color: #202124;
+}
+.email-item.unread .sender-text {
+  font-weight: 800;
   color: #202124;
 }
 
+
 .email-item.read .snippet-text {
-  color: #5f6368;
+  color: var(--text-secondary);
 }
 
-/* Left section - checkboxes and action buttons */
 .email-item-left {
   display: flex;
   align-items: center;
@@ -66,7 +103,7 @@
   width: 20px;
   height: 20px;
   margin: 0 8px 0 0;
-  accent-color: #1a73e8;
+  accent-color: var(--accent-color);
   cursor: pointer;
 }
 
@@ -84,10 +121,15 @@
   align-items: center;
   justify-content: center;
   opacity: 0.7;
+  filter: var(--icon-filter);
+}
+
+.email-item-right .icon-btn img {
+  filter: var(--icon-filter);
 }
 
 .icon-btn:hover {
-  background-color: rgba(60, 64, 67, 0.08);
+  background-color: var(--icon-hover-background);
   opacity: 1;
 }
 
@@ -95,27 +137,37 @@
   width: 20px;
   height: 20px;
   display: block;
+  filter: var(--icon-filter);
 }
 
-/* Subject and content area */
 .col {
   display: flex;
   align-items: center;
   padding: 8px 0;
 }
+.col-sender {
+  flex: 0 0 150px; 
+  padding-left: 16px;
+  padding-right: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 .col-subject {
   flex: 1;
   min-width: 0;
   display: flex;
   align-items: center;
-  padding: 8px 16px 8px 8px;
+  padding: 8px 16px;
+  gap: 8px;
   overflow: hidden;
 }
 
 .subject-text {
   font-size: 14px;
-  color: #202124;
+  color: var(--text-primary);
   margin-right: 8px;
   white-space: nowrap;
   flex-shrink: 0;
@@ -126,7 +178,7 @@
 
 .snippet-text {
   font-size: 14px;
-  color: #5f6368;
+  color: var(--text-secondary);
   font-weight: 400;
   white-space: nowrap;
   overflow: hidden;
@@ -134,19 +186,17 @@
   flex: 1;
 }
 
-/* Date column */
 .col-date {
   flex-shrink: 0;
   padding: 8px 12px;
   font-size: 13px;
-  color: #5f6368;
+  color: var(--text-secondary);
   font-weight: 400;
   white-space: nowrap;
   min-width: 120px;
   text-align: right;
 }
 
-/* Labels */
 .labels {
   display: flex;
   flex-wrap: wrap;
@@ -157,17 +207,16 @@
 }
 
 .tag {
-  background-color: rgba(26, 115, 232, 0.1);
-  color: #1a73e8;
+  background-color: var(--tag-background);
+  color: var(--accent-color);
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 11px;
   font-weight: 500;
   white-space: nowrap;
-  border: 1px solid rgba(26, 115, 232, 0.2);
+  border: 1px solid var(--tag-border);
 }
 
-/* Right section - action buttons */
 .email-item-right {
   display: flex;
   align-items: center;
@@ -184,58 +233,55 @@
 
 .email-item-right .icon-btn {
   opacity: 0.6;
+  filter: var(--icon-filter);
 }
+
 
 .email-item-right .icon-btn:hover {
   opacity: 1;
-  background-color: rgba(60, 64, 67, 0.08);
+  background-color: var(--icon-hover-background);
 }
 
-/* Special styling for starred items */
 .email-item .icon-btn img[src*="full_star"] {
   filter: invert(73%) sepia(89%) saturate(1018%) hue-rotate(359deg) brightness(99%) contrast(94%);
 }
 
 .email-item .icon-btn img[src*="starred"]:not([src*="full_star"]) {
   opacity: 0.6;
+  filter: var(--icon-filter); 
 }
 
 .email-item:hover .icon-btn img[src*="starred"]:not([src*="full_star"]) {
   opacity: 1;
 }
 
-/* Special styling for important items */
 .email-item .icon-btn img[src*="full_important"] {
   filter: invert(73%) sepia(89%) saturate(1018%) hue-rotate(359deg) brightness(99%) contrast(94%);
 }
 
 .email-item .icon-btn img[src*="important"]:not([src*="full_important"]) {
   opacity: 0.6;  
+  filter: var(--icon-filter); 
 }
 
 .email-item:hover .icon-btn img[src*="important"]:not([src*="full_important"]) {
   opacity: 1;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .col-subject {
     padding: 8px 8px 8px 4px;
   }
-  
   .subject-text {
     max-width: 200px;
   }
-  
   .col-date {
     min-width: 80px;
     font-size: 12px;
   }
-  
   .labels {
     max-width: 150px;
   }
-  
   .tag {
     font-size: 10px;
     padding: 1px 6px;
@@ -247,23 +293,18 @@
     padding: 8px 0 8px 8px;
     gap: 2px;
   }
-  
   .col-subject {
     padding: 8px 4px;
   }
-  
   .subject-text {
     max-width: 150px;
   }
-  
   .snippet-text {
     display: none;
   }
-  
   .labels {
     display: none;
   }
-  
   .col-date {
     min-width: 60px;
     padding: 8px 8px;
