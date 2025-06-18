@@ -24,7 +24,7 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setLabelMenuOpen(false);
-        setActiveLabelId(null); // סגירת תת־תפריט אחרי לחיצה מחוץ
+        setActiveLabelId(null);
       }
     };
 
@@ -63,16 +63,17 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
   const handleLabelAction = async (labelId, action) => {
     setLoading(true);
     try {
-        if (action === 'add') {
+      if (action === 'add') {
         await Promise.all(selectedIds.map(id => addLabelToEmail(id, labelId)));
         await Promise.all(selectedIds.map(id => addMailToLabel(labelId, id)));
-        } else if (action === 'remove') {
+      } else if (action === 'remove') {
         await Promise.all(selectedIds.map(id => removeLabelFromEmail(id, labelId)));
         await Promise.all(selectedIds.map(id => deleteMailFromLabel(labelId, id)));
-        }
-        await onRefresh();
-        onAction({ type: 'labelAction', labelId, action });
-        setActiveLabelId(null); // סגירת תת־תפריט אחרי פעולה
+        console.log('DEBUG: Removed label from emails (from BAB):', selectedIds, 'Label ID:', labelId);
+      }
+      await onRefresh();
+      onAction({ type: 'labelAction', labelId, action });
+      setActiveLabelId(null); 
     } catch (err) {
         setError(err.message);
     } finally {
@@ -80,37 +81,6 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
     }
   };
 
-  const handleMarkAsStarred = async () => {
-    setLoading(true);
-    try {
-        await Promise.all(selectedIds.map(id => markEmailAsStarred(id)));
-        await onRefresh();
-        onAction({ type: 'star' });
-    } catch (err) {
-        setError(err.message);
-    } finally {
-        setLoading(false);
-    }
-  };
-
-//   const handleToggleLabel = async (labelId, shouldAdd) => {
-//     setLoading(true);
-//     try {
-//       if (shouldAdd) {
-//         await Promise.all(selectedIds.map(id => addLabelToEmail(id, labelId)));
-//         await Promise.all(selectedIds.map(id => addMailToLabel(labelId, id)));
-//       } else {
-//         await Promise.all(selectedIds.map(id => removeLabelFromEmail(id, labelId)));
-//         await Promise.all(selectedIds.map(id => deleteMailFromLabel(labelId, id)));
-//       }
-//       await onRefresh();
-//       onAction({ type: 'toggleLabel', labelId });
-//     } catch (err) {
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
 
   const handleDeleteAll = async () => {
     setLoading(true);
@@ -124,12 +94,6 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
       setLoading(false);
     }
   };
-
-//   const handleCheckboxChange = (labelId) => {
-//     const newState = !labelStates[labelId];
-//     setLabelStates(prev => ({ ...prev, [labelId]: newState }));
-//     handleToggleLabel(labelId, newState);
-//   };
 
   return (
     <div className="batch-bar">
@@ -153,16 +117,11 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
 
         {labelMenuOpen && (
             <div className="label-menu" ref={menuRef}>
-              {console.log('Labels array:', labels)} {/* Debug */}
               {labels.map(label => (
                 <div key={label.id} className="label-item">
                 <button
                     className="label-name-btn"
                     onClick={() => {
-                        console.log('--- Label Clicked ---'); // כדי לזהות בבירור אירוע לחיצה
-                        console.log('Clicked label ID:', label.id, 'Name:', label.name);
-                        console.log('Current activeLabelId BEFORE update:', activeLabelId);
-                        // setActiveLabelId(activeLabelId === label.id ? null : label.id);
                         const newActiveLabelId = activeLabelId === label.id ? null : label.id;
                         setActiveLabelId(newActiveLabelId);
                         setTimeout(() => {
@@ -172,7 +131,6 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
                 >
                     {label.name}
                 </button>
-                  {console.log(`Label <span class="math-inline">\{label\.name\}\: activeLabelId\=</span>{activeLabelId}, label.id=<span class="math-inline">\{label\.id\}, Condition\=</span>{activeLabelId === label.id}`)} {/* Debug */}
                   {activeLabelId === label.id && (
                     <div className="label-submenu">
                     <button onClick={() => handleLabelAction(label.id, 'add')}>
@@ -188,7 +146,6 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
           </div>
         )}
       </div>
-
 
       {/* Delete */}
       <button onClick={handleDeleteAll} title="Delete">

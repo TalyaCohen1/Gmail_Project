@@ -1,6 +1,6 @@
 // src/components/Sidebar.jsx
 
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle, useCallback, useMemo } from 'react';
 import LabelManager from './LabelManager';
 import CreateMail from "../components/CreateMail";
 import '../styles/SideBar.css';
@@ -95,7 +95,7 @@ useEffect(() => {
    * @param {Function | string} param - If type is 'api', this is the fetch function (e.g., getInboxEmails).
    * If type is 'filter', this is the label name to filter by (e.g., 'Starred').
    */
-  const handleSystemLabelClick = async (type, param) => {
+  const handleSystemLabelClick = useCallback(async (type, param) => {
     setDisplayLoading(true);
     setDisplayError(null);
     try {
@@ -127,32 +127,38 @@ useEffect(() => {
           setCurrentView && setCurrentView('deleted');
         } else if (param === getEmails) {
           setCurrentView && setCurrentView('all');  
+        }
       } else if (type === 'filter') {
-        const targetLabel = labels.find(label => label.name === param);
+        const lowerCaseParam = param.toLowerCase();
+        const targetLabel = labels.find(label => label.name.toLowerCase() === lowerCaseParam);
+
         let filteredMails = [];
         if (targetLabel) {
             filteredMails = await fetchMailsForLabel(targetLabel.id);
-            // Update category count if it's a category label
+
             if (['Social', 'Updates', 'Forums', 'Promotions'].includes(param)) {
-              setCategoryCounts(prev => ({ ...prev, [param]: filteredMails.length }));
+                setCategoryCounts(prev => ({ ...prev, [param]: filteredMails.length }));
             }
-            setCurrentView && setCurrentView(param.toLowerCase());
+            setCurrentView(lowerCaseParam);
         } else {
-            console.warn(`Label '${param}' not found in LabelContext for filter type.`);
+            console.warn(`DEBUG: Label '${param}' not found in LabelContext for filter type.`);
             filteredMails = [];
-          }
-          emailsToDisplay = filteredMails;
         }
-        setDisplayedEmails(emailsToDisplay);
+          emailsToDisplay = filteredMails;
       }
+      setDisplayedEmails(emailsToDisplay);
     } catch (err) {
-      setDisplayError(`Error fetching emails for ${param || 'label'}: ${err.message}`);
-      console.error("Error in handleSystemLabelClick:", err);
-      setDisplayedEmails([]);
+        setDisplayError(`Error fetching emails for ${param || 'label'}: ${err.message}`);
+        console.error("DEBUG: Error in handleSystemLabelClick:", err);
+        setDisplayedEmails([]);
     } finally {
-      setDisplayLoading(false);
+        setDisplayLoading(false);
     }
-  };
+}, [
+    labels, setCurrentView, fetchMailsForLabel, setDisplayedEmails, setDisplayLoading, setDisplayError, setCategoryCounts,
+    // ... וכל שאר פונקציות ה-getXEmails שהיא משתמשת בהן
+    getInboxEmails, getSentEmails, getDraftEmails, getSpamEmails, getDeletedEmails, getImportantEmails, getStarredEmails
+]);
 
   const defaultLabels = [
     { name: 'Inbox', icon: '/icons/inbox.svg', handler: () => handleSystemLabelClick('api', getInboxEmails), type: 'system', count: inboxCount },
@@ -169,17 +175,19 @@ useEffect(() => {
     { name: 'Categories', icon: '/icons/categories.svg', path: '#', type: 'category' }
   ];
 
-  const categorySubLabels = [
+  const categorySubLabels = useMemo(() => [
     { name: 'Social', icon: '/icons/social.svg', handler: () => handleSystemLabelClick('filter', 'Social'), type: 'system', count: categoryCounts['Social'] },
     { name: 'Updates', icon: '/icons/updates.svg', handler: () => handleSystemLabelClick('filter', 'Updates'), type: 'system', count: categoryCounts['Updates'] },
     { name: 'Forums', icon: '/icons/forums.svg', handler: () => handleSystemLabelClick('filter', 'Forums'), type: 'system', count: categoryCounts['Forums'] },
     { name: 'Promotions', icon: '/icons/promotions.svg', handler: () => handleSystemLabelClick('filter', 'Promotions'), type: 'system', count: categoryCounts['Promotions'] },
-  ];
+  ], [handleSystemLabelClick, categoryCounts]);
 
   const renderLabelItem = (item) => (
     <React.Fragment key={item.name}>
       {item.handler ? (
-        <button onClick={item.handler} className="sidebar-item sidebar-button-link">
+        <button 
+        // onClick={item.handler} 
+          onClick={item.handler} className="sidebar-item sidebar-button-link">
           <img src={item.icon} alt={item.name} className="sidebar-icon" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/24x24/cccccc/000000?text=?" }} />
           {isEffectivelyOpen && (
             <span>

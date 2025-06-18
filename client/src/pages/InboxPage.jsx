@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from "../components/Sidebar";
@@ -70,7 +70,7 @@ export default function InboxPage({ isSidebarOpen, toggleSidebar }) {
   const sidebarRef = useRef();
   const location = useLocation();
 
-const refreshAll = async () => {
+const refreshAll = useCallback(async () => {
   setDisplayLoading(true);
   try {
     if (!currentView) {
@@ -121,21 +121,41 @@ const refreshAll = async () => {
   } finally {
     setDisplayLoading(false);
   }
-};
+}, [
+    currentView, labels, fetchMailsForLabel, getSentEmails, getDraftEmails,
+    getSpamEmails, getDeletedEmails, getImportantEmails, getStarredEmails,
+    getInboxEmails, sortEmailsByDate, setDisplayedEmails, setDisplayError, setDisplayLoading
+]);
 
+  const refreshAllIntervalRef = useRef(refreshAll);
 
   useEffect(() => {
-    refreshAll();
-    // const interval = setInterval(refreshAll, 3000);
+    refreshAllIntervalRef.current = refreshAll;
+  }, [refreshAll]);
+
+  useEffect(() => {
+    refreshAllIntervalRef.current();
     const interval = setInterval(() => {
-        refreshAll(); 
-    }, 10000);
-  //   return () => clearInterval(interval);
-  // }, []);
-  return () => {
+        refreshAllIntervalRef.current();
+    }, 10000); 
+
+    return () => {
         clearInterval(interval);
     };
-  }, [currentView]);
+}, []);
+  
+  // useEffect(() => {
+  //   refreshAll();
+  //   // const interval = setInterval(refreshAll, 3000);
+  //   const interval = setInterval(() => {
+  //       refreshAll(); 
+  //   }, 10000);
+  // //   return () => clearInterval(interval);
+  // // }, []);
+  // return () => {
+  //       clearInterval(interval);
+  //   };
+  // }, [currentView]);
 
   // Helper function to update email in both states
   const updateEmailInStates = (emailId, updates) => {
