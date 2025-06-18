@@ -12,7 +12,6 @@
 .logo-section {
   margin-bottom: 1px;
 }
-
 .logo-img {
   width: 800px;
   height: 300px;
@@ -40,18 +39,18 @@
 }
 
 .btn-login {
-  background-color: #1a73e8;
+  background-color: #e2ba35;
   color: white;
 }
 
 .btn-login:hover {
-  background-color: #1558b0;
+  background-color: #e7c659;
 }
 
 .btn-register {
   background-color: transparent;
-  color: #1a73e8;
-  border: 1.5px solid #1a73e8;
+  color: #e2ba35;
+  border: 1.5px solid #e2ba35;
 }
 
 .btn-register:hover {
