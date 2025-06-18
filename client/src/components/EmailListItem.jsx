@@ -12,23 +12,13 @@ export default function EmailListItem({
   onToggleImportant,
   onToggleRead,
   onOpenEmail,
-  onRefresh
+  onRefresh,
+  currentView
 }) {
   const navigate = useNavigate();
   const [senderInfo, setSenderInfo] = useState(null);
 
-  
-  // local UI state
-//   const [starredState, setStarredState] = useState(!!email.starred);
-//   const [importantState, setImportantState] = useState(!!email.important);
-//   const [readState, setReadState] = useState(!!email.read);
 
-//   // update local state when props change
-//   useEffect(() => { setStarredState(!!email.starred); }, [email.starred]);
-//   useEffect(() => { setImportantState(!!email.important); }, [email.important]);
-//   useEffect(() => { setReadState(!!email.read); }, [email.read]);
-
-  // handle user actions with stopPropagation to prevent email opening
   useEffect(() => {
     if (email.send === false) {
         setSenderInfo(null);
@@ -83,11 +73,13 @@ export default function EmailListItem({
     onToggleSelect(email.id);
   };
 
+  const isDeletedView = currentView.toLowerCase() === 'deleted';
+
   return (
     <li 
       className={`email-item ${isSelected ? 'selected' : ''} ${email.isRead ? 'read' : 'unread'}`}
       onClick={() => onOpenEmail(email)}
-      style={{ cursor: 'pointer' ,    backgroundColor: email.isRead ? '#f6f6f6' : '#ffffff', }}
+      style={{ cursor: 'pointer', backgroundColor: email.isRead ? '#f6f6f6' : '#ffffff' }}
     >
       <div className="email-item-left">
         <input
@@ -143,6 +135,7 @@ export default function EmailListItem({
           />
         </button>
 
+      {!isDeletedView && (
         <button className="icon-btn" onClick={handleDelete} title="Delete">
           <img
             src={`${process.env.PUBLIC_URL}/icons/trash.svg`}
@@ -150,6 +143,7 @@ export default function EmailListItem({
             className="inline-icon"
           />
         </button>
+      )}
       </div>
     </li>
   );

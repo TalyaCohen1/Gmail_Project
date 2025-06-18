@@ -4,7 +4,7 @@ import React from 'react';
 import EmailListItem from './EmailListItem';
 import '../styles/EmailList.css';
 
-export default function EmailList({ emails = [], selectedIds, onToggleSelect, onDelete , onOpenEmail, onToggleStar, onToggleImportant, onToggleRead, onRefresh }) {
+export default function EmailList({ emails = [], selectedIds, onToggleSelect, onDelete , onOpenEmail, onToggleStar, onToggleImportant, onToggleRead, onRefresh, currentView }) {
     if (emails.length === 0) {
         return (
         <div className="email-list-empty">
@@ -27,7 +27,8 @@ export default function EmailList({ emails = [], selectedIds, onToggleSelect, on
                     onToggleImportant={onToggleImportant}
                     onToggleRead={onToggleRead}
                     onRefresh={onRefresh}
-                    />
+                    currentView={currentView}
+                />
             ))}
         </ul>
     );

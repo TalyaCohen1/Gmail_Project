@@ -10,7 +10,7 @@ import {
 import { useLabels } from '../context/LabelContext';
 import '../styles/BatchActionsBar.css';
 
-export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction }) {
+export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction, currentView }) {
   const { labels, addMailToLabel, deleteMailFromLabel } = useLabels();
   const [labelStates, setLabelStates] = useState({});
   const [labelMenuOpen, setLabelMenuOpen] = useState(false);
@@ -95,6 +95,8 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
     }
   };
 
+  const isDeletedView = currentView.toLowerCase() === 'deleted';
+
   return (
     <div className="batch-bar">
       <span>{selectedIds.length} selected</span>
@@ -148,9 +150,11 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
       </div>
 
       {/* Delete */}
+    {!isDeletedView && (  
       <button onClick={handleDeleteAll} title="Delete">
         <img src={'/icons/trash.svg'} alt={"Delete"} className="inline-icon" />
       </button>
+    )}
     </div>
   );
 }
