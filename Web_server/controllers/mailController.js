@@ -9,21 +9,7 @@ const URL_REGEX = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?
 exports.listMails = (req, res) => {
     const email = userModel.findById(req.userId).emailAddress;
     const mails = mailModel.getAll(email);
-    const mailsWithSenderInfo = mails.map(mail => {
-        const senderUser = userModel.findByEmail(mail.from);
-        if (senderUser) {
-            return {
-                ...mail,
-                fromUser: {
-                    fullName: senderUser.fullName,
-                    email: senderUser.emailAddress,
-                    profileImage: senderUser.profileImage || '/uploads/default-profile.png'
-                }
-            };
-        }
-        return mail;
-    });
-    res.status(200).json(mailsWithSenderInfo);
+    res.status(200).json(mails);
 };
 
 /**
@@ -33,20 +19,6 @@ exports.getMail = (req, res) => {
     const id = Number(req.params.id);
     const email = userModel.findById(req.userId).emailAddress;
     const mail = mailModel.getById(email, id);
-    if (!mail) {
-        return res.status(404).json({ error: 'Mail not found' });
-    }
-
-     const senderUser = userModel.findByEmail(mail.from);
-    if (senderUser) {
-        mail.fromUser = {
-            fullName: senderUser.fullName,
-            email: senderUser.emailAddress,
-            profileImage: senderUser.profileImage || '/uploads/default-profile.png'
-        };
-        console.log("senderUser", senderUser);
-    }
-
     res.status(200).json(mail);
 };
 
