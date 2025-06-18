@@ -24,7 +24,7 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction 
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setLabelMenuOpen(false);
-        setActiveLabelId(null); // סגירת תת־תפריט אחרי לחיצה מחוץ
+        setActiveLabelId(null); //close the sub-menu
       }
     };
 

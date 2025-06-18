@@ -280,6 +280,7 @@ const refreshAll = async () => {
           setDisplayError={setDisplayError}
           setCurrentView={setCurrentView}
           currentView={currentView}
+          onRefresh={refreshAll}
         />
 
         <div className="email-list-container">
@@ -312,6 +313,7 @@ const refreshAll = async () => {
                 <EmailDetail
                   email={openedEmail}
                   onClose={() => setOpenedEmail(null)}
+                  onRefresh={refreshAll}
                 />
               ) : (
                 <EmailList
@@ -323,6 +325,7 @@ const refreshAll = async () => {
                   onToggleStar={handleToggleStar}
                   onToggleImportant={handleToggleImportant}
                   onToggleRead={handleToggleRead}
+                  onRefresh={refreshAll}
                 />
               )}
             </>

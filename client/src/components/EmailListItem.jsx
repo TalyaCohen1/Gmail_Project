@@ -12,6 +12,7 @@ export default function EmailListItem({
   onToggleImportant,
   onToggleRead,
   onOpenEmail,
+  onRefresh
 }) {
   const navigate = useNavigate();
   const [senderInfo, setSenderInfo] = useState(null);

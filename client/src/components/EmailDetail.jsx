@@ -5,7 +5,7 @@ import { getEmailById, markEmailAsRead } from '../services/mailService';
 import EmailActions from './EmailActions';
 import '../styles/EmailDetail.css';
 
-export default function EmailDetail({ email: inlineEmail, onClose }) {
+export default function EmailDetail({ email: inlineEmail, onClose, onRefresh }) {
     const { emailId } = useParams();
     const navigate = useNavigate();
     const [email, setEmail] = useState(inlineEmail || null);
@@ -52,8 +52,18 @@ export default function EmailDetail({ email: inlineEmail, onClose }) {
         return (
             <div className="email-detail error">
                 <p>Error: {error}</p>
-                <button onClick={() => isRouteMode ? navigate(-1) : onClose()}>
-                    Go Back
+                <button onClick={() => {
+                    if (isRouteMode) {
+                        navigate(-1);
+                    }
+                    if (onClose) {
+                        onClose();
+                    }
+                    if (onRefresh) { // Call refresh on error go back/close
+                        onRefresh();
+                    }
+                }}> 
+                   Go Back
                 </button>
             </div>
         );
@@ -69,15 +79,22 @@ export default function EmailDetail({ email: inlineEmail, onClose }) {
         if (isRouteMode) {
             navigate(-1);
         }
+        if (onRefresh) onRefresh();
     };
 
     return (
         <div className="email-detail">
             <div className="email-detail-header">
                 {isRouteMode ? (
-                    <button onClick={() => navigate(-1)}>← Back</button>
+                    <button onClick={() => {
+                        navigate(-1);
+                        if (onRefresh) onRefresh(); // Refresh on back
+                    }}>← Back</button>
                 ) : (
-                    <button onClick={onClose}>× Close</button>
+                    <button onClick={() => {
+                        if (onClose) onClose();
+                        if (onRefresh) onRefresh(); // Refresh on close
+                    }}>× Close</button>
                 )}
                 <h2 className="email-subject">{email.subject || '(No Subject)'}</h2>
             </div>

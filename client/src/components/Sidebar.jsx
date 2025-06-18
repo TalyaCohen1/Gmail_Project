@@ -9,7 +9,7 @@ import { useLabels } from '../context/LabelContext';
 // Import all necessary mail service functions
 import { getEmails, getInboxEmails, getDraftEmails, getSentEmails, getEmailLabels, getSpamEmails, getDeletedEmails, getStarredEmails, getImportantEmails } from '../services/mailService';
 
-const SideBar = forwardRef(({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisplayError, setCurrentView }, ref) => {
+const SideBar = forwardRef(({ isSidebarOpen, setDisplayedEmails, setDisplayLoading, setDisplayError, setCurrentView, onRefresh }, ref) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showMoreLabels, setShowMoreLabels] = useState(false);
   const [showCategoriesSubLabels, setShowCategoriesSubLabels] = useState(false);
@@ -214,7 +214,7 @@ useEffect(() => {
         {isEffectivelyOpen && <span>Compose</span>}
       </button>
 
-      {showCreateMail && <CreateMail onClose={() => setShowCreateMail(false)} />}
+      {showCreateMail && <CreateMail onClose={() => setShowCreateMail(false)} onRefresh={onRefresh} />}
 
       <div className="sidebar-section main-labels">
         {defaultLabels.map(renderLabelItem)}

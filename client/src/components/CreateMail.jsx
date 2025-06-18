@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { createEmail, updateEmail } from "../services/mailService";
 import "../styles/Mail.css";
 
-export default function CreateMail({ onSend, onClose, existingEmail = null, defaultValues = null, readOnlyActions = false }) {
+export default function CreateMail({ onSend, onClose, existingEmail = null, defaultValues = null, readOnlyActions = false ,onRefresh }) {
     const [draft, setDraft] = useState(null);
     const [to, setTo] = useState(() => {
         if (defaultValues?.to) return defaultValues.to;
@@ -106,7 +106,7 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
             setTo('');
             setSubject('');
             setBody('');
-            
+            onRefresh && onRefresh(); // Refresh the email list after sending
             onClose && onClose();
         } catch (err) {
             if (err.message.includes('Recipient email')) {
@@ -138,6 +138,7 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
             }
         }
         onClose && onClose();
+        onRefresh && onRefresh();
     }
     return (
         <div className={`compose-popup ${isMinimized ? 'minimized' : ''} ${isMaximized ? 'maximized' : ''}`}>
