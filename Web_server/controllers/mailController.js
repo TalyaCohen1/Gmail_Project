@@ -9,7 +9,21 @@ const URL_REGEX = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?
 exports.listMails = (req, res) => {
     const email = userModel.findById(req.userId).emailAddress;
     const mails = mailModel.getAll(email);
-    res.status(200).json(mails);
+    const mailsWithSenderInfo = mails.map(mail => {
+        const senderUser = userModel.findByEmail(mail.from);
+        if (senderUser) {
+            return {
+                ...mail,
+                fromUser: {
+                    fullName: senderUser.fullName,
+                    email: senderUser.emailAddress,
+                    profileImage: senderUser.profileImage || '/uploads/default-profile.png'
+                }
+            };
+        }
+        return mail;
+    });
+    res.status(200).json(mailsWithSenderInfo);
 };
 
 /**
@@ -19,6 +33,36 @@ exports.getMail = (req, res) => {
     const id = Number(req.params.id);
     const email = userModel.findById(req.userId).emailAddress;
     const mail = mailModel.getById(email, id);
+    if (!mail) {
+        return res.status(404).json({ error: 'Mail not found' });
+    }
+    // If the mail is not sent (draft), return it with send: false
+    if (mail.send === false) {
+        return res.status(200).json({
+            id: mail.id,
+            from: mail.from || null,
+            to: mail.to || null,
+            subject: mail.subject || null,
+            body: mail.body || null,
+            isImportant: mail.isImportant || false,
+            isStarred: mail.isStarred || false,
+            isSpam: mail.isSpam || false,
+            labels: mail.labels || [],
+            send: false,
+            fromUser: null
+        });
+    }
+
+    const senderUser = userModel.findByEmail(mail.from);
+    if (senderUser) {
+        mail.fromUser = {
+            fullName: senderUser.fullName,
+            email: senderUser.emailAddress,
+            profileImage: senderUser.profileImage || '/uploads/default-profile.png'
+        };
+        console.log("senderUser", senderUser);
+    } 
+
     res.status(200).json(mail);
 };
 
