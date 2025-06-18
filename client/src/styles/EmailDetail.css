@@ -190,7 +190,8 @@
   color: var(--text-primary);
   margin: 8px 16px;
   background: var(--background-primary);
-  width: calc(100% - 32px);
+  width: calc(100% - 56px);
+  box-sizing: border-box;
 }
 
 .inline-reply .compose-popup input:focus,
