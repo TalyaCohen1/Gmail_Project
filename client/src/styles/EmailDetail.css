@@ -12,6 +12,7 @@
   box-shadow: 0 2px 8px var(--shadow-color);
   overflow: hidden;
   font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  top: 65px; 
 }
 
 .email-detail.loading {
@@ -99,13 +100,14 @@
 
 .email-body {
   padding: 24px;
-  line-height: 1.6;
+  line-height: 1.5;
   color: var(--text-primary);
   font-size: 14px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  min-height: 100px;
-  flex: 1;
+  min-height: 60px;
+  max-height: 300px ;
+  flex: 0 1 auto;
   overflow-y: auto;
   background: var(--background-primary);
   margin: 0 16px 16px 16px;
@@ -275,8 +277,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  border-bottom: 1px solid #e8eaed;
-  background: #fff;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background-secondary);
 }
 
 .sender-avatar img {

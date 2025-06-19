@@ -12,6 +12,7 @@ export default function EmailDetail({ email: inlineEmail, onClose, onRefresh }) 
     const [loading, setLoading] = useState(!inlineEmail);
     const [error, setError] = useState('');
     const isRouteMode = !!emailId;
+    // Fetch the email if accessed via route or needs update
 
     useEffect(() => {
         const shouldFetch = (isRouteMode && !inlineEmail) || (inlineEmail && !inlineEmail.fromUser);
@@ -35,7 +36,7 @@ export default function EmailDetail({ email: inlineEmail, onClose, onRefresh }) 
         fetchEmail();
         }, [emailId, inlineEmail, isRouteMode]);
 
-
+    // Mark email as read when it's loaded
     useEffect(() => {
     if (email && email.id) {
         markEmailAsRead(email.id).catch(err =>
@@ -72,7 +73,7 @@ export default function EmailDetail({ email: inlineEmail, onClose, onRefresh }) 
     if (!email) {
         return <div className="email-detail loading">No email found</div>;
     }
-
+    // Callback to update state after editing or sending
     const handleEmailUpdate = (updatedEmail) => {
         setEmail(updatedEmail);
         if (onClose) onClose();

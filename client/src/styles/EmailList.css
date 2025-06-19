@@ -8,7 +8,10 @@
   font-size: 14px;
   overflow-y: auto;
   flex: 1;
+  min-height: 0;
   color: var(--text-primary);
+  margin-top: 64px; /* Adjusted to account for header height */
+  top: 0px;
 }
 
 .email-list-empty {
