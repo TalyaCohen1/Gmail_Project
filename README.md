@@ -212,25 +212,37 @@ DELETE /api/labels/:id // Delete label
 
 ## Screenshots 
 
+### Home Page
+
+![Home Page](screenshots/home.png)
+
 ### Registration Page
 
-![Registration Page](screenshots/registration.jpg)
+![Registration Page](screenshots/registration.png)
 
 ### Login Page
 
-![Login Page](screenshots/login.jpg)
+![Login Page](screenshots/login.png)
 
 ### Main Screen
 
-![Main Page](screenshots/main.jpg)
+![Main Page](screenshots/main.png)
+
+### Displaying An Email
+
+![Email View Page](screenshots/message.png)
 
 ### Email Composition
 
-![Email Composition Page](screenshots/compose.jpg)
+![Email Composition Page](screenshots/compose.png)
+
+### Reply To A Message
+
+![Reply Page](screenshots/reply.png)
 
 ### Dark Theme
 
-![Dark Themed Page](screenshots/dark.jpg)
+![Dark Themed Page](screenshots/dark.png)
 
 ---
 
