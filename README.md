@@ -81,7 +81,7 @@ docker-compose down
 
 Example of a successful build + launch of the servers:
 
-![build](screenshots/build.jpg)
+![build](screenshots/build.png)
 
 ---
 
