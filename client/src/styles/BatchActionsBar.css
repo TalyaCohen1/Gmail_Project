@@ -4,20 +4,19 @@
   gap: 12px;
   background-color: var(--background-primary);
   padding: 8px 16px;
-  border-bottom: 1px solid #dadce0;
+  border-bottom: 1px solid var(--border-color); 
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
   position: sticky;
   top: 65px; 
   z-index: 100; 
-}
-.main-layout {
-  margin-top: 64px;
+  color: var(--text-primary); 
 }
 
 .batch-bar button {
   background: none;
   border: none;
+  color: var(--text-primary); 
   cursor: pointer;
   padding: 6px;
   border-radius: 4px;
@@ -25,65 +24,11 @@
 }
 
 .batch-bar button:hover {
-  background-color: #e8eaed;
+  background-color: var(--hover-background); 
 }
 
 .inline-icon {
   width: 20px;
   height: 20px;
-}
-
-.label-menu {
-  position: absolute;
-  top: 100%;
-  left: 50px;
-  margin-top: 4px;
-  background: var(--background-primary);
-  border: 1px solid #dadce0;
-  border-radius: 8px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  padding: 8px 0;
-  min-width: 160px;
-}
-
-.label-item {
-  position: relative;
-  padding: 6px 16px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.label-item:hover {
-  background-color: #f1f3f4;
-}
-
-.label-submenu {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  background-color: var(--background-primary);
-  border: 1px solid #dadce0;
-  border-radius: 8px;
-  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
-  padding: 6px 0;
-  min-width: 140px;
-  z-index: 1001;
-  display: flex;
-  flex-direction: column;
-}
-
-.label-submenu button {
-  background: none;
-  border: none;
-  width: 100%;
-  padding: 8px 16px;
-  font-size: 14px;
-  text-align: left;
-  cursor: pointer;
-  display: block;
-}
-
-.label-submenu button:hover {
-  background-color: #f1f3f4;
+  filter: var(--icon-filter);
 }

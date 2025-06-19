@@ -17,6 +17,7 @@
   flex-grow: 1; /* Allows email list to take up all available horizontal space */
   overflow-y: auto; /* Adds scroll to email list if content overflows */
   padding: 0px 20px; /* Example padding */
+  transition: margin-left 0.3s ease-in-out; /* Smooth transition for margin changes */
 }
 
 .loading,
@@ -32,11 +33,4 @@
   flex-direction: row;
   min-height: calc(100vh - 64px); /* full viewport height minus header height */
   background-color: var(--background-primary);
-}
-
-/* The email list container will flex-grow to fill remaining space */
-.email-list-container {
-  flex-grow: 1;
-  padding: 24px;
-  overflow-y: auto;
 }

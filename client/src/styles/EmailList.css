@@ -10,8 +10,7 @@
   flex: 1;
   min-height: 0;
   color: var(--text-primary);
-  margin-top: 0px; /* Adjust based on your header height */
-  top: 64px; /* Adjust based on your header height */
+  margin-top: 64px; /* Adjust based on your header height */
 }
 
 .email-list-empty {

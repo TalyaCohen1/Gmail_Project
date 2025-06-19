@@ -12,9 +12,13 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    position: fixed; /* Keep sidebar fixed on the left */
+    top: 64px; /* Below the header */
+    left: 0; /* Align to the left edge */
     transition: width 0.3s ease-in-out, padding 0.3s ease-in-out, align-items 0.3s ease-in-out; /* Smooth transitions */
     flex-shrink: 0; /* Prevent sidebar from shrinking when content grows */
     color: var(--text-primary); /* Ensure text color changes with theme */
+    z-index: 99; /* Ensure sidebar is below header but above other content if necessary */
 }
 
 /* Styles for when the sidebar is closed */

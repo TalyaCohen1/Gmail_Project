@@ -11,7 +11,9 @@
   justify-content: space-between;
   position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 /* New style for the sidebar toggle button */
