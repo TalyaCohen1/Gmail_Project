@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, useNavigate, Routes, Route } from 'react-router-dom';
 
+import './styles/App.css'; // This is the main app style
 import './styles/HomePage.css'; // This is for the pre-login landing page
 import './styles/AuthForm.css'; // For Login/Register forms
 import './styles/Header.css'; // Header will always use its own default styles unless explicitly themed by its parent

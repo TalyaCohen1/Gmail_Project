@@ -2,18 +2,19 @@
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  border-bottom: 1px solid #ddd;
-  background-color: #f6f8fc;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--background-primary);
   position: sticky;
-  top: 0;
+  top: 64px; /* Adjust based on your header height */
   z-index: 100;
+  color: var(--text-primary);
 }
 
 .toolbar-checkbox {
   width: 18px;
   height: 18px;
   margin-right: 16px;
-  accent-color: #5f6368;
+  accent-color: var(--text-secondary);
   cursor: pointer;
 }
 
@@ -28,6 +29,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--text-primary);
 }
 
 .toolbar-btn:last-of-type {
@@ -35,13 +37,14 @@
 }
 
 .toolbar-btn:hover {
-  background-color: #e0e0e0;
+  background-color: var(--hover-background);
 }
 
 .inline-icon {
   width: 20px;
   height: 20px;
   display: block;
+  filter: var(--icon-filter); /* Using theme variable for icon filter */
 }
 
 .toolbar-more {
@@ -53,9 +56,9 @@
   top: 36px;
   left: 0;
   transform: translateX(0); 
-  background: white;
-  border: 1px solid #ddd;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  background-color: var(--background-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 4px var(--shadow-color);
   border-radius: 4px;
   min-width: 180px;
   z-index: 200;
@@ -72,10 +75,11 @@
   font-size: 14px;
   transition: background-color 0.2s ease;
   white-space: nowrap;
+  color: var(--text-primary);
 }
 
 .toolbar-menu button:hover {
-  background-color: #f1f3f4;
+  background-color: var(--hover-background);
 }
 
 .toolbar-error {

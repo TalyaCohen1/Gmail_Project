@@ -4,6 +4,7 @@ import { createEmail, updateEmail } from "../services/mailService";
 import "../styles/Mail.css";
 
 export default function CreateMail({ onSend, onClose, existingEmail = null, defaultValues = null, readOnlyActions = false ,onRefresh }) {
+    // State for managing draft and input fields
     const [draft, setDraft] = useState(null);
     const [to, setTo] = useState(() => {
         if (defaultValues?.to) return defaultValues.to;
@@ -20,16 +21,18 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
     const [isMaximized, setIsMaximized] = useState(false);
     const hasCreatedDraft = useRef(false);
 
+    // Toggle minimize state
     const handleMinimize = () => {
         setIsMinimized(!isMinimized);
         if (!isMinimized) setIsMaximized(false);
     };
-
+    // Toggle maximize state
     const handleMaximize = () => {
         setIsMaximized(!isMaximized);
         if (!isMaximized) setIsMinimized(false);
     };
 
+    // Create a new draft email if no existing email is provided
     const createDraft = async () => {
         try {
             const data = await createEmail({ to: " ", subject: " ", body: " ", send: false });
@@ -39,6 +42,7 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
         }
     };
 
+        // Create or load draft on mount
     useEffect(() => {
         if (existingEmail) {
             setDraft(existingEmail);
@@ -54,7 +58,8 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
             })();
         }
     }, [existingEmail]);
-
+    
+    // Auto-save draft after 1 second of inactivity on input
     useEffect(() => {
         if (!draft || !draft.id || existingEmail?.id) return;
         setIsSaving(true);
@@ -70,6 +75,7 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
         return () => clearTimeout(timeout);
     }, [to, subject, body]);
 
+        // Handle email sending (including duplication for multiple recipients)
     const handleSend = async () => {
         if (!draft) {
             setError('Draft not created yet');
@@ -129,6 +135,7 @@ export default function CreateMail({ onSend, onClose, existingEmail = null, defa
     }
 }, [existingEmail]);
 
+// Handle closing the popup with saving the draft
     const handleCloseWithSave = async () => {
         if (draft && draft.id) {
             try {

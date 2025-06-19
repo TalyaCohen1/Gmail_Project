@@ -305,7 +305,14 @@ const refreshAll = useCallback(async () => {
 
         <div className="email-list-container">
           {displayError && <p style={{ color: 'red' }}>{displayError}</p>}
-            <>
+            {openedEmail ? (
+              <EmailDetail
+                email={openedEmail}
+                onClose={() => setOpenedEmail(null)}
+                onRefresh={refreshAll}
+              />
+            ) : (
+              <>
               {selectedIds.length > 0 ? (
                 <BatchActionsBar
                   selectedIds={selectedIds}
@@ -329,14 +336,6 @@ const refreshAll = useCallback(async () => {
                   onMarkAllRead={handleMarkAllRead}
                 />
               )}
-
-              {openedEmail ? (
-                <EmailDetail
-                  email={openedEmail}
-                  onClose={() => setOpenedEmail(null)}
-                  onRefresh={refreshAll}
-                />
-              ) : (
                 <EmailList
                   emails={sortedDisplayedEmails}
                   selectedIds={selectedIds}
@@ -349,8 +348,8 @@ const refreshAll = useCallback(async () => {
                   onRefresh={refreshAll}
                   currentView={currentView}
                 />
-              )}
             </>
+            )}
         </div>
       </div>
     </div>

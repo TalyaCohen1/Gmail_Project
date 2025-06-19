@@ -9,10 +9,12 @@ export default function EmailActions({ email, onEmailUpdate, onRefresh }) {
   const [inlineAction, setInlineAction] = useState(null); // "reply" or "forward"
   const [isStarred, setIsStarred] = useState(email.starred || false);
 
+    // Determine if the email is a draft
   const isDraft =
     email.send === false ||
     email.labels?.some(label => label.name?.toLowerCase() === "drafts");
 
+  // Format quoted body for reply/forward
   const getQuotedBody = (label) =>
     `\n\n--- ${label} ---\nFrom: ${email.from}\nDate: ${new Date(email.date).toLocaleString()}\nSubject: ${email.subject}\n\n${email.body}`;
 
@@ -22,7 +24,7 @@ export default function EmailActions({ email, onEmailUpdate, onRefresh }) {
   const handleEditDraft = () => {
     openComposer({ existingEmail: email }); 
   };
-
+  // Get default values for inline composer based on reply/forward
   const getDefaultValues = () => {
     if (inlineAction === "reply") {
       return {
@@ -40,7 +42,7 @@ export default function EmailActions({ email, onEmailUpdate, onRefresh }) {
     }
     return null;
   };
-
+  // Callback after inline composer sends mail
   const handleInlineDone = (sentEmail) => {
     setInlineAction(null);
     if (sentEmail && onEmailUpdate) onEmailUpdate(sentEmail);
