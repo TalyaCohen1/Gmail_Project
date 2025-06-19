@@ -13,6 +13,10 @@
   color: var(--text-primary); 
 }
 
+.main-layout {
+  margin-top: 64px ;
+}
+
 .batch-bar button {
   background: none;
   border: none;
@@ -31,4 +35,60 @@
   width: 20px;
   height: 20px;
   filter: var(--icon-filter);
+}
+
+
+.label-menu {
+  position: absolute;
+  top: 100%;
+  left: 50px;
+  margin-top: 4px;
+  background: var(--background-primary);
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  padding: 8px 0;
+  min-width: 160px;
+}
+
+.label-item {
+  position: relative;
+  padding: 6px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.label-item:hover {
+  background-color: #f1f3f4;
+}
+
+.label-submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background-color: var(--background-primary);
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+  padding: 6px 0;
+  min-width: 140px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+}
+
+.label-submenu button {
+  background: none;
+  border: none;
+  width: 100%;
+  padding: 8px 16px;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  display: block;
+}
+
+.label-submenu button:hover {
+  background-color: #f1f3f4;
 }
