@@ -79,8 +79,7 @@ export default function EmailListItem({
     <li 
       className={`email-item ${isSelected ? 'selected' : ''} ${email.isRead ? 'read' : 'unread'}`}
       onClick={() => onOpenEmail(email)}
-      style={{ cursor: 'pointer', backgroundColor: email.isRead ? '#f6f6f6' : '#ffffff' }}
-    >
+      style={{ cursor: 'pointer' }}    >
       <div className="email-item-left">
         <input
           type="checkbox"
@@ -117,14 +116,20 @@ export default function EmailListItem({
             </div>
 
             <div className="col col-date">
-                {new Date(email.date).toLocaleString()}
+                {new Date(email.date).toLocaleString(undefined, {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}
             </div>
 
-      <div className="labels">
+      {/* <div className="labels">
         {(email.labels || []).map(label => (
           <span key={label.id} className="tag">{label.name}</span>
         ))}
-      </div>
+      </div> */}
 
       <div className="email-item-right">
         <button className="icon-btn" onClick={handleRead} title="Toggle Read">

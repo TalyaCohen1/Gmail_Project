@@ -16,6 +16,16 @@ body.light, /* These rules will still be defined, and can be used by themed comp
   --compose-button-background: #c2e7ff;
   --compose-button-text: #001d35;
   --compose-button-hover: #b0d8f7;
+
+  /* variables for EmailListItem */
+  --email-item-read-background: #f6f6f6;
+  --email-item-unread-background: #ffffff; 
+  --email-item-selected-background: #e8f0fe; 
+  --email-item-selected-border: #1a73e8; 
+  --email-item-accent-color: #1a73e8; 
+  --icon-hover-background: rgba(60, 64, 67, 0.08); 
+  --tag-background: #e8f0fe;
+  --tag-border: #cddcfa; 
 }
 
 /* Dark Theme Variables - these will ONLY apply when body.dark is present (i.e., on Inbox) */
@@ -32,7 +42,23 @@ body.dark {
   --compose-button-background: #303134;
   --compose-button-text: #e8eaed;
   --compose-button-hover: #3c4043;
-  --icon-filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(285deg) brightness(100%) contrast(100%);
+  --icon-filter: brightness(0) invert(1);
+
+  /* variables for EmailListItem */
+  --email-item-read-background: #272727; /* var(--background-primary); */ 
+  --email-item-unread-background: #3a3a3a; 
+  --email-item-selected-background: #303134; 
+  --email-item-selected-border: #8ab4f8; 
+  --email-item-accent-color: #8ab4f8; 
+  --icon-hover-background: rgba(138, 180, 248, 0.12); 
+  --tag-background: #303134; 
+  --tag-border: #5f6368;
+
+  /* Popup menu */
+  --popup-background: #363636; 
+  --popup-border-color: #5f6368; 
+  --popup-hover-background: #4a4a4a; 
+  --popup-text-color: var(--text-primary); 
 }
 
 /* Default body styles (primarily for Login/Register/Home pages) */
