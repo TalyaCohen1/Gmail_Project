@@ -140,7 +140,7 @@ Example of a successful build + launch of the servers:
 - **Delete Emails**: Remove emails from inbox (soft delete - only removes for current user)
 - **Email Search**:
   - Search through all emails by content, sender, or subject
-  - Real-time search results as you type
+  - Real-time search results.
   - Search across inbox, sent, and draft folders
 
 ### Labels System
@@ -163,7 +163,7 @@ Example of a successful build + launch of the servers:
 - **Dark/Light Mode Toggle**: Switch between themes via header button
 - **Theme Persistence**: Selected theme saved and restored on app reload
 - **Gmail-inspired Design**: Authentic Gmail look and feel in both themes
-- **Collapse sidebar**: Left navigation collapses on click
+- **Collapse sidebar**: Left navigation collapses on click and on hover.
 
 ### Real-time Features
 
@@ -250,4 +250,4 @@ DELETE /api/labels/:id // Delete label
 
 This server uses in-memory storage. All data (users, emails, labels, drafts) is lost when the server restarts.
 
-The blacklist server maintains its own persistence for URL validation.
+The blacklist server maintains its own persistence for URL validation and the blacklisted url's are still on the list also after shutting down the server.
