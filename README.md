@@ -1,37 +1,77 @@
-# Part C - Gmail-like Web Server
-This project implements a multi-threaded web server using MVC architecture that provides Gmail-like functionality. The server integrates with a URL blacklist filter to validate URLs in emails.
+# Exercise 4 - Gmail-like React Web Application
+This project implements a complete Gmail-like web application using React that communicates with the web server from Exercise 3. The application provides a modern, responsive interface inspired by Gmail's design and functionality.
 
 ---
 
-## Description
+## Project Overview
 
-The web server provides a RESTful API for a Gmail-like application with the following features:
+This is a full-stack Gmail clone consisting of:
 
-1. **User Management**: Registration and authentication
-2. **Email System**: Send, receive, manage, and draft emails with URL blacklist validation
-3. **Labels**: Create and manage email labels/categories
-4. **Blacklist Integration**: Integration with Exercise 2's URL blacklist filter
-5. **Multi-threading**: Handle multiple concurrent clients
+- **Frontend**: React application with modern UI/UX
+- **Backend**: Multi-threaded web server (from Exercise 3)
+- **URL Filtering**: Blacklist server integration (from Exercise 2)
+
+The React application provides all the functionality of Gmail including user authentication, email management, search capabilities, and theme switching.
+
+---
+
+## Features
+
+### Authentication & User Management
+
+- **User Registration**: Complete registration form with profile image upload
+- **User Login**:  Secure authentication with JWT tokens
+- **Form Validation**: Client-side validation for all input fields
+- **Session Management**: Automatic session handling and route protection
+
+### Email Management
+
+- **Inbox View**: Display emails with Gmail-like interface
+- **Compose Email**: Rich email composition with real-time validation
+- **Draft Management**: Save and edit email drafts
+- **Email Actions**: Reply, forward, delete emails
+- **Search Functionality**: Advanced email search with real-time results
+
+### Organization & Labels
+
+- **Custom Labels**: Create, edit, and manage email labels
+- **Email Categorization**: Organize emails with labels
+- **Folder Navigation**: Inbox, Sent, Drafts, Spam filtering
+
+### User Experience
+
+- **Dark/Light Theme**: Toggle between themes with persistent settings
+- **Responsive Design**: Mobile-friendly responsive layout
+- **Gmail-inspired UI**: Authentic Gmail look and feel
+- **Real-time Update**s: Live email updates across browser tabs
 
 ---
 
 ## Requirements
 
-- Docker
-- Docker Compose
+- Docker & Docker Compose
+- Node.js (for development)
+- Modern web browser
 
 ## Getting Started
 
-## Building and Running with Docker
+### Building and Running with Docker
 
-Build the Docker image:
+Build the Docker image + Start both servers:
 ```bash
-docker-compose build
+docker-compose up --build
 ```
 
-Start both servers (Exercise 2 blacklist server and Exercise 3 web server):
-```bash
-docker-compose up
+This will start:
+
+1. URL Blacklist Server
+2. Gmail Web Server
+3. React Application (served by web server)
+
+### Access the application
+
+```
+http://localhost:8080
 ```
 
 To stop all running containers:
@@ -41,331 +81,168 @@ docker-compose down
 
 Example of a successful build + launch of the servers:
 
-![build](screenshots/build.jpg)
+![build](screenshots/build.png)
 
 ---
 
-## API Documentation
+## Application Functionality
+
+### User Authentication & Registration
+
+#### Registration Process
+
+- **User Registration Form**: New users can register with full name, email, password, confirm password, birth date, and profile image (not required)
+- **Form Validation**: All fields are required with specific validation rules:
+
+  - Password must be at least 8 characters with uppercase letters and digits
+  - Email format validation and uniqueness check
+  - Birth date validation (must be 13+ years old)
+  - Profile image upload with file validation
+
+- Visual Feedback: Clear error messages and validation indicators for invalid inputs
+
+#### Login Process
+
+- **Login Form**: Existing users login with email and password
+- **JWT Authentication**: Upon successful login, users receive a JWT token for session management
+- **Session Persistence**: Authentication state maintained across browser sessions
+- **Automatic Redirect**: Successful login redirects to main inbox interface
+
+#### Route Protection
+
+- **Protected Routes**: Main application screens require authentication (inbox, compose, settings)
+- **Public Routes**: Login and registration accessible without authentication
+- **Auto-redirect**: Unauthenticated users automatically redirected to login when accessing protected content
+
+### Email Management System
+
+#### Inbox & Email Display
+
+- **Inbox View**: Gmail-like interface displaying all received emails
+- **Email List**: Shows sender, subject, date, and read/unread status
+- **Email Details**: Click any email to view full content with sender details, subject, body, and timestamps
+- **Real-time Updates**: New emails appear automatically without page refresh
+
+#### Email Composition & Sending
+
+- **Compose Interface**: Rich email editor with recipient, subject, and body fields
+- **Draft Management**:
+  - Save emails as drafts without sending
+  - Edit existing drafts and send later
+  - Drafts automatically saved during composition
+- **Send Functionality**:
+  - Send emails with URL validation through blacklist server
+  - Emails with blacklisted URLs are Will go to spam
+  - Successful sends show confirmation and update sent folder
+
+#### Email Actions & Management
+
+- **Delete Emails**: Remove emails from inbox (soft delete - only removes for current user)
+- **Email Search**:
+  - Search through all emails by content, sender, or subject
+  - Real-time search results.
+  - Search across inbox, sent, and draft folders
+
+### Labels System
+
+- **Create Labels**: Add custom labels for email organization
+- **Edit Labels**: Rename existing labels
+- **Delete Labels**: Remove labels (emails remain, just lose the label)
+- **Apply Labels**: Assign labels to emails for categorization
+
+#### Organization System
+
+- **Inbox**: All received emails
+- **Sent**: Emails you've sent to others
+- **Drafts**: Unsent email drafts
+- **Spam**: Filtered emails (through blacklist system)
+- **Custom Labels**: Navigate emails by custom labels
+
+### User Interface & Experience
+
+- **Dark/Light Mode Toggle**: Switch between themes via header button
+- **Theme Persistence**: Selected theme saved and restored on app reload
+- **Gmail-inspired Design**: Authentic Gmail look and feel in both themes
+- **Collapse sidebar**: Left navigation collapses on click and on hover.
+
+### Real-time Features
+
+- **Cross-tab Synchronization**: Changes in one browser tab reflect in others
+- **Automatic Refresh**: New emails appear without manual refresh
+- **Dynamic UI Updates**: Interface updates immediately after actions (send, delete, etc.)
+- **Clear Error Messages**: Specific error messages for various failure scenarios
+- **Loading States**: Visual indicators during server communication
+- **Success Confirmations**: Positive feedback for successful actions
+
+---
+
+## API Integration
+
+The React app communicates with the Exercise 3 server:
 
 ### Authentication Endpoints
 
-#### User Registration
-
 ```
-POST http://localhost:3000/api/users
-Content-Type: application/json
-
-{
-  "fullName": "John Doe",
-  "emailAddress": "john.doe@gmail.com",
-  "birthDate": "1990-01-15",
-  "gender": "male",
-  "password": "Password123"
-}
-```
-
-**Registration Requirements**
-Passwords must meet the following criteria:
-- At least 8 characters long
-- Contain at least one uppercase letter and one digit
-- Can include letters, digits, and special characters
-
-Users must be 13 years old or older (based on the birthDate field).
-
-If the user is younger than 13, the server will respond with 400 Bad Request.
-
-#### User Details
-```
-GET http://localhost:3000/api/users/:id
-Authorization: Bearer <user_id>
-```
-
-#### Login
-```
-POST http://localhost:3000/api/tokens
-Content-Type: application/json
-
-{
-  "emailAddress": "john.doe@gmail.com",
-  "password": "Password123"
-}
+POST /api/users        // User registration
+POST /api/tokens       // User login
+GET /api/users/:id     // User profile
 ```
 
 ### Email Management
 
-#### Get Inbox (Last 50 emails)
 ```
-GET http://localhost:3000/api/mails
-Authorization: Bearer <user_id>
-```
-
-#### Send Email or Save as Draft 
-```
-POST http://localhost:3000/api/mails
-Authorization: Bearer <user_id>
-Content-Type: application/json
-{
-  "to": "recipient@gmail.com",
-  "subject": "Subject Line",
-  "body": "Body content",
-  "send": true      
-}
-```
-
-- If `"send": true` → Validates URLs and sends email
-- If `"send": false` or omitted → Saves email as draft
-
-#### Get Specific Email
-```
-GET http://localhost:3000/api/mails/:id
-Authorization: Bearer <user_id>
-```
-
-#### Update Email
-```
-PATCH http://localhost:3000/api/mails/:id
-Authorization: Bearer <user_id>
-Content-Type: application/json
-
-{
-  "subject": "Updated Subject",
-  "body": "Updated body",
-  "to": "newrecipient@gmail.com",
-  "send": true    
-}
-```
-
-- Only draft emails can be updated.
-- If `"send": true`, the draft is deleted and the email is sent
-
-#### Delete Email
-```
-DELETE http://localhost:3000/api/mails/:id
-Authorization: Bearer <user_id>
-```
-
-- Emails are soft-deleted only for the requesting user.
-
-#### Search Emails
-```
-GET http://localhost:3000/api/mails/search/:query
-Authorization: Bearer <user_id>
+GET /api/mails                    // Get inbox
+POST /api/mails                   // Send/save email
+GET /api/mails/:id               // Get specific email
+PATCH /api/mails/:id             // Update draft
+DELETE /api/mails/:id            // Delete email
+GET /api/mails/search/:query     // Search emails
 ```
 
 ### Label Management
 
-#### Get All Labels
 ```
-GET http://localhost:3000/api/labels
-Authorization: Bearer <user_id>
-```
-
-#### Create Label
-```
-POST http://localhost:3000/api/labels
-Authorization: Bearer <user_id>
-Content-Type: application/json
-
-{
-  "name": "Work"
-}
-```
-
-#### Get Specific Label
-```
-GET http://localhost:3000/api/labels/:id
-Authorization: Bearer <user_id>
-```
-
-#### Update Label
-```
-PATCH http://localhost:3000/api/labels/:id
-Authorization: Bearer <user_id>
-Content-Type: application/json
-
-{
-  "name": "Updated Work"
-}
-```
-
-#### Delete Label
-```
-DELETE http://localhost:3000/api/labels/:id
-Authorization: Bearer <user_id>
-```
-
-### Blacklist Management
-
-#### Add URL to Blacklist
-```
-POST http://localhost:3000/api/blacklist
-Authorization: Bearer <user_id>
-Content-Type: application/json
-
-{
-  "url": "http://malicious-site.com"
-}
-```
-
-#### Remove URL from Blacklist
-```
-DELETE http://localhost:3000/api/blacklist/:id
-Authorization: Bearer <user_id>
+GET /api/labels        // Get all labels
+POST /api/labels       // Create label
+PATCH /api/labels/:id  // Update label
+DELETE /api/labels/:id // Delete label
 ```
 
 ---
 
-## HTTP Status Codes
+## Screenshots 
 
-The API returns appropriate HTTP status codes:
+### Home Page
 
-- **200 OK**: Successful GET requests
-- **201 Created**: Successful POST requests (resource created)
-- **204 No Content**: Successful DELETE/PATCH requests
-- **400 Bad Request**: Malformed request or blacklisted URL detected
-- **404 Not Found**: Resource not found
-- **500 Internal Server Error**: Server error
+![Home Page](screenshots/home.png)
 
----
+### Registration Page
 
-## URL Blacklist Integration
+![Registration Page](screenshots/registration.png)
 
-When sending emails, all URLs in the email body are automatically checked against the blacklist server:
+### Login Page
 
-1. Email content is scanned for URLs
-2. Each URL is validated against the blacklist server
-3. If any URL is blacklisted, the email creation fails with `400 Bad Request`
-4. Only emails with clean URLs are created and delivered
-5. Drafts are not validated until they are sent
+![Login Page](screenshots/login.png)
 
----
+### Main Screen
 
-## Authentication
+![Main Page](screenshots/main.png)
 
-The server uses a simple token-based authentication system:
+### Displaying An Email
 
-1. Users register with email Address, password, and profile details
-2. Login returns a user ID token
-3. Protected routes require the `Authorization: Bearer <user_id>` header
-4. The user ID is validated for each protected request
+![Email View Page](screenshots/message.png)
 
-### Public Endpoints (No Authentication Required):
-- `POST /api/users` - User registration
-- `POST /api/tokens` - User login
+### Email Composition
 
-### Protected Endpoints (Authentication Required):
-All other endpoints require the `Authorization: Bearer <user_id>` header:
+![Email Composition Page](screenshots/compose.png)
 
-**User Management:**
-- `GET /api/users/:id` - Get user details
+### Reply To A Message
 
-**Email Management:**
-- `GET /api/mails` - Get inbox
-- `POST /api/mails` - Send email
-- `GET /api/mails/:id` - Get specific email
-- `PATCH /api/mails/:id` - Update email
-- `DELETE /api/mails/:id` - Delete email
-- `GET /api/mails/search/:query` - Search emails
+![Reply Page](screenshots/reply.png)
 
-**Label Management:**
-- `GET /api/labels` - Get all labels
-- `POST /api/labels` - Create label
-- `GET /api/labels/:id` - Get specific label
-- `PATCH /api/labels/:id` - Update label
-- `DELETE /api/labels/:id` - Delete label
+### Dark Theme
 
-**Blacklist Management:**
-- `POST /api/blacklist` - Add URL to blacklist
-- `DELETE /api/blacklist/:id` - Remove URL from blacklist
-
---- 
-
-## Running Example
-
-### User Registration and Login
-```bash
-# Register a new user
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"fullName":"Alice Smith","emailAddress":"alice@gmail.com","birthDate":"1990-05-10","gender":"female","password":"password123"}'
-
-# Login
-curl -X POST http://localhost:3000/api/tokens \
-  -H "Content-Type: application/json" \
-  -d '{"emailAddress":"alice@gmail.com","password":"password123"}'
-```
-
-### Send and Retrieve Emails
-```bash
-# Send email (replace USER_ID with actual ID from login)
-curl -X POST http://localhost:3000/api/mails \
-  -H "Authorization: Bearer USER_ID" \
-  -H "Content-Type: application/json" \
-  -d '{"to":"bob@gmail.com","subject":"Hello","body":"Hi Bob! Check out https://example.com", "send":true}'
-
-# Get inbox
-curl -X GET http://localhost:3000/api/mails \
-  -H "Authorization: Bearer USER_ID"
-
-# Get a specific email (replace MAIL_ID)
-curl -X GET http://localhost:3000/api/mails/MAIL_ID \
-  -H "Authorization: Bearer USER_ID"
-
-# Update a draft email (replace MAIL_ID)
-curl -X PATCH http://localhost:3000/api/mails/MAIL_ID \
-  -H "Authorization: Bearer USER_ID" \
-  -H "Content-Type: application/json" \
-  -d '{"subject":"Updated Subject","body":"Updated body","to":"newrecipient@gmail.com","send":true}'
-
-# Delete an email (replace MAIL_ID)
-curl -X DELETE http://localhost:3000/api/mails/MAIL_ID \
-  -H "Authorization: Bearer USER_ID"
-
-# Search emails by keyword
-curl -X GET http://localhost:3000/api/mails/search/urgent \
-  -H "Authorization: Bearer USER_ID"
-```
-
-### Create, Update, Delete and Get all labels
-```bash
-# Create label (replace USER_ID with actual ID from login)
-curl -X POST http://localhost:3000/api/labels \
-  -H "Authorization: Bearer USER_ID" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Work"}'
-
-# Get all labels
-curl -X GET http://localhost:3000/api/labels \
-  -H "Authorization: Bearer USER_ID"
-
-# Update a label (replace LABEL_ID)
-curl -X PATCH http://localhost:3000/api/labels/LABEL_ID \
-  -H "Authorization: Bearer USER_ID" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Personal"}'
-
-# Delete a label (replace LABEL_ID)
-curl -X DELETE http://localhost:3000/api/labels/LABEL_ID \
-  -H "Authorization: Bearer USER_ID"
-```
-
-### Manage Blacklist
-```bash
-# Add a URL to the blacklist
-curl -X POST http://localhost:3000/api/blacklist \
-  -H "Authorization: Bearer USER_ID" \
-  -H "Content-Type: application/json" \
-  -d '{"url":"http://malicious-site.com"}'
-
-# Remove a URL from the blacklist (replace BLACKLIST_ID)
-curl -X DELETE http://localhost:3000/api/blacklist/BLACKLIST_ID \
-  -H "Authorization: Bearer USER_ID"
-```
-
-Example server output:
-
-![Server Running](screenshots/server_running1.jpg)
-![Server Running](screenshots/server_running2.jpg)
+![Dark Themed Page](screenshots/dark.png)
 
 ---
 
@@ -373,4 +250,4 @@ Example server output:
 
 This server uses in-memory storage. All data (users, emails, labels, drafts) is lost when the server restarts.
 
-The blacklist server maintains its own persistence for URL validation.
+The blacklist server maintains its own persistence for URL validation and the blacklisted url's are still on the list also after shutting down the server.

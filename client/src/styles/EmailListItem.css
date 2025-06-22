@@ -33,7 +33,7 @@
 }
 
 .email-item.unread {
-  background-color: var(--background-primary);
+  background-color: var(--email-item-unread-background);
   font-weight: bold;
 }
 
@@ -43,7 +43,7 @@
 }
 
 .email-item.read {
-  background-color: var(--background-primary);
+  background-color: var(--email-item-read-background);
 }
 
 .email-item.read .subject-text {
@@ -77,7 +77,7 @@
   width: 20px;
   height: 20px;
   margin: 0 8px 0 0;
-  accent-color: var(--accent-color);
+  accent-color: var(--accent-color); /* var(--email-item-accent-color); */
   cursor: pointer;
 }
 
@@ -182,7 +182,7 @@
 
 .tag {
   background-color: var(--tag-background);
-  color: var(--accent-color);
+  color: var(--accent-color); /* var(--text-primary); */
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 11px;
