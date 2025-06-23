@@ -8,6 +8,9 @@ import android.widget.*;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Calendar;
+import androidx.lifecycle.ViewModelProvider;
+import com.example.android_app.viewmodel.RegistrationViewModel;
+
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -53,11 +56,21 @@ public class RegistrationActivity extends AppCompatActivity {
             startActivityForResult(intent, 100); // requestCode = 100
         });
 
-        //register button
+        RegistrationViewModel viewModel = new ViewModelProvider(this).get(RegistrationViewModel.class);
+        viewModel.status.observe(this, message ->
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        );
+
         btnRegister.setOnClickListener(v -> {
-            // Check if all fields are filled
             if (validateForm()) {
-                Toast.makeText(this, "Validated! (השלב הבא יהיה לשלוח לשרת)", Toast.LENGTH_SHORT).show();
+                viewModel.registerUser(
+                        etFullName.getText().toString().trim(),
+                        etEmail.getText().toString().trim(),
+                        getBirthDate(), // פונקציה שמחזירה תאריך לידה כ־"yyyy-MM-dd"
+                        spinnerGender.getSelectedItem().toString(),
+                        etPassword.getText().toString(),
+                        selectedImageUri
+                );
             }
         });
     }
@@ -124,5 +137,13 @@ public class RegistrationActivity extends AppCompatActivity {
             imagePreview.setImageURI(selectedImageUri);
         }
     }
+
+    private String getBirthDate() {
+        int year = datePicker.getYear();
+        int month = datePicker.getMonth() + 1; // zero-based
+        int day = datePicker.getDayOfMonth();
+        return String.format("%04d-%02d-%02d", year, month, day);
+    }
+
 
 }

@@ -24,8 +24,8 @@
 
         <DatePicker
             android:id="@+id/datePicker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="244dp"
+            android:layout_height="244dp"
             android:calendarViewShown="true" />
 
         <Spinner
