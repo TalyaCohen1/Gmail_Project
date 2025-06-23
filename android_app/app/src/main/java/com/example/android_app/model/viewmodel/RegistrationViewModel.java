@@ -1,4 +1,4 @@
-package com.example.android_app.viewmodel;
+package com.example.android_app.model.viewmodel;
 
 import android.app.Application;
 import android.net.Uri;

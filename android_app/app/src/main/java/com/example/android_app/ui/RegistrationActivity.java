@@ -1,6 +1,5 @@
-package com.example.android_app;
+package com.example.android_app.ui;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,7 +8,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Calendar;
 import androidx.lifecycle.ViewModelProvider;
-import com.example.android_app.viewmodel.RegistrationViewModel;
+
+import com.example.android_app.R;
+import com.example.android_app.model.viewmodel.RegistrationViewModel;
 
 
 public class RegistrationActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package com.example.android_app.network;
+package com.example.android_app.data.network;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

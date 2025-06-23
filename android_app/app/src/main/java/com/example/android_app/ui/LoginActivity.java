@@ -1,12 +1,12 @@
-package com.example.android_app;
+package com.example.android_app.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.example.android_app.R;
-import com.example.android_app.viewmodel.LoginViewModel;
+import com.example.android_app.model.viewmodel.LoginViewModel;
 import com.example.android_app.utils.SharedPrefsManager;
 
 public class LoginActivity extends AppCompatActivity {

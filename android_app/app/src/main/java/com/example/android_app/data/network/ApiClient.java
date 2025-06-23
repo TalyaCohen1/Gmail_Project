@@ -1,4 +1,4 @@
-package com.example.android_app.network;
+package com.example.android_app.data.network;
 import com.example.android_app.BuildConfig;
 
 import retrofit2.Retrofit;

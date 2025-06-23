@@ -1,4 +1,4 @@
-package com.example.android_app.viewmodel;
+package com.example.android_app.model.viewmodel;
 
 
 import androidx.annotation.NonNull;
@@ -7,7 +7,7 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+
 import com.example.android_app.model.LoginRequest;
 import com.example.android_app.model.LoginResponse;
 import com.example.android_app.data.repository.UserRepository;
