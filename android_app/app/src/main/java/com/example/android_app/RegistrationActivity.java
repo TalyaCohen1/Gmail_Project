@@ -112,7 +112,7 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(this, "You must be at least 13 years old", Toast.LENGTH_SHORT).show();
             valid = false;
         }
-        if (!gender.equals("Female") && !gender.equals("Male")) {
+        if (!gender.equals("female") && !gender.equals("male")) {
             Toast.makeText(this, "Please select gender", Toast.LENGTH_SHORT).show();
             valid = false;
         }
