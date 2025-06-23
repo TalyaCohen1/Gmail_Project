@@ -1,6 +1,5 @@
-package com.example.android_app;
+package com.example.android_app.ui;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,7 +8,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Calendar;
 import androidx.lifecycle.ViewModelProvider;
-import com.example.android_app.viewmodel.RegistrationViewModel;
+
+import com.example.android_app.R;
+import com.example.android_app.model.viewmodel.RegistrationViewModel;
 
 
 public class RegistrationActivity extends AppCompatActivity {
@@ -57,9 +58,14 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
         RegistrationViewModel viewModel = new ViewModelProvider(this).get(RegistrationViewModel.class);
-        viewModel.status.observe(this, message ->
-                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-        );
+        viewModel.status.observe(this, message -> {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                if(message.equals("Registration successful")) {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+        });
 
         btnRegister.setOnClickListener(v -> {
             if (validateForm()) {
@@ -112,7 +118,7 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(this, "You must be at least 13 years old", Toast.LENGTH_SHORT).show();
             valid = false;
         }
-        if (!gender.equals("Female") && !gender.equals("Male")) {
+        if (!gender.equals("female") && !gender.equals("male")) {
             Toast.makeText(this, "Please select gender", Toast.LENGTH_SHORT).show();
             valid = false;
         }
