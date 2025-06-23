@@ -69,7 +69,6 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction,
       } else if (action === 'remove') {
         await Promise.all(selectedIds.map(id => removeLabelFromEmail(id, labelId)));
         await Promise.all(selectedIds.map(id => deleteMailFromLabel(labelId, id)));
-        console.log('DEBUG: Removed label from emails (from BAB):', selectedIds, 'Label ID:', labelId);
       }
       await onRefresh();
       onAction({ type: 'labelAction', labelId, action });
@@ -127,7 +126,6 @@ export default function BatchActionsBar({ selectedIds = [], onRefresh, onAction,
                         const newActiveLabelId = activeLabelId === label.id ? null : label.id;
                         setActiveLabelId(newActiveLabelId);
                         setTimeout(() => {
-                          console.log('activeLabelId AFTER update (async check):', newActiveLabelId); 
                         }, 0); 
                     }}
                 >

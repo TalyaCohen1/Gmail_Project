@@ -95,34 +95,3 @@ body {
   }
 }
 
-
-/* These specific App container styles should only be active when ThemeProvider applies the theme */
-/* So they should probably be moved into a themed component like InboxPage.css or a wrapper within Inbox */
-/* For now, let's keep them here but understand they will affect all pages unless very specific */
-
-/* .app-container {
-  display: flex;        
-  height: calc(100vh - 64px); 
-  width: 100vw;         
-  overflow: hidden;     
-}
-
-.sidebar {
-  width: 280px;         
-  height: 100%;        
-  background-color: #fff;  
-  border-right: 1px solid #e0e0e0; 
-  padding: 24px 16px; 
-  box-sizing: border-box;
-  flex-shrink: 0;       
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.main-content {
-  flex-grow: 1;         
-  padding: 24px;
-  overflow-y: auto;
-  background-color: #f5f7fa; 
-} */

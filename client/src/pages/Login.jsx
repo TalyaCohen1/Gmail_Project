@@ -11,7 +11,6 @@ const Login = () => {
 
     const handleLoginSuccess = (token) => {
     localStorage.setItem("token", token); // Save the token to localStorage
-    console.log("Login successful! Token:", token);
     
     //navigate back if we came from a different page
     const from = new URLSearchParams(location.search).get("from") || "/inbox";

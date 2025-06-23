@@ -51,7 +51,6 @@ async function checkUrl(url) {
     const statusLine = (parts[0] || '').trim();
     const flagsLine = (parts[2] || '').trim();
     const flags = flagsLine.split(/\s+/);
-    console.log(`answe: ${flags[0]} ${flags[1]}`);
     return (
         statusLine === '200 Ok' &&
         flags.length >= 2 &&
@@ -112,7 +111,6 @@ async function addUrl_s(url) {
     try {
         const response = await sendCommandString(`POST ${url}`);
         const statusLine = response.trim().split('\n')[0];
-        console.log(`status add: ${statusLine}`);
         return statusLine.startsWith('201');
     } catch (err) {
         console.error(`Error adding URL to blacklist: ${url}`, err);
