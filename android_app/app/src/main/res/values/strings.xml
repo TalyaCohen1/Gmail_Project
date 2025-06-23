@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">android_app</string>
+    <string name="email_subject">Subject</string>
+    <string name="sender_name">sender</string>
+    <string name="time">10:45</string>
+    <string name="sender_image">Sender image</string>
     <string-array name="gender_options">
         <item>Select Gender</item>
         <item>Male</item>
