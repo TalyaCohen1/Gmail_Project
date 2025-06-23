@@ -185,7 +185,6 @@ export async function removeLabelFromEmail(id, labelId) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || `Failed to remove label from email ${id}`);
     }
-    console.log(`DEBUG: Removed label ${labelId} from email ${id}`);
     return;
 }
 

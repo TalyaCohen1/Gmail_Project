@@ -84,6 +84,13 @@ const deleteLabel = (id, userId) => {
     return labels.splice(index, 1)[0];
 };
 
+/** * Adds a mail to a label for a given user.
+ * @param {number} labelId - The ID of the label.
+ * @param {string|number} mailId - The ID of the mail.
+ * @param {string|number} userId - The ID of the user.
+ * @param {string} userEmail - The email of the user (to ensure mail exists for this user).
+ * @returns {Object|null} The updated label or null if not found or mail does not exist.
+ */
 const addMailToLabel = (labelId, mailId, userId, userEmail) => { // Added userEmail
     const label = getLabel(labelId, userId);
     if (!label) return null;
@@ -100,6 +107,12 @@ const addMailToLabel = (labelId, mailId, userId, userEmail) => { // Added userEm
     return label;
 };
 
+/** * Removes a mail from a label for a given user.
+ * @param {number} labelId - The ID of the label.
+ * @param {string|number} mailId - The ID of the mail.
+ * @param {string|number} userId - The ID of the user.
+ * @returns {Object|null} The updated label or null if not found.
+ */
 const removeMailFromLabel = (labelId, mailId, userId) => {
     const label = getLabel(labelId, userId);
     if (!label || !label.mails) return null;
@@ -107,6 +120,12 @@ const removeMailFromLabel = (labelId, mailId, userId) => {
     return label;
 };
 
+/** * Retrieves all mails associated with a specific label for a given user.
+ * @param {number} labelId - The ID of the label.
+ * @param {string|number} userId - The ID of the user.
+ * @param {string} userEmail - The email of the user (to ensure mails belong to this user).
+ * @returns {Array<Object>} An array of mail objects associated with the label.
+ */
 const getMailsByLabel = (labelId, userId, userEmail) => { // Added userEmail
     const label = getLabel(labelId, userId);
     if (!label || !label.mails) return [];

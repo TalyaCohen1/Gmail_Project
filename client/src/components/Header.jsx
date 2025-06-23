@@ -38,8 +38,6 @@ function Header({ toggleSidebar }) {
 
       // Set the search results directly to be displayed
       setDisplayedEmails(data);
-
-      console.log('Search results (full objects from mailService):', data);
     } catch (error) {
       console.error('Search error:', error);
       setDisplayError(`Error searching emails: ${error.message}`); // Set error

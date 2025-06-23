@@ -141,7 +141,6 @@ useEffect(() => {
             }
             setCurrentView(lowerCaseParam);
         } else {
-            console.warn(`DEBUG: Label '${param}' not found in LabelContext for filter type.`);
             filteredMails = [];
         }
           emailsToDisplay = filteredMails;
@@ -149,7 +148,6 @@ useEffect(() => {
       setDisplayedEmails(emailsToDisplay);
     } catch (err) {
         setDisplayError(`Error fetching emails for ${param || 'label'}: ${err.message}`);
-        console.error("DEBUG: Error in handleSystemLabelClick:", err);
         setDisplayedEmails([]);
     } finally {
         setDisplayLoading(false);
