@@ -57,9 +57,14 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
         RegistrationViewModel viewModel = new ViewModelProvider(this).get(RegistrationViewModel.class);
-        viewModel.status.observe(this, message ->
-                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-        );
+        viewModel.status.observe(this, message -> {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                if(message.equals("Registration successful")) {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+        });
 
         btnRegister.setOnClickListener(v -> {
             if (validateForm()) {

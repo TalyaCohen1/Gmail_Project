@@ -5,6 +5,8 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.*;
+import com.example.android_app.model.LoginResponse;
+import com.example.android_app.model.LoginRequest;
 
 public interface ApiService {
 
@@ -18,4 +20,7 @@ public interface ApiService {
             @Part("password") RequestBody password,
             @Part MultipartBody.Part profileImage
     );
+    @POST("api/users/login")
+    Call<LoginResponse> loginUser(@Body LoginRequest request);
+
 }
