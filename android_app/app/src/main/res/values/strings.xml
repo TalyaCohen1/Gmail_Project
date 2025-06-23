@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">android_app</string>
+    <string name="app_name">Smail :)</string>
     <string-array name="gender_options">
         <item>Select Gender</item>
         <item>male</item>
