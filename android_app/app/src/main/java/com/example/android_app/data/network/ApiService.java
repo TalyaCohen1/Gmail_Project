@@ -20,7 +20,7 @@ public interface ApiService {
             @Part("password") RequestBody password,
             @Part MultipartBody.Part profileImage
     );
-    @POST("api/users/login")
+    @POST("api/tokens")
     Call<LoginResponse> loginUser(@Body LoginRequest request);
 
 }

@@ -4,10 +4,13 @@ import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import android.content.Intent;
 
 import com.example.android_app.R;
 import com.example.android_app.model.viewmodel.LoginViewModel;
 import com.example.android_app.utils.SharedPrefsManager;
+import com.example.android_app.ui.activity.MainActivity;
+
 
 public class LoginActivity extends AppCompatActivity {
     private EditText emailField, passwordField;
@@ -39,9 +42,10 @@ public class LoginActivity extends AppCompatActivity {
             SharedPrefsManager.save(this, "profileImage", result.getProfileImage() != null ? result.getProfileImage() : "/uploads/default-profile.png");
             SharedPrefsManager.save(this, "userId", result.getUserId());
 
-//            Intent intent = new Intent(this, InboxActivity.class);
-//            startActivity(intent);
-//            finish();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
         });
 
         viewModel.getErrorMessage().observe(this, error -> {
