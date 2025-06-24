@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/mailController');
-const { authenticateUser , authenticateToken} = require('../middlewares/authMiddleware');
+const authenticateToken = require('../middlewares/authMiddleware');
 
 // List up to 50 most recent mails
 router.get('/', authenticateToken, controller.listMails);
