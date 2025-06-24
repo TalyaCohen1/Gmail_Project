@@ -26,6 +26,4 @@ public interface ApiService {
     @POST("api/users/login")
     Call<LoginResponse> loginUser(@Body LoginRequest request);
 
-    @GET("/api/emails/{id}")
-    Call<Email> getEmailById(@Path("id") String id, @Header("Authorization") String userId);
 }
