@@ -1,4 +1,4 @@
-package com.example.android_app.ui;
+package com.example.android_app.ui.activity;
 
 import android.os.Bundle;
 import android.widget.*;
