@@ -1,4 +1,13 @@
 services:
+  mongodb: # New service for MongoDB
+    image: mongo:latest # Or a specific version like mongo:6.0
+    container_name: smail_mongo_db # Renamed for clarity and to reflect 'smail'
+    ports:
+      - "27017:27017" # Expose MongoDB port to host
+    volumes:
+      - mongo_data:/data/db # Persistent data volume
+    restart: unless-stopped # Always restart unless explicitly stopped
+
   blacklist_server:
     build:
       context: ./BlackList_server   # matches your folder exactly (case-sensitive!)
@@ -19,6 +28,9 @@ services:
       - ./Web_server/uploads:/app/uploads           # maps the local Web_server folder to /app in the container
     depends_on:
       - blacklist_server           # must match the service name above exactly (lowercase)
+      - mongodb           # must match the service name above exactly (lowercase)
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/smail-mongo # Connection string to Mongo
     restart: unless-stopped
 
   react_server:
@@ -32,3 +44,6 @@ services:
     depends_on:
       - web_server
     restart: unless-stopped
+
+volumes:
+  mongo_data:

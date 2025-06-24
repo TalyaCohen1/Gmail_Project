@@ -1,28 +1,30 @@
 const userModel = require('../models/userModel');
-const { isValidGmail, isValidDateFormat,isPastDate, isAgeOver13, isValidGender, isValidPassword } = require('../models/validator');
+const { isValidGmail, isValidDateFormat, isPastDate, isAgeOver13, isValidGender, isValidPassword } = require('../models/validator');
 const labelModel = require('../models/labelModel');
+
 /**
  * register a new user
  * POST /api/users
  * @param {*} req - The request object containing user data
- * @param {*} res  - The response object to send back the result 
+ * @param {*} res  - The response object to send back the result
  */
-const register = (req, res) => {
-  const { fullName, emailAddress, birthDate, gender, password} = req.body;
+const register = async (req, res) => {
+  const { fullName, emailAddress, birthDate, gender, password } = req.body;
+  // profileImage is set by multer in req.file, or defaulted here.
+  // Mongoose schema default will also handle this if profileImage is not explicitly set in createUser.
   const profileImage = req.file
     ? `/uploads/${req.file.filename}`
-    : '/uploads/default-profile.png';
+    : '/uploads/default-profile.png'; // This path is correct for DB storage and return
 
-  // Validate input
-   if (!fullName || !password|| !emailAddress || !birthDate || !gender) {
+  if (!fullName || !password || !emailAddress || !birthDate || !gender) {
     return res.status(400).json({ error: "Missing required fields" });
   }
-   if (!isValidGmail(emailAddress)) {
+  if (!isValidGmail(emailAddress)) {
     return res.status(400).json({ error: "Email must be a valid @gmail.com address" });
   }
 
   if (!isValidDateFormat(birthDate)) {
-    return res.status(400).json({ error: "Birth date must be in the format YYYY-MM-DD" });
+    return res.status(400).json({ error: "Birth date must be in the formatYYYY-MM-DD" });
   }
   if (!isPastDate(birthDate)) {
     return res.status(400).json({ error: "Birth date must be in the past" });
@@ -35,21 +37,31 @@ const register = (req, res) => {
   }
 
   if (!isValidGender(gender)) {
-    return res.status(400).json({ error: "Gender must be either 'male' or 'female" });
+    return res.status(400).json({ error: "Gender must be either 'male' or 'female'" });
   }
-  // Check if emailAddress already exists
-  if (userModel.findByEmail(emailAddress))
-    return res.status(400).json({ error: 'This email adress already exists' });
 
-  const id = Date.now().toString(); // Generate a unique ID based on the current timestamp
-  const newUser = userModel.createUser(fullName, id, emailAddress, birthDate,gender, password , profileImage);
-  const labels = labelModel.createDefaultLabels(id); // Create default labels for the new user
-  newUser.labels = labels.map(label => label.id); // Store only label IDs in the user object
+  try {
+    const existingUser = await userModel.findByEmail(emailAddress);
+    if (existingUser) {
+      return res.status(400).json({ error: 'This email address already exists' });
+    }
 
-  //response with the new user id 
+    const newUser = await userModel.createUser(fullName, emailAddress, birthDate, gender, password, profileImage);
+
+    await labelModel.createDefaultLabels(newUser._id);
+
     res.status(201)
-      .location(`/api/users/${id}`)
-      .json({ id, fullName, profileImage });
+      .location(`/api/users/${newUser._id}`)
+      .json({
+        _id: newUser._id,
+        id: newUser._id,
+        fullName: newUser.fullName,
+        profileImage: newUser.profileImage || '/uploads/default-profile.png' // Ensure fallback here too
+      });
+  } catch (error) {
+    console.error("Error during user registration:", error);
+    res.status(500).json({ error: "Internal server error during registration" });
+  }
 };
 
 /**
@@ -58,15 +70,28 @@ const register = (req, res) => {
  * @param {*} req - The request object containing email and password
  * @param {*} res - The response object to send back the result
  */
-const login = (req, res) => {
+const login = async (req, res) => {
   const { emailAddress, password } = req.body;
 
-  const user = userModel.findByEmail(emailAddress);
+  try {
+    const user = await userModel.findByEmail(emailAddress);
 
-  if (!user || user.password !== password)
-    return res.status(400).json({ error: 'wrong password' });
+    if (!user || user.password !== password) {
+      return res.status(400).json({ error: 'Wrong email or password!' });
+    }
 
-  res.status(200).json({ token: user.id , fullName: user.fullName, profileImage: user.profileImage || '/uploads/default-profile.png' });
+    res.status(200).json({
+      token: user._id,
+      _id: user._id,
+      id: user._id,
+      fullName: user.fullName,
+      emailAddress: user.emailAddress,
+      profileImage: user.profileImage || '/uploads/default-profile.png' // IMPORTANT: Ensure fallback here
+    });
+  } catch (error) {
+    console.error("Error during user login:", error);
+    res.status(500).json({ error: "Internal server error during login" });
+  }
 };
 
 /**
@@ -75,17 +100,26 @@ const login = (req, res) => {
  * @param {*} req - request object
  * @param {*} res - response object
  */
-const getUserById = (req, res) => {
-  const user = userModel.findById(req.params.id);
-  if (!user) return res.status(404).json({ error: 'User not found' });
+const getUserById = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-  res.status(200).json({
-    id: user.id,
-    fullName: user.fullName,
-    emailAddress: user.emailAddress,
-    birthDate: user.birthDate,
-    gender: user.gender
-  });
+    res.status(200).json({
+      _id: user._id,
+      id: user._id,
+      fullName: user.fullName,
+      emailAddress: user.emailAddress,
+      birthDate: user.birthDate,
+      gender: user.gender,
+      profileImage: user.profileImage || '/uploads/default-profile.png' // IMPORTANT: Ensure fallback here
+    });
+  } catch (error) {
+    console.error("Error getting user by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 /**
@@ -94,36 +128,69 @@ const getUserById = (req, res) => {
  * @param {*} req - request object
  * @param {*} res - response object
  */
-const getAllUsers = (req, res) => {
-  const users = userModel.getAllUsers();
-  res.status(200).json(users);
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await userModel.getAllUsers();
+    const formattedUsers = users.map(user => ({
+      _id: user._id,
+      id: user._id,
+      fullName: user.fullName,
+      emailAddress: user.emailAddress,
+      profileImage: user.profileImage || '/uploads/default-profile.png' // IMPORTANT: Ensure fallback here
+    }));
+    res.status(200).json(formattedUsers);
+  } catch (error) {
+    console.error("Error getting all users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
-// Update user information
-const updateUser = (req, res) => {
+/**
+ * Update user information
+ * PATCH /api/users/:id
+ * @param {*} req - request object
+ * @param {*} res - response object
+ */
+const updateUser = async (req, res) => {
   const userId = req.params.id;
   const { fullName } = req.body;
+  let updates = {};
 
-  const users = userModel.getAllUsers();
-  const userToUpdate = userModel.findById(userId);
-  if (!userToUpdate) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-  // Update the user information
   if (fullName) {
-    userToUpdate.fullName = fullName;
+    updates.fullName = fullName;
   }
   if (req.file) {
-    userToUpdate.profileImage = `/uploads/${req.file.filename}`;
+    updates.profileImage = `/uploads/${req.file.filename}`;
+  } else if ('profileImage' in req.body && req.body.profileImage === null) {
+      // Allow explicit setting to null/empty string to trigger default fallback
+      updates.profileImage = null; // Or an empty string
   }
-    return res.json({
-    message: 'User updated successfully',
-    fullName: userToUpdate.fullName,
-    profileImage: userToUpdate.profileImage,
-  });
-}
 
-// Export the functions to be used in routes
+
+  if (Object.keys(updates).length === 0) {
+    return res.status(400).json({ error: 'No valid fields provided for update.' });
+  }
+
+  try {
+    const updatedUser = await userModel.updateUser(userId, updates);
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found or failed to update' });
+    }
+
+    return res.json({
+      message: 'User updated successfully',
+      _id: updatedUser._id,
+      id: updatedUser._id,
+      fullName: updatedUser.fullName,
+      emailAddress: updatedUser.emailAddress,
+      profileImage: updatedUser.profileImage || '/uploads/default-profile.png', // IMPORTANT: Ensure fallback here
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal server error during update" });
+  }
+};
+
 module.exports = {
   register,
   login,

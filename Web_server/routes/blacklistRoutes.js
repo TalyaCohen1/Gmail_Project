@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/blacklistController');
-const { authenticateUser, authenticateToken } = require('../middlewares/authMiddleware');
+const authenticateToken = require('../middlewares/authMiddleware');
 
 /**
  * Route to add a URL to the blacklist.
