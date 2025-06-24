@@ -54,6 +54,9 @@ function search(email, query) {
     );
 }
 
+/** * Create a new draft mail record.
+ * @param {string} from    the sender’s email
+ */
 function createDraft({ from, to, subject, body, isImportant = false, isStarred = false, isSpam = false, labels = []}) {
     const timestamp = Date.now();
     const date = new Date().toISOString()
@@ -113,6 +116,9 @@ function updateDraft(email, id, fields) {
     }
 }
 
+/** * Delete a draft mail by ID.
+ * @param {number} id
+ */
 function deleteFromDrafts(id) {
     const idx = draftMails.findIndex(d => d.id === id);
     if (idx === -1) return false;
@@ -120,6 +126,9 @@ function deleteFromDrafts(id) {
     return true;
 }
 
+/** * Get all drafts for a user.
+ * @param {string} email
+ */
 function getDrafts(email) {
     return draftMails.filter(d => d.from === email && d.send === false && !d.deleted); // Filter by send: false
 }
@@ -215,31 +224,53 @@ function removeLabel(email, id, labelId) {
     return false;
 }
 
+/** * Get all mails in the inbox for a user.
+ * @param {string} email
+ */
 function getInbox(email) {
     return mails.filter(m => m.to === email && !m.deletedForReceiver && !m.isSpam);
 }
 
+/** * Get all mails sent by a user.
+ * @param {string} email
+ */
 function getSent(email) {
     return mails.filter(m => m.from === email && !m.deletedForSender);
 }
 
+/** * Get all spam mails for a user.
+ * @param {string} email
+ * @returns {Array} Array of spam mails
+ */     
 function getSpam(email) {
     return mails.filter(m => m.to === email && m.isSpam && !m.deletedForReceiver);
 }
 
+/** * Mark a mail as spam.
+ * @param {object} mail - The mail object to mark as spam.
+ * @param {number} id - The ID of the mail.
+ */
 function markAsSpam(mail, id) {
     if (!mail) return null;
     mail.isSpam = true;
     return mail;
 }
 
+/** * Unmark a mail as spam.
+ *  @param {object} mail - The mail object to unmark as spam.
+ *  @param {number} id - The ID of the mail.
+ *  @returns {object|null} The updated mail object if successful, null otherwise.
+ */
 function unmarkAsSpam(mail, id) {
     if (!mail) return null;
     mail.isSpam = false;
     return mail;
 }
 
-
+/** * Get all deleted mails for a user, including drafts.
+ * @param {string} email
+ * @returns {Array} Array of deleted mails
+ */
 function getDeletedMails(email) {
     const filteredMails = mails.filter(m => (m.from === email && m.deletedForSender) || (m.to === email && m.deletedForReceiver));
     const filteredDrafts = draftMails.filter(d => d.from === email && d.deleted);

@@ -1,4 +1,4 @@
-package com.example.android_app.viewmodel;
+package com.example.android_app.model.viewmodel;
 
 import android.app.Application;
 import android.net.Uri;
@@ -14,16 +14,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+//class that handles the registration process- connect between view and repository
 public class RegistrationViewModel extends AndroidViewModel {
-    private final UserRepository repository;
+    private final UserRepository repository; //interface for interacting with the Network layer
 
-    public MutableLiveData<String> status = new MutableLiveData<>();
+    public MutableLiveData<String> status = new MutableLiveData<>(); //live data to notify the view about the registration status
 
     public RegistrationViewModel(@NonNull Application application) {
         super(application);
         repository = new UserRepository(application);
     }
 
+    //call registerUser method from repository
     public void registerUser(String fullName, String email, String birthDate, String gender, String password, Uri imageUri) {
         repository.registerUser(fullName, email, birthDate, gender, password, imageUri)
                 .enqueue(new Callback<ResponseBody>() {
