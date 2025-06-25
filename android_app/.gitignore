@@ -18,3 +18,5 @@ misc.xml
 deployment-target-metadata.json
 .idea/misc.xml
 /.idea
+.idea
+/.idea/deploymentTargetSelector.xml
