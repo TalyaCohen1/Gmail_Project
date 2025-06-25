@@ -9,7 +9,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.android_app.R;
-import com.example.android_app.ui.fragments.CreateMailFragment;
+import com.example.android_app.ui.fragments.EditProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new CreateMailFragment())
+                    .replace(R.id.fragment_container, new EditProfileFragment())
                     .commit();
         }
     }

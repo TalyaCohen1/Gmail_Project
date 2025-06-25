@@ -35,4 +35,13 @@ public interface ApiService {
             @Header("Authorization") String token,
             @Body EmailRequest email
     );
+
+    @Multipart
+    @PATCH("api/users/{id}")
+    Call<LoginResponse> updateUser(
+            @Path("id") String userId,
+            @Part("fullName") RequestBody fullName,
+            @Part MultipartBody.Part profileImage
+    );
+
 }
