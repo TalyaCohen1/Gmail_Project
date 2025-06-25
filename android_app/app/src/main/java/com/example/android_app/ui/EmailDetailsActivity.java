@@ -8,17 +8,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import com.example.android_app.data.network.ApiClient;
-import com.example.android_app.data.network.ApiService;
 import com.example.android_app.model.Email;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.android_app.R;
-import com.example.android_app.model.Email;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 public class EmailDetailsActivity extends AppCompatActivity {
@@ -45,7 +40,7 @@ public class EmailDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<Email> call, Response<Email> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Email email = response.body();
-                    senderView.setText("From: " + email.from);
+                    senderView.setText("From: " + email.Sender);
                     subjectView.setText("Subject: " + email.subject);
                     bodyView.setText(email.body);
                 } else {

@@ -18,7 +18,7 @@ public class MailService {
 
     public MailService() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:3000/") // אמולאטור -> לוקאלי
+                .baseUrl("http://10.0.2.2:3000/") // local emulator address
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

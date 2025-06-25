@@ -17,6 +17,9 @@
         android:theme="@style/Theme.Android_app"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activity.InboxActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.EmailDetailsActivity"
             android:exported="false"
             android:label="@string/title_activity_email_details"
@@ -36,21 +39,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.LoginActivity"
+        <activity
+            android:name=".ui.activity.LoginActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.MainActivity"
+        <activity
+            android:name=".ui.activity.MainActivity"
             android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN"/>
-            <category android:name="android.intent.category.LAUNCHER"/>
-        </intent-filter>
-    </activity>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -1,11 +1,9 @@
 package com.example.android_app.ui;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,51 +14,61 @@ import com.example.android_app.model.Email;
 import java.util.List;
 
 public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHolder> {
-    private final List<Email> emailList;
 
-    public EmailAdapter(List<Email> emails) {
-        this.emailList = emails;
+    private List<Email> emails;
+    private OnEmailClickListener listener;
+
+    // 1. הגדרת ה-interface לטיפול בלחיצה
+    public interface OnEmailClickListener {
+        void onEmailClick(Email email);
     }
 
-    public static class EmailViewHolder extends RecyclerView.ViewHolder {
-        TextView textSender, textSubject, textTime, textAvatar;
-
-        public EmailViewHolder(@NonNull View itemView) {
-            super(itemView);
-            textSender = itemView.findViewById(R.id.textSender);
-            textSubject = itemView.findViewById(R.id.textSubject);
-            textTime = itemView.findViewById(R.id.textTime);
-            textAvatar = itemView.findViewById(R.id.textAvatar);
-        }
+    // 2. קונסטרוקטור שמקבל את המאזין
+    public EmailAdapter(List<Email> emails, OnEmailClickListener listener) {
+        this.emails = emails;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public EmailViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_email, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_email, parent, false);
         return new EmailViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull EmailViewHolder holder, int position) {
-        Email email = emailList.get(position);
-
-        holder.textSender.setText(email.from);
-        holder.textSubject.setText(email.subject);
-        holder.textTime.setText("10:45"); // את יכולה להמיר timestamp לזמן אמיתי
-        holder.textAvatar.setText(email.from.substring(0, 1).toUpperCase());
-
-        // כשהמשתמש לוחץ על פריט ברשימה
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), EmailDetailsActivity.class);
-            intent.putExtra("email_id", email.id);
-            v.getContext().startActivity(intent);
-        });
+        Email currentEmail = emails.get(position);
+        holder.bind(currentEmail, listener); // מעבירים את המייל והמאזין
     }
 
     @Override
     public int getItemCount() {
-        return emailList.size();
+        return emails == null ? 0 : emails.size();
+    }
+
+    public void updateEmails(List<Email> newEmails) {
+        this.emails = newEmails;
+        notifyDataSetChanged();
+    }
+
+    // ViewHolder הוא קלאס פנימי סטטי
+    public static class EmailViewHolder extends RecyclerView.ViewHolder {
+        private TextView senderTextView;
+        // ... שאר ה-TextViews
+
+        public EmailViewHolder(@NonNull View itemView) {
+            super(itemView);
+            senderTextView = itemView.findViewById(R.id.textViewSender);
+            // ...
+        }
+
+        // 3. פונקציית ה-bind מקבלת את המאזין
+        public void bind(final Email email, final OnEmailClickListener listener) {
+            senderTextView.setText(email.getSender());
+            // ...
+            // 4. הגדרת הלחיצה על הפריט כולו
+            itemView.setOnClickListener(v -> listener.onEmailClick(email));
+        }
     }
 }
