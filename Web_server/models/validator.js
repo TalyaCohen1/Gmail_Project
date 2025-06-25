@@ -73,12 +73,12 @@ function isValidPassword(password) {
 }
 
 /**
- * Checks if the given email is a string and ends with "@gmail.com".
+ * Checks if the given email is a string and ends with "@smail.com".
  * @param {string} email - The email string to validate.
  * @returns {boolean} True if the email is a valid Gmail address.
  */
 function isValidGmail(email) {
-  return typeof email === 'string' && email.endsWith('@gmail.com');
+  return typeof email === 'string' && email.endsWith('@smail.com');
 }
 module.exports = {
   isValidGmail,

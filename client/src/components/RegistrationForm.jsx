@@ -41,7 +41,7 @@ const RegistrationForm = () => {
         const { fullName, emailAddress, birthDate, gender, password, confirmPassword } = formData;
 
         if (!fullName.trim()) newErrors.fullName = 'Full name is required';
-        if (!emailAddress.endsWith('@gmail.com')) newErrors.emailAddress = 'Email must be a @gmail.com address';
+        if (!emailAddress.endsWith('@smail.com')) newErrors.emailAddress = 'Email must be a @smail.com address';
         if (!birthDate) newErrors.birthDate = 'Birth date is required';
         else {
         const birth = new Date(birthDate);
@@ -146,7 +146,7 @@ const RegistrationForm = () => {
 
     <div className="form-group">
       <label htmlFor="emailAddress">Email Address</label>
-      <input type="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} className={errors.emailAddress ? 'error' : ''} placeholder="your.name@gmail.com" autoComplete="email" />
+      <input type="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} className={errors.emailAddress ? 'error' : ''} placeholder="your.name@smail.com" autoComplete="email" />
         {errors.emailAddress && <div className="error-message">{errors.emailAddress} </div>}
         </div>
 
