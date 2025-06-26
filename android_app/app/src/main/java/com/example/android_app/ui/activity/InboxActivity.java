@@ -18,6 +18,7 @@ import com.example.android_app.model.Email;
 import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
+import com.example.android_app.ui.fragments.CreateMailFragment;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,17 @@ public class InboxActivity extends AppCompatActivity {
         // התחלת תהליך קבלת המיילים
         Log.d("MyDebug", "Activity onCreate: Calling viewModel.fetchInbox()");
         viewModel.fetchEmails();
+
+        findViewById(R.id.fabCompose).setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentCreateMailContainer, new CreateMailFragment())
+                    .addToBackStack("compose")
+                    .commit();
+
+            // מציג את ה-FrameLayout
+            findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.VISIBLE);
+        });
+
     }
 
     private void setupRecyclerView() {
