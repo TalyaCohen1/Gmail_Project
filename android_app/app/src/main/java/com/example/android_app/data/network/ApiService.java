@@ -1,33 +1,24 @@
 package com.example.android_app.data.network;
 
+import com.example.android_app.model.Email;
+import com.example.android_app.model.EmailRequest;
+import com.example.android_app.model.LoginRequest;
+import com.example.android_app.model.LoginResponse;
+
+import java.util.List;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.*;
-
 import retrofit2.http.Body;
-import retrofit2.http.Header;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Multipart;
-import retrofit2.http.PATCH; // For partial updates
+import retrofit2.http.POST;
 import retrofit2.http.Part;
-import retrofit2.http.HTTP; // For DELETE with a body
+import retrofit2.http.Path;
 
-
-import com.example.android_app.model.EmailRequest;
-import com.example.android_app.model.LoginResponse;
-import com.example.android_app.model.LoginRequest;
-import com.example.android_app.model.Label;
-import com.example.android_app.model.Mail;
-import com.example.android_app.model.LabelCreateRequest;
-import com.example.android_app.model.LabelUpdateRequest;
-import com.example.android_app.model.MailLabelRequest;
-
-import java.util.List;
 
 public interface ApiService {
 
@@ -49,6 +40,7 @@ public interface ApiService {
             @Header("Authorization") String token,
             @Body EmailRequest email
     );
+
 
     // --- Label Service Endpoints ---
 
@@ -90,6 +82,27 @@ public interface ApiService {
             @Header("Authorization") String token,
             @Path("labelId") String labelId,
             @Body MailLabelRequest request
+    );
+
+
+    @Multipart
+    @PATCH("api/users/{id}")
+    Call<LoginResponse> updateUser(
+            @Path("id") String userId,
+            @Part("fullName") RequestBody fullName,
+            @Part MultipartBody.Part profileImage
+    );
+
+
+    @GET("api/mails")
+    Call<List<Email>> getInboxEmails(
+            @Header("Authorization") String token
+    );
+
+    @GET("api/mails/{id}")
+    Call<Email> getEmailDetails(
+            @Header("Authorization") String token,
+            @Path("id") String emailId
     );
 
 }

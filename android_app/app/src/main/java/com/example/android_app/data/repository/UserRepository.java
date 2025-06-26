@@ -10,6 +10,7 @@ import com.example.android_app.data.network.ApiClient;
 import com.example.android_app.data.network.ApiService;
 import com.example.android_app.model.LoginResponse;
 import com.example.android_app.model.LoginRequest;
+import com.example.android_app.utils.SharedPrefsManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,8 +35,6 @@ import okhttp3.*;
 public class UserRepository {
     private final ApiService apiService; //retrofit interface
     private final Context context; //context to casting api
-    private static final String BASE_URL = BuildConfig.SERVER_URL;
-    private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
 
     public UserRepository(Context context) {
@@ -129,6 +128,42 @@ public class UserRepository {
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 error.postValue("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+
+    public void updateUserProfile(String userId, String newName, Uri imageUri,
+                                  MutableLiveData<String> successMsg, MutableLiveData<String> errorMsg) {
+
+        RequestBody nameBody = RequestBody.create(MediaType.parse("text/plain"), newName);
+
+        MultipartBody.Part imagePart = null;
+        if (imageUri != null) {
+            File imageFile = getFileFromUri(imageUri);
+            if (imageFile != null) {
+                RequestBody imageRequest = RequestBody.create(MediaType.parse("image/*"), imageFile);
+                imagePart = MultipartBody.Part.createFormData("profileImage", imageFile.getName(), imageRequest);
+            }
+        }
+
+        Call<LoginResponse> call = apiService.updateUser(userId, nameBody, imagePart);
+
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse body = response.body();
+                    SharedPrefsManager.saveProfile(context, body.getFullName(), body.getProfileImage());
+                    successMsg.postValue("Profile updated successfully");
+                } else {
+                    errorMsg.postValue("Failed to update profile");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                errorMsg.postValue("Network error: " + t.getMessage());
             }
         });
     }
