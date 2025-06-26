@@ -1,0 +1,127 @@
+package com.example.android_app.ui.fragments;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.*;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.android_app.R;
+import com.example.android_app.model.viewmodel.EditProfileViewModel;
+import com.example.android_app.utils.ViewModelFactory;
+import com.example.android_app.utils.UserManager;
+
+public class EditProfileFragment extends Fragment {
+
+    private static final int PICK_IMAGE_REQUEST = 101;
+
+    private EditText editTextName;
+    private ImageView imageProfile;
+    private Button buttonSave;
+    private TextView textGreeting, textError, textSuccess;
+    private Uri selectedImageUri;
+    private EditProfileViewModel viewModel;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+
+        //get all the ui components
+        editTextName = view.findViewById(R.id.editTextName);
+        imageProfile = view.findViewById(R.id.imageProfile);
+        buttonSave = view.findViewById(R.id.buttonSave);
+        textGreeting = view.findViewById(R.id.textGreeting);
+        textError = view.findViewById(R.id.textError);
+        textSuccess = view.findViewById(R.id.textSuccess);
+
+        // create viewmodel instance
+        ViewModelFactory factory = new ViewModelFactory(requireActivity().getApplication());
+        viewModel = new ViewModelProvider(this, factory).get(EditProfileViewModel.class);
+        String fullName = UserManager.getFullName(requireContext());
+        String profileImageUrl = UserManager.getProfileImage(requireContext());
+        editTextName.setText(fullName);
+        textGreeting.setText("Hello, " + fullName);
+
+        //show userProfile image if exist
+        if (profileImageUrl != null) {
+            loadImageFromUrl(profileImageUrl, imageProfile);
+        }
+
+        // open galery to choose profile image
+        imageProfile.setOnClickListener(v -> selectImageFromGallery());
+
+        // save button click to update profile
+        buttonSave.setOnClickListener(v -> {
+            String newName = editTextName.getText().toString().trim();
+            if (newName.isEmpty()) {
+                textError.setText("Name cannot be empty");
+                textError.setVisibility(View.VISIBLE);
+                textSuccess.setVisibility(View.GONE);
+                return;
+            }
+            viewModel.updateProfile(newName, selectedImageUri);
+        });
+
+        //see error message if failed
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                textError.setText(error);
+                textError.setVisibility(View.VISIBLE);
+                textSuccess.setVisibility(View.GONE);
+            }
+        });
+
+        //see success message if success
+        viewModel.getSuccessMessage().observe(getViewLifecycleOwner(), success -> {
+            if (success != null) {
+                textSuccess.setText(success);
+                textSuccess.setVisibility(View.VISIBLE);
+                textError.setVisibility(View.GONE);
+            }
+        });
+
+        return view;
+    }
+
+    //select image from gallery to update profile
+    private void selectImageFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    //get image from gallery
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            selectedImageUri = data.getData();
+            imageProfile.setImageURI(selectedImageUri);
+        }
+    }
+    //load image from url
+    private void loadImageFromUrl(String urlString, ImageView imageView) {
+        new Thread(() -> {
+            try {
+                java.net.URL url = new java.net.URL(urlString);
+                java.io.InputStream input = url.openStream();
+                android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(input);
+                requireActivity().runOnUiThread(() -> imageView.setImageBitmap(bitmap));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+}

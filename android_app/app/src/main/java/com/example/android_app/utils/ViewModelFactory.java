@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.android_app.model.viewmodel.CreateMailViewModel;
+import com.example.android_app.model.viewmodel.EditProfileViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
     private final Application application;
@@ -18,8 +18,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(CreateMailViewModel.class)) {
-            return (T) new CreateMailViewModel(application);
+        if (modelClass.isAssignableFrom(EditProfileViewModel.class)) {
+            return (T) new EditProfileViewModel(application);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
