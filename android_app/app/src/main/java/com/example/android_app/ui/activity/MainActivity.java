@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.android_app.R;
 import com.example.android_app.ui.fragments.CreateMailFragment;
 
+
 public class MainActivity extends AppCompatActivity {
 
     @Override

@@ -49,6 +49,6 @@ public interface ApiService {
     @GET("api/mails/{id}")
     Call<Email> getEmailDetails(
             @Header("Authorization") String token,
-            @Path("id") int emailId
+            @Path("id") String emailId
     );
 }

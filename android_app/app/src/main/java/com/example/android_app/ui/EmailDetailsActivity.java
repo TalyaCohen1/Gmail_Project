@@ -28,12 +28,12 @@ public class EmailDetailsActivity extends AppCompatActivity {
 
         // 1. קבלי את ה-ID מה-Intent והמירי אותו ל-int
         // השתמשי בערך ברירת מחדל כמו -1 כדי לטפל במקרה שה-ID לא נשלח
-        int emailId = getIntent().getIntExtra("email_id", -1);
+        String emailId = getIntent().getStringExtra("email_id");
 
         // אם אין ID, אין מה להמשיך
-        if (emailId == -1) {
+        if (emailId == null || emailId.isEmpty()) {
             Toast.makeText(this, "Error: Email ID not provided", Toast.LENGTH_LONG).show();
-            finish(); // סגירת ה-Activity
+            finish();
             return;
         }
 
@@ -65,7 +65,7 @@ public class EmailDetailsActivity extends AppCompatActivity {
     }
 
     private void updateUi(Email email) {
-        senderView.setText("From: " + email.getSender());
+        senderView.setText("From: " + email.getFrom());
         subjectView.setText("Subject: " + email.getSubject());
         bodyView.setText(email.getBody());
     }

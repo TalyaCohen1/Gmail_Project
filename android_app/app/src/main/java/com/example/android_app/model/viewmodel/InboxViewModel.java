@@ -1,6 +1,7 @@
 package com.example.android_app.model.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -38,6 +39,8 @@ public class InboxViewModel extends AndroidViewModel {
 
     // method that fetch the data
     public void fetchEmails() {
+        Log.d("MyDebug", "ViewModel fetchInbox: Calling repository.getInbox()");
+        isLoading.setValue(true);
         mailRepository.getInbox(new MailRepository.InboxCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
@@ -47,6 +50,7 @@ public class InboxViewModel extends AndroidViewModel {
 
             @Override
             public void onFailure(String errorMessage) {
+                Log.e("InboxViewModel", "Failed to fetch inbox: " + errorMessage);
                 error.postValue(errorMessage);
                 isLoading.postValue(false);
             }

@@ -4,30 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InboxActivity"
+    tools:context=".ui.activity.InboxActivity"
     tools:ignore="ExtraText">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewEmails"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_email" />  <!-- מאפשר לראות תצוגה מקדימה של פריט בעיצוב -->
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- ה-RecyclerView המקורי נמצא עכשיו בפנים -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewEmails"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_email" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- ה-ProgressBar נשאר כמו שהיה, מחוץ ל-SwipeRefreshLayout -->
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/loadingProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"
-        tools:ignore="MissingConstraints" /> <!-- מתחיל כבלתי נראה -->
-
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    tools:visibility="visible" /> <!-- מאפשר לראות אותו בתצוגה המקדימה -->
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,7 +30,7 @@ public class EmailDetailsViewModel extends AndroidViewModel {
     }
 
     // Activate the API call
-    public void fetchEmailById(int emailId) {
+    public void fetchEmailById(String emailId) {
         mailRepository.getEmailById(emailId, new MailRepository.EmailDetailsCallback() {
             @Override
             public void onSuccess(Email email) {

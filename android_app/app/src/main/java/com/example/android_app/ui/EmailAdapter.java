@@ -78,7 +78,7 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         }
 
         void bind(Email email) {
-            senderTextView.setText(email.getSender());
+            senderTextView.setText(email.getFrom());
             subjectTextView.setText(email.getSubject());
             // עדכני שדות נוספים אם יש
         }

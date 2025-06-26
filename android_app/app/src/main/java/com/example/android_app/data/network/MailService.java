@@ -1,5 +1,7 @@
 package com.example.android_app.data.network;
 
+import android.util.Log;
+
 import com.example.android_app.BuildConfig;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
@@ -7,6 +9,8 @@ import com.example.android_app.utils.SendCallback;
 
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,8 +24,17 @@ public class MailService {
     private Retrofit retrofit;
 
     public MailService() {
+        // 1. יוצרים את ה-interceptor שידפיס את הלוגים
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        // 2. קובעים לו להדפיס את כל גוף הבקשה והתשובה
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        // 3. יוצרים OkHttpClient ומוסיפים לו את ה-interceptor שלנו
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:3000/") // local emulator address
+                .baseUrl("http://192.168.68.50:3000/") // local emulator address
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -53,6 +66,7 @@ public void sendEmail(String to, String subject, String body, String token, Send
     }
 
     public void getInbox(String token, InboxCallback callback) {
+        Log.d("MyDebug", "Service getInbox: Calling api.getInboxEmails()");
         api.getInboxEmails("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
             public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
@@ -71,7 +85,7 @@ public void sendEmail(String to, String subject, String body, String token, Send
     }
 
     // 2. מתודה לקבלת מייל ספציפי לפי ID
-    public void getEmailById(int emailId, String token, EmailDetailsCallback callback) {
+    public void getEmailById(String emailId, String token, EmailDetailsCallback callback) {
         api.getEmailDetails("Bearer " + token, emailId).enqueue(new Callback<Email>() {
             @Override
             public void onResponse(Call<Email> call, Response<Email> response) {
