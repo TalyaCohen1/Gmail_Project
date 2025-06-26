@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.EmailDetailsActivity">
+
+    <!-- TextView להצגת השולח -->
+    <!-- שימי לב שה-id תואם למה שחיפשנו בקוד ה-Java -->
+    <TextView
+        android:id="@+id/emailSender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="From: shani.levi@example.com" />
+
+    <!-- TextView להצגת הנושא -->
+    <TextView
+        android:id="@+id/emailSubject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        tools:text="Important Project Update" />
+
+    <!-- קו מפריד ויזואלי -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/darker_gray" />
+
+    <!-- TextView להצגת גוף המייל -->
+    <TextView
+        android:id="@+id/emailBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:lineSpacingExtra="4dp"
+        tools:text="Hi team,\n\nThis is the full body of the email. We need to make sure that it wraps correctly and displays multiple lines if needed.\n\nThanks,\nShani" />
+
+</LinearLayout>

@@ -1,15 +1,18 @@
 package com.example.android_app.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import android.content.Intent;
 
 import com.example.android_app.R;
 import com.example.android_app.model.viewmodel.LoginViewModel;
 import com.example.android_app.utils.SharedPrefsManager;
-import com.example.android_app.ui.activity.MainActivity;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -43,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
             SharedPrefsManager.save(this, "userId", result.getUserId());
 
 
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, InboxActivity.class);
             startActivity(intent);
             finish();
         });

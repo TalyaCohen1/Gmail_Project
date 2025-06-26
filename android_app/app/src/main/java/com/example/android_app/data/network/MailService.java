@@ -1,15 +1,21 @@
 package com.example.android_app.data.network;
 
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import android.util.Log;
+
+import com.example.android_app.BuildConfig;
+import com.example.android_app.model.Email;
+import com.example.android_app.model.EmailRequest;
+import com.example.android_app.utils.SendCallback;
+
+import java.util.List;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-
-import com.example.android_app.BuildConfig;
-import com.example.android_app.model.EmailRequest;
-import com.example.android_app.utils.SendCallback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MailService {
@@ -18,7 +24,21 @@ public class MailService {
     private Retrofit retrofit;
 
     public MailService() {
-        api = ApiClient.getClient().create(ApiService.class);
+        // 1. יוצרים את ה-interceptor שידפיס את הלוגים
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        // 2. קובעים לו להדפיס את כל גוף הבקשה והתשובה
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        // 3. יוצרים OkHttpClient ומוסיפים לו את ה-interceptor שלנו
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.68.50:3000/") // local emulator address
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        api = retrofit.create(ApiService.class);
     }
 
 public void sendEmail(String to, String subject, String body, String token, SendCallback callback) {
@@ -33,11 +53,65 @@ public void sendEmail(String to, String subject, String body, String token, Send
             }
         }
 
-        @Override
-        public void onFailure(Call<Void> call, Throwable t) {
-            callback.onFailure(t.getMessage());
-        }
-    });
-}
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onFailure(t.getMessage());
+            }
+        });
+    }
+
+    public interface MailCallback {
+        void onSuccess();
+        void onFailure(String error);
+    }
+
+    public void getInbox(String token, InboxCallback callback) {
+        Log.d("MyDebug", "Service getInbox: Calling api.getInboxEmails()");
+        api.getInboxEmails("Bearer " + token).enqueue(new Callback<List<Email>>() {
+            @Override
+            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure("Failed to fetch inbox. Code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Email>> call, Throwable t) {
+                callback.onFailure("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    // 2. מתודה לקבלת מייל ספציפי לפי ID
+    public void getEmailById(String emailId, String token, EmailDetailsCallback callback) {
+        api.getEmailDetails("Bearer " + token, emailId).enqueue(new Callback<Email>() {
+            @Override
+            public void onResponse(Call<Email> call, Response<Email> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure("Failed to fetch email details. Code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Email> call, Throwable t) {
+                callback.onFailure("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    // 3. Interfaces עבור ה-Callbacks החדשים
+    public interface InboxCallback {
+        void onSuccess(List<Email> emails);
+        void onFailure(String error);
+    }
+
+    public interface EmailDetailsCallback {
+        void onSuccess(Email email);
+        void onFailure(String error);
+    }
 }
 
