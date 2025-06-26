@@ -110,8 +110,8 @@ public class RegistrationActivity extends AppCompatActivity {
             etFullName.setError("Full name is required");
             valid = false;
         }
-        if (!email.endsWith("@gmail.com")) {
-            etEmail.setError("Email must be @gmail.com");
+        if (!email.endsWith("@smail.com")) {
+            etEmail.setError("Email must be @smail.com");
             valid = false;
         }
         if (age < 13) {

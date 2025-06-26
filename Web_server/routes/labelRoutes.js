@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/labelController');
-const { authenticateUser, authenticateToken } = require('../middlewares/authMiddleware');
+const authenticateToken = require('../middlewares/authMiddleware');
 
 /**
  * Route to get all labels for authenticated user or create a new label.

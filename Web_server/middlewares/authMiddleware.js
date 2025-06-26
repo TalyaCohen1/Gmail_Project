@@ -1,50 +1,37 @@
-//middleware/authMiddleware.js
-const { findById } = require('../models/userModel');
-
-/**
- * Authentication middleware.
- * Checks for user ID in Authorization header and validates that the user exists.
- *
- * @param {Request} req - Express request object.
- * @param {Response} res - Express response object.
- * @param {Function} next - Callback to pass control to the next middleware.
- */
-const authenticateUser = (req, res, next) => {
-    const userId = req.headers.authorization;
-
-    if (!userId) {
-        return res.status(401).json({ error: 'Authorization header is required' });
-    }
-
-    const user = findById(userId);
-    if (!user) {
-        return res.status(401).json({ error: 'Invalid user ID' });
-    }
-
-    req.userId = userId;
-    req.user = user;
-    next();
-};
-
 const jwt = require('jsonwebtoken');
+// No longer need to import userModel here, as the token contains the necessary user ID
+
+// Ensure that the SECRET_KEY is set in your environment variables
 const SECRET_KEY = process.env.JWT_SECRET || 'my_super_secret_key';
 
+/**
+ * Middleware to authenticate requests using JWT.
+ * It expects a token in the 'Authorization' header in the format 'Bearer <token>'.
+ * If the token is valid, it decodes it and attaches the user's ID (from the token payload)
+ * to `req.userId` for subsequent use in controllers.
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ */
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']; // Get the Authorization header
     const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
 
     if (!token) {
-        return res.status(401).json({ error: 'Token is required' });
+        return res.status(401).json({ error: 'Authentication token required' });
     }
 
-    try{
+    try {
         const decoded = jwt.verify(token, SECRET_KEY); // Verify the token using the secret key
         req.user = decoded; // Attach the decoded user information to the request object
-        req.userId = decoded.id; // Store user ID for later use
+        req.userId = decoded.id; // Store user ID for later use (this is the MongoDB _id)
         next(); // Call the next middleware or route handler
     } catch (err) {
-        return res.status(401).json({ error: 'Invalid token' });
+        console.error('JWT verification failed:', err.message);
+        // Token is invalid or expired
+        return res.status(403).json({ error: 'Invalid or expired token' });
     }
 }
 
-module.exports = { authenticateUser, authenticateToken }; // Export the middleware functions
+module.exports = authenticateToken; // Only export the authenticateToken function

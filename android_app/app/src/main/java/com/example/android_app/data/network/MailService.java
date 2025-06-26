@@ -8,11 +8,17 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+
+
+import com.example.android_app.BuildConfig;
+import com.example.android_app.model.EmailRequest;
+import com.example.android_app.utils.SendCallback;
+
 
 public class MailService {
-    private final MailApiService api;
+    private final ApiService api;
+    private static final String BASE_URL = BuildConfig.SERVER_URL;
+    private Retrofit retrofit;
 
     public MailService() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -23,17 +29,17 @@ public class MailService {
         api = retrofit.create(MailApiService.class);
     }
 
-    public void sendEmail(String to, String subject, String body, String token, MailCallback callback) {
-        EmailRequest request = new EmailRequest(to, subject, body);
-        api.sendEmail("Bearer " + token, request).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
+public void sendEmail(String to, String subject, String body, String token, SendCallback callback) {
+    EmailRequest request = new EmailRequest(to, subject, body);
+    api.sendEmail("Bearer " + token, request).enqueue(new Callback<Void>() {
+        @Override
+        public void onResponse(Call<Void> call, Response<Void> response) {
+            if (response.isSuccessful()) {
+                callback.onSuccess();
+            } else {
+                callback.onFailure("Server error: " + response.code());
             }
+        }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {

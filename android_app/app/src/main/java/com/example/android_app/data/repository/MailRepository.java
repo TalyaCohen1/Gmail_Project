@@ -19,8 +19,8 @@ public class MailRepository {
     }
 
     public void sendEmail(String to, String subject, String body, SendCallback callback) {
-        String token = getTokenFromPrefs(context); // מתוך SharedPreferences
-        mailService.sendEmail(to, subject, body, token, new MailService.MailCallback() {
+        String token = getTokenFromPrefs(context);
+        mailService.sendEmail(to, subject, body, token, new SendCallback() {
             @Override
             public void onSuccess() {
                 callback.onSuccess();
