@@ -24,11 +24,6 @@
             android:exported="false"
             android:label="@string/title_activity_email_details"
             android:theme="@style/Theme.Android_app">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.RegistrationActivity"

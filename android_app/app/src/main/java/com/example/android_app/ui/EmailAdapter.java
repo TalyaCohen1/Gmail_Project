@@ -1,5 +1,7 @@
 package com.example.android_app.ui;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,60 +17,70 @@ import java.util.List;
 
 public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHolder> {
 
-    private List<Email> emails;
-    private OnEmailClickListener listener;
+    private List<Email> emailList;
+    private Context context; // נצטרך את ה-Context כדי לפתוח Activity חדש
 
-    // 1. הגדרת ה-interface לטיפול בלחיצה
-    public interface OnEmailClickListener {
-        void onEmailClick(Email email);
-    }
-
-    // 2. קונסטרוקטור שמקבל את המאזין
-    public EmailAdapter(List<Email> emails, OnEmailClickListener listener) {
-        this.emails = emails;
-        this.listener = listener;
+    public EmailAdapter(Context context, List<Email> emailList) {
+        this.context = context;
+        this.emailList = emailList;
     }
 
     @NonNull
     @Override
     public EmailViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_email, parent, false);
+        // יוצר את התצוגה עבור כל שורה ברשימה
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_email, parent, false);
         return new EmailViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull EmailViewHolder holder, int position) {
-        Email currentEmail = emails.get(position);
-        holder.bind(currentEmail, listener); // מעבירים את המייל והמאזין
+        // מקשר את הנתונים לתצוגה
+        Email currentEmail = emailList.get(position);
+        holder.bind(currentEmail);
     }
 
     @Override
     public int getItemCount() {
-        return emails == null ? 0 : emails.size();
+        return emailList != null ? emailList.size() : 0;
     }
 
-    public void updateEmails(List<Email> newEmails) {
-        this.emails = newEmails;
-        notifyDataSetChanged();
+    // מתודה לעדכון הרשימה כשהנתונים מגיעים מה-ViewModel
+    public void setEmails(List<Email> emails) {
+        this.emailList = emails;
+        notifyDataSetChanged(); // מרענן את התצוגה
     }
 
-    // ViewHolder הוא קלאס פנימי סטטי
-    public static class EmailViewHolder extends RecyclerView.ViewHolder {
-        private TextView senderTextView;
-        // ... שאר ה-TextViews
+    // ה-ViewHolder שמחזיק את הרכיבים של כל שורה
+    class EmailViewHolder extends RecyclerView.ViewHolder {
+        TextView senderTextView;
+        TextView subjectTextView;
+        // אפשר להוסיף גם תאריך, תצוגה מקדימה וכו'
 
         public EmailViewHolder(@NonNull View itemView) {
             super(itemView);
-            senderTextView = itemView.findViewById(R.id.textViewSender);
-            // ...
+            senderTextView = itemView.findViewById(R.id.senderTextView);
+            subjectTextView = itemView.findViewById(R.id.subjectTextView);
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Email clickedEmail = emailList.get(position);
+
+                    // יוצרים Intent כדי לפתוח את EmailDetailsActivity
+                    Intent intent = new Intent(context, EmailDetailsActivity.class);
+                    intent.putExtra("email_id", clickedEmail.getId());
+
+                    // start the activity of email display
+                    context.startActivity(intent);
+                }
+            });
         }
 
-        // 3. פונקציית ה-bind מקבלת את המאזין
-        public void bind(final Email email, final OnEmailClickListener listener) {
+        void bind(Email email) {
             senderTextView.setText(email.getSender());
-            // ...
-            // 4. הגדרת הלחיצה על הפריט כולו
-            itemView.setOnClickListener(v -> listener.onEmailClick(email));
+            subjectTextView.setText(email.getSubject());
+            // עדכני שדות נוספים אם יש
         }
     }
 }

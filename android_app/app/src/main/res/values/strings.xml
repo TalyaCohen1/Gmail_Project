@@ -4,6 +4,7 @@
     <string name="sender_name">sender</string>
     <string name="time">10:45</string>
     <string name="sender_image">Sender image</string>
+    <string name="title_activity_email_details">Email Details</string>
     <string-array name="gender_options">
         <item>Select Gender</item>
         <item>male</item>

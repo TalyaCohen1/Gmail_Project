@@ -1,13 +1,14 @@
 package com.example.android_app.model;
 
 public class Email {
-    public String id;
-    public String Sender;
-    public String receiver;
-    public String subject;
-    public String body;
-    public long timestamp;
-    public String date;
+    private String id;
+    private String Sender;
+    private String receiver;
+    private String subject;
+    private String body;
+    private long timestamp;
+    private String date;
+    private Boolean isRead;
 
     public Email() { }
 
@@ -65,5 +66,17 @@ public class Email {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public void setIsRead() {
+        if (isRead) {
+            isRead = false;
+        } else {
+            isRead = true;
+        }
+    }
+
+    public Boolean getIsRead() {
+        return isRead;
     }
 }

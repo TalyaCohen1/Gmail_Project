@@ -24,7 +24,7 @@ public interface MailApiService {
             @Header("Authorization") String token
     );
 
-    @GET("emails/{id}")
+    @GET("api/mails/{id}")
     Call<Email> getEmailDetails(
             @Header("Authorization") String token,
             @Path("id") int emailId

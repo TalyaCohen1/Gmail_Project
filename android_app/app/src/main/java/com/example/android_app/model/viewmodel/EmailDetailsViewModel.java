@@ -1,54 +1,45 @@
 package com.example.android_app.model.viewmodel;
 
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
 import com.example.android_app.data.repository.MailRepository;
 import com.example.android_app.model.Email;
 
-import java.util.List;
-
-public class InboxViewModel extends AndroidViewModel {
+public class EmailDetailsViewModel extends AndroidViewModel {
 
     private final MailRepository mailRepository;
-    private final MutableLiveData<List<Email>> inboxEmails = new MutableLiveData<>();
+    private final MutableLiveData<Email> emailDetails = new MutableLiveData<>();
     private final MutableLiveData<String> error = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
-    public InboxViewModel(@NonNull Application application) {
+    public EmailDetailsViewModel(@NonNull Application application) {
         super(application);
         mailRepository = new MailRepository(application);
     }
 
-    public LiveData<List<Email>> getInboxEmails() {
-        return inboxEmails;
+    // LiveData שה-Activity יאזין לו כדי לקבל את פרטי המייל
+    public LiveData<Email> getEmailDetails() {
+        return emailDetails;
     }
 
+    // LiveData שה-Activity יאזין לו כדי לדעת אם הייתה שגיאה
     public LiveData<String> getError() {
         return error;
     }
 
-    public MutableLiveData<Boolean> getIsLoading() {
-        return isLoading;
-    }
-
-    // method that fetch the data
-    public void fetchEmails() {
-        mailRepository.getInbox(new MailRepository.InboxCallback() {
+    // Activate the API call
+    public void fetchEmailById(int emailId) {
+        mailRepository.getEmailById(emailId, new MailRepository.EmailDetailsCallback() {
             @Override
-            public void onSuccess(List<Email> emails) {
-                inboxEmails.postValue(emails);
-                isLoading.postValue(false);
+            public void onSuccess(Email email) {
+                emailDetails.postValue(email);
             }
 
             @Override
             public void onFailure(String errorMessage) {
                 error.postValue(errorMessage);
-                isLoading.postValue(false);
             }
         });
     }
