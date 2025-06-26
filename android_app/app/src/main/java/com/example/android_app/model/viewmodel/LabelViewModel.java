@@ -8,8 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.android_app.data.network.LabelService; // Still needed for LabelService.LabelServiceCallback
 import com.example.android_app.data.repository.LabelRepository; // Import the LabelRepository
+import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
-import com.example.android_app.model.Mail; // Assuming you'll need this for 'getMailsByLabel'
 
 import java.util.List;
 
@@ -39,8 +39,8 @@ public class LabelViewModel extends AndroidViewModel {
     }
 
     // LiveData for mails associated with a specific label (if you have a dedicated screen for it)
-    private final MutableLiveData<List<Mail>> _mailsForLabel = new MutableLiveData<>();
-    public LiveData<List<Mail>> getMailsForLabel() {
+    private final MutableLiveData<List<Email>> _mailsForLabel = new MutableLiveData<List<Email>>();
+    public LiveData<List<Email>> getMailsForLabel() {
         return _mailsForLabel;
     }
 
@@ -182,9 +182,9 @@ public class LabelViewModel extends AndroidViewModel {
 
         _isLoading.setValue(true);
         // Token retrieval and checking is now handled by the repository
-        repository.getMailsByLabel(labelId, new LabelService.LabelServiceCallback<List<Mail>>() {
+        repository.getMailsByLabel(labelId, new LabelService.LabelServiceCallback<List<Email>>() {
             @Override
-            public void onSuccess(List<Mail> result) {
+            public void onSuccess(List<Email> result) {
                 _mailsForLabel.setValue(result); // Update LiveData with mails
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);

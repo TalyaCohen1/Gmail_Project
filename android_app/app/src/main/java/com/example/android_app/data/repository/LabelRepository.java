@@ -2,8 +2,8 @@ package com.example.android_app.data.repository;
 
 import android.content.Context; // Required for SharedPrefsManager
 import com.example.android_app.data.network.LabelService;
+import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
-import com.example.android_app.model.Mail;
 import com.example.android_app.utils.SharedPrefsManager;
 
 import java.util.List;
@@ -92,7 +92,7 @@ public class LabelRepository {
      * @param labelId The ID of the label whose mails are to be fetched.
      * @param callback The callback to handle the list of mails or an error.
      */
-    public void getMailsByLabel(String labelId, final LabelService.LabelServiceCallback<List<Mail>> callback) {
+    public void getMailsByLabel(String labelId, final LabelService.LabelServiceCallback<List<Email>> callback) {
         String token = getToken(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token not found. Please log in.");

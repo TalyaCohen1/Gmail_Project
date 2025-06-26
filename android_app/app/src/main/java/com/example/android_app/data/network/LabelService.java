@@ -1,8 +1,7 @@
 package com.example.android_app.data.network;
 
-import com.example.android_app.BuildConfig;
+import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
-import com.example.android_app.model.Mail;
 
 // NEW IMPORTS - these no longer need the 'static' keyword or 'ApiService.' prefix
 import com.example.android_app.model.LabelCreateRequest;
@@ -16,7 +15,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 
 public class LabelService {
@@ -154,14 +152,14 @@ public class LabelService {
         });
     }
 
-    public void getMailsByLabel(String token, String id, final LabelServiceCallback<List<Mail>> callback) {
+    public void getMailsByLabel(String token, String id, final LabelServiceCallback<List<Email>> callback) {
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
             return;
         }
-        api.getMailsByLabel("Bearer " + token, id).enqueue(new Callback<List<Mail>>() {
+        api.getMailsByLabel("Bearer " + token, id).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(Call<List<Mail>> call, Response<List<Mail>> response) {
+            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess(response.body());
                 } else {
@@ -178,7 +176,7 @@ public class LabelService {
             }
 
             @Override
-            public void onFailure(Call<List<Mail>> call, Throwable t) {
+            public void onFailure(Call<List<Email>> call, Throwable t) {
                 callback.onFailure("Network error: " + t.getMessage());
             }
         });
