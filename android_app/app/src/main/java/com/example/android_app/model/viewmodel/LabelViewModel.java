@@ -1,6 +1,7 @@
 package com.example.android_app.model.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -47,8 +48,8 @@ public class LabelViewModel extends AndroidViewModel {
 
     public LabelViewModel(@NonNull Application application) {
         super(application);
-        // Initialize your LabelRepository, passing the application context
-        this.repository = new LabelRepository(application);
+        // Initialize LabelRepository using the application context
+        this.repository = new LabelRepository(application.getApplicationContext());
     }
 
     /**
