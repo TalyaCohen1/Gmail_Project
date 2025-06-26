@@ -41,6 +41,15 @@ public interface ApiService {
             @Body EmailRequest email
     );
 
+    @Multipart
+    @PATCH("api/users/{id}")
+    Call<LoginResponse> updateUser(
+            @Path("id") String userId,
+            @Part("fullName") RequestBody fullName,
+            @Part MultipartBody.Part profileImage
+    );
+
+
     @GET("api/mails")
     Call<List<Email>> getInboxEmails(
             @Header("Authorization") String token
