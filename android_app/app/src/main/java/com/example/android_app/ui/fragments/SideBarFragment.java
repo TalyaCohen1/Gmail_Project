@@ -71,7 +71,7 @@ public class SideBarFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_side_bar, container, false);
+        View view = inflater.inflate(R.layout.fragment_sidebar, container, false);
 
         // Initialize ViewModelFactory and ViewModels
         mailViewModel = new ViewModelProvider(this).get(MailViewModel.class); // No custom factory needed here
@@ -150,8 +150,8 @@ public class SideBarFragment extends Fragment {
         for (Label label : labels) {
             // Create a new layout for each label (e.g., a LinearLayout with a TextView)
             LinearLayout labelView = (LinearLayout) LayoutInflater.from(getContext())
-                    .inflate(R.layout.item_sidebar_label, customLabelsContainer, false); // Create item_sidebar_label.xml if you don't have it
-            TextView labelNameTextView = labelView.findViewById(R.id.label_name_text_view); // Assuming ID in item_sidebar_label.xml
+                    .inflate(R.layout.item_custom_label, customLabelsContainer, false); // Create item_sidebar_label.xml if you don't have it
+            TextView labelNameTextView = labelView.findViewById(R.id.label_name); // Assuming ID in item_sidebar_label.xml
             ImageView labelActionsButton = labelView.findViewById(R.id.label_actions_button); // Assuming ID for a 3-dots menu
 
             if (labelNameTextView != null) {
@@ -176,7 +176,7 @@ public class SideBarFragment extends Fragment {
     // Existing showLabelActionsMenu method (from your snippet)
     private void showLabelActionsMenu(View anchorView, Label label) {
         PopupMenu popup = new PopupMenu(getContext(), anchorView);
-        popup.getMenuInflater().inflate(R.menu.label_actions_menu, popup.getMenu()); // Inflate the menu XML
+        popup.getMenuInflater().inflate(R.menu.label_actions_menu, popup.getMenu()); // Inflate the entire menu XML
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.action_edit_label) {

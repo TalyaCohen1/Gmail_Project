@@ -14,7 +14,7 @@
         android:id="@+id/label_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_labels"
+        android:src="@drawable/labels"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:contentDescription="Label Icon" />
@@ -39,7 +39,7 @@
         android:visibility="gone" /> <!-- Initially hidden until count is available -->
 
     <ImageView
-        android:id="@+id/three_dots_button"
+        android:id="@+id/label_actions_button"
         style="@style/ThreeDotsButton"
         android:layout_width="36dp"
         android:layout_height="36dp"

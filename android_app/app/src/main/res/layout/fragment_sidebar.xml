@@ -33,33 +33,146 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="8dp">
+        android:paddingTop="16dp"
+        android:paddingHorizontal="16dp">
 
-        <TextView
-            android:id="@+id/label_inbox"
-            style="@style/SidebarLabelItem"
-            android:text="Inbox (0)"
-            android:drawableStart="@drawable/inbox" />
+        <LinearLayout
+            android:id="@+id/inbox_layout" android:layout_width="match_parent"
+            android:layout_height="48dp" android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/inbox" android:layout_marginEnd="16dp"
+                android:contentDescription="Inbox icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inbox (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/label_starred"
-            style="@style/SidebarLabelItem"
-            android:text="Starred (0)"
-            android:drawableStart="@drawable/starred" />
+        <LinearLayout
+            android:id="@+id/starred_layout" android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/starred" android:layout_marginEnd="16dp"
+                android:contentDescription="Starred icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Starred (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/label_sent"
-            style="@style/SidebarLabelItem"
-            android:text="Sent (0)"
-            android:drawableStart="@drawable/sent" />
+        <LinearLayout
+            android:id="@+id/sent_layout" android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/sent" android:layout_marginEnd="16dp"
+                android:contentDescription="Sent icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sent (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/label_drafts"
-            style="@style/SidebarLabelItem"
-            android:text="Drafts (0)"
-            android:drawableStart="@drawable/drafts" />
+        <LinearLayout
+            android:id="@+id/drafts_layout" android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/drafts" android:layout_marginEnd="16dp"
+                android:contentDescription="Drafts icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Drafts (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/spam_layout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/spam"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="Spam icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Spam (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/trash_layout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/trash"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="Trash icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trash (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
 
     </LinearLayout>
+
 
     <!-- "More" Button to toggle visibility of more_labels_section -->
     <Button
