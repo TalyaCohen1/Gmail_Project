@@ -14,6 +14,8 @@ public class CreateMailViewModel extends AndroidViewModel {
 
     private final MailRepository repository;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> emailSent = new MutableLiveData<>();
+
 
     public CreateMailViewModel(@NonNull Application application) {
         super(application);
@@ -38,14 +40,19 @@ public class CreateMailViewModel extends AndroidViewModel {
         repository.sendEmail(to, subject, body, new SendCallback() {
             @Override
             public void onSuccess() {
+                emailSent.setValue(true);
                 errorMessage.setValue(null); // clear
             }
 
             @Override
             public void onFailure(String error) {
+                emailSent.setValue(false);
                 errorMessage.setValue(error);
             }
         });
+    }
+    public LiveData<Boolean> getEmailSent() {
+        return emailSent;
     }
 }
 

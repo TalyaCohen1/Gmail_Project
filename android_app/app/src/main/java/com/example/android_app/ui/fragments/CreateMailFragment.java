@@ -50,6 +50,14 @@ public class CreateMailFragment extends Fragment {
             }
         });
 
+        viewModel.getEmailSent().observe(getViewLifecycleOwner(), sent -> {
+            if (Boolean.TRUE.equals(sent)) {
+                // סגירת הפרגמנט והחזרת התצוגה לאינבוקס
+                requireActivity().getSupportFragmentManager().popBackStack();
+                requireActivity().findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
+            }
+        });
+
         // כפתור שליחה
         buttonSend.setOnClickListener(v -> {
             String to = editTextTo.getText().toString();
