@@ -1,18 +1,17 @@
 package com.example.android_app.data.network;
 
+import com.example.android_app.BuildConfig;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
+import com.example.android_app.utils.SendCallback;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-
-import com.example.android_app.BuildConfig;
-import com.example.android_app.model.EmailRequest;
-import com.example.android_app.utils.SendCallback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MailService {
@@ -26,7 +25,7 @@ public class MailService {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        api = retrofit.create(MailApiService.class);
+        api = retrofit.create(ApiService.class);
     }
 
 public void sendEmail(String to, String subject, String body, String token, SendCallback callback) {
