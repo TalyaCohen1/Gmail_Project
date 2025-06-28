@@ -8,6 +8,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.android_app.data.repository.UserRepository;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -34,7 +36,22 @@ public class RegistrationViewModel extends AndroidViewModel {
                         if (response.isSuccessful()) {
                             status.postValue("Registration successful");
                         } else {
-                            status.postValue("Registration failed: " + response.message());
+                            try {
+                                String errorBody = response.errorBody().string();
+                                JsonObject jsonError = new Gson().fromJson(errorBody, JsonObject.class);
+                                String msg = null;
+
+                                if (jsonError.has("message")) {
+                                    msg = jsonError.get("message").getAsString();
+                                } else if (jsonError.has("error")) {
+                                    msg = jsonError.get("error").getAsString();
+                                } else {
+                                    msg = "Registration failed";
+                                }
+                                status.postValue(msg);
+                            } catch (Exception e) {
+                                status.postValue("Unexpected error occurred");
+                            }
                         }
                     }
 
