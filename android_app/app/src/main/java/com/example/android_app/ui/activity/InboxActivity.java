@@ -58,6 +58,12 @@ public class InboxActivity extends AppCompatActivity {
             // מציג את ה-FrameLayout
             findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.VISIBLE);
         });
+        //Refresh the inbox when the back stack changes
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            if (getSupportFragmentManager().findFragmentById(R.id.fragmentCreateMailContainer) == null) {
+                viewModel.fetchEmails();
+            }
+        });
 
     }
 
