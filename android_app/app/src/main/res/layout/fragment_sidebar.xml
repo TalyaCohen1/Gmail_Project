@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    tools:context=".ui.fragments.SideBarFragment">
+
+    <!-- Compose Button -->
+    <Button
+        android:id="@+id/compose_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Compose"
+        android:drawableStart="@drawable/new_mail"
+        android:padding="16dp"
+        android:layout_margin="16dp"
+        android:textColor="@android:color/black"
+        android:gravity="center_vertical|start"
+        android:elevation="4dp"
+        android:stateListAnimator="@null"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:drawablePadding="8dp"
+        style="?android:attr/buttonBarButtonStyle" />
+    <!--        android:background="@drawable/rounded_button_background"-->
+
+    <!-- Default Labels Section (Inbox, Starred, Sent, Drafts) -->
+    <LinearLayout
+        android:id="@+id/main_labels_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingHorizontal="16dp">
+
+        <LinearLayout
+            android:id="@+id/inbox_layout" android:layout_width="match_parent"
+            android:layout_height="48dp" android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/inbox" android:layout_marginEnd="16dp"
+                android:contentDescription="Inbox icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inbox (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/starred_layout" android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/starred" android:layout_marginEnd="16dp"
+                android:contentDescription="Starred icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Starred (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sent_layout" android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/sent" android:layout_marginEnd="16dp"
+                android:contentDescription="Sent icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sent (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/drafts_layout" android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/drafts" android:layout_marginEnd="16dp"
+                android:contentDescription="Drafts icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Drafts (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/spam_layout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/spam"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="Spam icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Spam (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/trash_layout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/trash"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="Trash icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trash (0)"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <!-- "More" Button to toggle visibility of more_labels_section -->
+    <Button
+        android:id="@+id/more_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="More"
+        android:drawableStart="@drawable/more"
+        android:padding="16dp"
+        android:gravity="center_vertical|start"
+        android:textColor="@android:color/black"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawablePadding="8dp" />
+
+    <!-- More Labels Section (Initially hidden) -->
+    <LinearLayout
+        android:id="@+id/more_labels_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingTop="8dp">
+
+        <TextView
+            android:id="@+id/label_important"
+            style="@style/SidebarLabelItem"
+            android:text="Important (0)"
+            android:drawableStart="@drawable/important" />
+        <TextView
+            android:id="@+id/label_all_mail"
+            style="@style/SidebarLabelItem"
+            android:text="All Mail (0)"
+            android:drawableStart="@drawable/all_mail" />
+        <TextView
+            android:id="@+id/label_spam"
+            style="@style/SidebarLabelItem"
+            android:text="Spam (0)"
+            android:drawableStart="@drawable/spam" />
+        <TextView
+            android:id="@+id/label_trash"
+            style="@style/SidebarLabelItem"
+            android:text="Trash (0)"
+            android:drawableStart="@drawable/trash" />
+
+        <!-- Categories Toggle Button -->
+        <Button
+            android:id="@+id/category_toggle_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Categories"
+            android:drawableStart="@drawable/arrow_right"
+            android:padding="16dp"
+            android:gravity="center_vertical|start"
+            android:textColor="@android:color/black"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawablePadding="8dp" />
+
+        <!-- Category Sub-Labels (Initially hidden) -->
+        <LinearLayout
+            android:id="@+id/category_sub_labels_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:paddingStart="32dp"
+            android:paddingTop="8dp">
+            <!-- These are system-defined categories, not custom labels -->
+            <TextView
+                android:id="@+id/label_social"
+                style="@style/SidebarLabelItem"
+                android:text="Social (0)"
+                android:drawableStart="@drawable/social" />
+            <TextView
+                android:id="@+id/label_updates"
+                style="@style/SidebarLabelItem"
+                android:text="Updates (0)"
+                android:drawableStart="@drawable/updates" />
+            <TextView
+                android:id="@+id/label_forums"
+                style="@style/SidebarLabelItem"
+                android:text="Forums (0)"
+                android:drawableStart="@drawable/forums" />
+            <TextView
+                android:id="@+id/label_promotions"
+                style="@style/SidebarLabelItem"
+                android:text="Promotions (0)"
+                android:drawableStart="@drawable/promotions" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Custom Labels Section Header and Add Button -->
+    <LinearLayout
+        android:id="@+id/custom_labels_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingHorizontal="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Labels"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/add_custom_label_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Label"
+            android:drawableStart="@drawable/plus"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical|start"
+            android:textColor="@android:color/black"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingStart="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- This LinearLayout will be populated dynamically with item_custom_label.xml -->
+        <LinearLayout
+            android:id="@+id/dynamic_custom_labels_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </LinearLayout>
+
+</LinearLayout>

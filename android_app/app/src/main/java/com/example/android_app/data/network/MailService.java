@@ -84,6 +84,7 @@ public void sendEmail(String to, String subject, String body, String token, Send
         });
     }
 
+
     // 2. מתודה לקבלת מייל ספציפי לפי ID
     public void getEmailById(String emailId, String token, EmailDetailsCallback callback) {
         api.getEmailDetails("Bearer " + token, emailId).enqueue(new Callback<Email>() {
