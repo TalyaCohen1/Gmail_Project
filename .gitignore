@@ -1,2 +1,4 @@
 Web_server/node_modules
 node_modules
+**/.idea/
+android_app/.idea/
