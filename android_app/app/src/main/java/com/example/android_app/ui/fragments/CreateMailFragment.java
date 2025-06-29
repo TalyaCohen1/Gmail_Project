@@ -20,6 +20,7 @@ public class CreateMailFragment extends Fragment {
     private EditText editTextTo, editTextSubject, editTextBody;
     private TextView textError;
     private Button buttonSend;
+    private ImageButton buttonBack;
     private CreateMailViewModel viewModel;
 
     @Nullable
@@ -49,12 +50,27 @@ public class CreateMailFragment extends Fragment {
             }
         });
 
+        viewModel.getEmailSent().observe(getViewLifecycleOwner(), sent -> {
+            if (Boolean.TRUE.equals(sent)) {
+                // סגירת הפרגמנט והחזרת התצוגה לאינבוקס
+                requireActivity().getSupportFragmentManager().popBackStack();
+                requireActivity().findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
+            }
+        });
+
         // כפתור שליחה
         buttonSend.setOnClickListener(v -> {
             String to = editTextTo.getText().toString();
             String subject = editTextSubject.getText().toString();
             String body = editTextBody.getText().toString();
             viewModel.sendEmail(to, subject, body);
+        });
+
+        //back to inbox
+        buttonBack = view.findViewById(R.id.buttonClose);
+        buttonBack.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().popBackStack();
+            requireActivity().findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
         });
 
         return view;

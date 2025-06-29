@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.android_app.data.network.ApiClient;
 import com.example.android_app.data.network.ApiService;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
@@ -31,29 +32,32 @@ public class MailRepository {
 
     public MailRepository(Context context) {
         this.context = context.getApplicationContext();
+        apiService = ApiClient.getClient().create(ApiService.class); //create object from retrofit
 
-        // ===========================================
-        // === בניית הרשת מרוכזת כאן באופן זמני ===
-        // ===========================================
-        Log.d("MyDebug", "MailRepository Constructor: Building network stack...");
-
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.68.50:3000/") // ודאי שזו הכתובת הנכונה
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        // ודאי שהשם כאן הוא שם הממשק הנכון (ApiService או MailApiService)
-        this.apiService = retrofit.create(ApiService.class);
-
-        Log.d("MyDebug", "MailRepository Constructor: Network stack built. apiService is " + (this.apiService == null ? "null" : "not null"));
+//        this.context = context.getApplicationContext();
+//
+//        // ===========================================
+//        // === בניית הרשת מרוכזת כאן באופן זמני ===
+//        // ===========================================
+//        Log.d("MyDebug", "MailRepository Constructor: Building network stack...");
+//
+//        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//
+//        OkHttpClient client = new OkHttpClient.Builder()
+//                .addInterceptor(loggingInterceptor)
+//                .build();
+//
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("http://192.168.68.50:3000/") // ודאי שזו הכתובת הנכונה
+//                .client(client)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//
+//        // ודאי שהשם כאן הוא שם הממשק הנכון (ApiService או MailApiService)
+//        this.apiService = retrofit.create(ApiService.class);
+//
+//        Log.d("MyDebug", "MailRepository Constructor: Network stack built. apiService is " + (this.apiService == null ? "null" : "not null"));
     }
 
     private String getTokenFromPrefs(Context context) {

@@ -12,7 +12,7 @@ import androidx.core.view.GravityCompat; // For opening/closing the drawer
 import androidx.drawerlayout.widget.DrawerLayout; // The DrawerLayout itself
 
 import com.example.android_app.R; // Your project's R file
-import com.example.android_app.ui.fragments.EditProfileFragment; // Your initial main content fragment
+import com.example.android_app.ui.fragments.CreateMailFragment; // Your initial main content fragment
 import com.example.android_app.ui.fragments.SideBarFragment; // Import your SideBarFragment
 
 public class MainActivity extends AppCompatActivity implements SideBarFragment.SideBarFragmentListener {
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements SideBarFragment.S
         // This replaces the content in R.id.fragment_container
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new EditProfileFragment()) // Your initial main content
+                    .replace(R.id.fragment_container, new CreateMailFragment())
                     .commit();
 
             // 5. Load your SideBarFragment into the sidebar_container
