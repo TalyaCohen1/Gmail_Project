@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.provider.OpenableColumns;
 
 import com.example.android_app.BuildConfig;
+import com.example.android_app.data.local.AppDatabase;
+import com.example.android_app.data.local.UserDao;
+import com.example.android_app.data.local.UserEntity;
 import com.example.android_app.data.network.ApiClient;
 import com.example.android_app.data.network.ApiService;
 import com.example.android_app.model.LoginResponse;
@@ -15,12 +18,16 @@ import com.example.android_app.utils.SharedPrefsManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+
+import com.example.android_app.utils.UserMapper;
 import com.google.gson.JsonObject;
 import retrofit2.Response;
 import retrofit2.Callback;
@@ -36,10 +43,14 @@ public class UserRepository {
     private final ApiService apiService; //retrofit interface
     private final Context context; //context to casting api
     private final Gson gson = new Gson();
+    private final UserDao userDao;
+    private final Executor executor;
 
     public UserRepository(Context context) {
         this.context = context.getApplicationContext();
         apiService = ApiClient.getClient().create(ApiService.class); //create object from retrofit
+        userDao = AppDatabase.getInstance(context).userDao();
+        executor = Executors.newSingleThreadExecutor();
     }
 
     public Call<ResponseBody> registerUser(String fullName, String email, String birthDate, String gender, String password, Uri imageUri) {
@@ -92,7 +103,8 @@ public class UserRepository {
             Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    int nameIndex = cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME);
+                    result = cursor.getString(nameIndex);
                 }
             } finally {
                 cursor.close();
@@ -112,7 +124,9 @@ public class UserRepository {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    result.postValue(response.body()); // ← אין צורך ב־Gson
+                    result.postValue(response.body());
+                    UserEntity user = UserMapper.fromLoginResponse(response.body());
+                    insertUser(user);
                 } else {
                     try {
                         String errorBody = response.errorBody().string();
@@ -154,7 +168,9 @@ public class UserRepository {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponse body = response.body();
-                    SharedPrefsManager.saveProfile(context, body.getFullName(), body.getProfileImage());
+                    SharedPrefsManager.saveProfile(context, body.getFullName(), body.getProfileImage()); //save profile to shared prefs
+                    UserEntity updatedUser = UserMapper.fromLoginResponse(body); //update local user
+                    insertUser(updatedUser);
                     successMsg.postValue("Profile updated successfully");
                 } else {
                     errorMsg.postValue("Failed to update profile");
@@ -166,6 +182,23 @@ public class UserRepository {
                 errorMsg.postValue("Network error: " + t.getMessage());
             }
         });
+    }
+    public void insertUser(UserEntity user) {
+        executor.execute(() -> userDao.insertUser(user));
+    }
+    public void getUserById(String id, LocalCallback<UserEntity> callback) {
+        executor.execute(() -> {
+            UserEntity user = userDao.getUserById(id);
+            callback.onResult(user);
+        });
+    }
+
+    public void deleteUser(UserEntity user) {
+        executor.execute(() -> userDao.deleteUser(user));
+    }
+
+    public interface LocalCallback<T> {
+        void onResult(T result);
     }
 
 }

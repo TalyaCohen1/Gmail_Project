@@ -24,20 +24,6 @@ public class MailService {
     private Retrofit retrofit;
 
     public MailService() {
-//        // 1. יוצרים את ה-interceptor שידפיס את הלוגים
-//        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//        // 2. קובעים לו להדפיס את כל גוף הבקשה והתשובה
-//        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//
-//        // 3. יוצרים OkHttpClient ומוסיפים לו את ה-interceptor שלנו
-//        OkHttpClient client = new OkHttpClient.Builder()
-//                .addInterceptor(loggingInterceptor)
-//                .build();
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("http://192.168.68.50:3000/") // local emulator address
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-
         api = retrofit.create(ApiService.class);
     }
 
