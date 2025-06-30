@@ -46,4 +46,40 @@
         android:lineSpacingExtra="4dp"
         tools:text="Hi team,\n\nThis is the full body of the email. We need to make sure that it wraps correctly and displays multiple lines if needed.\n\nThanks,\nShani" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/btnReply"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FFD54F"
+            android:text="↩️ Reply" />
+
+        <Button
+            android:id="@+id/btnForward"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FFD54F"
+            android:text="↪️ Forward"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/compose_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"/>
 </LinearLayout>
+

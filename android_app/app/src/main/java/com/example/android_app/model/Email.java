@@ -49,7 +49,7 @@ public class Email {
     @SerializedName("timestamp")
     private long timestamp;
 
-    public Email() { }
+    public Email () { }
 
     public void setFrom(String from) {
         this.from = from;
@@ -174,6 +174,38 @@ public class Email {
             e.printStackTrace();
             return null;
         }
+    }
+    public String getReplySubject() {
+        if (subject == null || subject.isEmpty()) {
+            return "RE: (No Subject)";
+        }
+        if (subject.toLowerCase().startsWith("re:")) {
+            return subject;
+        }
+        return "RE: " + subject;
+    }
+    public String getReplyBody() {
+        return "\n\n--- Original Message ---\n"
+                + "From: " + getFrom() + "\n"
+                + "Date: " + (getDate() != null ? getDate().toString() : "") + "\n"
+                + "Subject: " + subject + "\n\n"
+                + (body != null ? body : "");
+    }
+    public String getForwardSubject() {
+        if (subject == null || subject.isEmpty()) {
+            return "FWD: (No Subject)";
+        }
+        if (subject.toLowerCase().startsWith("fwd:") || subject.toLowerCase().startsWith("fw:")) {
+            return subject;
+        }
+        return "FWD: " + subject;
+    }
+    public String getForwardBody() {
+        return "\n\n--- Forwarded Message ---\n"
+                + "From: " + getFrom() + "\n"
+                + "Date: " + (getDate() != null ? getDate().toString() : "") + "\n"
+                + "Subject: " + subject + "\n\n"
+                + (body != null ? body : "");
     }
 }
 
