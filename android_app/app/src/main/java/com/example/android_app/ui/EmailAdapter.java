@@ -1,26 +1,27 @@
 package com.example.android_app.ui;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Typeface; // Import for Typeface
-import android.util.Log; // Import for Log
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView; // Import for ImageView
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_app.R;
 import com.example.android_app.model.Email;
-import com.example.android_app.ui.EmailDetailsActivity; // Make sure this import is correct
 
-import java.util.ArrayList; // Import for ArrayList
-import java.util.HashSet; // Import for HashSet
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set; // Import for Set
+import java.util.Locale;
+import java.util.Set;
 
 public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHolder> {
 
@@ -37,10 +38,12 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         void onSelectedCountChanged(int count);
     }
 
-    // Interface for item clicks (regular and long)
+    // Interface for item clicks (regular and long) and star actions
     public interface EmailItemClickListener {
         void onEmailClick(Email email);
         void onEmailLongClick(Email email);
+        // Changed to toggle method for simplicity
+        void onToggleEmailStarred(Email email, int position); // Pass position to notify adapter
     }
 
     // Updated constructor to accept the click listener
@@ -65,81 +68,70 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
     @Override
     public void onBindViewHolder(@NonNull EmailViewHolder holder, int position) {
         Email currentEmail = emailList.get(position);
-        holder.bind(currentEmail);
+        holder.bind(currentEmail); // Bind basic data
 
         boolean isSelected = selectedEmailIds.contains(currentEmail.getId());
 
-        // Visually mark selected items (background color)
-        holder.itemView.setBackgroundResource(isSelected ? R.color.selected_item_background : R.color.white);
-
-        // Handle image based on multi-select mode and selection state
+        // --- Handle Multi-Select Visuals ---
         if (isMultiSelectMode) {
-            // In multi-select mode, show a checkmark or initial based on selection
+            holder.imageSenderOrSelected.setVisibility(View.VISIBLE); // Show the image view
             if (isSelected) {
                 holder.imageSenderOrSelected.setImageResource(R.drawable.ic_check_circle_blue);
-                holder.imageSenderOrSelected.setBackgroundResource(0); // Remove circle background
+                holder.imageSenderOrSelected.setBackgroundResource(0); // Remove any background circle
             } else {
-                // Show initial of sender name in a circle if not selected
-                String senderName = currentEmail.getFrom(); // Assuming getFrom() gives the sender's display name
-                if (senderName != null && !senderName.isEmpty()) {
-                    char initial = senderName.toUpperCase().charAt(0);
-                    // This part is tricky. Drawing text on a circle is not straightforward with ImageView alone.
-                    // For now, we'll use a placeholder or simply the default profile icon
-                    // You might need a custom Drawable or a library like 'TextDrawable' for proper initials.
-                    // For simplicity, let's just show the default placeholder or draw it programmatically (more complex).
-                    holder.imageSenderOrSelected.setImageResource(0); // Clear existing image
-                    holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background); // Re-apply circle shape for background
-                    // To show initials, you would need to set a TextDrawable or draw on a Canvas here.
-                    // Example (if using a TextDrawable-like approach):
-                    // holder.imageSenderOrSelected.setImageDrawable(TextDrawable.builder().buildRound(String.valueOf(initial), Color.GRAY));
-                } else {
-                    holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-                    holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-                }
+                // Show initial of sender name in a circle if not selected (or default profile)
+                // This is a placeholder. For proper initials, you'd need a custom Drawable or library.
+                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+                holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background); // Assuming this draws a circle
             }
         } else {
-            // Not in multi-select mode, show default sender image (e.g., initial or profile pic placeholder)
+            // Not in multi-select mode, always show the default sender image (e.g., initial or profile pic placeholder)
+            holder.imageSenderOrSelected.setVisibility(View.VISIBLE); // Ensure it's visible
             holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
             holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
         }
 
-        // Update read/unread indicator and text style
-        if (currentEmail.isRead()) { // Assuming Email model has isRead() method
+        // --- Handle Item Background and Activated State (for selector) ---
+        // The selector should manage selected_item_background and selectableItemBackground.
+        // We only need to set 'activated' state and let the selector do its job.
+        holder.itemView.setActivated(isSelected); // Activates the 'state_activated' item in your selector XML
+
+        // --- Handle Read/Unread Status and Text Style ---
+        if (currentEmail.isRead()) {
+            // Read state: Normal text, transparent or read_email_background (handled by selector's default)
             holder.senderTextView.setTypeface(null, Typeface.NORMAL);
             holder.subjectTextView.setTypeface(null, Typeface.NORMAL);
-            holder.unreadIndicator.setVisibility(View.GONE);
+            holder.textTime.setTypeface(null, Typeface.NORMAL); // Added time text style
+            holder.unreadIndicator.setVisibility(View.GONE); // Hide the unread indicator
+            // Set text color for read emails (e.g., a darker grey for readability)
+            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
+            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
+            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
         } else {
+            // Unread state: Bold text, unread_email_background (handled by selector's default)
             holder.senderTextView.setTypeface(null, Typeface.BOLD);
             holder.subjectTextView.setTypeface(null, Typeface.BOLD);
-            holder.unreadIndicator.setVisibility(View.VISIBLE);
+            holder.textTime.setTypeface(null, Typeface.BOLD); // Added time text style
+            holder.unreadIndicator.setVisibility(View.VISIBLE); // Show the unread indicator
+            // Set text color for unread emails (e.g., black)
+            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
+            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
+            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
         }
 
-        // Set click listeners
-        holder.itemView.setOnClickListener(v -> {
-            if (isMultiSelectMode) {
-                toggleEmailSelection(currentEmail);
-            } else {
-                if (itemClickListener != null) {
-                    itemClickListener.onEmailClick(currentEmail);
-                } else {
-                    // Original navigation logic if no specific itemClickListener is set for normal mode
-                    Intent intent = new Intent(context, EmailDetailsActivity.class);
-                    intent.putExtra("email_id", currentEmail.getId());
-                    context.startActivity(intent);
-                }
-            }
-        });
+        // --- Handle Star Icon (Important/Starred) ---
+        // Ensure you have 'full_star' (filled) and 'starred' (empty) drawables.
+        // Based on your description, 'starred' might be your empty star and 'full_star' your filled.
+        if (currentEmail.isStarred()) { // Assuming 'isStarred()' in Email model
+            holder.iconStar.setImageResource(R.drawable.full_star); // Filled star
+        } else {
+            holder.iconStar.setImageResource(R.drawable.starred); // Empty star
+        }
+        holder.iconStar.setVisibility(View.VISIBLE); // Ensure star is always visible
 
-        holder.itemView.setOnLongClickListener(v -> {
-            if (!isMultiSelectMode) {
-                setMultiSelectMode(true); // Enter multi-select mode
-            }
-            toggleEmailSelection(currentEmail); // Select the item that was long-clicked
-            if (itemClickListener != null) {
-                itemClickListener.onEmailLongClick(currentEmail); // Notify Activity of long click
-            }
-            return true; // Consume the long click event
-        });
+        // --- Set Click Listeners (Moved to ViewHolder constructor for efficiency) ---
+        // The actual logic for what happens on click is now in the ViewHolder.
+        // It uses the itemClickListener passed to the adapter.
     }
 
     @Override
@@ -147,21 +139,17 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         return emailList != null ? emailList.size() : 0;
     }
 
-    // Method to update the list when data arrives from the ViewModel
     public void setEmails(List<Email> newEmails) {
         this.emailList = newEmails;
-        // When setting new emails, ensure selection state is handled correctly.
-        // If exiting multi-select, clear selectedEmailIds.
-        // If remaining in multi-select (e.g., after an action), might need to re-validate selections.
-        if (!isMultiSelectMode) { // Clear selection only if not actively in multi-select mode
-            selectedEmailIds.clear();
+        // Important: When setting new emails, ensure selection state is handled correctly.
+        if (!isMultiSelectMode) {
+            selectedEmailIds.clear(); // Clear selection if not in multi-select
         } else {
             // Re-validate existing selections if new emails list came in while in multi-select
-            // This is important if emails were deleted/moved.
-            selectedEmailIds.retainAll(getEmailIds(newEmails)); // Remove IDs that are no longer in the new list
+            selectedEmailIds.retainAll(getEmailIds(newEmails));
             updateMultiSelectMode(); // Update count and mode if needed
         }
-        notifyDataSetChanged(); // Refresh the view
+        notifyDataSetChanged(); // Refresh the entire view
     }
 
     private Set<String> getEmailIds(List<Email> emails) {
@@ -171,7 +159,6 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         }
         return ids;
     }
-
 
     public List<Email> getSelectedEmails() {
         List<Email> selected = new ArrayList<>();
@@ -194,7 +181,10 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         } else {
             selectedEmailIds.add(email.getId());
         }
-        notifyItemChanged(emailList.indexOf(email)); // Notify specific item changed
+        int position = emailList.indexOf(email);
+        if (position != -1) {
+            notifyItemChanged(position); // Notify specific item changed
+        }
         updateMultiSelectMode(); // Update mode and count
     }
 
@@ -207,7 +197,7 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
             multiSelectModeListener.onSelectedCountChanged(selectedEmailIds.size());
         }
         if (selectedEmailIds.isEmpty() && isMultiSelectMode) { // Exit multi-select if nothing is selected
-            setMultiSelectMode(false);
+            setMultiSelectMode(false); // This will call notifyDataSetChanged()
         }
     }
 
@@ -232,29 +222,100 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
     }
 
     // The ViewHolder that holds the components of each row
-    // Make this class public static if it's not nested in EmailAdapter, or keep as is.
-    class EmailViewHolder extends RecyclerView.ViewHolder {
+    // Make this class public static to avoid potential memory leak warnings in some lint checks
+    public class EmailViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout emailItemContainer; // Use this for the item's background and click events
         TextView senderTextView;
         TextView subjectTextView;
-        TextView textTime; // New: for email time
-        ImageView imageSenderOrSelected; // New: for sender image or selection indicator
-        View unreadIndicator; // New: for unread dot
+        TextView textTime;
+        ImageView imageSenderOrSelected;
+        View unreadIndicator;
+        ImageView iconStar;
 
         public EmailViewHolder(@NonNull View itemView) {
             super(itemView);
+            emailItemContainer = itemView.findViewById(R.id.emailItemContainer); // Assuming this is the root LinearLayout
             senderTextView = itemView.findViewById(R.id.senderTextView);
             subjectTextView = itemView.findViewById(R.id.subjectTextView);
-            textTime = itemView.findViewById(R.id.textTime); // Initialize new view
-            imageSenderOrSelected = itemView.findViewById(R.id.imageSenderOrSelected); // Initialize new view
-            unreadIndicator = itemView.findViewById(R.id.unreadIndicator); // Initialize new view
+            textTime = itemView.findViewById(R.id.textTime);
+            imageSenderOrSelected = itemView.findViewById(R.id.imageSenderOrSelected);
+            unreadIndicator = itemView.findViewById(R.id.unreadIndicator);
+            iconStar = itemView.findViewById(R.id.iconStar);
+
+            // --- Set Click Listeners Here (Crucial for interaction) ---
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Email clickedEmail = emailList.get(position);
+
+                    if (isMultiSelectMode) {
+                        toggleEmailSelection(clickedEmail);
+                    } else {
+                        if (itemClickListener != null) {
+                            itemClickListener.onEmailClick(clickedEmail);
+                            // After clicking an email in normal mode, mark it as read.
+                            // Assuming you have a way to update the 'read' status in your model/DB.
+                            // For immediate UI update, toggle isRead and notifyItemChanged.
+                            if (!clickedEmail.isRead()) {
+                                clickedEmail.setIsRead(true); // Update data model
+                                notifyItemChanged(position); // Refresh this item's view
+                            }
+                        }
+                        // Original navigation logic if no specific itemClickListener is set for normal mode
+                        // (You likely want to handle navigation via the itemClickListener in the Activity)
+                        // Intent intent = new Intent(context, EmailDetailsActivity.class);
+                        // intent.putExtra("email_id", clickedEmail.getId());
+                        // context.startActivity(intent);
+                    }
+                }
+            });
+
+            itemView.setOnLongClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Email longClickedEmail = emailList.get(position);
+
+                    if (!isMultiSelectMode) {
+                        setMultiSelectMode(true); // Enter multi-select mode
+                    }
+                    toggleEmailSelection(longClickedEmail); // Select the item that was long-clicked
+
+                    if (itemClickListener != null) {
+                        itemClickListener.onEmailLongClick(longClickedEmail); // Notify Activity of long click
+                    }
+                    return true; // Consume the long click event
+                }
+                return false; // Did not consume
+            });
+
+            iconStar.setOnClickListener(v -> {
+                int position = getAdapterPosition(); // Use getAdapterPosition()
+                if (position != RecyclerView.NO_POSITION) {
+                    Email starredEmail = emailList.get(position);
+
+                    // Call the listener to handle the starring logic (which should update the model and notify)
+                    if (itemClickListener != null) {
+                        itemClickListener.onToggleEmailStarred(starredEmail, position);
+                    }
+                    // The actual UI update for the star icon will happen when onBindViewHolder is called again
+                    // after onToggleEmailStarred calls notifyItemChanged(position)
+                }
+            });
         }
 
+        // bind method is mostly for setting text/image resources based on email data
         void bind(Email email) {
             senderTextView.setText(email.getFrom());
             subjectTextView.setText(email.getSubject());
-            textTime.setText(email.getDate()); // Placeholder for now
-            // Ensure your Email model has a 'isRead()' method
-            // and a 'getId()' method
+
+            if (email.getDate() != null) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
+                textTime.setText(dateFormat.format(email.getDate()));
+            } else {
+                textTime.setText("");
+            }
+            // The imageSenderOrSelected and iconStar are set in onBindViewHolder due to conditional logic
+            // The background is also set in onBindViewHolder based on multi-select/read state
         }
     }
 }

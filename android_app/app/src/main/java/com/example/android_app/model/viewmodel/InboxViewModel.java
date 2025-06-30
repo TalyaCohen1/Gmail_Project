@@ -143,6 +143,21 @@ public class InboxViewModel extends AndroidViewModel {
         });
     }
 
+    public void unmarkEmailAsImportant(String emailId) {
+        mailRepository.unmarkMailAsImportant(emailId, new MailActionCallback() { // תצטרך ליישם את unmarkMailAsImportant ב-MailRepository
+            @Override
+            public void onSuccess() {
+                Log.d("InboxViewModel", "Email unmarked as important: " + emailId);
+                fetchEmails();
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                error.postValue("Failed to unmark as important: " + errorMessage);
+            }
+        });
+    }
+
     public void markEmailAsSpam(String emailId) {
         mailRepository.markMailAsSpam(emailId, new MailActionCallback() {
             @Override
@@ -158,6 +173,50 @@ public class InboxViewModel extends AndroidViewModel {
         });
     }
 
+    public void unmarkEmailAsSpam(String emailId) {
+        mailRepository.unmarkMailAsSpam(emailId, new MailActionCallback() { // תצטרך ליישם את unmarkMailAsSpam ב-MailRepository
+            @Override
+            public void onSuccess() {
+                Log.d("InboxViewModel", "Email unmarked as spam: " + emailId);
+                fetchEmails(); // רענן את התיבה לאחר הפעולה
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                error.postValue("Failed to unmark as spam: " + errorMessage);
+            }
+        });
+    }
+
+    public void markEmailAsStarred(String emailId) {
+        mailRepository.markMailAsStarred(emailId, new MailActionCallback() { // תצטרך ליישם את markMailAsStarred ב-MailRepository
+            @Override
+            public void onSuccess() {
+                Log.d("InboxViewModel", "Email marked as starred: " + emailId);
+                fetchEmails(); // רענן את התיבה לאחר הפעולה
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                error.postValue("Failed to mark as starred: " + errorMessage);
+            }
+        });
+    }
+
+    public void unmarkEmailAsStarred(String emailId) {
+        mailRepository.unmarkMailAsStarred(emailId, new MailActionCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d("InboxViewModel", "Email unmarked as starred: " + emailId);
+                fetchEmails(); // רענן את התיבה לאחר הפעולה
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                error.postValue("Failed to unmark as starred: " + errorMessage);
+            }
+        });
+    }
 
     public void fetchLabels() { // New method to fetch labels
         mailRepository.getLabels(new LabelsCallback() {
