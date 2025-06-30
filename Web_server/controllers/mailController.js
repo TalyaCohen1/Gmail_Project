@@ -120,7 +120,7 @@ exports.sendMail = async (req, res) => {
         if (!email) {
             return res.status(404).json({ error: 'Sender user not found' });
         }
-        const fromId = req.userId; // Get the authenticated user's ID
+        const fromId = findByEmail(email)._id; // Get the authenticated user's ID
 
         let { to, subject = '', body = '', isImportant = false, isStarred = false, labels = [], id } = req.body;
 
