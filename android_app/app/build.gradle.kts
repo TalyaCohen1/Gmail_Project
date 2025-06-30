@@ -80,6 +80,9 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
+    //Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
 
     implementation(libs.appcompat)
     implementation(libs.material)
