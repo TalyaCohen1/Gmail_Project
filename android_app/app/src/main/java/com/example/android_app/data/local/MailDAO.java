@@ -12,6 +12,13 @@ public interface MailDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<MailEntity> mails);
 
+    @Query("SELECT * FROM mails ORDER BY timestamp DESC")
+    LiveData<List<MailEntity>> getAllMails();
+
+    @Query("SELECT * FROM mails ORDER BY timestamp DESC")
+    List<MailEntity> getAllMailsNow(); //without LiveData
+
+
     @Query("SELECT * FROM mails WHERE send = 0")
     LiveData<List<MailEntity>> getDrafts();
 
@@ -23,4 +30,7 @@ public interface MailDAO {
 
     @Delete
     void deleteMail(MailEntity mail);
+
+    @Query("SELECT * FROM mails WHERE id = :id")
+    LiveData<MailEntity> getMailById(int id);
 }

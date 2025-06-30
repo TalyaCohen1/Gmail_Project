@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.android_app.data.local.MailEntity;
 import com.example.android_app.data.repository.MailRepository;
 import com.example.android_app.model.Email;
 
@@ -25,8 +26,8 @@ public class InboxViewModel extends AndroidViewModel {
         mailRepository = new MailRepository(application);
     }
 
-    public LiveData<List<Email>> getInboxEmails() {
-        return inboxEmails;
+    public LiveData<List<MailEntity>> getInboxEmails() {
+        return mailRepository.getLocalInbox();
     }
 
     public LiveData<String> getError() {
@@ -35,6 +36,10 @@ public class InboxViewModel extends AndroidViewModel {
 
     public MutableLiveData<Boolean> getIsLoading() {
         return isLoading;
+    }
+
+    public void refreshInboxFromServer() {
+        mailRepository.syncInboxFromServer();
     }
 
     // method that fetch the data

@@ -7,8 +7,9 @@ import java.util.List;
 
 @Entity(tableName = "mails")
 public class MailEntity {
-    @PrimaryKey(autoGenerate = true)
-    public int id;
+    @PrimaryKey
+    @NonNull
+    public String id;
 
     public String from;
     public String to;

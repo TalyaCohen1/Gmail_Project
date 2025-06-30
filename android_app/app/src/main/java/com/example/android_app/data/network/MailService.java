@@ -20,10 +20,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MailService {
     private final ApiService api;
-//    private static final String BASE_URL = BuildConfig.SERVER_URL;
+    private static final String BASE_URL = BuildConfig.SERVER_URL;
     private Retrofit retrofit;
 
     public MailService() {
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
         api = retrofit.create(ApiService.class);
     }
 

@@ -8,11 +8,13 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.android_app.data.local.MailEntity;
 import com.example.android_app.data.repository.MailRepository;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
 import com.example.android_app.model.Label;
 import com.example.android_app.utils.SendCallback;
+import com.example.android_app.utils.MailMapper;
 
 import java.util.List;
 
@@ -103,23 +105,20 @@ public class MailViewModel extends AndroidViewModel {
 
     public void fetchInboxMails() {
         _isLoading.setValue(true);
-        mailRepository.getInbox(new MailRepository.InboxCallback() {
+        mailRepository.fetchInboxAndSaveToLocal(new MailRepository.ActionCallback() {
             @Override
-            public void onSuccess(List<Email> emails) {
-                _inboxMails.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null); // Clear any previous error
-                Log.d(TAG, "Fetched Inbox: " + emails.size() + " mails");
+            public void onSuccess() {
+                _isLoading.postValue(false);
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
-                Log.e(TAG, "Failed to fetch Inbox: " + error);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
             }
         });
     }
+
 
     public void fetchSentMails() {
         _isLoading.setValue(true);
