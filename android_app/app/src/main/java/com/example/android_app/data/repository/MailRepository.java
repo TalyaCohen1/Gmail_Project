@@ -801,6 +801,7 @@ public class MailRepository {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
+    }
     // --- Interfaces שנשארים ---
     public interface InboxCallback {
         void onSuccess(List<Email> emails);
