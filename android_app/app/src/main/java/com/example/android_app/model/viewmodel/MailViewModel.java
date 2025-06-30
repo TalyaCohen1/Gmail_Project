@@ -73,6 +73,12 @@ public class MailViewModel extends AndroidViewModel {
         return _mailsByLabel;
     }
 
+    // New LiveData for all mails
+    private final MutableLiveData<List<Email>> _allMails = new MutableLiveData<>();
+    public LiveData<List<Email>> getAllMails() {
+        return _allMails;
+    }
+
     private final MutableLiveData<Email> _selectedMailDetails = new MutableLiveData<>();
     public LiveData<Email> getSelectedMailDetails() {
         return _selectedMailDetails;
@@ -117,6 +123,29 @@ public class MailViewModel extends AndroidViewModel {
                 _errorMessage.setValue(error);
                 _isLoading.setValue(false);
                 Log.e(TAG, "Failed to fetch Inbox: " + error);
+            }
+        });
+    }
+
+    /**
+     * Fetches all mails using the listMails method from MailRepository.
+     */
+    public void fetchAllMails() {
+        _isLoading.setValue(true);
+        mailRepository.listMails(new MailRepository.ListEmailsCallback() {
+            @Override
+            public void onSuccess(List<Email> emails) {
+                _allMails.setValue(emails);
+                _isLoading.setValue(false);
+                _errorMessage.setValue(null);
+                Log.d(TAG, "Fetched All Mails: " + emails.size() + " mails");
+            }
+
+            @Override
+            public void onFailure(String error) {
+                _errorMessage.setValue(error);
+                _isLoading.setValue(false);
+                Log.e(TAG, "Failed to fetch All Mails: " + error);
             }
         });
     }

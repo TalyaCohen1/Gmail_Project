@@ -1,12 +1,14 @@
 package com.example.android_app.ui.fragments;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -19,33 +21,47 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.android_app.R;
-import com.example.android_app.data.network.LabelService;
-import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
 import com.example.android_app.model.viewmodel.LabelViewModel;
 import com.example.android_app.model.viewmodel.MailViewModel;
-import com.example.android_app.utils.ViewModelFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.ArrayList; // Added for filtering
 
 public class SideBarFragment extends Fragment {
 
     private MailViewModel mailViewModel;
-    private LabelViewModel labelViewModel; // Assuming you have a LabelViewModel for label management
+    private LabelViewModel labelViewModel;
 
-    // Declare your LinearLayouts/TextViews for the categories here (example)
+    // Predefined category label names (must match backend)
+    private static final List<String> CATEGORY_LABEL_NAMES = Arrays.asList("Social", "Updates", "Forums", "Promotions");
+
+    // Default categories layouts
     private LinearLayout inboxLayout;
     private LinearLayout sentLayout;
     private LinearLayout draftsLayout;
+
+    // "More" section elements
+    private Button moreButton;
+    private LinearLayout moreLabelsSection;
+    private LinearLayout importantLayout;
+    private LinearLayout allMailLayout;
     private LinearLayout spamLayout;
     private LinearLayout trashLayout;
 
-    private LinearLayout customLabelsContainer; // Container for dynamically added custom labels
+    // Categories sub-section elements (within "More")
+    private Button categoryToggleButton;
+    private LinearLayout categorySubLabelsContainer;
+    private LinearLayout socialLayout;
+    private LinearLayout updatesLayout;
+    private LinearLayout forumsLayout;
+    private LinearLayout promotionsLayout;
+
+    // Custom labels section
+    private ImageView addCustomLabelButton;
+    private LinearLayout customLabelsContainer; // This will hold the dynamic labels
 
     // Listener for communication with the hosting Activity
     private SideBarFragmentListener listener;
@@ -53,8 +69,6 @@ public class SideBarFragment extends Fragment {
     public interface SideBarFragmentListener {
         void onCategorySelected(String categoryName);
         void onLabelSelected(String labelId, String labelName);
-        // Add other methods as needed, e.g., for compose email
-        void onComposeEmailSelected();
     }
 
     @Override
@@ -73,61 +87,145 @@ public class SideBarFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sidebar, container, false);
 
-        // Initialize ViewModelFactory and ViewModels
-        mailViewModel = new ViewModelProvider(this).get(MailViewModel.class); // No custom factory needed here
-        labelViewModel = new ViewModelProvider(this).get(LabelViewModel.class); // No custom factory needed here
+        // Initialize ViewModels
+        mailViewModel = new ViewModelProvider(this).get(MailViewModel.class);
+        labelViewModel = new ViewModelProvider(this).get(LabelViewModel.class);
 
-
-        // Initialize UI elements (replace with your actual IDs)
-        inboxLayout = view.findViewById(R.id.inbox_layout); // Example ID
+        // Initialize UI elements for default categories
+        inboxLayout = view.findViewById(R.id.inbox_layout);
         sentLayout = view.findViewById(R.id.sent_layout);
         draftsLayout = view.findViewById(R.id.drafts_layout);
-        spamLayout = view.findViewById(R.id.spam_layout);
-        trashLayout = view.findViewById(R.id.trash_layout);
-        customLabelsContainer = view.findViewById(R.id.custom_labels_container); // Example ID for a LinearLayout
+
+        // Initialize UI elements for "More" section
+        moreButton = view.findViewById(R.id.more_button);
+        moreLabelsSection = view.findViewById(R.id.more_labels_section);
+        importantLayout = view.findViewById(R.id.important_layout);
+        allMailLayout = view.findViewById(R.id.all_mail_layout);
+        spamLayout = view.findViewById(R.id.more_spam_layout);
+        trashLayout = view.findViewById(R.id.more_trash_layout);
+
+
+        // Initialize UI elements for Categories sub-section
+        categoryToggleButton = view.findViewById(R.id.category_toggle_button);
+        categorySubLabelsContainer = view.findViewById(R.id.category_sub_labels_container);
+        socialLayout = view.findViewById(R.id.social_layout);
+        updatesLayout = view.findViewById(R.id.updates_layout);
+        forumsLayout = view.findViewById(R.id.forums_layout);
+        promotionsLayout = view.findViewById(R.id.promotions_layout);
+
+        // Initialize UI elements for custom labels
+        addCustomLabelButton = view.findViewById(R.id.add_custom_label_button);
+        customLabelsContainer = view.findViewById(R.id.dynamic_custom_labels_list);
+
 
         // Set up click listeners for static categories
         if (inboxLayout != null) {
             inboxLayout.setOnClickListener(v -> {
-                mailViewModel.fetchInboxMails(); // Call the fetch method
+                mailViewModel.fetchInboxMails();
                 if (listener != null) listener.onCategorySelected("Inbox");
             });
         }
         if (sentLayout != null) {
             sentLayout.setOnClickListener(v -> {
-                mailViewModel.fetchSentMails(); // Call the fetch method
+                mailViewModel.fetchSentMails();
                 if (listener != null) listener.onCategorySelected("Sent");
             });
         }
         if (draftsLayout != null) {
             draftsLayout.setOnClickListener(v -> {
-                mailViewModel.fetchDrafts(); // Call the fetch method
+                mailViewModel.fetchDrafts();
                 if (listener != null) listener.onCategorySelected("Drafts");
+            });
+        }
+
+        // Set up click listener for "More" button
+        if (moreButton != null) {
+            moreButton.setOnClickListener(v -> {
+                if (moreLabelsSection.getVisibility() == View.GONE) {
+                    moreLabelsSection.setVisibility(View.VISIBLE);
+                    // Change drawable to arrow_down when expanded
+                    moreButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_drop_down, 0, 0, 0);
+                } else {
+                    moreLabelsSection.setVisibility(View.GONE);
+                    // Change drawable back to arrow_right when collapsed
+                    moreButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_right, 0, 0, 0);
+                    // Also hide categories if "More" is collapsed
+                    categorySubLabelsContainer.setVisibility(View.GONE);
+                    categoryToggleButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_right, 0, 0, 0);
+                }
+            });
+        }
+
+        // Set up click listeners for the "More" section categories
+        if (importantLayout != null) {
+            importantLayout.setOnClickListener(v -> {
+                mailViewModel.fetchImportantMails();
+                if (listener != null) listener.onCategorySelected("Important");
+            });
+        }
+        if (allMailLayout != null) {
+            allMailLayout.setOnClickListener(v -> {
+                mailViewModel.fetchAllMails(); // Use the newly added fetchAllMails
+                if (listener != null) listener.onCategorySelected("All Mail");
             });
         }
         if (spamLayout != null) {
             spamLayout.setOnClickListener(v -> {
-                mailViewModel.fetchSpamMails(); // Call the fetch method
+                mailViewModel.fetchSpamMails();
                 if (listener != null) listener.onCategorySelected("Spam");
             });
         }
         if (trashLayout != null) {
             trashLayout.setOnClickListener(v -> {
-                mailViewModel.fetchDeletedMails(); // Call the fetch method
+                mailViewModel.fetchDeletedMails();
                 if (listener != null) listener.onCategorySelected("Trash");
             });
         }
 
 
+        // Set up click listener for "Categories" toggle button
+        if (categoryToggleButton != null) {
+            categoryToggleButton.setOnClickListener(v -> {
+                if (categorySubLabelsContainer.getVisibility() == View.GONE) {
+                    categorySubLabelsContainer.setVisibility(View.VISIBLE);
+                    // Change drawable to arrow_down when expanded
+                    categoryToggleButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_drop_down, 0, 0, 0);
+                } else {
+                    categorySubLabelsContainer.setVisibility(View.GONE);
+                    // Change drawable back to arrow_right when collapsed
+                    categoryToggleButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_right, 0, 0, 0);
+                }
+            });
+        }
+
+        // Set up click listeners for category sub-labels
+        // These will now find the label ID and call fetchMailsByLabel
+        if (socialLayout != null) {
+            socialLayout.setOnClickListener(v -> handleCategoryLabelClick("Social"));
+        }
+        if (updatesLayout != null) {
+            updatesLayout.setOnClickListener(v -> handleCategoryLabelClick("Updates"));
+        }
+        if (forumsLayout != null) {
+            forumsLayout.setOnClickListener(v -> handleCategoryLabelClick("Forums"));
+        }
+        if (promotionsLayout != null) {
+            promotionsLayout.setOnClickListener(v -> handleCategoryLabelClick("Promotions"));
+        }
+
+        // Set up click listener for "Add Label" icon
+        if (addCustomLabelButton != null) {
+            addCustomLabelButton.setOnClickListener(v -> {
+                // Implement your add label functionality here, e.g., show a dialog
+                Toast.makeText(getContext(), "Add new custom label", Toast.LENGTH_SHORT).show();
+            });
+        }
+
         // Observe LiveData from MailViewModel to update counts (optional, but good practice)
-        mailViewModel.getInboxMails().observe(getViewLifecycleOwner(), emails -> {
-            // Update inbox count TextView if you have one
-            // TextView inboxCount = view.findViewById(R.id.inbox_count);
-            // if (inboxCount != null) inboxCount.setText(String.valueOf(emails.size()));
-        });
-        // Repeat for other categories (sent, drafts, etc.)
+        // ... (existing count observation code remains the same)
 
         // Observe LiveData from LabelViewModel to populate custom labels dynamically
+        // The displayCustomLabels method will now filter out the predefined categories
         labelViewModel.getLabels().observe(getViewLifecycleOwner(), this::displayCustomLabels);
 
         // Fetch initial data when the fragment is created
@@ -138,20 +236,49 @@ public class SideBarFragment extends Fragment {
     }
 
     /**
-     * Dynamically displays custom labels in the sidebar.
-     * You will need to create a layout for each label (e.g., a LinearLayout containing a TextView).
-     * @param labels The list of custom Label objects.
+     * Handles clicks on predefined category labels (Social, Updates, etc.).
+     * It finds the corresponding Label ID and calls fetchMailsByLabel.
+     * @param categoryName The name of the category label clicked.
      */
-    private void displayCustomLabels(List<Label> labels) {
+    private void handleCategoryLabelClick(String categoryName) {
+        // Get all labels observed by the ViewModel
+        List<Label> allLabels = labelViewModel.getLabels().getValue();
+        if (allLabels != null) {
+            for (Label label : allLabels) {
+                if (Objects.equals(label.getName(), categoryName)) {
+                    mailViewModel.fetchMailsByLabel(label.getId());
+                    if (listener != null) listener.onCategorySelected(categoryName); // Use onCategorySelected for consistency
+                    return;
+                }
+            }
+        }
+        Toast.makeText(getContext(), "Category '" + categoryName + "' not found.", Toast.LENGTH_SHORT).show();
+        Log.e(TAG, "Category label " + categoryName + " not found in fetched labels.");
+    }
+
+    /**
+     * Dynamically displays custom labels in the sidebar,
+     * filtering out the predefined category labels.
+     * @param allLabels The list of all Label objects fetched from the backend.
+     */
+    private void displayCustomLabels(List<Label> allLabels) {
         if (customLabelsContainer == null) return;
 
         customLabelsContainer.removeAllViews(); // Clear existing labels
 
-        for (Label label : labels) {
+        // Filter out the predefined category labels
+        List<Label> filteredLabels = new ArrayList<>();
+        for (Label label : allLabels) {
+            if (!CATEGORY_LABEL_NAMES.contains(label.getName())) {
+                filteredLabels.add(label);
+            }
+        }
+
+        for (Label label : filteredLabels) {
             // Create a new layout for each label (e.g., a LinearLayout with a TextView)
             LinearLayout labelView = (LinearLayout) LayoutInflater.from(getContext())
-                    .inflate(R.layout.item_custom_label, customLabelsContainer, false); // Create item_sidebar_label.xml if you don't have it
-            TextView labelNameTextView = labelView.findViewById(R.id.label_name); // Assuming ID in item_sidebar_label.xml
+                    .inflate(R.layout.item_custom_label, customLabelsContainer, false); // Assuming you have item_custom_label.xml
+            TextView labelNameTextView = labelView.findViewById(R.id.label_name); // Assuming ID in item_custom_label.xml
             ImageView labelActionsButton = labelView.findViewById(R.id.label_actions_button); // Assuming ID for a 3-dots menu
 
             if (labelNameTextView != null) {
@@ -183,7 +310,7 @@ public class SideBarFragment extends Fragment {
                 // showEditLabelModal(label); // Assuming you have this method
                 Toast.makeText(getContext(), "Edit label: " + label.getName(), Toast.LENGTH_SHORT).show();
                 return true;
-            } else if (itemId == R.id.action_delete_label) {
+            } else if (itemId == R.id.action_delete_label) { // Corrected this line
                 labelViewModel.deleteLabel(label.getId()); // Call ViewModel to delete label
                 Toast.makeText(getContext(), "Delete label: " + label.getName(), Toast.LENGTH_SHORT).show();
                 return true;
@@ -194,7 +321,7 @@ public class SideBarFragment extends Fragment {
     }
 
 
-    // Helper method to convert dp to pixels
+    // Helper method to convert dp to pixels (if needed, not directly used in this modification)
     private int dpToPx(int dp) {
         return (int) (dp * getResources().getDisplayMetrics().density);
     }

@@ -2,6 +2,7 @@ package com.example.android_app.ui.activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity; // <--- Import this
 import android.view.MenuItem; // Required for handling menu item selections (like hamburger icon click)
 
 import androidx.annotation.NonNull;
@@ -101,16 +102,5 @@ public class MainActivity extends AppCompatActivity implements SideBarFragment.S
         //         .replace(R.id.fragment_container, MailListFragment.newInstance(null, labelId))
         //         .commit();
         drawerLayout.closeDrawers(); // Close the drawer after selection
-    }
-
-    @Override
-    public void onComposeEmailSelected() {
-        // This method will be called when the "Compose" button is clicked in SideBarFragment
-        Log.d("MainActivity", "Compose Email button clicked.");
-        // Here you would typically navigate to a new activity or fragment for composing an email
-        // Example:
-        // Intent composeIntent = new Intent(this, ComposeEmailActivity.class);
-        // startActivity(composeIntent);
-        drawerLayout.closeDrawers(); // Close the drawer
     }
 }
