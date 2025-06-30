@@ -2,7 +2,9 @@ package com.example.android_app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
@@ -73,27 +75,53 @@ public class EmailDetailsActivity extends AppCompatActivity {
         senderView.setText("From: " + email.getFrom());
         subjectView.setText("Subject: " + email.getSubject());
         bodyView.setText(email.getBody());
-        replyButton.setOnClickListener(v -> openCreateMail("replay", email));
-        forwardButton.setOnClickListener(v -> openCreateMail("forward", email));
+
+        LinearLayout sentButtonsGroup = findViewById(R.id.sentButtonsGroup);
+        LinearLayout draftButtonsGroup = findViewById(R.id.draftButtonsGroup);
+
+        sentButtonsGroup.setVisibility(View.GONE);
+        draftButtonsGroup.setVisibility(View.GONE);
+
+        if(!email.isSend()){
+            //handle draft case
+            draftButtonsGroup.setVisibility(View.VISIBLE);
+            Button editDraftButton = findViewById(R.id.btnEditDraft);
+            editDraftButton.setOnClickListener(v -> openCreateMail("edit", email));
+        } else {
+            //handle sent case
+            sentButtonsGroup.setVisibility(View.VISIBLE);
+            replyButton.setOnClickListener(v -> openCreateMail("replay", email));
+            forwardButton.setOnClickListener(v -> openCreateMail("forward", email));
+        }
     }
+
 
     private void openCreateMail(String type, Email email) {
         Bundle args = new Bundle();
         if(type.equals("replay")) {
             args.putString("to", email.getFrom());
             args.putString("subject",  email.getReplySubject());
+            args.putString("body", email.getReplyBody());
         } else if(type.equals("forward")) {
             args.putString("to", email.getTo());
             args.putString("subject", "FWD: " + email.getForwardSubject());
+            args.putString("body", email.getForwardBody());
+        } else if(type.equals("edit")) {
+            args.putString("to", email.getTo());
+            args.putString("subject", email.getSubject());
+            args.putString("body", email.getBody());
         }
 
         CreateMailFragment fragment = new CreateMailFragment();
         fragment.setArguments(args);
+        findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
     }
+
 
     private void displayError() {
         senderView.setText("Error loading email");

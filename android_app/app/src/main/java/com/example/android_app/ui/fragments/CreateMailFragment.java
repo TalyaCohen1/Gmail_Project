@@ -30,6 +30,15 @@ public class CreateMailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_mail, container, false);
 
+        // חיבור לרכיבי UI
+        editTextTo = view.findViewById(R.id.editTextTo);
+        editTextSubject = view.findViewById(R.id.editTextSubject);
+        editTextBody = view.findViewById(R.id.editTextBody);
+        textError = view.findViewById(R.id.textError);
+        buttonSend = view.findViewById(R.id.buttonSend);
+        ViewModelFactory factory = new ViewModelFactory(requireActivity().getApplication());
+        viewModel = new ViewModelProvider(this, factory).get(CreateMailViewModel.class);
+
         Bundle args = getArguments();
         if (args != null) {
             String defaultTo = args.getString("to", "");
@@ -40,15 +49,6 @@ public class CreateMailFragment extends Fragment {
             editTextSubject.setText(defaultSubject);
             editTextBody.setText(defaultBody);
         }
-
-        // חיבור לרכיבי UI
-        editTextTo = view.findViewById(R.id.editTextTo);
-        editTextSubject = view.findViewById(R.id.editTextSubject);
-        editTextBody = view.findViewById(R.id.editTextBody);
-        textError = view.findViewById(R.id.textError);
-        buttonSend = view.findViewById(R.id.buttonSend);
-        ViewModelFactory factory = new ViewModelFactory(requireActivity().getApplication());
-        viewModel = new ViewModelProvider(this, factory).get(CreateMailViewModel.class);
 
         // show error message
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
@@ -64,7 +64,7 @@ public class CreateMailFragment extends Fragment {
             if (Boolean.TRUE.equals(sent)) {
                 //close fragment and back to inbox
                 requireActivity().getSupportFragmentManager().popBackStack();
-                requireActivity().findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
+                requireActivity().findViewById(R.id.fragment_container).setVisibility(View.GONE);
             }
         });
 
