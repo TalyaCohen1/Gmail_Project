@@ -99,6 +99,30 @@ public class InboxActivity extends AppCompatActivity implements
         });
     }
 
+    @Override
+    public void onToggleEmailStarred(Email email, int position) {
+        // --- THIS IS THE MISSING METHOD YOU NEED TO ADD ---
+
+        // 1. Toggle the 'starred' status in your data model
+        // Assuming your Email object is mutable and email.setStarred() works
+        email.setStarred(!email.isStarred());
+
+        // 2. Notify the adapter that this specific item's data has changed.
+        // This will cause onBindViewHolder to be re-executed for this item,
+        // which will update the star icon based on the new email.isStarred() state.
+        adapter.notifyItemChanged(position);
+
+        // 3. (Optional) Show a Toast message or update UI
+        String message = email.isStarred() ? "Marked as starred" : "Unmarked as starred";
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+        // 4. (Important) If you're using a ViewModel or persistent storage (like a database),
+        // you would typically call a method on your ViewModel here to persist this change.
+        // For example:
+        // myEmailViewModel.updateEmailStarredStatus(email.getId(), email.isStarred());
+    }
+
+
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new EmailAdapter(this, new ArrayList<>(), this); // Pass 'this' as EmailItemClickListener
@@ -292,6 +316,15 @@ public class InboxActivity extends AppCompatActivity implements
             startActivity(intent);
         }
         // If in multi-select mode, the adapter already handled the toggle
+    }
+    public void onMarkAsStarred(String mailId) {
+        viewModel.markEmailAsImportant(mailId);
+        Toast.makeText(this, "Marked as starred", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onUnmarkAsStarred(String mailId) {
+        viewModel.unmarkEmailAsImportant(mailId); // ודא שמתודה זו קיימת ב-ViewModel
+        Toast.makeText(this, "Unmarked as starred", Toast.LENGTH_SHORT).show();
     }
 
     @Override
