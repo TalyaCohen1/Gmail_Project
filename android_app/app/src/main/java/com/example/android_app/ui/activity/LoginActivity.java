@@ -55,5 +55,11 @@ public class LoginActivity extends AppCompatActivity {
             TextView errorView = findViewById(R.id.errorMessage);
             errorView.setText(error);
         });
+
+        TextView tvNoAccount = findViewById(R.id.tvNoAccount);
+        tvNoAccount.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RegistrationActivity.class);
+            startActivity(intent);
+            finish();
     }
 }
