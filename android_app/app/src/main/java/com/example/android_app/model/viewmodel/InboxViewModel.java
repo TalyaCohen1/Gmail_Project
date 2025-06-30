@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.android_app.data.local.MailEntity;
 import com.example.android_app.data.repository.MailRepository;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label; // Import for Label
@@ -30,8 +31,8 @@ public class InboxViewModel extends AndroidViewModel {
         fetchLabels(); // Fetch labels when ViewModel is created
     }
 
-    public LiveData<List<Email>> getInboxEmails() {
-        return inboxEmails;
+    public LiveData<List<MailEntity>> getInboxEmails() {
+        return mailRepository.getLocalInbox();
     }
 
     public LiveData<String> getError() {
@@ -40,6 +41,10 @@ public class InboxViewModel extends AndroidViewModel {
 
     public MutableLiveData<Boolean> getIsLoading() {
         return isLoading;
+    }
+
+    public void refreshInboxFromServer() {
+        mailRepository.syncInboxFromServer();
     }
 
     public LiveData<List<Label>> getLabels() { // New getter for labels

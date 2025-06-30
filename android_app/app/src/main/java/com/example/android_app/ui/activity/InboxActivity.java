@@ -26,6 +26,7 @@ import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
+import com.example.android_app.utils.MailMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -345,7 +346,8 @@ public class InboxActivity extends AppCompatActivity implements
     private void observeViewModel() {
         viewModel.getInboxEmails().observe(this, emails -> {
             if (emails != null) {
-                adapter.setEmails(emails);
+                List<Email> emailsToShow = MailMapper.toEmails(emails);
+                adapter.setEmails(emailsToShow);
             }
             swipeRefreshLayout.setRefreshing(false); // Stop refresh animation regardless
             loadingProgressBar.setVisibility(View.GONE); // Hide progress bar regardless

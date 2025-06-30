@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 
 import com.example.android_app.data.network.ApiClient;
 import com.example.android_app.data.network.ApiService;
@@ -11,10 +12,21 @@ import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
 import com.example.android_app.model.Label; // Needed for getMailLabels
 import com.example.android_app.model.MailLabelRequest; // Needed for addLabelToMail, removeMailFromLabel
+import com.example.android_app.utils.MailMapper;
 import com.example.android_app.utils.SendCallback;
 import com.example.android_app.utils.SharedPrefsManager;
+import com.example.android_app.data.network.MailService;
 
+//Room Database
+import com.example.android_app.data.local.AppDatabase;
+import com.example.android_app.data.local.MailDAO;
+import com.example.android_app.data.local.MailEntity;
+
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import okhttp3.ResponseBody; // Needed for various success/failure responses
 import retrofit2.Call;
@@ -25,56 +37,33 @@ public class MailRepository {
 
     private final ApiService apiService; // הממשק של Retrofit
     private final Context context;
+    private final MailDAO mailDao;
+    private final MailService mailService = new MailService();
+
+    private final ExecutorService executor; //so room run in another thread
 
     public MailRepository(Context context) {
         this.context = context.getApplicationContext();
         apiService = ApiClient.getClient().create(ApiService.class); //create object from retrofit
+        AppDatabase db = AppDatabase.getInstance(context);
+        mailDao = db.mailDao();
+        executor = Executors.newSingleThreadExecutor();
+
     }
 
     private String getTokenFromPrefs(Context context) {
         return SharedPrefsManager.get(context, "token");
     }
 
-    // --- קאלבקים (Callbacks) ---
-
-    // קאלבקים קיימים
-    public interface InboxCallback {
-        void onSuccess(List<Email> emails);
-        void onFailure(String error);
-    }
-
-    public interface EmailDetailsCallback {
-        void onSuccess(Email email);
-        void onFailure(String error);
-    }
-
-    // קאלבקים חדשים לפעולות כלליות על מיילים ותוויות
-    public interface MailActionCallback { // Changed from ActionCallback to MailActionCallback for clarity and consistency
-        void onSuccess();
-        void onFailure(String error);
-    }
-
-    public interface LabelsCallback { // Changed from ListLabelsCallback to LabelsCallback for clarity and consistency
-        void onSuccess(List<Label> labels);
-        void onFailure(String error);
-    }
-
-    public interface ListEmailsCallback {
-        void onSuccess(List<Email> emails);
-        void onFailure(String error);
-    }
-
-
-    // --- מתודות קיימות ---
+    // --- מתודות קיימות שנשארות ---
 
     public void sendEmail(String to, String subject, String body, SendCallback callback) {
-        Log.d("MyDebug", "Repository sendEmail: Calling apiService.sendEmail()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
             return;
         }
-        EmailRequest request = new EmailRequest(to, subject, body); // נניח שזה המודל הנכון
+        EmailRequest request = new EmailRequest(to, subject, body);
 
         apiService.sendEmail("Bearer " + token, request).enqueue(new Callback<Void>() {
             @Override
@@ -93,19 +82,19 @@ public class MailRepository {
     }
 
     public void getInbox(InboxCallback callback) {
-        Log.d("MyDebug", "Repository getInbox: Calling apiService.getInboxEmails()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository getInbox: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
 
         apiService.getInboxEmails("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
+            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
+                if (response.isSuccessful()) {
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -119,7 +108,6 @@ public class MailRepository {
     }
 
     public void getEmailById(String emailId, EmailDetailsCallback callback) {
-        Log.d("MyDebug", "Repository getEmailById: Calling apiService.getEmailDetails()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -131,6 +119,7 @@ public class MailRepository {
             public void onResponse(@NonNull Call<Email> call, @NonNull Response<Email> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
+
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -197,19 +186,19 @@ public class MailRepository {
     }
 
     public void getDrafts(ListEmailsCallback callback) {
-        Log.d("MyDebug", "Repository getDrafts: Calling apiService.getDrafts()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository getDrafts: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
 
         apiService.getDrafts("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
+            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
+                if (response.isSuccessful()) {
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -233,10 +222,11 @@ public class MailRepository {
 
         apiService.getSent("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
-                } else {
+            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
+                if (response.isSuccessful()) {
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -261,8 +251,9 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
-                } else {
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -287,8 +278,9 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
-                } else {
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -365,8 +357,9 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -442,9 +435,10 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure("Failed to mark as unread. Code: " + response.code());
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);                } else {
+                    callback.onFailure("Server error: " + response.code());
                 }
             }
 
@@ -703,9 +697,10 @@ public class MailRepository {
         apiService.getMailsByLabel("Bearer " + token, labelId).enqueue(new Callback<List<Email>>() {
             @Override
             public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
-                } else {
+                if (response.isSuccessful()) {
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -716,6 +711,71 @@ public class MailRepository {
             }
         });
     }
+
+
+        private void saveEmailsToLocalDb(List<Email> emails) {
+            executor.execute(() -> {
+                List<MailEntity> entities = new ArrayList<>();
+                for (Email email : emails) {
+                    entities.add(MailMapper.toEntity(email));
+                }
+                mailDao.insertAll(entities);
+            });
+        }
+
+        public void getMailsFromLocal(LocalCallback<List<MailEntity>> callback) {
+            executor.execute(() -> {
+                List<MailEntity> mails = mailDao.getAllMailsNow();
+                callback.onResult(mails);
+            });
+        }
+    public void syncInboxFromServer() {
+        getInbox(new InboxCallback() {
+            @Override
+            public void onSuccess(List<Email> emails) {
+                executor.execute(() -> {
+                    List<MailEntity> entities = MailMapper.toEntities(emails);
+                    mailDao.clearAll();
+                    mailDao.insertAll(entities);
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("Repo", "Failed to sync: " + error);
+            }
+        });
+    }
+
+    public LiveData<List<MailEntity>> getLocalInbox() {
+        return mailDao.getAllMails();
+    }
+
+    public void fetchInboxAndSaveToLocal(ActionCallback callback) {
+        String token = getTokenFromPrefs(context);
+
+        mailService.getInbox(token, new MailService.InboxCallback() {
+            @Override
+            public void onSuccess(List<Email> emails) {
+                // המרת Email ל־MailEntity
+                List<MailEntity> entities = MailMapper.toEntities(emails);
+
+                // שמירה במסד המקומי (Room)
+                executor.execute(() -> {
+                    mailDao.insertAll(entities); // פעולה שכותבת במסד המקומי
+                    callback.onSuccess();
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                callback.onFailure(error);
+            }
+        });
+    }
+
+
+
 
     // NEW method to fetch all labels (for the "Add to label" menu in InboxActivity)
     public void getLabels(LabelsCallback callback) {
@@ -741,5 +801,36 @@ public class MailRepository {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
+    }
+    // --- Interfaces שנשארים ---
+    public interface InboxCallback {
+        void onSuccess(List<Email> emails);
+        void onFailure(String error);
+    }
+
+    public interface EmailDetailsCallback {
+        void onSuccess(Email email);
+        void onFailure(String error);
+    }
+
+    public interface LocalCallback<T> {
+        void onResult(T result);
+    }
+
+    // --- NEW Interfaces for Mail-Related Methods ---
+
+    public interface ListEmailsCallback {
+        void onSuccess(List<Email> emails);
+        void onFailure(String error);
+    }
+
+    public interface ActionCallback {
+        void onSuccess();
+        void onFailure(String error);
+    }
+
+    public interface ListLabelsCallback {
+        void onSuccess(List<Label> labels);
+        void onFailure(String error);
     }
 }
