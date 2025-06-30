@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
             SharedPrefsManager.save(this, "userId", result.getUserId());
 
 
-            Intent intent = new Intent(this, InboxActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
         });
