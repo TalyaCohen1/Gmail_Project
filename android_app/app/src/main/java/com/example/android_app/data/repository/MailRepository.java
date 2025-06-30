@@ -55,14 +55,19 @@ public class MailRepository {
         return SharedPrefsManager.get(context, "token");
     }
 
+    // --- מתודות קיימות שנשארות ---
 
     public void sendEmail(String to, String subject, String body, SendCallback callback) {
         String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
         EmailRequest request = new EmailRequest(to, subject, body);
 
         apiService.sendEmail("Bearer " + token, request).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
                 } else {
@@ -70,7 +75,7 @@ public class MailRepository {
                 }
             }
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
@@ -96,7 +101,7 @@ public class MailRepository {
             }
 
             @Override
-            public void onFailure(Call<List<Email>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Email>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
@@ -104,11 +109,15 @@ public class MailRepository {
 
     public void getEmailById(String emailId, EmailDetailsCallback callback) {
         String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
 
         apiService.getEmailDetails("Bearer " + token, emailId).enqueue(new Callback<Email>() {
             @Override
-            public void onResponse(Call<Email> call, Response<Email> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call<Email> call, @NonNull Response<Email> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
 
                 } else {
@@ -116,13 +125,13 @@ public class MailRepository {
                 }
             }
             @Override
-            public void onFailure(Call<Email> call, Throwable t) {
+            public void onFailure(@NonNull Call<Email> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
     }
 
-    // --- NEW Mail-Related Methods ---
+    // --- מתודות נוספות שהיו קיימות אצלך (לא קשורות לבחירה מרובה אך חשובות) ---
 
     public void listMails(ListEmailsCallback callback) {
         Log.d("MyDebug", "Repository listMails: Calling apiService.listMails()");
@@ -135,8 +144,8 @@ public class MailRepository {
 
         apiService.listMails("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
                     callback.onFailure("Server error: " + response.code());
@@ -144,7 +153,7 @@ public class MailRepository {
             }
 
             @Override
-            public void onFailure(Call<List<Email>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Email>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
@@ -161,8 +170,8 @@ public class MailRepository {
 
         apiService.searchMails("Bearer " + token, query).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
                     callback.onFailure("Server error: " + response.code());
@@ -170,7 +179,7 @@ public class MailRepository {
             }
 
             @Override
-            public void onFailure(Call<List<Email>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Email>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
@@ -196,13 +205,11 @@ public class MailRepository {
             }
 
             @Override
-            public void onFailure(Call<List<Email>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Email>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
     }
-
-    // getInbox is already defined, using apiService.getInboxEmails()
 
     public void getSentMails(ListEmailsCallback callback) {
         Log.d("MyDebug", "Repository getSentMails: Calling apiService.getSent()");
@@ -225,7 +232,7 @@ public class MailRepository {
             }
 
             @Override
-            public void onFailure(Call<List<Email>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Email>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
@@ -242,8 +249,8 @@ public class MailRepository {
 
         apiService.getSpamMails("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     List<Email> emails = response.body();
                     saveEmailsToLocalDb(emails);
                     callback.onSuccess(emails);                } else {
@@ -252,7 +259,7 @@ public class MailRepository {
             }
 
             @Override
-            public void onFailure(Call<List<Email>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Email>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
@@ -269,8 +276,8 @@ public class MailRepository {
 
         apiService.getDeletedMails("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     List<Email> emails = response.body();
                     saveEmailsToLocalDb(emails);
                     callback.onSuccess(emails);                } else {
@@ -279,59 +286,7 @@ public class MailRepository {
             }
 
             @Override
-            public void onFailure(Call<List<Email>> call, Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
-
-    public void markMailAsImportant(String mailId, ActionCallback callback) {
-        Log.d("MyDebug", "Repository markMailAsImportant: Calling apiService.markMailAsImportant()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository markMailAsImportant: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-
-        apiService.markMailAsImportant("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
-
-    public void unmarkMailAsImportant(String mailId, ActionCallback callback) {
-        Log.d("MyDebug", "Repository unmarkMailAsImportant: Calling apiService.unmarkMailAsImportant()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository unmarkMailAsImportant: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-
-        apiService.unmarkMailAsImportant("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Email>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
@@ -348,69 +303,16 @@ public class MailRepository {
 
         apiService.getImportantMails("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
-                if (response.isSuccessful()) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Email>> call, Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
-
-    public void markMailAsStarred(String mailId, ActionCallback callback) {
-        Log.d("MyDebug", "Repository markMailAsStarred: Calling apiService.markMailAsStarred()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository markMailAsStarred: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-
-        apiService.markMailAsStarred("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess();
+            public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
-
-    public void unmarkMailAsStarred(String mailId, ActionCallback callback) {
-        Log.d("MyDebug", "Repository unmarkMailAsStarred: Calling apiService.unmarkMailAsStarred()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository unmarkMailAsStarred: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-
-        apiService.unmarkMailAsStarred("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Email>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
@@ -427,25 +329,22 @@ public class MailRepository {
 
         apiService.getStarredMails("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
-            public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
-                if (response.isSuccessful()) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);                } else {
+            public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Email>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Email>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
     }
 
-    // getMail is covered by getEmailById (same endpoint)
-
-    public void updateDraft(String mailId, EmailRequest request, ActionCallback callback) {
+    public void updateDraft(String mailId, EmailRequest request, MailActionCallback callback) {
         Log.d("MyDebug", "Repository updateDraft: Calling apiService.updateDraft()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
@@ -456,33 +355,112 @@ public class MailRepository {
 
         apiService.updateDraft("Bearer " + token, mailId, request).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
     }
 
-    public void deleteMail(String mailId, ActionCallback callback) {
+    // --- מתודות מעודכנות/חדשות עבור בחירה מרובה ופעולות על מיילים ---
+
+    public void deleteMail(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository deleteMail: Calling apiService.deleteMail()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository deleteMail: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
 
-        apiService.deleteMail("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
+        apiService.deleteMail("Bearer " + token, emailId).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Failed to delete mail. Code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                callback.onFailure("Network failure: " + t.getMessage());
+            }
+        });
+    }
+
+    public void markAsRead(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
+        Log.d("MyDebug", "Repository markAsRead: Calling apiService.markAsRead()");
+        String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
+
+        apiService.markAsRead("Bearer " + token, emailId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Failed to mark as read. Code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                callback.onFailure("Network failure: " + t.getMessage());
+            }
+        });
+    }
+
+    public void markAsUnread(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
+        Log.d("MyDebug", "Repository markAsUnread: Calling apiService.markAsUnread()");
+        String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
+
+        apiService.markAsUnread("Bearer " + token, emailId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    List<Email> emails = response.body();
+                    saveEmailsToLocalDb(emails);
+                    callback.onSuccess(emails);                } else {
+                    callback.onFailure("Server error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                callback.onFailure("Network failure: " + t.getMessage());
+            }
+        });
+    }
+
+    public void markMailAsImportant(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
+        Log.d("MyDebug", "Repository markMailAsImportant: Calling apiService.markMailAsImportant()");
+        String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            Log.e("MyDebug", "Repository markMailAsImportant: TOKEN IS MISSING!");
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
+
+        apiService.markMailAsImportant("Bearer " + token, emailId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
                 } else {
@@ -491,13 +469,91 @@ public class MailRepository {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
     }
 
-    public void markMailAsSpam(String mailId, ActionCallback callback) {
+    public void unmarkMailAsImportant(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
+        Log.d("MyDebug", "Repository unmarkMailAsImportant: Calling apiService.unmarkMailAsImportant()");
+        String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            Log.e("MyDebug", "Repository unmarkMailAsImportant: TOKEN IS MISSING!");
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
+
+        apiService.unmarkMailAsImportant("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Server error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                callback.onFailure("Network failure: " + t.getMessage());
+            }
+        });
+    }
+
+    public void markMailAsStarred(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
+        Log.d("MyDebug", "Repository markMailAsStarred: Calling apiService.markMailAsStarred()");
+        String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            Log.e("MyDebug", "Repository markMailAsStarred: TOKEN IS MISSING!");
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
+
+        apiService.markMailAsStarred("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Server error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                callback.onFailure("Network failure: " + t.getMessage());
+            }
+        });
+    }
+
+    public void unmarkMailAsStarred(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
+        Log.d("MyDebug", "Repository unmarkMailAsStarred: Calling apiService.unmarkMailAsStarred()");
+        String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            Log.e("MyDebug", "Repository unmarkMailAsStarred: TOKEN IS MISSING!");
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
+
+        apiService.unmarkMailAsStarred("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Server error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                callback.onFailure("Network failure: " + t.getMessage());
+            }
+        });
+    }
+
+    public void markMailAsSpam(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository markMailAsSpam: Calling apiService.markMailAsSpam()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
@@ -508,7 +564,7 @@ public class MailRepository {
 
         apiService.markMailAsSpam("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
                 } else {
@@ -517,13 +573,13 @@ public class MailRepository {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
     }
 
-    public void unmarkMailAsSpam(String mailId, ActionCallback callback) {
+    public void unmarkMailAsSpam(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository unmarkMailAsSpam: Calling apiService.unmarkMailAsSpam()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
@@ -534,32 +590,6 @@ public class MailRepository {
 
         apiService.unmarkMailAsSpam("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
-
-    public void markAsRead(String mailId, ActionCallback callback) {
-        Log.d("MyDebug", "Repository markAsRead: Calling apiService.markAsRead()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository markAsRead: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-
-        apiService.markAsRead("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
-            @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
@@ -575,33 +605,7 @@ public class MailRepository {
         });
     }
 
-    public void markAsUnread(String mailId, ActionCallback callback) {
-        Log.d("MyDebug", "Repository markAsUnread: Calling apiService.markAsUnread()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository markAsUnread: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-
-        apiService.markAsUnread("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
-
-    public void addLabelToMail(String mailId, String labelId, ActionCallback callback) {
+    public void addLabelToMail(String mailId, String labelId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository addLabelToMail: Calling apiService.addLabelToMail()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
@@ -628,7 +632,7 @@ public class MailRepository {
         });
     }
 
-    public void removeLabelFromMail(String mailId, String labelId, ActionCallback callback) {
+    public void removeLabelFromMail(String mailId, String labelId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository removeLabelFromMail: Calling apiService.removeLabelFromMail()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
@@ -654,7 +658,7 @@ public class MailRepository {
         });
     }
 
-    public void getMailLabels(String mailId, ListLabelsCallback callback) {
+    public void getMailLabels(String mailId, LabelsCallback callback) { // Updated to use LabelsCallback
         Log.d("MyDebug", "Repository getMailLabels: Calling apiService.getMailLabels()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
@@ -666,7 +670,7 @@ public class MailRepository {
         apiService.getMailLabels("Bearer " + token, mailId).enqueue(new Callback<List<Label>>() {
             @Override
             public void onResponse(@NonNull Call<List<Label>> call, @NonNull Response<List<Label>> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
                     callback.onFailure("Server error: " + response.code());
@@ -773,6 +777,30 @@ public class MailRepository {
 
 
 
+    // NEW method to fetch all labels (for the "Add to label" menu in InboxActivity)
+    public void getLabels(LabelsCallback callback) {
+        Log.d("MyDebug", "Repository getLabels: Calling apiService.getLabels()");
+        String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
+
+        apiService.getLabels("Bearer " + token).enqueue(new Callback<List<Label>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Label>> call, @NonNull Response<List<Label>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure("Failed to fetch labels. Code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Label>> call, @NonNull Throwable t) {
+                callback.onFailure("Network failure: " + t.getMessage());
+            }
+        });
     // --- Interfaces שנשארים ---
     public interface InboxCallback {
         void onSuccess(List<Email> emails);
