@@ -167,7 +167,6 @@ public class InboxViewModel extends AndroidViewModel {
         mailRepository.markMailAsSpam(emailId, new MailActionCallback() {
             @Override
             public void onSuccess() {
-                Log.d("InboxViewModel", "Email marked as spam: " + emailId);
                 fetchEmails();
             }
 

@@ -131,8 +131,6 @@ public class MailRepository {
         });
     }
 
-    // --- מתודות נוספות שהיו קיימות אצלך (לא קשורות לבחירה מרובה אך חשובות) ---
-
     public void listMails(ListEmailsCallback callback) {
         Log.d("MyDebug", "Repository listMails: Calling apiService.listMails()");
         String token = getTokenFromPrefs(context);
@@ -357,9 +355,8 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);                } else {
+                    callback.onSuccess();
+                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -371,7 +368,6 @@ public class MailRepository {
         });
     }
 
-    // --- מתודות מעודכנות/חדשות עבור בחירה מרובה ופעולות על מיילים ---
 
     public void deleteMail(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository deleteMail: Calling apiService.deleteMail()");
@@ -424,7 +420,6 @@ public class MailRepository {
     }
 
     public void markAsUnread(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository markAsUnread: Calling apiService.markAsUnread()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -435,10 +430,9 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);                } else {
-                    callback.onFailure("Server error: " + response.code());
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Failed to mark as unread. Code: " + response.code());
                 }
             }
 
@@ -813,6 +807,11 @@ public class MailRepository {
         void onFailure(String error);
     }
 
+    public interface MailActionCallback {
+        void onSuccess();
+        void onFailure(String error);
+    }
+
     public interface LocalCallback<T> {
         void onResult(T result);
     }
@@ -829,6 +828,10 @@ public class MailRepository {
         void onFailure(String error);
     }
 
+    public interface LabelsCallback { // Changed from ListLabelsCallback to LabelsCallback for clarity and consistency
+        void onSuccess(List<Label> labels);
+        void onFailure(String error);
+    }
     public interface ListLabelsCallback {
         void onSuccess(List<Label> labels);
         void onFailure(String error);

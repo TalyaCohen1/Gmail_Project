@@ -13,8 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.android_app.R;
+import com.example.android_app.data.network.ApiClient;
+import com.example.android_app.data.network.ApiService;
 import com.example.android_app.model.Email;
+import com.example.android_app.model.User;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +26,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHolder> {
 
@@ -71,6 +79,64 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         holder.bind(currentEmail); // Bind basic data
 
         boolean isSelected = selectedEmailIds.contains(currentEmail.getId());
+        if (currentEmail.getSenderName() == null || currentEmail.getProfilePicUrl() == null) {
+            // קריאה לשרת כדי לקבל את פרטי המשתמש
+            ApiService apiService = ApiClient.getApiService();
+            apiService.getUserById(currentEmail.getFromId()).enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        User user = response.body();
+                        currentEmail.setSenderName(user.getUsername());
+                        currentEmail.setProfilePicUrl(user.getProfilePicUrl());
+
+                        // וודא שהשם והתמונה מוצגים ב-UI לאחר הטעינה
+                        holder.senderTextView.setText(user.getUsername());
+                        if (user.getProfilePicUrl() != null && !user.getProfilePicUrl().isEmpty()) {
+                            Glide.with(context)
+                                    .load(user.getProfilePicUrl())
+                                    .placeholder(R.drawable.ic_profile_placeholder) // תמונת placeholder בזמן טעינה
+                                    .error(R.drawable.ic_profile_placeholder) // תמונת שגיאה אם הטעינה נכשלה
+                                    .circleCrop() // לחיתוך לתמונה עגולה
+                                    .into(holder.imageSenderOrSelected);
+                            holder.imageSenderOrSelected.setBackgroundResource(0); // הסר את רקע העיגול אם טענת תמונה
+                        } else {
+                            holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+                            holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+                        }
+                    } else {
+                        // טיפול בשגיאת API (לדוגמה: משתמש לא נמצא)
+                        holder.senderTextView.setText("Unknown Sender");
+                        holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+                        holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                    // טיפול בשגיאת רשת
+                    holder.senderTextView.setText("Error Loading Sender");
+                    holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+                    holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+                    // Log.e("EmailAdapter", "Failed to load user: " + t.getMessage()); // לוג שגיאה
+                }
+            });
+        } else {
+            // אם השם והתמונה כבר קיימים במודל, פשוט הצג אותם
+            holder.senderTextView.setText(currentEmail.getSenderName());
+            if (currentEmail.getProfilePicUrl() != null && !currentEmail.getProfilePicUrl().isEmpty()) {
+                Glide.with(context)
+                        .load(currentEmail.getProfilePicUrl())
+                        .placeholder(R.drawable.ic_profile_placeholder)
+                        .error(R.drawable.ic_profile_placeholder)
+                        .circleCrop()
+                        .into(holder.imageSenderOrSelected);
+                holder.imageSenderOrSelected.setBackgroundResource(0);
+            } else {
+                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+                holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+            }
+        }
 
         // --- Handle Multi-Select Visuals ---
         if (isMultiSelectMode) {

@@ -7,6 +7,11 @@ const mailSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    fromId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Crucial for populating sender's details
+        required: true // Assuming every mail has a sender user ID
+    },
     to: {
         type: String,
         trim: true,
@@ -177,9 +182,10 @@ async function search(email, query) {
  * @param {object} mailData - Object containing from, to, subject, body, isImportant, isStarred, labels.
  * @returns {Promise<Object>} Promise resolving to the newly created draft mail object.
  */
-async function createDraft({ from, to = '', subject = '', body = '', isImportant = false, isStarred = false, labels = [] }) {
+async function createDraft({ from, fromId, to = '', subject = '', body = '', isImportant = false, isStarred = false, labels = [] }) {
     const newDraft = new Mail({
         from,
+        fromId,
         to,
         subject,
         body,
@@ -200,7 +206,7 @@ async function createDraft({ from, to = '', subject = '', body = '', isImportant
  * @param {object} mailData - Object containing from, to, subject, body, id (optional draft _id), isSpam, isImportant, isStarred, labels.
  * @returns {Promise<Object>} Promise resolving to the newly created or updated mail object.
  */
-async function createMail({ from, to, subject = '', body = '', id, isSpam = false, isImportant = false, isStarred = false, labels = [] }) {
+async function createMail({ from, fromId, to, subject = '', body = '', id, isSpam = false, isImportant = false, isStarred = false, labels = [] }) {
     let mail;
 
     if (id && mongoose.Types.ObjectId.isValid(id)) {
@@ -229,6 +235,7 @@ async function createMail({ from, to, subject = '', body = '', id, isSpam = fals
         // If no valid ID was provided, or draft was not found/not eligible, create a new mail
         mail = new Mail({
             from,
+            fromId, 
             to,
             subject,
             body,

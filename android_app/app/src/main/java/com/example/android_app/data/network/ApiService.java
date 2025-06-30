@@ -2,19 +2,13 @@ package com.example.android_app.data.network;
 
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
-import com.example.android_app.model.LoginRequest;
-import com.example.android_app.model.LoginResponse;
 import com.example.android_app.model.Label;
 import com.example.android_app.model.LabelCreateRequest;
 import com.example.android_app.model.LabelUpdateRequest;
-import retrofit2.http.Path;
-import retrofit2.http.DELETE;
-import retrofit2.http.GET;
-import retrofit2.http.Multipart;
-import retrofit2.http.PATCH; // For partial updates
-import retrofit2.http.Part;
-import retrofit2.http.HTTP; // For DELETE with a body
+import com.example.android_app.model.LoginRequest;
+import com.example.android_app.model.LoginResponse;
 import com.example.android_app.model.MailLabelRequest;
+import com.example.android_app.model.User;
 
 import java.util.List;
 
@@ -23,10 +17,15 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
-import retrofit2.http.POST;
-import retrofit2.http.Query; // For query parameters like search
+import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.Path;
 
 
 public interface ApiService {
@@ -43,6 +42,10 @@ public interface ApiService {
     );
     @POST("api/tokens")
     Call<LoginResponse> loginUser(@Body LoginRequest request);
+
+    // GET /api/users/:id
+    @GET("api/users/{id}")
+    Call<User> getUserById(@Path("id") String userId);
 
     @POST("api/mails")
     Call<Void> sendEmail(
@@ -71,9 +74,9 @@ public interface ApiService {
             @Header("Authorization") String token
     );
 
-    // GET inbox mails (router.get('/inbox')) - This one was already somewhat covered by getInboxEmails, but let's make it explicit.
+    // GET inbox mails (router.get('/inbox'))
     @GET("api/mails/inbox")
-    Call<List<Email>> getInbox(
+    Call<List<Email>> getInboxEmails(
             @Header("Authorization") String token
     );
 
@@ -260,10 +263,6 @@ public interface ApiService {
     );
 
     // Duplicates from before, kept for context but new ones are more specific
-    @GET("api/mails")
-    Call<List<Email>> getInboxEmails(
-            @Header("Authorization") String token
-    );
 
     @GET("api/mails/{id}")
     Call<Email> getEmailDetails(

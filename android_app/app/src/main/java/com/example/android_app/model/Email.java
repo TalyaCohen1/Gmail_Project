@@ -9,13 +9,15 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Email {
-    @SerializedName("_id") // או "mail_id" או מה שזה לא יהיה בשרת
+    @SerializedName("_id")
     private String id;
 
-    @SerializedName("from") // או "sender_email", "sender"
+    @SerializedName("from")
     private String from;
-
+    @SerializedName("fromId")
+    private String fromId;
     private String senderName;
+    private String profilePicUrl;
 
     @SerializedName("to")
     private String to;
@@ -49,7 +51,26 @@ public class Email {
 
     public Email() { }
 
-    // Getters
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public void setFromId(String fromId) {
+        this.fromId = fromId;
+    }
+
+    public String getFromId() {
+        return fromId;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public String getProfilePicUrl() {
+        return profilePicUrl;
+    }
+
     public String getId() { return id; }
     public String getFrom() { return from; }
     public String getTo() { return to; }
@@ -57,6 +78,13 @@ public class Email {
     public String getBody() { return body; }
     //public String getDate() { return date; }
     public boolean isRead() { return isRead; }
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public void setProfilePicUrl(String profilePicUrl) {
+        this.profilePicUrl = profilePicUrl;
+    }
 
     public void setId(String id) {
         this.id = id;

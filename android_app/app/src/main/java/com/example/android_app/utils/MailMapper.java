@@ -44,8 +44,8 @@ public class MailMapper {
         email.setDate(entity.date);
         email.setTimestamp(entity.timestamp);
         email.setSend(entity.send);
-        email.setIsRead();
-        if (!entity.isRead) email.setIsRead();
+        email.setIsRead(entity.isRead);
+        // if (!entity.isRead) email.setIsRead();
         email.setSpam(entity.isSpam);
         email.setImportant(entity.isImportant);
         email.setStarred(entity.isStarred);

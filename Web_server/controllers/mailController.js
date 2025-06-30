@@ -120,6 +120,7 @@ exports.sendMail = async (req, res) => {
         if (!email) {
             return res.status(404).json({ error: 'Sender user not found' });
         }
+        const fromId = req.userId; // Get the authenticated user's ID
 
         let { to, subject = '', body = '', isImportant = false, isStarred = false, labels = [], id } = req.body;
 
@@ -162,7 +163,7 @@ exports.sendMail = async (req, res) => {
         }
         // If an ID is provided, it means we are sending an existing draft.
         // The createMail function will handle updating the draft or creating new.
-        const mail = await mailModel.createMail({ from: email, to, subject, body, id, isSpam, isImportant, isStarred, labels });
+        const mail = await mailModel.createMail({ from: email, fromId, to, subject, body, id, isSpam, isImportant, isStarred, labels });
 
         res.status(201)
             .location(`/api/mails/${mail._id}`)
