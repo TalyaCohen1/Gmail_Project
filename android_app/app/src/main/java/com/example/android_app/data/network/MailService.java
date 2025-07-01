@@ -56,7 +56,6 @@ public void sendEmail(String to, String subject, String body, String token, Send
     }
 
     public void getInbox(String token, InboxCallback callback) {
-        Log.d("MyDebug", "Service getInbox: Calling api.getInboxEmails()");
         api.getInboxEmails("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
             public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {

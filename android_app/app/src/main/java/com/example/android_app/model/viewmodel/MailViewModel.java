@@ -11,13 +11,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.MediatorLiveData; // Import MediatorLiveData
 
-import com.example.android_app.data.local.MailEntity;
 import com.example.android_app.data.repository.MailRepository;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
 import com.example.android_app.model.Label;
 import com.example.android_app.utils.SendCallback;
-import com.example.android_app.utils.MailMapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -587,7 +585,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.updateDraft(mailId, request, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -608,7 +606,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.deleteMail(mailId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -629,7 +627,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.markMailAsSpam(mailId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -650,7 +648,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.unmarkMailAsSpam(mailId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -670,7 +668,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.markMailAsImportant(mailId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -691,7 +689,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.unmarkMailAsImportant(mailId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -712,7 +710,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.markMailAsStarred(mailId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -733,7 +731,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.unmarkMailAsStarred(mailId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -754,7 +752,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.markAsRead(mailId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -775,7 +773,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.markAsUnread(mailId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -795,7 +793,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.addLabelToMail(mailId, labelId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);
@@ -816,7 +814,7 @@ public class MailViewModel extends AndroidViewModel {
         _isLoading.setValue(true);
         mailRepository.removeLabelFromMail(mailId, labelId, new MailRepository.MailActionCallback() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(String mailId) {
                 _actionSuccess.setValue(true);
                 _isLoading.setValue(false);
                 _errorMessage.setValue(null);

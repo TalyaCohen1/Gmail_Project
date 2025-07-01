@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import android.content.Context;
 
-@Database(entities = {MailEntity.class, UserEntity.class}, version = 3)
+@Database(entities = {MailEntity.class, UserEntity.class}, version = 3, exportSchema = false)
 @TypeConverters(LabelIdConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;

@@ -1,5 +1,6 @@
 package com.example.android_app.model;
 
+import com.example.android_app.BuildConfig;
 import com.google.gson.annotations.SerializedName;
 
 import java.text.ParseException;
@@ -9,13 +10,13 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Email {
-    @SerializedName("_id") // או "mail_id" או מה שזה לא יהיה בשרת
+    @SerializedName("_id")
     private String id;
 
-    @SerializedName("from") // או "sender_email", "sender"
+    @SerializedName("fromUser")
+    private FromUser fromUser;
+    @SerializedName("from")
     private String from;
-
-    private String senderName;
 
     @SerializedName("to")
     private String to;
@@ -49,7 +50,10 @@ public class Email {
 
     public Email() { }
 
-    // Getters
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
     public String getId() { return id; }
     public String getFrom() { return from; }
     public String getTo() { return to; }
@@ -58,8 +62,18 @@ public class Email {
     //public String getDate() { return date; }
     public boolean isRead() { return isRead; }
 
+
     public void setId(String id) {
         this.id = id;
+    }
+
+    public FromUser getFromUser() {
+        return fromUser;
+    }
+
+    // Setter עבור FromUser
+    public void setFromUser(FromUser fromUser) {
+        this.fromUser = fromUser;
     }
     public void setSender(String sender) {
         this.from = sender;
@@ -145,6 +159,52 @@ public class Email {
         } catch (java.time.format.DateTimeParseException e) { // For Instant.parse() errors
             e.printStackTrace();
             return null;
+        }
+    }
+    public String getSenderName() {
+        return fromUser != null ? fromUser.getFullName() : null;
+    }
+
+    public String getProfilePicUrl() {
+        return fromUser != null ? fromUser.getProfileImage() : null;
+    }
+
+    // מחלקה פנימית שמייצגת את האובייקט fromUser
+    public static class FromUser {
+        @SerializedName("fullName")
+        private String fullName;
+        @SerializedName("email")
+        private String email; // שים לב שזהו ה-emailAddress מה-backend
+        @SerializedName("profileImage")
+        private String profileImage;
+
+        // getters
+        public String getFullName() {
+            return fullName;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getProfileImage() {
+            if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
+                return BuildConfig.SERVER_URL + profileImage;
+            }
+            return profileImage;
+        }
+
+        // setters (אם יש צורך)
+        public void setFullName(String fullName) {
+            this.fullName = fullName;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public void setProfileImage(String profileImage) {
+            this.profileImage = profileImage;
         }
     }
 }

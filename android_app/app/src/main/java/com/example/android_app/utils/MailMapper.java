@@ -6,6 +6,9 @@ import com.example.android_app.data.local.MailEntity;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 //this class use to switch between the two model
 public class MailMapper {
     public static MailEntity toEntity(Email email) {
@@ -16,7 +19,8 @@ public class MailMapper {
         entity.to = email.getTo();
         entity.subject = email.getSubject();
         entity.body = email.getBody();
-        entity.date = email.getDate();
+        entity.date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                .format(email.getDate());
         entity.timestamp = email.getTimestamp();
         entity.send = email.isSend();
         entity.isRead = email.getIsRead();
@@ -44,8 +48,7 @@ public class MailMapper {
         email.setDate(entity.date);
         email.setTimestamp(entity.timestamp);
         email.setSend(entity.send);
-        email.setIsRead();
-        if (!entity.isRead) email.setIsRead();
+        email.setIsRead(entity.isRead);
         email.setSpam(entity.isSpam);
         email.setImportant(entity.isImportant);
         email.setStarred(entity.isStarred);
