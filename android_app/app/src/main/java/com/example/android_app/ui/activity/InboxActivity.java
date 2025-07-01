@@ -26,7 +26,6 @@ import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
-import com.example.android_app.utils.MailMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,28 +99,28 @@ public class InboxActivity extends AppCompatActivity implements
         });
     }
 
-    @Override
-    public void onToggleEmailStarred(Email email, int position) {
-        // --- THIS IS THE MISSING METHOD YOU NEED TO ADD ---
-
-        // 1. Toggle the 'starred' status in your data model
-        // Assuming your Email object is mutable and email.setStarred() works
-        email.setStarred(!email.isStarred());
-
-        // 2. Notify the adapter that this specific item's data has changed.
-        // This will cause onBindViewHolder to be re-executed for this item,
-        // which will update the star icon based on the new email.isStarred() state.
-        adapter.notifyItemChanged(position);
-
-        // 3. (Optional) Show a Toast message or update UI
-        String message = email.isStarred() ? "Marked as starred" : "Unmarked as starred";
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-
-        // 4. (Important) If you're using a ViewModel or persistent storage (like a database),
-        // you would typically call a method on your ViewModel here to persist this change.
-        // For example:
-        // myEmailViewModel.updateEmailStarredStatus(email.getId(), email.isStarred());
-    }
+//    @Override
+//    public void onToggleEmailStarred(Email email, int position) {
+//        // --- THIS IS THE MISSING METHOD YOU NEED TO ADD ---
+//
+//        // 1. Toggle the 'starred' status in your data model
+//        // Assuming your Email object is mutable and email.setStarred() works
+//        email.setStarred(!email.isStarred());
+//
+//        // 2. Notify the adapter that this specific item's data has changed.
+//        // This will cause onBindViewHolder to be re-executed for this item,
+//        // which will update the star icon based on the new email.isStarred() state.
+//        adapter.notifyItemChanged(position);
+//
+//        // 3. (Optional) Show a Toast message or update UI
+//        String message = email.isStarred() ? "Marked as starred" : "Unmarked as starred";
+//        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+//
+//        // 4. (Important) If you're using a ViewModel or persistent storage (like a database),
+//        // you would typically call a method on your ViewModel here to persist this change.
+//        // For example:
+//        // myEmailViewModel.updateEmailStarredStatus(email.getId(), email.isStarred());
+//    }
 
 
     private void setupRecyclerView() {
@@ -319,13 +318,22 @@ public class InboxActivity extends AppCompatActivity implements
         // If in multi-select mode, the adapter already handled the toggle
     }
     public void onMarkAsStarred(String mailId) {
-        viewModel.markEmailAsImportant(mailId);
+        viewModel.markEmailAsStarred(mailId);
         Toast.makeText(this, "Marked as starred", Toast.LENGTH_SHORT).show();
     }
-
     public void onUnmarkAsStarred(String mailId) {
-        viewModel.unmarkEmailAsImportant(mailId); // ודא שמתודה זו קיימת ב-ViewModel
+        viewModel.unmarkEmailAsStarred(mailId);
         Toast.makeText(this, "Unmarked as starred", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onUnmarkAsImportant(String mailId) {
+        viewModel.unmarkEmailAsImportant(mailId);
+        Toast.makeText(this, "Unmarked as starred", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onMarkAsImportant(String mailId) {
+        viewModel.markEmailAsImportant(mailId);
+        Toast.makeText(this, "Marked as starred", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -346,8 +354,9 @@ public class InboxActivity extends AppCompatActivity implements
     private void observeViewModel() {
         viewModel.getInboxEmails().observe(this, emails -> {
             if (emails != null) {
-                List<Email> emailsToShow = MailMapper.toEmails(emails);
-                adapter.setEmails(emailsToShow);
+                // List<Email> emailsToShow = MailMapper.toEmails(emails);
+                // adapter.setEmails(emailsToShow);
+                adapter.setEmails(emails);
             }
             swipeRefreshLayout.setRefreshing(false); // Stop refresh animation regardless
             loadingProgressBar.setVisibility(View.GONE); // Hide progress bar regardless

@@ -1,5 +1,6 @@
 package com.example.android_app.model;
 
+import com.example.android_app.BuildConfig;
 import com.google.gson.annotations.SerializedName;
 
 import java.text.ParseException;
@@ -16,8 +17,6 @@ public class Email {
     private FromUser fromUser;
     @SerializedName("from")
     private String from;
-    @SerializedName("fromId")
-    private String fromId;
 
     @SerializedName("to")
     private String to;
@@ -53,14 +52,6 @@ public class Email {
 
     public void setFrom(String from) {
         this.from = from;
-    }
-
-    public void setFromId(String fromId) {
-        this.fromId = fromId;
-    }
-
-    public String getFromId() {
-        return fromId;
     }
 
     public String getId() { return id; }
@@ -197,6 +188,9 @@ public class Email {
         }
 
         public String getProfileImage() {
+            if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
+                return BuildConfig.SERVER_URL + profileImage;
+            }
             return profileImage;
         }
 

@@ -355,7 +355,7 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -369,7 +369,7 @@ public class MailRepository {
     }
 
 
-    public void deleteMail(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
+    public void deleteMail(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository deleteMail: Calling apiService.deleteMail()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
@@ -377,11 +377,11 @@ public class MailRepository {
             return;
         }
 
-        apiService.deleteMail("Bearer " + token, emailId).enqueue(new Callback<ResponseBody>() {
+        apiService.deleteMail("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Failed to delete mail. Code: " + response.code());
                 }
@@ -394,7 +394,7 @@ public class MailRepository {
         });
     }
 
-    public void markAsRead(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
+    public void markAsRead(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository markAsRead: Calling apiService.markAsRead()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
@@ -402,11 +402,22 @@ public class MailRepository {
             return;
         }
 
-        apiService.markAsRead("Bearer " + token, emailId).enqueue(new Callback<ResponseBody>() {
+        apiService.markAsRead("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    // ** Update Room Database **
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            existingMail.isRead = true;
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Updated local MailEntity as read: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Failed to mark as read. Code: " + response.code());
                 }
@@ -419,18 +430,28 @@ public class MailRepository {
         });
     }
 
-    public void markAsUnread(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
+    public void markAsUnread(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
             return;
         }
 
-        apiService.markAsUnread("Bearer " + token, emailId).enqueue(new Callback<ResponseBody>() {
+        apiService.markAsUnread("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            existingMail.isRead = false; // עדכן את השדה
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Updated local MailEntity as unread: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Failed to mark as unread. Code: " + response.code());
                 }
@@ -443,7 +464,7 @@ public class MailRepository {
         });
     }
 
-    public void markMailAsImportant(String emailId, MailActionCallback callback) { // Updated to use MailActionCallback
+    public void markMailAsImportant(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository markMailAsImportant: Calling apiService.markMailAsImportant()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
@@ -452,11 +473,21 @@ public class MailRepository {
             return;
         }
 
-        apiService.markMailAsImportant("Bearer " + token, emailId).enqueue(new Callback<ResponseBody>() {
+        apiService.markMailAsImportant("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            existingMail.isImportant = true;
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Updated local MailEntity as unread: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -482,7 +513,17 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            existingMail.isImportant = false;
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Updated local MailEntity as unread: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -508,7 +549,17 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            existingMail.isStarred = true;
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Updated local MailEntity as starred: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -534,7 +585,17 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            existingMail.isStarred = false;
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Updated local MailEntity as starred: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -560,7 +621,17 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            existingMail.isSpam = true;
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Updated local MailEntity as spam: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -586,7 +657,17 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            existingMail.isSpam = false;
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Updated local MailEntity as spam: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -613,7 +694,31 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            // ודא שהרשימה קיימת ואינה null
+                            if (existingMail.labelsForSender == null) {
+                                existingMail.labelsForSender = new ArrayList<>();
+                            }
+                            if (!existingMail.labelsForSender.contains(labelId)) { // הוסף רק אם לא קיים
+                                existingMail.labelsForSender.add(labelId);
+                            }
+                            // אם יש לך גם labelsForReceiver ואתה רוצה לעדכן אותו:
+                            // if (existingMail.labelsForReceiver == null) {
+                            //     existingMail.labelsForReceiver = new ArrayList<>();
+                            // }
+                            // if (!existingMail.labelsForReceiver.contains(labelId)) {
+                            //     existingMail.labelsForReceiver.add(labelId);
+                            // }
+
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Added label " + labelId + " to local MailEntity: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot add label: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -639,7 +744,24 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess();
+                    executor.execute(() -> {
+                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
+                        if (existingMail != null) {
+                            if (existingMail.labelsForSender != null) {
+                                existingMail.labelsForSender.remove(labelId); // הסר את התווית
+                            }
+                            // אם יש לך גם labelsForReceiver ואתה רוצה לעדכן אותו:
+                            // if (existingMail.labelsForReceiver != null) {
+                            //     existingMail.labelsForReceiver.remove(labelId);
+                            // }
+
+                            mailDao.insertMail(existingMail);
+                            Log.d("MailRepository", "Removed label " + labelId + " from local MailEntity: " + mailId);
+                        } else {
+                            Log.w("MailRepository", "Mail not found in local DB, cannot remove label: " + mailId);
+                        }
+                    });
+                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -768,9 +890,6 @@ public class MailRepository {
         });
     }
 
-
-
-
     // NEW method to fetch all labels (for the "Add to label" menu in InboxActivity)
     public void getLabels(LabelsCallback callback) {
         Log.d("MyDebug", "Repository getLabels: Calling apiService.getLabels()");
@@ -808,7 +927,7 @@ public class MailRepository {
     }
 
     public interface MailActionCallback {
-        void onSuccess();
+        void onSuccess(String emailId);
         void onFailure(String error);
     }
 
