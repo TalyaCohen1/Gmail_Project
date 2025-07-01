@@ -46,6 +46,7 @@ import com.example.android_app.utils.SharedPrefsManager; // Import SharedPrefsMa
 import com.example.android_app.model.User;
 import com.bumptech.glide.Glide; // Make sure to add Glide to your build.gradle
 import com.example.android_app.model.viewmodel.InboxViewModel;
+import com.example.android_app.model.viewmodel.MailViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
@@ -63,6 +64,8 @@ public class InboxActivity extends AppCompatActivity implements
         SideBarFragment.SideBarFragmentListener { // Implement the new interface
 
     private InboxViewModel viewModel;
+
+    private MailViewModel viewModel_mail;
     private EmailAdapter adapter;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -212,6 +215,7 @@ public class InboxActivity extends AppCompatActivity implements
         iconMoreOptions = findViewById(R.id.iconMoreOptions);
 
         viewModel = new ViewModelProvider(this).get(InboxViewModel.class);
+        viewModel_mail = new ViewModelProvider(this).get(MailViewModel.class);
 
         setupRecyclerView();
         setupMultiSelectToolbarListeners(); // New method for toolbar listeners
@@ -605,8 +609,13 @@ public class InboxActivity extends AppCompatActivity implements
      */
     private void performSearch(String query) {
         Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_SHORT).show();
-        // Implement your search logic here, e.g.,
-        // viewModel.searchEmails(query);
+        viewModel_mail.searchMails(query);
+        viewModel_mail.getSearchResults().observe(this, emails -> {
+            if (emails != null) {
+                adapter.setEmails(emails);
+                Toast.makeText(this, "Search results: " + emails.size(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public String getProfileImage() {
