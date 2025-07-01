@@ -3,40 +3,29 @@ package com.example.android_app.ui.activity; // Make sure this package is correc
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent; // Added import for KeyEvent
+import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText; // Added import for EditText
-import android.widget.ImageView; // Added import for ImageView
-import android.widget.ProgressBar;
-import android.widget.TextView; // Added import for TextView
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar; // Added import for Toolbar
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout; // Added import for DrawerLayout
-
-import android.view.Menu;
-import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import android.widget.Toast;
 
 import com.example.android_app.BuildConfig;
 import com.example.android_app.R;
@@ -46,10 +35,7 @@ import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
-import com.example.android_app.ui.fragments.SideBarFragment; // Added import for SideBarFragment
-
-import com.example.android_app.utils.MailMapper;
-
+import com.example.android_app.ui.fragments.SideBarFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -380,14 +366,38 @@ public class InboxActivity extends AppCompatActivity implements
     }
 
     // --- Callbacks from EmailAdapter.MultiSelectModeListener ---
+    // @Override
+    // public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
+    //     multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
+    //     findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // Hide FAB
+
+    //     // You might want to change the status bar color here as well
+    //     // getWindow().setStatusBarColor(ContextCompat.getColor(this,
+    //     //         inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
+    // }
     @Override
     public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
+        Log.d("MultiSelect", "Mode changed to: " + (inMultiSelectMode ? "active" : "inactive"));
+        
+        // Get both toolbar references
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        ConstraintLayout multiSelectToolbar = findViewById(R.id.multiSelectToolbar);
+        if (multiSelectToolbar.getChildCount() == 0) {
+            Log.e("MultiSelect", "MultiSelectToolbar has no child views!");
+        }
+        
+        // Toggle visibility with logging
+        toolbar.setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE);
         multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
-        findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // Hide FAB
-
-        // You might want to change the status bar color here as well
-        // getWindow().setStatusBarColor(ContextCompat.getColor(this,
-        //         inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
+        
+        Log.d("MultiSelect", "Toolbar visibility: " + 
+            (toolbar.getVisibility() == View.VISIBLE ? "VISIBLE" : "GONE"));
+        Log.d("MultiSelect", "MultiSelectToolbar visibility: " + 
+            (multiSelectToolbar.getVisibility() == View.VISIBLE ? "VISIBLE" : "GONE"));
+        
+        findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE);
+        multiSelectToolbar.requestLayout();
+        multiSelectToolbar.invalidate();
     }
 
     @Override

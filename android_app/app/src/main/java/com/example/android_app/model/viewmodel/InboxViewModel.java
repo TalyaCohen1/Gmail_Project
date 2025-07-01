@@ -23,6 +23,8 @@ public class InboxViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private final MutableLiveData<List<Label>> labels = new MutableLiveData<>(); // New: LiveData for labels
 
+    private String currentCategoryOrLabelId = "inbox"; // default to "inbox"
+
     public InboxViewModel(@NonNull Application application) {
         super(application);
         mailRepository = new MailRepository(application);
