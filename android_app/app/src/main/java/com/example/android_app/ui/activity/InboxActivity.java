@@ -42,6 +42,9 @@ import com.example.android_app.BuildConfig;
 import com.example.android_app.R;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
+import com.example.android_app.utils.SharedPrefsManager; // Import SharedPrefsManager
+import com.example.android_app.model.User;
+import com.bumptech.glide.Glide; // Make sure to add Glide to your build.gradle
 import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
@@ -71,8 +74,12 @@ public class InboxActivity extends AppCompatActivity implements
 
     private String profileImage;
 
+    private ImageView profilePicture; // Declare ImageView for profile picture
+    private User currentUser; // Declare a User object
+
     // Multi-select UI elements
     private ConstraintLayout multiSelectToolbar;
+    private Toolbar toolbar;
     private TextView selectedCountTextView;
     private ImageView iconCloseMultiSelect;
     private ImageView iconDelete;
@@ -84,8 +91,47 @@ public class InboxActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
+        multiSelectToolbar = findViewById(R.id.multiSelectToolbar);
         setSupportActionBar(toolbar);
+
+
+        profilePicture = findViewById(R.id.profile_picture); // Initialize the ImageView
+
+        // Retrieve user data from SharedPrefsManager
+        String userId = SharedPrefsManager.get(this, "userId");
+        String fullName = SharedPrefsManager.get(this, "fullName");
+        String profileImageUrl = SharedPrefsManager.get(this, "profileImage");
+
+        // Construct the full URL for the profile image if it's a relative path
+        if (profileImageUrl != null && !profileImageUrl.isEmpty() && !profileImageUrl.startsWith("http")) {
+            profileImageUrl = BuildConfig.SERVER_URL + profileImageUrl;
+        }
+
+        // Create the User object
+        currentUser = new User(userId, fullName, profileImageUrl);
+
+        // Load the profile picture using Glide
+        if (currentUser != null && currentUser.getProfilePicUrl() != null && !currentUser.getProfilePicUrl().isEmpty()) {
+            Glide.with(this)
+                    .load(currentUser.getProfilePicUrl())
+                    .placeholder(R.drawable.default_profile) // Optional: default image while loading
+                    .error(R.drawable.default_profile) // Optional: image to show if loading fails
+                    .circleCrop() // Optional: to make the image circular
+                    .into(profilePicture);
+            Log.d("InboxActivity", "Profile picture loaded: " + currentUser.getProfilePicUrl());
+        } else {
+            profilePicture.setImageResource(R.drawable.default_profile);
+            Log.d("InboxActivity", "User profile URL is missing or null, showing default profile picture.");
+        }
+
+        // Set up profile picture click listener (optional)
+        profilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Hide the default title as we have a custom layout within the toolbar
         if (getSupportActionBar() != null) {
@@ -380,17 +426,41 @@ public class InboxActivity extends AppCompatActivity implements
     }
 
     // --- Callbacks from EmailAdapter.MultiSelectModeListener ---
+//    @Override
+//    public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
+//        Log.d("DEBUG_MULTISELECT", "InboxActivity onMultiSelectModeChanged received: " + inMultiSelectMode); // Add this
+//
+//        multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
+//        Log.d("DEBUG_MULTISELECT", "multiSelectToolbar visibility set to: " + (inMultiSelectMode ? "VISIBLE" : "GONE")); // Add this
+//
+//        // Crucial change: Toggle visibility of the regular toolbar
+//        toolbar.setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // ADD THIS LINE
+//        Log.d("DEBUG_MULTISELECT", "Regular toolbar visibility set to: " + (inMultiSelectMode ? "GONE" : "VISIBLE")); // Add this
+//
+//        findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // Hide FAB
+//
+//        // You might want to change the status bar color here as well
+//        // getWindow().setStatusBarColor(ContextCompat.getColor(this,
+//        //         inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
+//    }
     @Override
     public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
+        // Show/hide the multiSelectToolbar based on selection mode
         multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
-        findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // Hide FAB
 
-        // You might want to change the status bar color here as well
+        // Show/hide the regular toolbar (opposite of multiSelectToolbar)
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE);
+
+        // Hide/show the FAB
+        findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE);
+
+        // Optional: Change the status bar color to match the selection mode
         // getWindow().setStatusBarColor(ContextCompat.getColor(this,
-        //         inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
+        //     inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
     }
 
-    @Override
+        @Override
     public void onSelectedCountChanged(int count) {
         selectedCountTextView.setText(String.valueOf(count));
         // Dynamically change the "Mark as Read/Unread" icon based on current selection
