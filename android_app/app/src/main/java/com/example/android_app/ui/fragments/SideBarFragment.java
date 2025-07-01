@@ -266,7 +266,7 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
             for (Label label : allLabels) { //
                 if (Objects.equals(label.getName(), categoryName)) { //
                     mailViewModel.fetchMailsByLabel(label.getId()); //
-                    if (listener != null) listener.onCategorySelected(categoryName); // Use onCategorySelected for consistency
+                    if (listener != null) listener.onLabelSelected(label.getId(), label.getName());
                     return;
                 }
             }

@@ -35,22 +35,30 @@
         android:textColor="@android:color/black"
         android:textStyle="normal"/>
 
-    <Button
-        android:id="@+id/cancel_button"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#e2ba35"
-        android:text="Cancel"
-        android:textColor="@android:color/white" />
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp">
 
-    <Button
-        android:id="@+id/save_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#e2ba35"
-        android:text="Save"
-        android:textColor="@android:color/white" />
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#e2ba35"
+            android:text="Cancel"
+            android:textColor="@android:color/white"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#e2ba35"
+            android:text="Save"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
 
 </LinearLayout>
