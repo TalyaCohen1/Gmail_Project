@@ -57,6 +57,7 @@ import com.example.android_app.utils.MailMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class InboxActivity extends AppCompatActivity implements
         EmailAdapter.EmailItemClickListener, // Implement the new interface
@@ -175,7 +176,6 @@ public class InboxActivity extends AppCompatActivity implements
         // Initialize search bar and profile picture
         searchEditText = findViewById(R.id.search_edit_text);
         ImageView profilePicture = findViewById(R.id.profile_picture);
-
         // Set up search action listener for the EditText
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -600,6 +600,24 @@ public class InboxActivity extends AppCompatActivity implements
         Log.d("InboxActivity", "Label selected: " + labelName + " (ID: " + labelId + ")");
         drawerLayout.closeDrawers(); // Close the drawer(s) after selection
         // Handle label selection (e.g., filter emails)
+    }
+
+    // In InboxActivity.java, add this method
+    private void updateToolbarForSearchState() {
+        // Determine if search is active based on the search EditText content
+        boolean isSearchActive = !searchEditText.getText().toString().isEmpty();
+
+        if (isSearchActive) {
+            // When search is active, show the back arrow
+            toggle.setDrawerIndicatorEnabled(false); // Hide the hamburger icon
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true); // Show the Up/Home button (which will be a back arrow)
+        } else {
+            // When no search is active, show the hamburger icon
+            toggle.setDrawerIndicatorEnabled(true); // Show the hamburger icon
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false); // Hide the Up/Home button
+        }
+        // Synchronize the state of the ActionBarDrawerToggle with the toolbar to reflect changes
+        toggle.syncState();
     }
 
     /**
