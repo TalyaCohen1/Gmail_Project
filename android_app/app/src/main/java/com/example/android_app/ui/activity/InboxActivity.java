@@ -14,6 +14,9 @@ import android.widget.ImageView; // Added import for ImageView
 import android.widget.ProgressBar;
 import android.widget.TextView; // Added import for TextView
 
+import com.bumptech.glide.Glide;
+
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +55,7 @@ import com.example.android_app.ui.fragments.SideBarFragment; // Added import for
 
 import com.example.android_app.utils.MailMapper;
 import com.example.android_app.utils.SharedPrefsManager;
+import com.example.android_app.utils.UserManager;
 
 
 import java.util.ArrayList;
@@ -130,6 +134,27 @@ public class InboxActivity extends AppCompatActivity implements
         searchEditText = findViewById(R.id.search_edit_text);
         ImageView profilePicture = findViewById(R.id.profile_picture);
 
+        String profileImageUrl = UserManager.getProfileImage(this); // UserManager.getProfileImage already provides a default of null
+        // Then handle the default image logic if profileImageUrl is null
+        if (profileImageUrl == null || profileImageUrl.isEmpty()) {
+            profileImageUrl = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
+        }
+        String fullUrl;
+        if (!profileImageUrl.startsWith("http")) {
+            fullUrl = BuildConfig.SERVER_URL + profileImageUrl;
+        } else {
+            fullUrl = profileImageUrl;
+        }
+
+        // put it into the ImageView
+        Glide.with(this)
+                .load(fullUrl)
+                .placeholder(R.drawable.default_profile)
+                .error(R.drawable.default_profile)
+                .circleCrop()
+                .into(profilePicture);
+
+
         // Set up search action listener for the EditText
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -205,7 +230,6 @@ public class InboxActivity extends AppCompatActivity implements
                     .commit();
         }
 
-        Log.d("MyDebug", "Activity onCreate: Calling viewModel.fetchInbox()");
         viewModel.fetchEmails();
 
         findViewById(R.id.fabCompose).setOnClickListener(v -> {
