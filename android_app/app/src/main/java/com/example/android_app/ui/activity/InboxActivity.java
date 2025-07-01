@@ -46,6 +46,7 @@ import com.example.android_app.BuildConfig;
 import com.example.android_app.R;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
+import com.example.android_app.model.viewmodel.EditProfileViewModel;
 import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
@@ -134,6 +135,7 @@ public class InboxActivity extends AppCompatActivity implements
         searchEditText = findViewById(R.id.search_edit_text);
         ImageView profilePicture = findViewById(R.id.profile_picture);
 
+        EditProfileViewModel editProfileViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
         String profileImageUrl = UserManager.getProfileImage(this); // UserManager.getProfileImage already provides a default of null
         // Then handle the default image logic if profileImageUrl is null
         if (profileImageUrl == null || profileImageUrl.isEmpty()) {
