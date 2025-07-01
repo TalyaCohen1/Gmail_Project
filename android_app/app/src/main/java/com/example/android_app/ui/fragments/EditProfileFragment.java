@@ -88,6 +88,9 @@ public class EditProfileFragment extends Fragment {
                 textSuccess.setVisibility(View.VISIBLE);
                 textError.setVisibility(View.GONE);
             }
+            new android.os.Handler().postDelayed(() -> {
+                requireActivity().getSupportFragmentManager().popBackStack();
+            }, 500);
         });
 
         return view;

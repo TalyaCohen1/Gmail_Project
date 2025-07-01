@@ -29,7 +29,7 @@ public class User {
         return profilePicUrl;
     }
 
-    // Setters (אם אתה צריך)
+    // Setters
     public void setId(String id) {
         this.id = id;
     }

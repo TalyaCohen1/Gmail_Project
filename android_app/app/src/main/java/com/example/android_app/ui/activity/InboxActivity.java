@@ -1,6 +1,7 @@
 package com.example.android_app.ui.activity; // Make sure this package is correct
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -46,9 +47,11 @@ import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
+import com.example.android_app.ui.fragments.EditProfileFragment;
 import com.example.android_app.ui.fragments.SideBarFragment; // Added import for SideBarFragment
 
 import com.example.android_app.utils.MailMapper;
+import com.example.android_app.utils.SharedPrefsManager;
 
 
 import java.util.ArrayList;
@@ -139,18 +142,40 @@ public class InboxActivity extends AppCompatActivity implements
             }
         });
 
-        // Set up profile picture click listener (optional: opens another fragment/activity)
-        profilePicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
-                // Example: Open a profile fragment or activity
-                // getSupportFragmentManager().beginTransaction()
-                //         .replace(R.id.fragment_container, new ProfileFragment())
-                //         .addToBackStack(null)
-                //         .commit();
+        // Set up profile picture click listener
+        profilePicture.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(InboxActivity.this, v);
+            popup.getMenuInflater().inflate(R.menu.menu_profile_popup, popup.getMenu());
+
+            popup.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
+                if (id == R.id.action_edit_profile) {
+                    //go to edit profile fragment
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragmentProfileContainer, new EditProfileFragment())
+                            .addToBackStack("editProfile")
+                            .commit();
+                    findViewById(R.id.fragmentProfileContainer).setVisibility(View.VISIBLE);
+                    return true;
+
+                } else if (id == R.id.action_logout) {
+                    //logout from this user
+                    performLogout();
+                    return true;
+                }
+                return false;
+            });
+
+            popup.show();
+        });
+
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            if (getSupportFragmentManager().findFragmentById(R.id.fragmentProfileContainer) == null) {
+                findViewById(R.id.fragmentProfileContainer).setVisibility(View.GONE);
             }
         });
+
+
 
         // Initialize views
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
@@ -544,5 +569,18 @@ public class InboxActivity extends AppCompatActivity implements
             return BuildConfig.SERVER_URL + profileImage;
         }
         return profileImage;
+    }
+
+    private void performLogout() {
+        //clear shared prefs
+        SharedPreferences prefs = getSharedPreferences("SmailPrefs", MODE_PRIVATE);
+        prefs.edit().clear().apply();
+
+        //back to Login Screen
+        Intent intent = new Intent(InboxActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // מנקה את ה־BackStack
+        startActivity(intent);
+
+        finish();
     }
 }
