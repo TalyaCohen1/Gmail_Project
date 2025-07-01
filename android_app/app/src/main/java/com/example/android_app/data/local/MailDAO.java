@@ -33,4 +33,8 @@ public interface MailDAO {
 
     @Query("SELECT * FROM mails WHERE id = :id")
     LiveData<MailEntity> getMailById(int id);
+
+    // added: quick getter for MailEntity
+    @Query("SELECT * FROM mails WHERE id = :mailId")
+    MailEntity getMailByIdNow(String mailId);
 }

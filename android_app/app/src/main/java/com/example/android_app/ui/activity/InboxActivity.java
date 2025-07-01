@@ -3,6 +3,23 @@ package com.example.android_app.ui.activity; // Make sure this package is correc
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent; // Added import for KeyEvent
+import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText; // Added import for EditText
+import android.widget.ImageView; // Added import for ImageView
+import android.widget.ProgressBar;
+import android.widget.TextView; // Added import for TextView
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar; // Added import for Toolbar
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout; // Added import for DrawerLayout
+
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,11 +31,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import android.widget.Toast;
 
+import com.example.android_app.BuildConfig;
 import com.example.android_app.R;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
@@ -26,20 +46,30 @@ import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
+import com.example.android_app.ui.fragments.SideBarFragment; // Added import for SideBarFragment
+
 import com.example.android_app.utils.MailMapper;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InboxActivity extends AppCompatActivity implements
         EmailAdapter.EmailItemClickListener, // Implement the new interface
-        EmailAdapter.MultiSelectModeListener { // Implement the new interface
+        EmailAdapter.MultiSelectModeListener,
+        SideBarFragment.SideBarFragmentListener { // Implement the new interface
 
     private InboxViewModel viewModel;
     private EmailAdapter adapter;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar loadingProgressBar;
+
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggle;
+    private EditText searchEditText; // Declare EditText for search
+
+    private String profileImage;
 
     // Multi-select UI elements
     private ConstraintLayout multiSelectToolbar;
@@ -49,11 +79,78 @@ public class InboxActivity extends AppCompatActivity implements
     private ImageView iconMarkReadUnread;
     private ImageView iconMoreOptions;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_inbox); // Ensure activity_inbox.xml is updated
+        setContentView(R.layout.activity_inbox);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Hide the default title as we have a custom layout within the toolbar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+
+        toggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+        );
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // Set the navigation click listener for the toolbar to control the drawer
+        // ActionBarDrawerToggle manages the icon and its click, but you can override it for custom behavior.
+        // If the hamburger icon should be on the right, you will need to set an explicit
+        // OnClickListener for a custom ImageView placed in the toolbar, and disable
+        // ActionBarDrawerToggle's default indicator.
+
+//        // FIND YOUR NEW CUSTOM HAMBURGER ICON AND SET ITS CLICK LISTENER
+//        ImageView iconMenu = findViewById(R.id.icon_menu); // This is the new ImageView you added
+//        iconMenu.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (drawerLayout.isDrawerOpen(GravityCompat.START)) { // Use Gravity.START for RTL compatibility
+//                    drawerLayout.closeDrawer(GravityCompat.START);
+//                } else {
+//                    drawerLayout.openDrawer(GravityCompat.START);
+//                }
+//            }
+//        });
+
+        // Initialize search bar and profile picture
+        searchEditText = findViewById(R.id.search_edit_text);
+        ImageView profilePicture = findViewById(R.id.profile_picture);
+
+        // Set up search action listener for the EditText
+        searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch(searchEditText.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        // Set up profile picture click listener (optional: opens another fragment/activity)
+        profilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
+                // Example: Open a profile fragment or activity
+                // getSupportFragmentManager().beginTransaction()
+                //         .replace(R.id.fragment_container, new ProfileFragment())
+                //         .addToBackStack(null)
+                //         .commit();
+            }
+        });
 
         // Initialize views
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
@@ -68,7 +165,6 @@ public class InboxActivity extends AppCompatActivity implements
         iconMarkReadUnread = findViewById(R.id.iconMarkReadUnread);
         iconMoreOptions = findViewById(R.id.iconMoreOptions);
 
-
         viewModel = new ViewModelProvider(this).get(InboxViewModel.class);
 
         setupRecyclerView();
@@ -76,8 +172,16 @@ public class InboxActivity extends AppCompatActivity implements
         setupRefreshListener();
         observeViewModel();
 
-        Log.d("MyDebug", "Activity onCreate: Calling viewModel.fetchEmails()");
-        viewModel.fetchEmails(); // Fetch initial emails
+
+        // Load the SideBarFragment into the sidebar_container
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.sidebar_container, new SideBarFragment())
+                    .commit();
+        }
+
+        Log.d("MyDebug", "Activity onCreate: Calling viewModel.fetchInbox()");
+        viewModel.fetchEmails();
 
         findViewById(R.id.fabCompose).setOnClickListener(v -> {
             // If in multi-select mode, exit it when compose button is clicked (optional, but good UX)
@@ -100,28 +204,28 @@ public class InboxActivity extends AppCompatActivity implements
         });
     }
 
-    @Override
-    public void onToggleEmailStarred(Email email, int position) {
-        // --- THIS IS THE MISSING METHOD YOU NEED TO ADD ---
-
-        // 1. Toggle the 'starred' status in your data model
-        // Assuming your Email object is mutable and email.setStarred() works
-        email.setStarred(!email.isStarred());
-
-        // 2. Notify the adapter that this specific item's data has changed.
-        // This will cause onBindViewHolder to be re-executed for this item,
-        // which will update the star icon based on the new email.isStarred() state.
-        adapter.notifyItemChanged(position);
-
-        // 3. (Optional) Show a Toast message or update UI
-        String message = email.isStarred() ? "Marked as starred" : "Unmarked as starred";
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-
-        // 4. (Important) If you're using a ViewModel or persistent storage (like a database),
-        // you would typically call a method on your ViewModel here to persist this change.
-        // For example:
-        // myEmailViewModel.updateEmailStarredStatus(email.getId(), email.isStarred());
-    }
+//    @Override
+//    public void onToggleEmailStarred(Email email, int position) {
+//        // --- THIS IS THE MISSING METHOD YOU NEED TO ADD ---
+//
+//        // 1. Toggle the 'starred' status in your data model
+//        // Assuming your Email object is mutable and email.setStarred() works
+//        email.setStarred(!email.isStarred());
+//
+//        // 2. Notify the adapter that this specific item's data has changed.
+//        // This will cause onBindViewHolder to be re-executed for this item,
+//        // which will update the star icon based on the new email.isStarred() state.
+//        adapter.notifyItemChanged(position);
+//
+//        // 3. (Optional) Show a Toast message or update UI
+//        String message = email.isStarred() ? "Marked as starred" : "Unmarked as starred";
+//        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+//
+//        // 4. (Important) If you're using a ViewModel or persistent storage (like a database),
+//        // you would typically call a method on your ViewModel here to persist this change.
+//        // For example:
+//        // myEmailViewModel.updateEmailStarredStatus(email.getId(), email.isStarred());
+//    }
 
 
     private void setupRecyclerView() {
@@ -319,13 +423,22 @@ public class InboxActivity extends AppCompatActivity implements
         // If in multi-select mode, the adapter already handled the toggle
     }
     public void onMarkAsStarred(String mailId) {
-        viewModel.markEmailAsImportant(mailId);
+        viewModel.markEmailAsStarred(mailId);
         Toast.makeText(this, "Marked as starred", Toast.LENGTH_SHORT).show();
     }
-
     public void onUnmarkAsStarred(String mailId) {
-        viewModel.unmarkEmailAsImportant(mailId); // ודא שמתודה זו קיימת ב-ViewModel
+        viewModel.unmarkEmailAsStarred(mailId);
         Toast.makeText(this, "Unmarked as starred", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onUnmarkAsImportant(String mailId) {
+        viewModel.unmarkEmailAsImportant(mailId);
+        Toast.makeText(this, "Unmarked as starred", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onMarkAsImportant(String mailId) {
+        viewModel.markEmailAsImportant(mailId);
+        Toast.makeText(this, "Marked as starred", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -346,8 +459,9 @@ public class InboxActivity extends AppCompatActivity implements
     private void observeViewModel() {
         viewModel.getInboxEmails().observe(this, emails -> {
             if (emails != null) {
-                List<Email> emailsToShow = MailMapper.toEmails(emails);
-                adapter.setEmails(emailsToShow);
+                // List<Email> emailsToShow = MailMapper.toEmails(emails);
+                // adapter.setEmails(emailsToShow);
+                adapter.setEmails(emails);
             }
             swipeRefreshLayout.setRefreshing(false); // Stop refresh animation regardless
             loadingProgressBar.setVisibility(View.GONE); // Hide progress bar regardless
@@ -379,5 +493,56 @@ public class InboxActivity extends AppCompatActivity implements
             // The popup menu itself will fetch and use this LiveData.
             // No direct UI update needed here, just ensures data is loaded.
         });
+    }
+
+//    @Override
+//    public void onBackPressed() {
+//        if (drawerLayout.isDrawerOpen(Gravity.LEFT)) {
+//            drawerLayout.closeDrawer(Gravity.LEFT);
+//        } else {
+//            super.onBackPressed();
+//        }
+//    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, which will handle the drawer open/close.
+        if (toggle.onOptionsItemSelected(item)) { // ADD THIS BLOCK
+            return true;
+        }
+        return super.onOptionsItemSelected(item); // Keep this for other menu items
+    }
+
+    // Implement the SideBarFragmentListener methods
+    @Override
+    public void onCategorySelected(String categoryName) {
+        Log.d("InboxActivity", "Category selected: " + categoryName);
+        drawerLayout.closeDrawers(); // Close the drawer(s) after selection
+        // Handle category selection (e.g., filter emails)
+    }
+
+    @Override
+    public void onLabelSelected(String labelId, String labelName) {
+        Log.d("InboxActivity", "Label selected: " + labelName + " (ID: " + labelId + ")");
+        drawerLayout.closeDrawers(); // Close the drawer(s) after selection
+        // Handle label selection (e.g., filter emails)
+    }
+
+    /**
+     * Placeholder method for performing the search.
+     * You would implement your email filtering logic here.
+     * @param query The search query entered by the user.
+     */
+    private void performSearch(String query) {
+        Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_SHORT).show();
+        // Implement your search logic here, e.g.,
+        // viewModel.searchEmails(query);
+    }
+
+    public String getProfileImage() {
+        if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
+            return BuildConfig.SERVER_URL + profileImage;
+        }
+        return profileImage;
     }
 }

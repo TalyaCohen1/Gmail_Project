@@ -15,10 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.android_app.R;
-import com.example.android_app.data.network.ApiClient;
-import com.example.android_app.data.network.ApiService;
 import com.example.android_app.model.Email;
-import com.example.android_app.model.User;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,10 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHolder> {
 
@@ -51,7 +44,9 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         void onEmailClick(Email email);
         void onEmailLongClick(Email email);
         // Changed to toggle method for simplicity
-        void onToggleEmailStarred(Email email, int position); // Pass position to notify adapter
+        // void onToggleEmailStarred(Email email, int position); // Pass position to notify adapter
+        void onMarkAsStarred(String mailId);
+        void onUnmarkAsStarred(String mailId);
     }
 
     // Updated constructor to accept the click listener
@@ -76,129 +71,236 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
     @Override
     public void onBindViewHolder(@NonNull EmailViewHolder holder, int position) {
         Email currentEmail = emailList.get(position);
-        holder.bind(currentEmail); // Bind basic data
 
-        boolean isSelected = selectedEmailIds.contains(currentEmail.getId());
-        if (currentEmail.getSenderName() == null || currentEmail.getProfilePicUrl() == null) {
-            // קריאה לשרת כדי לקבל את פרטי המשתמש
-            ApiService apiService = ApiClient.getApiService();
-            apiService.getUserById(currentEmail.getFromId()).enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        User user = response.body();
-                        currentEmail.setSenderName(user.getUsername());
-                        currentEmail.setProfilePicUrl(user.getProfilePicUrl());
+        // --- 1. Set basic text fields ---
+        holder.subjectTextView.setText(currentEmail.getSubject());
 
-                        // וודא שהשם והתמונה מוצגים ב-UI לאחר הטעינה
-                        holder.senderTextView.setText(user.getUsername());
-                        if (user.getProfilePicUrl() != null && !user.getProfilePicUrl().isEmpty()) {
-                            Glide.with(context)
-                                    .load(user.getProfilePicUrl())
-                                    .placeholder(R.drawable.ic_profile_placeholder) // תמונת placeholder בזמן טעינה
-                                    .error(R.drawable.ic_profile_placeholder) // תמונת שגיאה אם הטעינה נכשלה
-                                    .circleCrop() // לחיתוך לתמונה עגולה
-                                    .into(holder.imageSenderOrSelected);
-                            holder.imageSenderOrSelected.setBackgroundResource(0); // הסר את רקע העיגול אם טענת תמונה
-                        } else {
-                            holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-                            holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-                        }
-                    } else {
-                        // טיפול בשגיאת API (לדוגמה: משתמש לא נמצא)
-                        holder.senderTextView.setText("Unknown Sender");
-                        holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-                        holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                    // טיפול בשגיאת רשת
-                    holder.senderTextView.setText("Error Loading Sender");
-                    holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-                    holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-                    // Log.e("EmailAdapter", "Failed to load user: " + t.getMessage()); // לוג שגיאה
-                }
-            });
+        if (currentEmail.getDate() != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
+            holder.textTime.setText(dateFormat.format(currentEmail.getDate()));
         } else {
-            // אם השם והתמונה כבר קיימים במודל, פשוט הצג אותם
-            holder.senderTextView.setText(currentEmail.getSenderName());
-            if (currentEmail.getProfilePicUrl() != null && !currentEmail.getProfilePicUrl().isEmpty()) {
-                Glide.with(context)
-                        .load(currentEmail.getProfilePicUrl())
-                        .placeholder(R.drawable.ic_profile_placeholder)
-                        .error(R.drawable.ic_profile_placeholder)
-                        .circleCrop()
-                        .into(holder.imageSenderOrSelected);
-                holder.imageSenderOrSelected.setBackgroundResource(0);
-            } else {
-                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-                holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-            }
+            holder.textTime.setText("");
         }
 
-        // --- Handle Multi-Select Visuals ---
+        // --- 2. Handle Sender Name & Profile Picture Logic ---
+        // Set initial sender name (either actual name, loading text, or error)
+        if (currentEmail.getSenderName() != null) {
+            holder.senderTextView.setText(currentEmail.getSenderName());
+        } else {
+            // Show loading text while we wait for the API call to complete
+            holder.senderTextView.setText("Unknown Sender");
+        }
+
+        // --- 3. Handle Profile Picture (using fromUser) ---
+        boolean isSelected = selectedEmailIds.contains(currentEmail.getId());
+
+        // Determine what to show in the image view (profile pic or selection icon)
         if (isMultiSelectMode) {
-            holder.imageSenderOrSelected.setVisibility(View.VISIBLE); // Show the image view
+            holder.imageSenderOrSelected.setVisibility(View.VISIBLE);
             if (isSelected) {
+                // Show blue checkmark if item is selected in multi-select mode
                 holder.imageSenderOrSelected.setImageResource(R.drawable.ic_check_circle_blue);
                 holder.imageSenderOrSelected.setBackgroundResource(0); // Remove any background circle
             } else {
-                // Show initial of sender name in a circle if not selected (or default profile)
-                // This is a placeholder. For proper initials, you'd need a custom Drawable or library.
-                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-                holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background); // Assuming this draws a circle
+                // Item is not selected but in multi-select mode, show profile pic or placeholder
+                loadProfileImage(holder.imageSenderOrSelected, currentEmail.getProfilePicUrl());
             }
         } else {
-            // Not in multi-select mode, always show the default sender image (e.g., initial or profile pic placeholder)
-            holder.imageSenderOrSelected.setVisibility(View.VISIBLE); // Ensure it's visible
-            holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-            holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+            // Not in multi-select mode, always show the sender's profile image
+            holder.imageSenderOrSelected.setVisibility(View.VISIBLE);
+            loadProfileImage(holder.imageSenderOrSelected, currentEmail.getProfilePicUrl());
         }
 
-        // --- Handle Item Background and Activated State (for selector) ---
-        // The selector should manage selected_item_background and selectableItemBackground.
-        // We only need to set 'activated' state and let the selector do its job.
-        holder.itemView.setActivated(isSelected); // Activates the 'state_activated' item in your selector XML
+        // --- 4. Handle Item Background and Activated State (for selector) ---
+        holder.itemView.setActivated(isSelected);
 
-        // --- Handle Read/Unread Status and Text Style ---
+        // --- 5. Handle Read/Unread Status and Text Style ---
         if (currentEmail.isRead()) {
-            // Read state: Normal text, transparent or read_email_background (handled by selector's default)
             holder.senderTextView.setTypeface(null, Typeface.NORMAL);
             holder.subjectTextView.setTypeface(null, Typeface.NORMAL);
-            holder.textTime.setTypeface(null, Typeface.NORMAL); // Added time text style
-            holder.unreadIndicator.setVisibility(View.GONE); // Hide the unread indicator
-            // Set text color for read emails (e.g., a darker grey for readability)
+            holder.textTime.setTypeface(null, Typeface.NORMAL);
+            holder.unreadIndicator.setVisibility(View.GONE);
             holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
             holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
             holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
         } else {
-            // Unread state: Bold text, unread_email_background (handled by selector's default)
             holder.senderTextView.setTypeface(null, Typeface.BOLD);
             holder.subjectTextView.setTypeface(null, Typeface.BOLD);
-            holder.textTime.setTypeface(null, Typeface.BOLD); // Added time text style
-            holder.unreadIndicator.setVisibility(View.VISIBLE); // Show the unread indicator
-            // Set text color for unread emails (e.g., black)
+            holder.textTime.setTypeface(null, Typeface.BOLD);
+            holder.unreadIndicator.setVisibility(View.VISIBLE);
             holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
             holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
             holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
         }
 
-        // --- Handle Star Icon (Important/Starred) ---
-        // Ensure you have 'full_star' (filled) and 'starred' (empty) drawables.
-        // Based on your description, 'starred' might be your empty star and 'full_star' your filled.
-        if (currentEmail.isStarred()) { // Assuming 'isStarred()' in Email model
-            holder.iconStar.setImageResource(R.drawable.full_star); // Filled star
+        // --- 6. Handle Star Icon (Important/Starred) ---
+        if (currentEmail.isStarred()) {
+            holder.iconStar.setImageResource(R.drawable.full_star);
         } else {
-            holder.iconStar.setImageResource(R.drawable.starred); // Empty star
+            holder.iconStar.setImageResource(R.drawable.starred);
         }
-        holder.iconStar.setVisibility(View.VISIBLE); // Ensure star is always visible
-
-        // --- Set Click Listeners (Moved to ViewHolder constructor for efficiency) ---
-        // The actual logic for what happens on click is now in the ViewHolder.
-        // It uses the itemClickListener passed to the adapter.
+        holder.iconStar.setVisibility(View.VISIBLE);
     }
+
+    // --- NEW Helper method for loading profile images ---
+    private void loadProfileImage(ImageView imageView, String imageUrl) {
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .error(R.drawable.ic_profile_placeholder)
+                    .circleCrop()
+                    .into(imageView);
+            imageView.setBackgroundResource(0); // Remove any background circle when image is loaded
+        } else {
+            imageView.setImageResource(R.drawable.ic_profile_placeholder);
+            imageView.setBackgroundResource(R.drawable.circle_background); // Assuming this draws a circle
+        }
+    }
+//    @Override
+//    public void onBindViewHolder(@NonNull EmailViewHolder holder, int position) {
+//        Email currentEmail = emailList.get(position);
+//        holder.bind(currentEmail); // Bind basic data
+//
+//        boolean isSelected = selectedEmailIds.contains(currentEmail.getId());
+//        if (currentEmail.getSenderName() == null || currentEmail.getProfilePicUrl() == null) {
+//            // קריאה לשרת כדי לקבל את פרטי המשתמש
+//            ApiService apiService = ApiClient.getApiService();
+//            apiService.getUserById(currentEmail.getFromId()).enqueue(new Callback<User>() {
+//                @Override
+//                public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+//                    if (response.isSuccessful() && response.body() != null) {
+//                        User user = response.body();
+//                        currentEmail.getFromUser().setFullName(user.getUsername());
+//                        currentEmail.getFromUser().setProfileImage(user.getProfilePicUrl());
+//
+//                        // וודא שהשם והתמונה מוצגים ב-UI לאחר הטעינה
+//                        holder.senderTextView.setText(user.getUsername());
+//                        if (user.getProfilePicUrl() != null && !user.getProfilePicUrl().isEmpty()) {
+//                            Glide.with(context)
+//                                    .load(user.getProfilePicUrl())
+//                                    .placeholder(R.drawable.ic_profile_placeholder) // תמונת placeholder בזמן טעינה
+//                                    .error(R.drawable.ic_profile_placeholder) // תמונת שגיאה אם הטעינה נכשלה
+//                                    .circleCrop() // לחיתוך לתמונה עגולה
+//                                    .into(holder.imageSenderOrSelected);
+//                            holder.imageSenderOrSelected.setBackgroundResource(0); // הסר את רקע העיגול אם טענת תמונה
+//                        } else {
+//                            holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+//                            holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+//                        }
+//                    } else {
+//                        // טיפול בשגיאת API (לדוגמה: משתמש לא נמצא)
+//                        holder.senderTextView.setText("Unknown Sender");
+//                        holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+//                        holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+//                    // טיפול בשגיאת רשת
+//                    holder.senderTextView.setText("Error Loading Sender");
+//                    holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+//                    holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+//                    // Log.e("EmailAdapter", "Failed to load user: " + t.getMessage()); // לוג שגיאה
+//                }
+//            });
+//        } else {
+//            // אם השם והתמונה כבר קיימים במודל, פשוט הצג אותם
+//            holder.senderTextView.setText(currentEmail.getSenderName());
+//            if (currentEmail.getProfilePicUrl() != null && !currentEmail.getProfilePicUrl().isEmpty()) {
+//                Glide.with(context)
+//                        .load(currentEmail.getProfilePicUrl())
+//                        .placeholder(R.drawable.ic_profile_placeholder)
+//                        .error(R.drawable.ic_profile_placeholder)
+//                        .circleCrop()
+//                        .into(holder.imageSenderOrSelected);
+//                holder.imageSenderOrSelected.setBackgroundResource(0);
+//            } else {
+//                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+//                holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+//            }
+//        }
+//
+//        // --- Handle Multi-Select Visuals ---
+//        if (isMultiSelectMode) {
+//            holder.imageSenderOrSelected.setVisibility(View.VISIBLE); // Show the image view
+//            if (isSelected) {
+//                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_check_circle_blue);
+//                holder.imageSenderOrSelected.setBackgroundResource(0); // Remove any background circle
+//            } else {
+//                // Show initial of sender name in a circle if not selected (or default profile)
+//                if (currentEmail.getProfilePicUrl() != null && !currentEmail.getProfilePicUrl().isEmpty()) {
+//                    Glide.with(context)
+//                            .load(currentEmail.getProfilePicUrl())
+//                            .placeholder(R.drawable.ic_profile_placeholder)
+//                            .error(R.drawable.ic_profile_placeholder)
+//                            .circleCrop()
+//                            .into(holder.imageSenderOrSelected);
+//                    holder.imageSenderOrSelected.setBackgroundResource(0);
+//                } else {
+//                    holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+//                    holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background); // Assuming this draws a circle
+//                }
+//            }
+//        } else {
+//            // Not in multi-select mode, always show the default sender image (e.g., initial or profile pic placeholder)
+//            if (currentEmail.getProfilePicUrl() != null && !currentEmail.getProfilePicUrl().isEmpty()) {
+//                Glide.with(context)
+//                        .load(currentEmail.getProfilePicUrl())
+//                        .placeholder(R.drawable.ic_profile_placeholder)
+//                        .error(R.drawable.ic_profile_placeholder)
+//                        .circleCrop()
+//                        .into(holder.imageSenderOrSelected);
+//                holder.imageSenderOrSelected.setBackgroundResource(0);
+//            } else {
+//                holder.imageSenderOrSelected.setVisibility(View.VISIBLE); // Ensure it's visible
+//                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
+//                holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
+//            }
+//        }
+//        // --- Handle Item Background and Activated State (for selector) ---
+//        // The selector should manage selected_item_background and selectableItemBackground.
+//        // We only need to set 'activated' state and let the selector do its job.
+//        holder.itemView.setActivated(isSelected); // Activates the 'state_activated' item in your selector XML
+//
+//        // --- Handle Read/Unread Status and Text Style ---
+//        if (currentEmail.isRead()) {
+//            // Read state: Normal text, transparent or read_email_background (handled by selector's default)
+//            holder.senderTextView.setTypeface(null, Typeface.NORMAL);
+//            holder.subjectTextView.setTypeface(null, Typeface.NORMAL);
+//            holder.textTime.setTypeface(null, Typeface.NORMAL); // Added time text style
+//            holder.unreadIndicator.setVisibility(View.GONE); // Hide the unread indicator
+//            // Set text color for read emails (e.g., a darker grey for readability)
+//            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
+//            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
+//            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
+//        } else {
+//            // Unread state: Bold text, unread_email_background (handled by selector's default)
+//            holder.senderTextView.setTypeface(null, Typeface.BOLD);
+//            holder.subjectTextView.setTypeface(null, Typeface.BOLD);
+//            holder.textTime.setTypeface(null, Typeface.BOLD); // Added time text style
+//            holder.unreadIndicator.setVisibility(View.VISIBLE); // Show the unread indicator
+//            // Set text color for unread emails (e.g., black)
+//            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
+//            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
+//            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
+//        }
+//
+//        // --- Handle Star Icon (Important/Starred) ---
+//        // Ensure you have 'full_star' (filled) and 'starred' (empty) drawables.
+//        // Based on your description, 'starred' might be your empty star and 'full_star' your filled.
+//        if (currentEmail.isStarred()) { // Assuming 'isStarred()' in Email model
+//            holder.iconStar.setImageResource(R.drawable.full_star); // Filled star
+//        } else {
+//            holder.iconStar.setImageResource(R.drawable.starred); // Empty star
+//        }
+//        holder.iconStar.setVisibility(View.VISIBLE); // Ensure star is always visible
+//
+//        // --- Set Click Listeners (Moved to ViewHolder constructor for efficiency) ---
+//        // The actual logic for what happens on click is now in the ViewHolder.
+//        // It uses the itemClickListener passed to the adapter.
+//    }
 
     @Override
     public int getItemCount() {
@@ -355,17 +457,20 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
             });
 
             iconStar.setOnClickListener(v -> {
-                int position = getAdapterPosition(); // Use getAdapterPosition()
-                if (position != RecyclerView.NO_POSITION) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && itemClickListener != null) {
                     Email starredEmail = emailList.get(position);
+                    boolean newStarredStatus = !starredEmail.isStarred(); // זה עושה toggle
+                    starredEmail.setStarred(newStarredStatus); // מעדכן את המודל המקומי של האדפטר
 
-                    // Call the listener to handle the starring logic (which should update the model and notify)
-                    if (itemClickListener != null) {
-                        itemClickListener.onToggleEmailStarred(starredEmail, position);
+                    if (newStarredStatus) { // אם המצב החדש אחרי הטוגל הוא true
+                        itemClickListener.onMarkAsStarred(starredEmail.getId()); // קרא למתודת סימון
+                    } else { // אם המצב החדש אחרי הטוגל הוא false
+                        itemClickListener.onUnmarkAsStarred(starredEmail.getId()); // קרא למתודת ביטול סימון
                     }
-                    // The actual UI update for the star icon will happen when onBindViewHolder is called again
-                    // after onToggleEmailStarred calls notifyItemChanged(position)
+                    notifyItemChanged(position); // רענן את הפריט ב-UI מיד
                 }
+
             });
         }
 
