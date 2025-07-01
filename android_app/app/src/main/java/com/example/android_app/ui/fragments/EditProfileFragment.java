@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
+import com.example.android_app.BuildConfig;
 import com.example.android_app.R;
 import com.example.android_app.model.viewmodel.EditProfileViewModel;
 import com.example.android_app.utils.ViewModelFactory;
@@ -54,8 +56,24 @@ public class EditProfileFragment extends Fragment {
 
         //show userProfile image if exist
         if (profileImageUrl != null) {
-            loadImageFromUrl(profileImageUrl, imageProfile);
+            // Use Glide to load the profile image
+            String fullUrl;
+            if (!profileImageUrl.startsWith("http") && !profileImageUrl.startsWith("content://") && !profileImageUrl.startsWith("file://")) {
+                fullUrl = BuildConfig.SERVER_URL + profileImageUrl;
+            } else {
+                fullUrl = profileImageUrl;
+            }
+            Glide.with(this)
+                    .load(fullUrl)
+                    .placeholder(R.drawable.default_profile)
+                    .error(R.drawable.default_profile)
+                    .circleCrop()
+                    .into(imageProfile);
+        } else {
+            // If no profile image URL, set default
+            imageProfile.setImageResource(R.drawable.default_profile);
         }
+
 
         // open galery to choose profile image
         imageProfile.setOnClickListener(v -> selectImageFromGallery());
@@ -87,7 +105,30 @@ public class EditProfileFragment extends Fragment {
                 textSuccess.setText(success);
                 textSuccess.setVisibility(View.VISIBLE);
                 textError.setVisibility(View.GONE);
+                // Update greeting and profile image immediately after successful save
+                String updatedFullName = UserManager.getFullName(requireContext());
+                String updatedProfileImageUrl = UserManager.getProfileImage(requireContext());
+                textGreeting.setText("Hello, " + updatedFullName);
+                if (updatedProfileImageUrl != null) {
+                    String fullUrl;
+                    if (!updatedProfileImageUrl.startsWith("http") && !updatedProfileImageUrl.startsWith("content://") && !updatedProfileImageUrl.startsWith("file://")) {
+                        fullUrl = BuildConfig.SERVER_URL + updatedProfileImageUrl;
+                    } else {
+                        fullUrl = updatedProfileImageUrl;
+                    }
+                    Glide.with(this)
+                            .load(fullUrl)
+                            .placeholder(R.drawable.default_profile)
+                            .error(R.drawable.default_profile)
+                            .circleCrop()
+                            .into(imageProfile);
+                } else {
+                    imageProfile.setImageResource(R.drawable.default_profile);
+                }
             }
+            new android.os.Handler().postDelayed(() -> {
+                requireActivity().getSupportFragmentManager().popBackStack();
+            }, 500);
         });
 
         return view;

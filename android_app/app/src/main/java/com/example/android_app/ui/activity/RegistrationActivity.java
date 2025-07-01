@@ -1,5 +1,6 @@
 package com.example.android_app.ui.activity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,8 +17,8 @@ import com.example.android_app.model.viewmodel.RegistrationViewModel;
 public class RegistrationActivity extends AppCompatActivity {
 
     // Declare UI elements
-    private EditText etFullName, etEmail, etPassword, etConfirmPassword;
-    private DatePicker datePicker;
+    private EditText etFullName, etEmail, etPassword, etConfirmPassword, etBirthDate;
+    private Calendar selectedBirthDate = Calendar.getInstance();
     private Spinner spinnerGender;
     private Button btnUploadImage, btnRegister;
     private ImageView imagePreview;
@@ -34,10 +35,24 @@ public class RegistrationActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
-        datePicker = findViewById(R.id.datePicker);
         spinnerGender = findViewById(R.id.spinnerGender);
         btnRegister = findViewById(R.id.btnRegister);
         imagePreview = findViewById(R.id.imagePreview);
+        etBirthDate = findViewById(R.id.etBirthDate);
+        etBirthDate.setOnClickListener(v -> {
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, y, m, d) -> {
+                selectedBirthDate.set(y, m, d);
+                String selectedDate = String.format("%02d/%02d/%04d", d, m + 1, y);
+                etBirthDate.setText(selectedDate);
+            }, year, month, day);
+
+            datePickerDialog.show();
+        });
 
 
         //init spinner for gender
@@ -97,19 +112,14 @@ public class RegistrationActivity extends AppCompatActivity {
         String confirmPassword = etConfirmPassword.getText().toString();
         String gender = spinnerGender.getSelectedItem().toString();
 
-        // Calculate age
-        int year = datePicker.getYear();
-        int month = datePicker.getMonth();
-        int day = datePicker.getDayOfMonth();
+
 
         //check if age is above 12
-        Calendar birthDate = Calendar.getInstance();
-        birthDate.set(year, month, day);
-        Calendar today = Calendar.getInstance();
-        int age = today.get(Calendar.YEAR) - birthDate.get(Calendar.YEAR);
-        if (today.get(Calendar.DAY_OF_YEAR) < birthDate.get(Calendar.DAY_OF_YEAR)) {
+        int age = Calendar.getInstance().get(Calendar.YEAR) - selectedBirthDate.get(Calendar.YEAR);
+        if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) < selectedBirthDate.get(Calendar.DAY_OF_YEAR)) {
             age--;
         }
+
 
         // check all fields
         if (fullName.isEmpty()) {
@@ -151,11 +161,12 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private String getBirthDate() {
-        int year = datePicker.getYear();
-        int month = datePicker.getMonth() + 1; // zero-based
-        int day = datePicker.getDayOfMonth();
+        int year = selectedBirthDate.get(Calendar.YEAR);
+        int month = selectedBirthDate.get(Calendar.MONTH) + 1; // 0-based
+        int day = selectedBirthDate.get(Calendar.DAY_OF_MONTH);
         return String.format("%04d-%02d-%02d", year, month, day);
     }
+
 
 
 }

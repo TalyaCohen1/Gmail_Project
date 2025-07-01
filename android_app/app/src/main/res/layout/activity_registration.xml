@@ -22,17 +22,18 @@
             android:textColor="#FFB300"
             android:layout_marginBottom="24dp" />
 
-        <!-- EditTexts עם רקע לבן ועיגולים -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#FFFFFF"
+            app:boxBackgroundColor="#FFFCF7"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#FF9800"
+            app:hintTextColor="#FF9800">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etFullName"
@@ -40,7 +41,7 @@
                 android:layout_height="48dp"
                 android:hint="Full Name"
                 android:inputType="textPersonName"
-                android:paddingStart="12dp"/>
+                android:padding="12dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -48,11 +49,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#FFFFFF"
+            app:boxBackgroundColor="#FFFCF7"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#FF9800"
+            app:hintTextColor="#FF9800">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
@@ -60,24 +63,32 @@
                 android:layout_height="48dp"
                 android:hint="Email Address"
                 android:inputType="textEmailAddress"
-                android:paddingStart="12dp"/>
+                android:padding="12dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Date of Birth"
-            android:textColor="#FFB300"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="16dp"
+            app:boxBackgroundMode="filled"
+            app:boxBackgroundColor="#FFFCF7"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#FF9800"
+            app:hintTextColor="#FF9800">
 
-        <DatePicker
-            android:id="@+id/datePicker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:calendarViewShown="false"
-            android:spinnersShown="true"
-            android:layout_marginBottom="16dp" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etBirthDate"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Date of Birth"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                android:padding="12dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Spinner
             android:id="@+id/spinnerGender"
@@ -90,11 +101,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#FFFFFF"
+            app:boxBackgroundColor="#FFFCF7"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#FF9800"
+            app:hintTextColor="#FF9800">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
@@ -102,7 +115,7 @@
                 android:layout_height="48dp"
                 android:hint="Password"
                 android:inputType="textPassword"
-                android:paddingStart="12dp"/>
+                android:padding="12dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -110,11 +123,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#FFFFFF"
+            app:boxBackgroundColor="#FFFCF7"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="#FF9800"
+            app:hintTextColor="#FF9800">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etConfirmPassword"
@@ -122,7 +137,7 @@
                 android:layout_height="48dp"
                 android:hint="Confirm Password"
                 android:inputType="textPassword"
-                android:paddingStart="12dp"/>
+                android:padding="12dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button

@@ -26,5 +26,9 @@ public class SharedPrefsManager {
     public static void clearAll(Context context) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().clear().apply();
     }
+    public static String load(Context context, String key, String defaultValue) {
+        SharedPreferences prefs = context.getSharedPreferences("SmailPrefs", Context.MODE_PRIVATE);
+        return prefs.getString(key, defaultValue);
+    }
 }
 

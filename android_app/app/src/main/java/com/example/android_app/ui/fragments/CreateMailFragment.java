@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.android_app.R;
 import com.example.android_app.model.viewmodel.CreateMailViewModel;
 import com.example.android_app.utils.ViewModelFactory;
+import com.example.android_app.model.Email;
 
 public class CreateMailFragment extends Fragment {
 
@@ -35,12 +36,21 @@ public class CreateMailFragment extends Fragment {
         editTextBody = view.findViewById(R.id.editTextBody);
         textError = view.findViewById(R.id.textError);
         buttonSend = view.findViewById(R.id.buttonSend);
-
-        // יצירת ViewModel עם Factory (כדי לקבל Context)
         ViewModelFactory factory = new ViewModelFactory(requireActivity().getApplication());
         viewModel = new ViewModelProvider(this, factory).get(CreateMailViewModel.class);
 
-        // תצפית על הודעות שגיאה
+        Bundle args = getArguments();
+        if (args != null) {
+            String defaultTo = args.getString("to", "");
+            String defaultSubject = args.getString("subject", "");
+            String defaultBody = args.getString("body", "");
+
+            editTextTo.setText(defaultTo);
+            editTextSubject.setText(defaultSubject);
+            editTextBody.setText(defaultBody);
+        }
+
+        // show error message
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
                 textError.setText(error);
@@ -52,13 +62,13 @@ public class CreateMailFragment extends Fragment {
 
         viewModel.getEmailSent().observe(getViewLifecycleOwner(), sent -> {
             if (Boolean.TRUE.equals(sent)) {
-                // סגירת הפרגמנט והחזרת התצוגה לאינבוקס
+                //close fragment and back to inbox
                 requireActivity().getSupportFragmentManager().popBackStack();
                 requireActivity().findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
             }
         });
 
-        // כפתור שליחה
+        //send buttun
         buttonSend.setOnClickListener(v -> {
             String to = editTextTo.getText().toString();
             String subject = editTextSubject.getText().toString();
