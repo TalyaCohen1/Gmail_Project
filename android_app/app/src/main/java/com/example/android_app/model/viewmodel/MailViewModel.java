@@ -130,14 +130,14 @@ public class MailViewModel extends AndroidViewModel {
         currentMailCounts.put("deleted", 0);
         currentMailCounts.put("important", 0);
         currentMailCounts.put("starred", 0);
-        _mailCounts.setValue(currentMailCounts); // Set initial values
+        _mailCounts.postValue(currentMailCounts); // Set initial values
     }
 
     /**
      * Fetches mail counts for all standard categories and updates _mailCounts LiveData.
      */
     public void fetchAllCategoryCounts() {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
 
         // Use a counter or a latch if you need to know when all fetches are complete
         // For simplicity, we'll update as each one completes.
@@ -148,7 +148,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(List<Email> emails) {
                 currentMailCounts.put("inbox", emails.size());
-                _mailCounts.setValue(currentMailCounts); // Update LiveData
+                _mailCounts.postValue(currentMailCounts); // Update LiveData
                 Log.d(TAG, "Fetched Inbox count: " + emails.size());
                 checkAllCountsFetched();
             }
@@ -156,7 +156,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to fetch Inbox count: " + error);
-                _errorMessage.setValue(error);
+                _errorMessage.postValue(error);
                 checkAllCountsFetched();
             }
         });
@@ -166,7 +166,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(List<Email> emails) {
                 currentMailCounts.put("sent", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
                 Log.d(TAG, "Fetched Sent count: " + emails.size());
                 checkAllCountsFetched();
             }
@@ -174,7 +174,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to fetch Sent count: " + error);
-                _errorMessage.setValue(error);
+                _errorMessage.postValue(error);
                 checkAllCountsFetched();
             }
         });
@@ -184,7 +184,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(List<Email> emails) {
                 currentMailCounts.put("drafts", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
                 Log.d(TAG, "Fetched Drafts count: " + emails.size());
                 checkAllCountsFetched();
             }
@@ -192,7 +192,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to fetch Drafts count: " + error);
-                _errorMessage.setValue(error);
+                _errorMessage.postValue(error);
                 checkAllCountsFetched();
             }
         });
@@ -202,7 +202,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(List<Email> emails) {
                 currentMailCounts.put("spam", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
                 Log.d(TAG, "Fetched Spam count: " + emails.size());
                 checkAllCountsFetched();
             }
@@ -210,7 +210,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to fetch Spam count: " + error);
-                _errorMessage.setValue(error);
+                _errorMessage.postValue(error);
                 checkAllCountsFetched();
             }
         });
@@ -220,7 +220,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(List<Email> emails) {
                 currentMailCounts.put("deleted", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
                 Log.d(TAG, "Fetched Deleted count: " + emails.size());
                 checkAllCountsFetched();
             }
@@ -228,7 +228,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to fetch Deleted count: " + error);
-                _errorMessage.setValue(error);
+                _errorMessage.postValue(error);
                 checkAllCountsFetched();
             }
         });
@@ -238,7 +238,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(List<Email> emails) {
                 currentMailCounts.put("important", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
                 Log.d(TAG, "Fetched Important count: " + emails.size());
                 checkAllCountsFetched();
             }
@@ -246,7 +246,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to fetch Important count: " + error);
-                _errorMessage.setValue(error);
+                _errorMessage.postValue(error);
                 checkAllCountsFetched();
             }
         });
@@ -256,7 +256,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(List<Email> emails) {
                 currentMailCounts.put("starred", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
                 Log.d(TAG, "Fetched Starred count: " + emails.size());
                 checkAllCountsFetched();
             }
@@ -264,7 +264,7 @@ public class MailViewModel extends AndroidViewModel {
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to fetch Starred count: " + error);
-                _errorMessage.setValue(error);
+                _errorMessage.postValue(error);
                 checkAllCountsFetched();
             }
         });
@@ -276,7 +276,7 @@ public class MailViewModel extends AndroidViewModel {
     private void checkAllCountsFetched() {
         completedCountFetches++;
         if (completedCountFetches == TOTAL_CATEGORY_COUNTS) {
-            _isLoading.setValue(false);
+            _isLoading.postValue(false);
             completedCountFetches = 0; // Reset for next fetch
         }
     }
@@ -291,7 +291,7 @@ public class MailViewModel extends AndroidViewModel {
      */
     public void fetchMailCountForLabel(String labelId, String labelName) {
         if (labelId == null || labelId.isEmpty() || labelName == null || labelName.isEmpty()) {
-            _errorMessage.setValue("Label ID and Label Name are required to fetch mail count for label.");
+            _errorMessage.postValue("Label ID and Label Name are required to fetch mail count for label.");
             return;
         }
 
@@ -303,34 +303,27 @@ public class MailViewModel extends AndroidViewModel {
             public void onSuccess(List<Email> emails) {
                 // Update the count for this specific label
                 currentMailCounts.put(labelName, emails.size());
-                _mailCounts.setValue(currentMailCounts); // Trigger LiveData update
+                _mailCounts.postValue(currentMailCounts); // Trigger LiveData update
                 Log.d(TAG, "Fetched count for label '" + labelName + "': " + emails.size());
             }
 
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to fetch mail count for label '" + labelName + "': " + error);
-                _errorMessage.setValue(error);
+                _errorMessage.postValue(error);
             }
         });
     }
 
     // --- Mail Fetching Operations ---
     public void fetchInboxMails() {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.fetchInboxAndSaveToLocal(new MailRepository.ActionCallback() {
             @Override
 
-            public void onSuccess(List<Email> emails) {
-                _inboxMails.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
-                Log.d(TAG, "Fetched Inbox: " + emails.size() + " mails");
-                // Also update count
-                currentMailCounts.put("inbox", emails.size());
-                _mailCounts.setValue(currentMailCounts);
-
-
+            public void onSuccess() {
+                _isLoading.postValue(false);
+            }
             @Override
             public void onFailure(String error) {
                 _errorMessage.postValue(error);
@@ -341,20 +334,20 @@ public class MailViewModel extends AndroidViewModel {
 
 
     public void fetchAllMails() { 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.listMails(new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                _allMails.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _allMails.postValue(emails);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Fetched All Mails: " + emails.size() + " mails");
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch All Mails: " + error);
             }
         });
@@ -362,198 +355,198 @@ public class MailViewModel extends AndroidViewModel {
 
     public void fetchSentMails() {
 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.getSentMails(new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                _sentMails.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _sentMails.postValue(emails);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Fetched Sent: " + emails.size() + " mails");
                 // Also update count
                 currentMailCounts.put("sent", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch Sent: " + error);
             }
         });
     }
 
     public void fetchDrafts() { 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.getDrafts(new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                _drafts.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _drafts.postValue(emails);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Fetched Drafts: " + emails.size() + " mails");
                 // Also update count
                 currentMailCounts.put("drafts", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch Drafts: " + error);
             }
         });
     }
 
     public void fetchSpamMails() { 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.getSpamMails(new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                _spamMails.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _spamMails.postValue(emails);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Fetched Spam: " + emails.size() + " mails");
                 // Also update count
                 currentMailCounts.put("spam", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch Spam: " + error);
             }
         });
     }
 
     public void fetchDeletedMails() { 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.getDeletedMails(new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                _deletedMails.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _deletedMails.postValue(emails);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Fetched Deleted: " + emails.size() + " mails");
                 // Also update count
                 currentMailCounts.put("deleted", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch Deleted: " + error);
             }
         });
     }
 
     public void fetchImportantMails() { 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.getImportantMails(new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                _importantMails.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _importantMails.postValue(emails);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Fetched Important: " + emails.size() + " mails");
                 // Also update count
                 currentMailCounts.put("important", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch Important: " + error);
             }
         });
     }
 
     public void fetchStarredMails() { 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.getStarredMails(new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                _starredMails.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _starredMails.postValue(emails);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Fetched Starred: " + emails.size() + " mails");
                 // Also update count
                 currentMailCounts.put("starred", emails.size());
-                _mailCounts.setValue(currentMailCounts);
+                _mailCounts.postValue(currentMailCounts);
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch Starred: " + error);
             }
         });
     }
 
     public void searchMails(String query) { 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.searchMails(query, new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                _searchResults.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _searchResults.postValue(emails);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Search Results: " + emails.size() + " mails");
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to search mails: " + error);
             }
         });
     }
 
     public void fetchMailDetails(String mailId) { 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.getEmailById(mailId, new MailRepository.EmailDetailsCallback() {
             @Override
             public void onSuccess(Email email) {
-                _selectedMailDetails.setValue(email);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _selectedMailDetails.postValue(email);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Fetched Mail Details for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch mail details for ID " + mailId + ": " + error);
             }
         });
     }
 
     public void fetchMailsByLabel(String labelId) { 
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.getMailsByLabel(labelId, new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                _mailsByLabel.setValue(emails);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _mailsByLabel.postValue(emails);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Fetched Mails by Label " + labelId + ": " + emails.size() + " mails");
             }
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch mails by label " + labelId + ": " + error);
             }
         });
@@ -561,271 +554,271 @@ public class MailViewModel extends AndroidViewModel {
 
     // --- Mail Action Operations ---
     public void sendEmail(String to, String subject, String body) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.sendEmail(to, subject, body, new SendCallback() {
             @Override
             public void onSuccess() {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Email sent successfully.");
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to send email: " + error);
             }
         });
     }
 
     public void updateDraft(String mailId, EmailRequest request) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.updateDraft(mailId, request, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Draft updated successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to update draft for ID " + mailId + ": " + error);
             }
         });
     }
 
     public void deleteMail(String mailId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.deleteMail(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Mail deleted successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to delete mail for ID " + mailId + ": " + error);
             }
         });
     }
 
     public void markMailAsSpam(String mailId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.markMailAsSpam(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Mail marked as spam successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to mark mail as spam for ID " + mailId + ": " + error);
             }
         });
     }
 
     public void unmarkMailAsSpam(String mailId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.unmarkMailAsSpam(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Mail unmarked as spam successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to unmark mail as spam for ID " + mailId + ": " + error);
             }
         });
     }
   public void markMailAsImportant(String mailId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.markMailAsImportant(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Mail marked as important successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to mark mail as important for ID " + mailId + ": " + error);
             }
         });
     }
 
     public void unmarkMailAsImportant(String mailId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.unmarkMailAsImportant(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Mail unmarked as important successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to unmark mail as important for ID " + mailId + ": " + error);
             }
         });
     }
 
     public void markMailAsStarred(String mailId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.markMailAsStarred(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Mail marked as starred successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to mark mail as starred for ID " + mailId + ": " + error);
             }
         });
     }
 
     public void unmarkMailAsStarred(String mailId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.unmarkMailAsStarred(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Mail unmarked as starred successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to unmark mail as starred for ID " + mailId + ": " + error);
             }
         });
     }
 
     public void markAsRead(String mailId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.markAsRead(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Mail marked as read successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to mark mail as read for ID " + mailId + ": " + error);
             }
         });
     }
 
     public void markAsUnread(String mailId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.markAsUnread(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Mail marked as unread successfully for ID: " + mailId);
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to mark mail as unread for ID " + mailId + ": " + error);
             }
         });
     }
     public void addLabelToMail(String mailId, String labelId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.addLabelToMail(mailId, labelId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Label " + labelId + " added to mail " + mailId + " successfully.");
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to add label " + labelId + " to mail " + mailId + ": " + error);
             }
         });
     }
 
     public void removeLabelFromMail(String mailId, String labelId) {
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
         mailRepository.removeLabelFromMail(mailId, labelId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String mailId) {
-                _actionSuccess.setValue(true);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null);
+                _actionSuccess.postValue(true);
+                _isLoading.postValue(false);
+                _errorMessage.postValue(null);
                 Log.d(TAG, "Label " + labelId + " removed from mail " + mailId + " successfully.");
             }
 
             @Override
             public void onFailure(String error) {
-                _actionSuccess.setValue(false);
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
+                _actionSuccess.postValue(false);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
                 Log.e(TAG, "Failed to remove label " + labelId + " from mail " + mailId + ": " + error);
             }
         });
@@ -835,6 +828,6 @@ public class MailViewModel extends AndroidViewModel {
      * Resets the action success LiveData. Call this after consuming the success state in UI.
      */
     public void resetActionSuccess() {
-        _actionSuccess.setValue(false);
+        _actionSuccess.postValue(false);
     }
 }

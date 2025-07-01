@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar; // Added import for Toolbar
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout; // Added import for DrawerLayout
 
 import android.view.Menu;
@@ -86,6 +87,11 @@ public class InboxActivity extends AppCompatActivity implements
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Hide the default title as we have a custom layout within the toolbar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
         drawerLayout = findViewById(R.id.drawer_layout);
 
         toggle = new ActionBarDrawerToggle(
@@ -103,16 +109,19 @@ public class InboxActivity extends AppCompatActivity implements
         // If the hamburger icon should be on the right, you will need to set an explicit
         // OnClickListener for a custom ImageView placed in the toolbar, and disable
         // ActionBarDrawerToggle's default indicator.
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawerLayout.isDrawerOpen(Gravity.LEFT)) { // Use Gravity.START for RTL compatibility
-                    drawerLayout.closeDrawer(Gravity.LEFT);
-                } else {
-                    drawerLayout.openDrawer(Gravity.LEFT);
-                }
-            }
-        });
+
+//        // FIND YOUR NEW CUSTOM HAMBURGER ICON AND SET ITS CLICK LISTENER
+//        ImageView iconMenu = findViewById(R.id.icon_menu); // This is the new ImageView you added
+//        iconMenu.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (drawerLayout.isDrawerOpen(GravityCompat.START)) { // Use Gravity.START for RTL compatibility
+//                    drawerLayout.closeDrawer(GravityCompat.START);
+//                } else {
+//                    drawerLayout.openDrawer(GravityCompat.START);
+//                }
+//            }
+//        });
 
         // Initialize search bar and profile picture
         searchEditText = findViewById(R.id.search_edit_text);
@@ -142,8 +151,6 @@ public class InboxActivity extends AppCompatActivity implements
                 //         .commit();
             }
         });
-
-        setContentView(R.layout.activity_inbox); // Ensure activity_inbox.xml is updated
 
         // Initialize views
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
@@ -488,20 +495,22 @@ public class InboxActivity extends AppCompatActivity implements
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(Gravity.LEFT)) {
-            drawerLayout.closeDrawer(Gravity.LEFT);
-        } else {
-            super.onBackPressed();
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (drawerLayout.isDrawerOpen(Gravity.LEFT)) {
+//            drawerLayout.closeDrawer(Gravity.LEFT);
+//        } else {
+//            super.onBackPressed();
+//        }
+//    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        // This will handle other menu items you might add to the toolbar.
-        // The navigation icon's click is handled by toolbar.setNavigationOnClickListener().
-        return super.onOptionsItemSelected(item);
+        // Pass the event to ActionBarDrawerToggle, which will handle the drawer open/close.
+        if (toggle.onOptionsItemSelected(item)) { // ADD THIS BLOCK
+            return true;
+        }
+        return super.onOptionsItemSelected(item); // Keep this for other menu items
     }
 
     // Implement the SideBarFragmentListener methods
