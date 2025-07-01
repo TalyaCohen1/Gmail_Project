@@ -1,20 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/emailItemContainer"
     android:orientation="vertical"
     android:padding="12dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:background="?attr/selectableItemBackground">
+    android:background="@drawable/item_email_background_selector">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/imageSender"
+            android:id="@+id/imageSenderOrSelected"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="8dp"
@@ -26,7 +28,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- sender -->
         <TextView
             android:paddingStart="8dp"
             android:id="@+id/senderTextView"
@@ -36,10 +37,9 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/imageSender"
-            app:layout_constraintTop_toTopOf="@id/imageSender" />
+            app:layout_constraintStart_toEndOf="@id/imageSenderOrSelected"
+            app:layout_constraintTop_toTopOf="@id/imageSenderOrSelected" />
 
-        <!-- subject -->
         <TextView
             android:paddingStart="8dp"
             android:id="@+id/subjectTextView"
@@ -53,7 +53,6 @@
             android:layout_marginTop="4dp"
             tools:ignore="RtlSymmetry" />
 
-        <!-- time -->
         <TextView
             android:id="@+id/textTime"
             android:text="@string/time"
@@ -63,6 +62,31 @@
             android:layout_height="wrap_content"
             app:layout_constraintBaseline_toBaselineOf="@id/senderTextView"
             app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iconStar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="2dp"
+            android:src="@drawable/starred"
+            app:layout_constraintEnd_toStartOf="@id/textTime"
+            app:layout_constraintBottom_toBottomOf="@id/subjectTextView"
+            app:layout_constraintTop_toTopOf="@id/subjectTextView"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <View
+            android:id="@+id/unreadIndicator"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/circle_unread_indicator"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            tools:visibility="visible" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

@@ -11,11 +11,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.MediatorLiveData; // Import MediatorLiveData
 
+import com.example.android_app.data.local.MailEntity;
 import com.example.android_app.data.repository.MailRepository;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
 import com.example.android_app.model.Label;
 import com.example.android_app.utils.SendCallback;
+import com.example.android_app.utils.MailMapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -318,8 +320,9 @@ public class MailViewModel extends AndroidViewModel {
     // --- Mail Fetching Operations ---
     public void fetchInboxMails() {
         _isLoading.setValue(true);
-        mailRepository.getInbox(new MailRepository.InboxCallback() {
+        mailRepository.fetchInboxAndSaveToLocal(new MailRepository.ActionCallback() {
             @Override
+
             public void onSuccess(List<Email> emails) {
                 _inboxMails.setValue(emails);
                 _isLoading.setValue(false);
@@ -328,16 +331,16 @@ public class MailViewModel extends AndroidViewModel {
                 // Also update count
                 currentMailCounts.put("inbox", emails.size());
                 _mailCounts.setValue(currentMailCounts);
-            }
+
 
             @Override
             public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
-                Log.e(TAG, "Failed to fetch Inbox: " + error);
+                _errorMessage.postValue(error);
+                _isLoading.postValue(false);
             }
         });
     }
+
 
     public void fetchAllMails() { 
         _isLoading.setValue(true);
@@ -359,7 +362,8 @@ public class MailViewModel extends AndroidViewModel {
         });
     }
 
-    public void fetchSentMails() { 
+    public void fetchSentMails() {
+
         _isLoading.setValue(true);
         mailRepository.getSentMails(new MailRepository.ListEmailsCallback() {
             @Override
@@ -581,7 +585,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void updateDraft(String mailId, EmailRequest request) {
         _isLoading.setValue(true);
-        mailRepository.updateDraft(mailId, request, new MailRepository.ActionCallback() {
+        mailRepository.updateDraft(mailId, request, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -602,7 +606,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void deleteMail(String mailId) {
         _isLoading.setValue(true);
-        mailRepository.deleteMail(mailId, new MailRepository.ActionCallback() {
+        mailRepository.deleteMail(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -623,7 +627,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void markMailAsSpam(String mailId) {
         _isLoading.setValue(true);
-        mailRepository.markMailAsSpam(mailId, new MailRepository.ActionCallback() {
+        mailRepository.markMailAsSpam(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -644,7 +648,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void unmarkMailAsSpam(String mailId) {
         _isLoading.setValue(true);
-        mailRepository.unmarkMailAsSpam(mailId, new MailRepository.ActionCallback() {
+        mailRepository.unmarkMailAsSpam(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -664,7 +668,7 @@ public class MailViewModel extends AndroidViewModel {
     }
   public void markMailAsImportant(String mailId) {
         _isLoading.setValue(true);
-        mailRepository.markMailAsImportant(mailId, new MailRepository.ActionCallback() {
+        mailRepository.markMailAsImportant(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -685,7 +689,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void unmarkMailAsImportant(String mailId) {
         _isLoading.setValue(true);
-        mailRepository.unmarkMailAsImportant(mailId, new MailRepository.ActionCallback() {
+        mailRepository.unmarkMailAsImportant(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -706,7 +710,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void markMailAsStarred(String mailId) {
         _isLoading.setValue(true);
-        mailRepository.markMailAsStarred(mailId, new MailRepository.ActionCallback() {
+        mailRepository.markMailAsStarred(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -727,7 +731,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void unmarkMailAsStarred(String mailId) {
         _isLoading.setValue(true);
-        mailRepository.unmarkMailAsStarred(mailId, new MailRepository.ActionCallback() {
+        mailRepository.unmarkMailAsStarred(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -748,7 +752,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void markAsRead(String mailId) {
         _isLoading.setValue(true);
-        mailRepository.markAsRead(mailId, new MailRepository.ActionCallback() {
+        mailRepository.markAsRead(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -769,7 +773,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void markAsUnread(String mailId) {
         _isLoading.setValue(true);
-        mailRepository.markAsUnread(mailId, new MailRepository.ActionCallback() {
+        mailRepository.markAsUnread(mailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -789,7 +793,7 @@ public class MailViewModel extends AndroidViewModel {
     }
     public void addLabelToMail(String mailId, String labelId) {
         _isLoading.setValue(true);
-        mailRepository.addLabelToMail(mailId, labelId, new MailRepository.ActionCallback() {
+        mailRepository.addLabelToMail(mailId, labelId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);
@@ -810,7 +814,7 @@ public class MailViewModel extends AndroidViewModel {
 
     public void removeLabelFromMail(String mailId, String labelId) {
         _isLoading.setValue(true);
-        mailRepository.removeLabelFromMail(mailId, labelId, new MailRepository.ActionCallback() {
+        mailRepository.removeLabelFromMail(mailId, labelId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.setValue(true);

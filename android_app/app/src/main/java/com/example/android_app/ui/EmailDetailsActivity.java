@@ -26,8 +26,6 @@ public class EmailDetailsActivity extends AppCompatActivity {
         subjectView = findViewById(R.id.emailSubject);
         bodyView = findViewById(R.id.emailBody);
 
-        // 1. קבלי את ה-ID מה-Intent והמירי אותו ל-int
-        // השתמשי בערך ברירת מחדל כמו -1 כדי לטפל במקרה שה-ID לא נשלח
         String emailId = getIntent().getStringExtra("email_id");
 
         // אם אין ID, אין מה להמשיך
@@ -37,13 +35,10 @@ public class EmailDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // 2. אתחול ה-ViewModel
         viewModel = new ViewModelProvider(this).get(EmailDetailsViewModel.class);
 
-        // 3. בקשי מה-ViewModel להביא את המידע
         viewModel.fetchEmailById(emailId);
 
-        // 4. האזיני לתוצאות מה-ViewModel
         setupObservers();
     }
 

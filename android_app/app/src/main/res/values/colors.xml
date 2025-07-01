@@ -2,4 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="selected_item_background">#CCE0F9</color>
+    <color name="blue_500">#3871E0</color>
+    <color name="unread_email_background">#FFFFFF</color>
+    <color name="read_email_background">#F5F5F5</color>
+    <color name="unread_text_color">#000000</color>
+    <color name="read_text_color">#424242</color>
+    <color name="grey_light_pressed">#E0E0E0</color>
+    <color name="grey_light_focused">#E0E0E0</color>
 </resources>

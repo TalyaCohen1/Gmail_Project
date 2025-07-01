@@ -79,6 +79,12 @@ public class RegistrationActivity extends AppCompatActivity {
                 );
             }
         });
+        TextView tvAlreadyHaveAccount = findViewById(R.id.tvAlreadyHaveAccount);
+        tvAlreadyHaveAccount.setOnClickListener(v -> {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 
     //validate form - check if all fields are legal
