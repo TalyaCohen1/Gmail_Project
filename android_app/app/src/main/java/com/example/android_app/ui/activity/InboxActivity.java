@@ -26,13 +26,15 @@ import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
+import com.example.android_app.ui.fragments.SideBarFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InboxActivity extends AppCompatActivity implements
         EmailAdapter.EmailItemClickListener, // Implement the new interface
-        EmailAdapter.MultiSelectModeListener { // Implement the new interface
+        EmailAdapter.MultiSelectModeListener,
+        SideBarFragment.SideBarFragmentListener { // Implement the new interface
 
     private InboxViewModel viewModel;
     private EmailAdapter adapter;
@@ -389,4 +391,19 @@ public class InboxActivity extends AppCompatActivity implements
             // No direct UI update needed here, just ensures data is loaded.
         });
     }
+
+
+    @Override
+    public void onCategorySelected(String categoryName) {
+
+    }
+
+    @Override
+    public void onLabelSelected(String labelId, String labelName) {
+
+    }
+
+    @Override
+    public void onComposeEmailSelected() { }
+
 }
