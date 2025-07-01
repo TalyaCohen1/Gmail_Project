@@ -64,7 +64,7 @@ public class CreateMailFragment extends Fragment {
             if (Boolean.TRUE.equals(sent)) {
                 //close fragment and back to inbox
                 requireActivity().getSupportFragmentManager().popBackStack();
-                requireActivity().findViewById(R.id.fragment_container).setVisibility(View.GONE);
+                requireActivity().findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
             }
         });
 
