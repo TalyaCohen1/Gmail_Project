@@ -29,6 +29,7 @@ public class EditProfileViewModel extends AndroidViewModel {
         String userId = SharedPrefsManager.get(getApplication(), "userId");
 
         repository.updateUserProfile(userId, name, imageUri, successMsg, errorMsg);
+        loadUpdatedUser();
     }
     public void loadUpdatedUser() {
         String userId = SharedPrefsManager.get(getApplication(), "userId");

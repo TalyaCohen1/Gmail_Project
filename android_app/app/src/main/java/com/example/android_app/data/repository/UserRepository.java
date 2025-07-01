@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.OpenableColumns;
+import android.util.Log;
 
 import com.example.android_app.BuildConfig;
 import com.example.android_app.data.local.AppDatabase;
@@ -27,6 +28,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 
+import com.example.android_app.utils.UserManager;
 import com.example.android_app.utils.UserMapper;
 import com.google.gson.JsonObject;
 import retrofit2.Response;
@@ -125,6 +127,11 @@ public class UserRepository {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     result.postValue(response.body());
+                    String userId = response.body().getUserId();
+                    if (userId != null) {
+                        UserManager.saveUserId(context, userId);
+                    }
+
                     UserEntity user = UserMapper.fromLoginResponse(response.body());
                     insertUser(user);
                 } else {
@@ -168,8 +175,13 @@ public class UserRepository {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponse body = response.body();
-                    SharedPrefsManager.saveProfile(context, body.getFullName(), body.getProfileImage()); //save profile to shared prefs
-                    UserEntity updatedUser = UserMapper.fromLoginResponse(body); //update local user
+                    String userId = body.getUserId();
+                    if (userId != null) {
+                        UserManager.saveUserId(context, userId);
+                    }
+
+                    SharedPrefsManager.saveProfile(context, body.getFullName(), body.getProfileImage());
+                    UserEntity updatedUser = UserMapper.fromLoginResponse(body);
                     insertUser(updatedUser);
                     successMsg.postValue("Profile updated successfully");
                 } else {
@@ -184,6 +196,10 @@ public class UserRepository {
         });
     }
     public void insertUser(UserEntity user) {
+        if (user == null || user._id == null || user._id.isEmpty()) {
+            Log.e("UserRepository", "Cannot insert user with null or empty _id!");
+            return;
+        }
         executor.execute(() -> userDao.insertUser(user));
     }
     public void getUserById(String id, LocalCallback<UserEntity> callback) {

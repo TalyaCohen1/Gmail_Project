@@ -5,8 +5,9 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    android:background="#FFF9F0"
+    android:fitsSystemWindows="true" tools:openDrawer="start">
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content"
@@ -156,6 +157,7 @@
                 android:layout_height="match_parent"
                 tools:listitem="@layout/item_email" />
 
+
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <ProgressBar
@@ -199,5 +201,14 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         tools:layout="@layout/fragment_sidebar" />
+
+    <FrameLayout
+        android:id="@+id/fragmentProfileContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        />
 
 </androidx.drawerlayout.widget.DrawerLayout>
