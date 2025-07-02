@@ -158,14 +158,14 @@ public class InboxActivity extends AppCompatActivity implements
 
         EditProfileViewModel editProfileViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
         // Then handle the default image logic if profileImageUrl is null
-        if (profileImageUrl == null || profileImageUrl.isEmpty()) {
-            profileImageUrl = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
+        if (profileImage == null || profileImage.isEmpty()) {
+            profileImage = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
         }
         String fullUrl;
-        if (!profileImageUrl.startsWith("http")) {
-            fullUrl = BuildConfig.SERVER_URL + profileImageUrl;
+        if (!profileImage.startsWith("http")) {
+            fullUrl = BuildConfig.SERVER_URL + profileImage;
         } else {
-            fullUrl = profileImageUrl;
+            fullUrl = profileImage;
         }
 
         // put it into the ImageView
@@ -264,6 +264,9 @@ public class InboxActivity extends AppCompatActivity implements
                                 viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
                             }
                             Toast.makeText(this, "המייל נשלח בהצלחה!", Toast.LENGTH_SHORT).show();
+                            // <--- הוסף את שתי השורות האלה:
+                            findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
+                            findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
                         }
                     }
                 }
@@ -286,7 +289,6 @@ public class InboxActivity extends AppCompatActivity implements
         viewModel.fetchEmailsForCategoryOrLabel("inbox");
 
         findViewById(R.id.fabCompose).setOnClickListener(v -> {
-            // If in multi-select mode, exit it when compose button is clicked (optional, but good UX)
             if (adapter.isMultiSelectMode()) {
                 adapter.clearSelection();
             }
@@ -296,12 +298,16 @@ public class InboxActivity extends AppCompatActivity implements
                     .commit();
 
             findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.VISIBLE);
+            findViewById(R.id.fabCompose).setVisibility(View.GONE); // <--- הוסף את השורה הזו
         });
 
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             // Refresh the inbox when the CreateMailFragment is popped from back stack
             if (getSupportFragmentManager().findFragmentById(R.id.fragmentCreateMailContainer) == null) {
                 viewModel.fetchEmailsForCategoryOrLabel(viewModel.getCurrentCategoryOrLabelId());
+                // <--- הוסף את שתי השורות האלה:
+                findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
+                findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
             }
         });
     }
@@ -680,24 +686,6 @@ public class InboxActivity extends AppCompatActivity implements
         drawerLayout.closeDrawers(); // Close the drawer(s) after selection
         // Handle label selection (e.g., filter emails)
         viewModel.fetchEmailsForCategoryOrLabel(labelId);
-    }
-
-    // In InboxActivity.java, add this method
-    private void updateToolbarForSearchState() {
-        // Determine if search is active based on the search EditText content
-        boolean isSearchActive = !searchEditText.getText().toString().isEmpty();
-
-        if (isSearchActive) {
-            // When search is active, show the back arrow
-            toggle.setDrawerIndicatorEnabled(false); // Hide the hamburger icon
-            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true); // Show the Up/Home button (which will be a back arrow)
-        } else {
-            // When no search is active, show the hamburger icon
-            toggle.setDrawerIndicatorEnabled(true); // Show the hamburger icon
-            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false); // Hide the Up/Home button
-        }
-        // Synchronize the state of the ActionBarDrawerToggle with the toolbar to reflect changes
-        toggle.syncState();
     }
 
     // In InboxActivity.java, add this method

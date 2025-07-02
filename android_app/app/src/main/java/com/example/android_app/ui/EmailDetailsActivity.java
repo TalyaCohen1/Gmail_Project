@@ -341,7 +341,7 @@ public class EmailDetailsActivity extends AppCompatActivity {
         });
         popup.show();
     }
-}
+
 
 
     @Override

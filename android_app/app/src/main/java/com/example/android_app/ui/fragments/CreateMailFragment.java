@@ -167,7 +167,6 @@ public class CreateMailFragment extends Fragment {
         }
 
         requireActivity().getSupportFragmentManager().popBackStack();
-        requireActivity().findViewById(R.id.fragment_container).setVisibility(View.GONE);
     }
 
     @Override
