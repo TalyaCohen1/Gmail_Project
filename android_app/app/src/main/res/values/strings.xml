@@ -2,7 +2,7 @@
     <string name="app_name">Smail :)</string>
     <string name="email_subject">Subject</string>
     <string name="sender_name">sender</string>
-    <string name="time">10:45</string>
+    <string name="time">Jun 3</string>
     <string name="sender_image">Sender image</string>
     <string name="title_activity_email_details">Email Details</string>
     <string-array name="gender_options">

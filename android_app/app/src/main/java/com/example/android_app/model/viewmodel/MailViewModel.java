@@ -9,18 +9,19 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.MediatorLiveData; // Import MediatorLiveData
 
 import com.example.android_app.data.repository.MailRepository;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
 import com.example.android_app.model.Label;
 import com.example.android_app.utils.SendCallback;
+import com.example.android_app.utils.SharedPrefsManager;
+import com.example.android_app.data.network.MailService;
+
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MailViewModel extends AndroidViewModel {
 
@@ -144,7 +145,7 @@ public class MailViewModel extends AndroidViewModel {
         // In a real app, consider using a CompletableFuture or RxJava for better coordination.
 
         // Fetch Inbox count
-        mailRepository.getInbox(new MailRepository.InboxCallback() {
+        mailRepository.getInbox(new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
                 currentMailCounts.put("inbox", emails.size());
@@ -555,7 +556,15 @@ public class MailViewModel extends AndroidViewModel {
     // --- Mail Action Operations ---
     public void sendEmail(String to, String subject, String body) {
         _isLoading.postValue(true);
-        mailRepository.sendEmail(to, subject, body, new SendCallback() {
+        String token = SharedPrefsManager.get(getApplication(), "token"); // או "authToken" אם זה המפתח שבו אתה שומר אותו
+        if (token == null || token.isEmpty()) {
+            _errorMessage.postValue("Authentication token is missing.");
+            _isLoading.postValue(false);
+            _actionSuccess.postValue(false);
+            Log.e(TAG, "Failed to send email: Authentication token is missing.");
+            return;
+        }
+        mailRepository.sendEmail(to, subject, body,token, new SendCallback() {
             @Override
             public void onSuccess() {
                 _actionSuccess.postValue(true);
@@ -576,13 +585,26 @@ public class MailViewModel extends AndroidViewModel {
 
     public void updateDraft(String mailId, EmailRequest request) {
         _isLoading.postValue(true);
-        mailRepository.updateDraft(mailId, request, new MailRepository.MailActionCallback() {
+        String token = SharedPrefsManager.get(getApplication(), "token"); // או "authToken"
+        if (token == null || token.isEmpty()) {
+            _errorMessage.postValue("Authentication token is missing.");
+            _isLoading.postValue(false);
+            _actionSuccess.postValue(false); // הגדר כשל גם כאן
+            Log.e(TAG, "Failed to update draft: Authentication token is missing.");
+            return;
+        }
+
+        String to = request.getTo();
+        String subject = request.getSubject();
+        String body = request.getBody();
+
+        mailRepository.updateDraft(mailId, to, subject, body, token, new MailService.DraftMailCallback() {
             @Override
-            public void onSuccess(String mailId) {
+            public void onSuccess(Email email) { // שינוי מסוג String ל-Email
                 _actionSuccess.postValue(true);
                 _isLoading.postValue(false);
                 _errorMessage.postValue(null);
-                Log.d(TAG, "Draft updated successfully for ID: " + mailId);
+                Log.d(TAG, "Draft updated successfully for ID: " + email.getId()); // השתמש ב-email.getId()
             }
 
             @Override

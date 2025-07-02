@@ -13,4 +13,5 @@ public class MailLabelRequest {
     public String getMailId() {
         return mailId;
     }
+
 }
