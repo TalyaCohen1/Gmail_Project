@@ -684,6 +684,47 @@ public class MailRepository {
         });
     }
 
+    public void addMailToLabel(String emailId, String labelId, MailActionCallback callback) {
+        Log.d("MailRepository", "addMailToLabel: Adding mail " + emailId + " to label " + labelId);
+        String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
+
+        // יצירת אובייקט ה-Request Body עם ה-ID של המייל
+        MailLabelRequest requestBody = new MailLabelRequest(emailId);
+
+        apiService.addMailToLabel("Bearer " + token, labelId, requestBody).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.d("MailRepository", "Successfully added mail " + emailId + " to label " + labelId);
+                    // כאן ניתן לעדכן את בסיס הנתונים המקומי אם המודל של המייל כולל את התוויות שלו
+                    callback.onSuccess(emailId);
+                } else {
+                    String errorMsg = "Failed to add label. Code: " + response.code();
+                    try {
+                        if (response.errorBody() != null) {
+                            // נסה לקרוא את גוף השגיאה כדי לקבל פרטים נוספים מהשרת
+                            errorMsg += ", Body: " + response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        Log.e("MailRepository", "Error reading error body", e);
+                    }
+                    Log.e("MailRepository", errorMsg);
+                    callback.onFailure(errorMsg);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.e("MailRepository", "Network failure adding label: " + t.getMessage(), t);
+                callback.onFailure("Network failure: " + t.getMessage());
+            }
+        });
+    }
+
     public void addLabelToMail(String mailId, String labelId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository addLabelToMail: Calling apiService.addLabelToMail()");
         String token = getTokenFromPrefs(context);

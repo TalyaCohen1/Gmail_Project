@@ -260,6 +260,20 @@ public class InboxViewModel extends AndroidViewModel {
             }
         });
     }
+    public void addMailToLabel(String emailId, String labelId) {
+        mailRepository.addMailToLabel(emailId, labelId, new MailRepository.MailActionCallback() {
+            @Override
+            public void onSuccess(String updatedEmailId) {
+                Log.d("InboxViewModel", "Mail " + emailId + " added to label " + labelId);
+                fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                error.postValue("Failed to add mail to label: " + errorMessage);
+            }
+        });
+    }
 
     public void addLabelToEmail(String emailId, String labelId) {
         mailRepository.addLabelToMail(emailId, labelId, new MailRepository.MailActionCallback() {

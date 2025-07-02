@@ -344,7 +344,7 @@ public class InboxActivity extends AppCompatActivity implements
                                         return true;
                                     }
                                     for (Email email : selectedEmails) {
-                                        viewModel.addLabelToEmail(email.getId(), label.getId()); // Call ViewModel to add label
+                                        viewModel.addMailToLabel(email.getId(), label.getId());
                                     }
                                     Toast.makeText(this, "Adding to label: " + label.getName() + "...", Toast.LENGTH_SHORT).show();
                                     adapter.clearSelection();
