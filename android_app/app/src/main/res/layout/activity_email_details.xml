@@ -10,6 +10,14 @@
     android:background="#FFF9F0"
     tools:context=".ui.EmailDetailsActivity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"> <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <!-- TextView להצגת השולח -->
     <!-- שימי לב שה-id תואם למה שחיפשנו בקוד ה-Java -->
     <TextView
@@ -95,6 +103,8 @@
             android:textColor="#FFFFFF"
             android:backgroundTint="#FFD54F" />
     </LinearLayout>
+    </LinearLayout>
+    </ScrollView>
 
     <FrameLayout
         android:id="@+id/fragment_container"

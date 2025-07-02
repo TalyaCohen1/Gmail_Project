@@ -202,9 +202,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:contentDescription="Compose Email"
-            android:text="+"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:backgroundTint="#FFD54F"
+            android:src="@drawable/new_mail"
+            app:tint="@android:color/white" />
 
         <FrameLayout
             android:id="@+id/fragmentCreateMailContainer"
