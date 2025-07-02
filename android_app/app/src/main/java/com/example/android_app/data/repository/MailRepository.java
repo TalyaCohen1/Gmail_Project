@@ -758,6 +758,46 @@ public class MailRepository {
         });
     }
 
+    public void removeMailFromLabel(String emailId, String labelId, MailActionCallback callback) {
+        Log.d("MailRepository", "removeMailFromLabel: Removing mail " + emailId + " from label " + labelId);
+        String token = getTokenFromPrefs(context);
+        if (token == null || token.isEmpty()) {
+            callback.onFailure("Authentication token is missing.");
+            return;
+        }
+
+        MailLabelRequest requestBody = new MailLabelRequest(emailId);
+
+        apiService.removeMailFromLabel("Bearer " + token, labelId, requestBody).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d("MailRepository", "Successfully removed mail " + emailId + " from label " + labelId);
+                    // אין גוף תגובה כאן, לכן אין צורך לקרוא response.body()
+                    callback.onSuccess(emailId);
+                } else {
+                    String errorMsg = "Failed to remove label. Code: " + response.code();
+                    try {
+                        if (response.errorBody() != null) {
+                            // עדיין ניתן לקרוא את גוף השגיאה אם השרת שולח כזה במקרה של כישלון
+                            errorMsg += ", Body: " + response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        Log.e("MailRepository", "Error reading error body", e);
+                    }
+                    Log.e("MailRepository", errorMsg);
+                    callback.onFailure(errorMsg);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Log.e("MailRepository", "Network failure removing label: " + t.getMessage(), t);
+                callback.onFailure("Network failure: " + t.getMessage());
+            }
+        });
+    }
+
     public void addLabelToMail(String mailId, String labelId, MailActionCallback callback) { // Updated to use MailActionCallback
         Log.d("MyDebug", "Repository addLabelToMail: Calling apiService.addLabelToMail()");
         String token = getTokenFromPrefs(context);

@@ -119,7 +119,7 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
             holder.senderTextView.setTypeface(null, Typeface.NORMAL);
             holder.subjectTextView.setTypeface(null, Typeface.NORMAL);
             holder.textTime.setTypeface(null, Typeface.NORMAL);
-            holder.unreadIndicator.setVisibility(View.GONE);
+            // holder.unreadIndicator.setVisibility(View.GONE);
             holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
             holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
             holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
@@ -127,7 +127,7 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
             holder.senderTextView.setTypeface(null, Typeface.BOLD);
             holder.subjectTextView.setTypeface(null, Typeface.BOLD);
             holder.textTime.setTypeface(null, Typeface.BOLD);
-            holder.unreadIndicator.setVisibility(View.VISIBLE);
+            // holder.unreadIndicator.setVisibility(View.VISIBLE);
             holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
             holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
             holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
