@@ -39,6 +39,7 @@ import com.example.android_app.ui.fragments.SideBarFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class InboxActivity extends AppCompatActivity implements
         EmailAdapter.EmailItemClickListener, // Implement the new interface
@@ -64,6 +65,7 @@ public class InboxActivity extends AppCompatActivity implements
     private ImageView iconDelete;
     private ImageView iconMarkReadUnread;
     private ImageView iconMoreOptions;
+    private ImageView iconSpam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,19 +97,6 @@ public class InboxActivity extends AppCompatActivity implements
         // If the hamburger icon should be on the right, you will need to set an explicit
         // OnClickListener for a custom ImageView placed in the toolbar, and disable
         // ActionBarDrawerToggle's default indicator.
-
-//        // FIND YOUR NEW CUSTOM HAMBURGER ICON AND SET ITS CLICK LISTENER
-//        ImageView iconMenu = findViewById(R.id.icon_menu); // This is the new ImageView you added
-//        iconMenu.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (drawerLayout.isDrawerOpen(GravityCompat.START)) { // Use Gravity.START for RTL compatibility
-//                    drawerLayout.closeDrawer(GravityCompat.START);
-//                } else {
-//                    drawerLayout.openDrawer(GravityCompat.START);
-//                }
-//            }
-//        });
 
         // Initialize search bar and profile picture
         searchEditText = findViewById(R.id.search_edit_text);
@@ -150,8 +139,37 @@ public class InboxActivity extends AppCompatActivity implements
         iconDelete = findViewById(R.id.iconDelete);
         iconMarkReadUnread = findViewById(R.id.iconMarkReadUnread);
         iconMoreOptions = findViewById(R.id.iconMoreOptions);
+        iconSpam = findViewById(R.id.iconSpam);
+
 
         viewModel = new ViewModelProvider(this).get(InboxViewModel.class);
+
+        getSupportFragmentManager().setFragmentResultListener(
+                CreateMailFragment.REQUEST_KEY_EMAIL_SENT, // המפתח שהגדרת ב-CreateMailFragment
+                this, // ה-LifecycleOwner הוא ה-Activity עצמו
+                (requestKey, result) -> {
+                    Log.d("InboxActivity", "Received fragment result. Request Key: " + requestKey);
+                    // Callback כאשר מתקבלת תוצאה
+                    if (requestKey.equals(CreateMailFragment.REQUEST_KEY_EMAIL_SENT)) {
+                        // בדוק אם המייל נשלח בהצלחה על פי הנתונים בחבילה (Bundle)
+                        boolean emailSentSuccess = result.getBoolean(CreateMailFragment.BUNDLE_KEY_EMAIL_SENT_SUCCESS, false);
+                        Log.d("InboxActivity", "Email sent success flag: " + emailSentSuccess);
+                        if (emailSentSuccess) {
+                            // המייל נשלח בהצלחה. כעת רענן את האינבוקס.
+                            String currentCategory = viewModel.getCurrentCategoryOrLabelId();
+                            Log.d("InboxActivity", "Email sent successfully. Refreshing category: " + currentCategory);
+                            if (currentCategory == null || currentCategory.isEmpty()) {
+                                // רענן את האינבוקס הראשי אם אין קטגוריה ספציפית פעילה
+                                viewModel.fetchEmailsForCategoryOrLabel("inbox");
+                            } else {
+                                // רענן את הקטגוריה הפעילה הנוכחית (לדוגמה, "inbox", "sent", "allmail")
+                                viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
+                            }
+                            Toast.makeText(this, "המייל נשלח בהצלחה!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
 
         setupRecyclerView();
         setupMultiSelectToolbarListeners(); // New method for toolbar listeners
@@ -167,7 +185,7 @@ public class InboxActivity extends AppCompatActivity implements
         }
 
         Log.d("MyDebug", "Activity onCreate: Calling viewModel.fetchInbox()");
-        viewModel.fetchEmails();
+        viewModel.fetchEmailsForCategoryOrLabel("inbox");
 
         findViewById(R.id.fabCompose).setOnClickListener(v -> {
             // If in multi-select mode, exit it when compose button is clicked (optional, but good UX)
@@ -185,7 +203,7 @@ public class InboxActivity extends AppCompatActivity implements
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             // Refresh the inbox when the CreateMailFragment is popped from back stack
             if (getSupportFragmentManager().findFragmentById(R.id.fragmentCreateMailContainer) == null) {
-                viewModel.fetchEmails();
+                viewModel.fetchEmailsForCategoryOrLabel(viewModel.getCurrentCategoryOrLabelId());
             }
         });
     }
@@ -227,13 +245,26 @@ public class InboxActivity extends AppCompatActivity implements
                 swipeRefreshLayout.setRefreshing(false);
                 return;
             }
-            viewModel.fetchEmails();
+            viewModel.fetchEmailsForCategoryOrLabel(viewModel.getCurrentCategoryOrLabelId());
         });
     }
 
     private void setupMultiSelectToolbarListeners() {
         iconCloseMultiSelect.setOnClickListener(v -> {
             adapter.clearSelection(); // Exit multi-select mode
+        });
+        iconSpam.setOnClickListener(v -> {
+            List<Email> selectedEmails = adapter.getSelectedEmails();
+            if (selectedEmails.isEmpty()) {
+                Toast.makeText(this, "No emails selected.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            for (Email email : selectedEmails) {
+                viewModel.markEmailAsSpam(email.getId());
+            }
+            Toast.makeText(this, "Marked as spam", Toast.LENGTH_SHORT).show();
+            adapter.clearSelection();
         });
 
         iconDelete.setOnClickListener(v -> {
@@ -329,6 +360,7 @@ public class InboxActivity extends AppCompatActivity implements
             // This is a bit tricky with LiveData and PopupMenu, consider using `removeObservers` if needed
             // For now, `labelsSubMenu.clear()` handles re-adding, but `removeObservers` is cleaner for single-shot updates.
             // Or, make sure `getLabels()` returns a LiveData that doesn't re-trigger on config changes.
+            viewModel.getLabels().removeObservers(this); // Remove observer after use
         });
 
         popup.setOnMenuItemClickListener(item -> {
@@ -467,7 +499,7 @@ public class InboxActivity extends AppCompatActivity implements
     }
 
     private void observeViewModel() {
-        viewModel.getInboxEmails().observe(this, emails -> {
+        viewModel.getCurrentEmails().observe(this, emails -> {
             if (emails != null) {
                 // List<Email> emailsToShow = MailMapper.toEmails(emails);
                 // adapter.setEmails(emailsToShow);
@@ -526,9 +558,10 @@ public class InboxActivity extends AppCompatActivity implements
     // Implement the SideBarFragmentListener methods
     @Override
     public void onCategorySelected(String categoryName) {
-        Log.d("InboxActivity", "Category selected: " + categoryName);
+        Log.d("InboxActivity", "onCategorySelected received: " + categoryName);
         drawerLayout.closeDrawers(); // Close the drawer(s) after selection
         // Handle category selection (e.g., filter emails)
+        viewModel.fetchEmailsForCategoryOrLabel(categoryName.toLowerCase(Locale.ROOT));
     }
 
     @Override
@@ -536,6 +569,7 @@ public class InboxActivity extends AppCompatActivity implements
         Log.d("InboxActivity", "Label selected: " + labelName + " (ID: " + labelId + ")");
         drawerLayout.closeDrawers(); // Close the drawer(s) after selection
         // Handle label selection (e.g., filter emails)
+        viewModel.fetchEmailsForCategoryOrLabel(labelId);
     }
 
     /**

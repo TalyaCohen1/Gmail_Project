@@ -1,6 +1,7 @@
 package com.example.android_app.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,11 +12,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.android_app.R;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.viewmodel.EmailDetailsViewModel;
+import com.example.android_app.model.viewmodel.InboxViewModel;
 
 
 public class EmailDetailsActivity extends AppCompatActivity {
     TextView senderView, subjectView, bodyView;
-    private EmailDetailsViewModel viewModel;
+    private EmailDetailsViewModel emailDetailsViewModel;
+    private InboxViewModel inboxViewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,23 +38,26 @@ public class EmailDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        viewModel = new ViewModelProvider(this).get(EmailDetailsViewModel.class);
+        emailDetailsViewModel = new ViewModelProvider(this).get(EmailDetailsViewModel.class);
+        inboxViewModel = new ViewModelProvider(this).get(InboxViewModel.class);
 
-        viewModel.fetchEmailById(emailId);
+        emailDetailsViewModel.fetchEmailById(emailId);
+        Log.d("EmailDetailsActivity", "Attempting to mark email as read for ID: " + emailId);
+        inboxViewModel.markEmailAsRead(emailId);
 
         setupObservers();
     }
 
     private void setupObservers() {
         // listen to valid data
-        viewModel.getEmailDetails().observe(this, email -> {
+        emailDetailsViewModel.getEmailDetails().observe(this, email -> {
             if (email != null) {
                 updateUi(email);
             }
         });
 
         // listen to errors
-        viewModel.getError().observe(this, error -> {
+        emailDetailsViewModel.getError().observe(this, error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(EmailDetailsActivity.this, error, Toast.LENGTH_LONG).show();
                 displayError();

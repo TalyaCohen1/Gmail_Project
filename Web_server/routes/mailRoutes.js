@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require('../controllers/mailController');
 const authenticateToken = require('../middlewares/authMiddleware');
 
-// List up to 50 most recent mails
+// List up to 25 most recent mails
 router.get('/', authenticateToken, controller.listMails);
 
 // Create a new mail (with blacklist check)

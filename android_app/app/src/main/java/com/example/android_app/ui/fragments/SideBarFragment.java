@@ -186,7 +186,7 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
         if (allMailLayout != null) { //
             allMailLayout.setOnClickListener(v -> { //
                 mailViewModel.fetchAllMails(); // Use the newly added fetchAllMails
-                if (listener != null) listener.onCategorySelected("All Mail"); //
+                if (listener != null) listener.onCategorySelected("allmail"); //
             });
         }
         if (spamLayout != null) { //
@@ -260,6 +260,7 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
      * @param categoryName The name of the category label clicked.
      */
     private void handleCategoryLabelClick(String categoryName) {
+        Log.d("SideBarFragment", "Category selected: " + categoryName);
         // Get all labels observed by the ViewModel
         List<Label> allLabels = labelViewModel.getLabels().getValue(); //
         if (allLabels != null) { //

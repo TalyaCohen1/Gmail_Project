@@ -55,7 +55,7 @@ public interface ApiService {
 
     // --- Mail Service Endpoints (from mailRoutes.js) ---
 
-    // List up to 50 most recent mails (router.get('/'))
+    // List up to 25 most recent mails (router.get('/'))
     @GET("api/mails")
     Call<List<Email>> listMails(
             @Header("Authorization") String token

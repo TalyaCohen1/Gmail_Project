@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.MediatorLiveData; // Import MediatorLiveData
 
 import com.example.android_app.data.repository.MailRepository;
 import com.example.android_app.model.Email;
@@ -20,7 +19,6 @@ import com.example.android_app.utils.SendCallback;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MailViewModel extends AndroidViewModel {
 
@@ -144,7 +142,7 @@ public class MailViewModel extends AndroidViewModel {
         // In a real app, consider using a CompletableFuture or RxJava for better coordination.
 
         // Fetch Inbox count
-        mailRepository.getInbox(new MailRepository.InboxCallback() {
+        mailRepository.getInbox(new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
                 currentMailCounts.put("inbox", emails.size());
