@@ -53,7 +53,6 @@ public class EmailDetailsActivity extends AppCompatActivity {
         inboxViewModel = new ViewModelProvider(this).get(InboxViewModel.class);
 
         emailDetailsViewModel.fetchEmailById(emailId);
-        Log.d("EmailDetailsActivity", "Attempting to mark email as read for ID: " + emailId);
         inboxViewModel.markEmailAsRead(emailId);
 
         setupObservers();

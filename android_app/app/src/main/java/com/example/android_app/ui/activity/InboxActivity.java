@@ -177,7 +177,6 @@ public class InboxActivity extends AppCompatActivity implements
         ImageView profilePicture = findViewById(R.id.profile_picture);
 
         EditProfileViewModel editProfileViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
-        String profileImageUrl = UserManager.getProfileImage(this); // UserManager.getProfileImage already provides a default of null
         // Then handle the default image logic if profileImageUrl is null
         if (profileImageUrl == null || profileImageUrl.isEmpty()) {
             profileImageUrl = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
@@ -726,23 +725,23 @@ public class InboxActivity extends AppCompatActivity implements
         toggle.syncState();
     }
 
-    // In InboxActivity.java, add this method
-    private void updateToolbarForSearchState() {
-        // Determine if search is active based on the search EditText content
-        boolean isSearchActive = !searchEditText.getText().toString().isEmpty();
-
-        if (isSearchActive) {
-            // When search is active, show the back arrow
-            toggle.setDrawerIndicatorEnabled(false); // Hide the hamburger icon
-            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true); // Show the Up/Home button (which will be a back arrow)
-        } else {
-            // When no search is active, show the hamburger icon
-            toggle.setDrawerIndicatorEnabled(true); // Show the hamburger icon
-            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false); // Hide the Up/Home button
-        }
-        // Synchronize the state of the ActionBarDrawerToggle with the toolbar to reflect changes
-        toggle.syncState();
-    }
+//    // In InboxActivity.java, add this method
+//    private void updateToolbarForSearchState() {
+//        // Determine if search is active based on the search EditText content
+//        boolean isSearchActive = !searchEditText.getText().toString().isEmpty();
+//
+//        if (isSearchActive) {
+//            // When search is active, show the back arrow
+//            toggle.setDrawerIndicatorEnabled(false); // Hide the hamburger icon
+//            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true); // Show the Up/Home button (which will be a back arrow)
+//        } else {
+//            // When no search is active, show the hamburger icon
+//            toggle.setDrawerIndicatorEnabled(true); // Show the hamburger icon
+//            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false); // Hide the Up/Home button
+//        }
+//        // Synchronize the state of the ActionBarDrawerToggle with the toolbar to reflect changes
+//        toggle.syncState();
+//    }
 
     /**
      * Placeholder method for performing the search.
