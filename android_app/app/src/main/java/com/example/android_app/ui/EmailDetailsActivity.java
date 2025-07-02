@@ -28,6 +28,7 @@ public class EmailDetailsActivity extends AppCompatActivity {
     private EmailDetailsViewModel emailDetailsViewModel;
     private InboxViewModel inboxViewModel;
     Button replyButton, forwardButton;
+    private Email currentEmail;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,12 +57,28 @@ public class EmailDetailsActivity extends AppCompatActivity {
         inboxViewModel.markEmailAsRead(emailId);
 
         setupObservers();
+
+        // *** שינוי חדש: האזנה לתוצאות מ-CreateMailFragment ***
+        getSupportFragmentManager().setFragmentResultListener(
+                CreateMailFragment.REQUEST_KEY_EMAIL_SENT,
+                this, // LifecycleOwner
+                (requestKey, result) -> {
+                    if (requestKey.equals(CreateMailFragment.REQUEST_KEY_EMAIL_SENT)) {
+                        boolean emailSentSuccess = result.getBoolean(CreateMailFragment.BUNDLE_KEY_EMAIL_SENT_SUCCESS, false);
+                        if (emailSentSuccess) {
+                            // המייל נשלח בהצלחה מ-CreateMailFragment, לכן נסיים את הפעילות הנוכחית
+                            finish(); // חזרה לאינבוקס
+                        }
+                    }
+                }
+        );
     }
 
     private void setupObservers() {
         // listen to valid data
         emailDetailsViewModel.getEmailDetails().observe(this, email -> {
             if (email != null) {
+                this.currentEmail = email;
                 updateUi(email);
             }
         });
@@ -83,8 +100,8 @@ public class EmailDetailsActivity extends AppCompatActivity {
         LinearLayout sentButtonsGroup = findViewById(R.id.sentButtonsGroup);
         LinearLayout draftButtonsGroup = findViewById(R.id.draftButtonsGroup);
 
-        sentButtonsGroup.setVisibility(View.GONE);
-        draftButtonsGroup.setVisibility(View.GONE);
+        if (sentButtonsGroup != null) sentButtonsGroup.setVisibility(View.GONE);
+        if (draftButtonsGroup != null) draftButtonsGroup.setVisibility(View.GONE);
 
         if(!email.isSend()){
             //handle draft case
@@ -101,25 +118,33 @@ public class EmailDetailsActivity extends AppCompatActivity {
 
 
     private void openCreateMail(String type, Email email) {
+        if(email == null) {
+            Toast.makeText(this, "Email data not available.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        View fragmentContainer = findViewById(R.id.fragment_container);
+        if (fragmentContainer != null) {
+            fragmentContainer.setVisibility(View.VISIBLE);
+        }
+
         Bundle args = new Bundle();
         if(type.equals("replay")) {
-            args.putString("to", email.getFrom());
-            args.putString("subject",  email.getReplySubject());
-            args.putString("body", email.getReplyBody());
+            args.putString(CreateMailFragment.ARG_TO, email.getFrom());
+            args.putString(CreateMailFragment.ARG_SUBJECT,  email.getReplySubject());
+            args.putString(CreateMailFragment.ARG_BODY, email.getReplyBody());
         } else if(type.equals("forward")) {
-            args.putString("to", email.getTo());
-            args.putString("subject", "FWD: " + email.getForwardSubject());
-            args.putString("body", email.getForwardBody());
+            args.putString(CreateMailFragment.ARG_TO, ""); // לרוב בהעברה השדה "אל" ריק
+            args.putString(CreateMailFragment.ARG_SUBJECT, email.getForwardSubject());
+            args.putString(CreateMailFragment.ARG_BODY, email.getForwardBody());
         } else if(type.equals("edit")) {
-            args.putString("to", email.getTo());
-            args.putString("subject", email.getSubject());
-            args.putString("body", email.getBody());
+            args.putString(CreateMailFragment.ARG_TO, email.getTo());
+            args.putString(CreateMailFragment.ARG_SUBJECT, email.getSubject());
+            args.putString(CreateMailFragment.ARG_BODY, email.getBody());
+            args.putString(CreateMailFragment.ARG_MAIL_ID, email.getId()); // *** תיקון 3: שימוש בקבוע ***
         }
 
         CreateMailFragment fragment = new CreateMailFragment();
         fragment.setArguments(args);
-        findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
-
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)
@@ -132,7 +157,28 @@ public class EmailDetailsActivity extends AppCompatActivity {
         subjectView.setText("");
         bodyView.setText("");
     }
+
+    @Override
+    public void onBackPressed() {
+        // *** שינוי חדש: טיפול בחזרה לאינבוקס לאחר סגירת הפרגמנט ***
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            // אם יש פרגמנטים במחסנית (כלומר, CreateMailFragment פתוח), נוציא אותו
+            getSupportFragmentManager().popBackStack();
+            View fragmentContainer = findViewById(R.id.fragment_container);
+            if (fragmentContainer != null) {
+                fragmentContainer.setVisibility(View.GONE); // נסתיר את הקונטיינר
+            }
+            // לאחר הוצאת הפרגמנט, אם אין יותר פרגמנטים, נסיים את הפעילות הנוכחית
+            if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                finish(); // חזרה לאינבוקס
+            }
+        } else {
+            // אם אין פרגמנטים במחסנית, נבצע את פעולת ברירת המחדל של כפתור החזרה (שתחזיר לאינבוקס)
+            super.onBackPressed();
+        }
+    }
 }
+
 
 //    private void fetchEmailById(String emailId, String userId) {
 //        ApiClient.getApiService().getEmailById(emailId, userId).enqueue(new Callback<Email>() {

@@ -48,9 +48,29 @@ public interface ApiService {
     Call<User> getUserById(@Path("id") String userId);
 
     @POST("api/mails")
+    Call<Email> createDraft( // Assuming the server returns the created draft Email object
+           @Header("Authorization") String token,
+           @Body EmailRequest request
+    );
+
+    @PATCH ("api/mails/{id}")
+    Call<Email> updateDraft(
+            @Header("Authorization") String token,
+            @Path("id") String mailId,
+            @Body EmailRequest request
+    );
+
+    // Send a previously saved draft
+    @POST("api/mails/{mailId}/send")
+    Call<ResponseBody> sendDraft(
+        @Header("Authorization") String token,
+        @Path("mailId") String mailId
+    );
+
+    @POST("api/mails")
     Call<Void> sendEmail(
             @Header("Authorization") String token,
-            @Body EmailRequest email
+            @Body EmailRequest request
     );
 
     // --- Mail Service Endpoints (from mailRoutes.js) ---
@@ -144,14 +164,6 @@ public interface ApiService {
     Call<Email> getMail(
             @Header("Authorization") String token,
             @Path("id") String mailId
-    );
-
-    // Update an existing mail (router.patch('/:id'))
-    @PATCH("api/mails/{id}")
-    Call<ResponseBody> updateDraft( // Assuming it's updating a draft, based on controller name
-                                    @Header("Authorization") String token,
-                                    @Path("id") String mailId,
-                                    @Body EmailRequest email // Assuming EmailRequest for updating structure
     );
 
     // Delete a mail (router.delete('/:id'))

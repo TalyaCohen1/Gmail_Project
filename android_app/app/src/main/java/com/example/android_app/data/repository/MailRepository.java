@@ -57,29 +57,62 @@ public class MailRepository {
 
     // --- מתודות קיימות שנשארות ---
 
-    public void sendEmail(String to, String subject, String body, SendCallback callback) {
-        String token = getTokenFromPrefs(context);
+    // New: Method to create a draft
+    public void createDraft(EmailRequest request, MailService.DraftMailCallback callback) {
+        String token = SharedPrefsManager.get(context, "token");
         if (token == null || token.isEmpty()) {
-            callback.onFailure("Authentication token is missing.");
+            callback.onFailure("Authentication token missing.");
             return;
         }
-        EmailRequest request = new EmailRequest(to, subject, body);
-
-        apiService.sendEmail("Bearer " + token, request).enqueue(new Callback<Void>() {
+        mailService.createDraft(token, request, new MailService.DraftMailCallback() {
             @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
+            public void onSuccess(Email email) {
+                callback.onSuccess(email);
             }
+
             @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
+            public void onFailure(String error) {
+                callback.onFailure(error);
             }
         });
     }
+
+    // New: Method to update a draft
+    public void updateDraft(String mailId, String to, String subject, String body, String token, MailService.DraftMailCallback callback) {
+        mailService.updateDraft(mailId, to, subject, body, token, new MailService.DraftMailCallback() {
+            @Override
+            public void onSuccess(Email email) {
+                // Optionally update in local DB here
+                callback.onSuccess(email);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                callback.onFailure(error);
+            }
+        });
+    }
+
+    // New: Method to send a draft
+    public void sendDraft(String mailId, String token, MailService.SendDraftCallback callback) {
+        mailService.sendDraft(mailId, token, new MailService.SendDraftCallback() {
+            @Override
+            public void onSuccess() {
+                // Optionally remove from local drafts and update main email list
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                callback.onFailure(error);
+            }
+        });
+    }
+
+    public void sendEmail(String to, String subject, String body, String token, SendCallback callback) {
+        mailService.sendEmail(to, subject, body, token, callback);
+    }
+
 
     public void getInbox(ListEmailsCallback callback) {
         String token = getTokenFromPrefs(context);
@@ -345,31 +378,31 @@ public class MailRepository {
         });
     }
 
-    public void updateDraft(String mailId, EmailRequest request, MailActionCallback callback) {
-        Log.d("MyDebug", "Repository updateDraft: Calling apiService.updateDraft()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository updateDraft: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-
-        apiService.updateDraft("Bearer " + token, mailId, request).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    callback.onSuccess(mailId);
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
+//    public void updateDraft(String mailId, EmailRequest request, MailActionCallback callback) {
+//        Log.d("MyDebug", "Repository updateDraft: Calling apiService.updateDraft()");
+//        String token = getTokenFromPrefs(context);
+//        if (token == null || token.isEmpty()) {
+//            Log.e("MyDebug", "Repository updateDraft: TOKEN IS MISSING!");
+//            callback.onFailure("Authentication token is missing.");
+//            return;
+//        }
+//
+//        apiService.updateDraft("Bearer " + token, mailId, request).enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+//                if (response.isSuccessful()) {
+//                    callback.onSuccess(mailId);
+//                } else {
+//                    callback.onFailure("Server error: " + response.code());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+//                callback.onFailure("Network failure: " + t.getMessage());
+//            }
+//        });
+//    }
 
 
     public void deleteMail(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
