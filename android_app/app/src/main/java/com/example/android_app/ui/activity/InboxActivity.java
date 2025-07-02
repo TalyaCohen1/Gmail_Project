@@ -9,23 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText; // Added import for EditText
-import android.widget.ImageView; // Added import for ImageView
-import android.widget.ProgressBar;
-import android.widget.TextView; // Added import for TextView
-
-import com.bumptech.glide.Glide;
-
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar; // Added import for Toolbar
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout; // Added import for DrawerLayout
-
-import android.view.Menu;
-import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -44,13 +28,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.android_app.BuildConfig;
 import com.example.android_app.R;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
-import com.example.android_app.utils.SharedPrefsManager; // Import SharedPrefsManager
 import com.example.android_app.model.User;
-import com.bumptech.glide.Glide; // Make sure to add Glide to your build.gradle
 import com.example.android_app.model.viewmodel.EditProfileViewModel;
 import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.model.viewmodel.MailViewModel;
@@ -58,17 +41,14 @@ import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
 import com.example.android_app.ui.fragments.EditProfileFragment;
-import com.example.android_app.ui.fragments.SideBarFragment; // Added import for SideBarFragment
-
-import com.example.android_app.utils.MailMapper;
+import com.example.android_app.ui.fragments.SideBarFragment;
 import com.example.android_app.utils.SharedPrefsManager;
 import com.example.android_app.utils.UserManager;
 
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Locale;
+import java.util.Objects;
 
 public class InboxActivity extends AppCompatActivity implements
         EmailAdapter.EmailItemClickListener, // Implement the new interface
@@ -117,15 +97,15 @@ public class InboxActivity extends AppCompatActivity implements
         // Retrieve user data from SharedPrefsManager
         String userId = SharedPrefsManager.get(this, "userId");
         String fullName = SharedPrefsManager.get(this, "fullName");
-        String profileImageUrl = SharedPrefsManager.get(this, "profileImage");
+        String profileImage = SharedPrefsManager.get(this, "profileImage");
 
         // Construct the full URL for the profile image if it's a relative path
-        if (profileImageUrl != null && !profileImageUrl.isEmpty() && !profileImageUrl.startsWith("http")) {
-            profileImageUrl = BuildConfig.SERVER_URL + profileImageUrl;
+        if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
+            profileImage = BuildConfig.SERVER_URL + profileImage;
         }
 
         // Create the User object
-        currentUser = new User(userId, fullName, profileImageUrl);
+        currentUser = new User(userId, fullName, profileImage);
 
         // Load the profile picture using Glide
         if (currentUser != null && currentUser.getProfilePicUrl() != null && !currentUser.getProfilePicUrl().isEmpty()) {
@@ -475,13 +455,8 @@ public class InboxActivity extends AppCompatActivity implements
                     labelsSubMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "No labels available");
                 }
             }
-            // Ensure the observer is removed to prevent multiple additions if popup is opened multiple times
-            // This is a bit tricky with LiveData and PopupMenu, consider using `removeObservers` if needed
-            // For now, `labelsSubMenu.clear()` handles re-adding, but `removeObservers` is cleaner for single-shot updates.
-            // Or, make sure `getLabels()` returns a LiveData that doesn't re-trigger on config changes.
             viewModel.getLabels().removeObservers(this); // Remove observer after use
         });
-
         popup.setOnMenuItemClickListener(item -> {
             int id = item.getItemId(); // זה ה-ID של פריט התפריט שנבחר מה-menu_multi_select_more.xml
             List<Email> selectedEmails = adapter.getSelectedEmails();
@@ -498,17 +473,17 @@ public class InboxActivity extends AppCompatActivity implements
                 Toast.makeText(this, "Marking as important...", Toast.LENGTH_SHORT).show();
                 adapter.clearSelection();
                 return true;
-            } else if (id == R.id.action_mark_spam) {
-                for (Email email : selectedEmails) {
-                    viewModel.markEmailAsSpam(email.getId());
-                }
-                Toast.makeText(this, "Reporting as spam...", Toast.LENGTH_SHORT).show();
-                adapter.clearSelection();
-                return true;
-            } else if (id == R.id.action_move_to_folder) {
-                // This would typically open another dialog or activity to select a folder
-                Toast.makeText(this, "Move to folder functionality (not implemented yet)", Toast.LENGTH_SHORT).show();
-                return true;
+//            } else if (id == R.id.action_mark_spam) {
+//                for (Email email : selectedEmails) {
+//                    viewModel.markEmailAsSpam(email.getId());
+//                }
+//                Toast.makeText(this, "Reporting as spam...", Toast.LENGTH_SHORT).show();
+//                adapter.clearSelection();
+//                return true;
+//            } else if (id == R.id.action_move_to_folder) {
+//                // This would typically open another dialog or activity to select a folder
+//                Toast.makeText(this, "Move to folder functionality (not implemented yet)", Toast.LENGTH_SHORT).show();
+//                return true;
             }
             // For labels, the listener is set directly on each submenu item, so it won't reach here.
             return false;
@@ -706,24 +681,6 @@ public class InboxActivity extends AppCompatActivity implements
         drawerLayout.closeDrawers(); // Close the drawer(s) after selection
         // Handle label selection (e.g., filter emails)
         viewModel.fetchEmailsForCategoryOrLabel(labelId);
-    }
-
-    // In InboxActivity.java, add this method
-    private void updateToolbarForSearchState() {
-        // Determine if search is active based on the search EditText content
-        boolean isSearchActive = !searchEditText.getText().toString().isEmpty();
-
-        if (isSearchActive) {
-            // When search is active, show the back arrow
-            toggle.setDrawerIndicatorEnabled(false); // Hide the hamburger icon
-            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true); // Show the Up/Home button (which will be a back arrow)
-        } else {
-            // When no search is active, show the hamburger icon
-            toggle.setDrawerIndicatorEnabled(true); // Show the hamburger icon
-            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false); // Hide the Up/Home button
-        }
-        // Synchronize the state of the ActionBarDrawerToggle with the toolbar to reflect changes
-        toggle.syncState();
     }
 
     // In InboxActivity.java, add this method

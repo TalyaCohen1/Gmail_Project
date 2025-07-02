@@ -9,28 +9,138 @@
     android:padding="16dp"
     tools:context=".ui.EmailDetailsActivity">
 
-    <!-- TextView להצגת השולח -->
-    <!-- שימי לב שה-id תואם למה שחיפשנו בקוד ה-Java -->
-    <TextView
-        android:id="@+id/emailSender"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        tools:text="From: shani.levi@example.com" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
 
-    <!-- TextView להצגת הנושא -->
-    <TextView
-        android:id="@+id/emailSubject"
-        android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="back"
+            android:padding="8dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/btnImportant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/important"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="סמן כחשוב"
+            android:padding="8dp"/>
+
+        <ImageButton
+            android:id="@+id/btnSpam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/spam"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="סמן כספאם"
+            android:padding="8dp"/>
+
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/trash"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="מחק מייל"
+            android:padding="8dp"/>
+
+        <ImageButton
+            android:id="@+id/btnMarkAsReadUnread"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mark_as_read" android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="mark as read / unread"
+            android:padding="8dp"/>
+
+        <ImageButton
+            android:id="@+id/btnLabels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/pending"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="labels"
+            android:padding="8dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/emailSubject"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            tools:text="Important Project Update" />
+
+        <ImageButton
+            android:id="@+id/btnStar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/starred"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="סמן בכוכב"
+            android:padding="8dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginTop="8dp"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        tools:text="Important Project Update" />
+        android:gravity="center_vertical">
 
-    <!-- קו מפריד ויזואלי -->
+        <ImageView
+            android:id="@+id/senderProfileImage"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_placeholder"
+            android:contentDescription="תמונת פרופיל"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/emailSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="shani.levi@example.com" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/emailTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
+            tools:text="10:30 AM" />
+    </LinearLayout>
+
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -38,7 +148,6 @@
         android:layout_marginBottom="16dp"
         android:background="@android:color/darker_gray" />
 
-    <!-- TextView להצגת גוף המייל -->
     <TextView
         android:id="@+id/emailBody"
         android:layout_width="match_parent"
@@ -47,7 +156,6 @@
         android:lineSpacingExtra="4dp"
         tools:text="Hi team,\n\nThis is the full body of the email. We need to make sure that it wraps correctly and displays multiple lines if needed.\n\nThanks,\nShani" />
 
-    <!-- כפתורים למייל רגיל -->
     <LinearLayout
         android:id="@+id/sentButtonsGroup"
         android:layout_width="match_parent"
@@ -77,7 +185,6 @@
             android:layout_marginStart="8dp" />
     </LinearLayout>
 
-    <!-- כפתור לעריכת טיוטה -->
     <LinearLayout
         android:id="@+id/draftButtonsGroup"
         android:layout_width="match_parent"
@@ -102,4 +209,3 @@
         android:visibility="gone"
         android:layout_marginTop="16dp"/>
 </LinearLayout>
-
