@@ -1,17 +1,25 @@
 package com.example.android_app.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
+
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.fragment.app.FragmentTransaction;
+
 
 import com.example.android_app.R;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.viewmodel.EmailDetailsViewModel;
+import com.example.android_app.ui.fragments.CreateMailFragment;
 import com.example.android_app.model.viewmodel.InboxViewModel;
 
 
@@ -19,6 +27,7 @@ public class EmailDetailsActivity extends AppCompatActivity {
     TextView senderView, subjectView, bodyView;
     private EmailDetailsViewModel emailDetailsViewModel;
     private InboxViewModel inboxViewModel;
+    Button replyButton, forwardButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,6 +37,8 @@ public class EmailDetailsActivity extends AppCompatActivity {
         senderView = findViewById(R.id.emailSender);
         subjectView = findViewById(R.id.emailSubject);
         bodyView = findViewById(R.id.emailBody);
+        replyButton = findViewById(R.id.btnReply);
+        forwardButton = findViewById(R.id.btnForward);
 
         String emailId = getIntent().getStringExtra("email_id");
 
@@ -69,7 +80,53 @@ public class EmailDetailsActivity extends AppCompatActivity {
         senderView.setText("From: " + email.getFrom());
         subjectView.setText("Subject: " + email.getSubject());
         bodyView.setText(email.getBody());
+
+        LinearLayout sentButtonsGroup = findViewById(R.id.sentButtonsGroup);
+        LinearLayout draftButtonsGroup = findViewById(R.id.draftButtonsGroup);
+
+        sentButtonsGroup.setVisibility(View.GONE);
+        draftButtonsGroup.setVisibility(View.GONE);
+
+        if(!email.isSend()){
+            //handle draft case
+            draftButtonsGroup.setVisibility(View.VISIBLE);
+            Button editDraftButton = findViewById(R.id.btnEditDraft);
+            editDraftButton.setOnClickListener(v -> openCreateMail("edit", email));
+        } else {
+            //handle sent case
+            sentButtonsGroup.setVisibility(View.VISIBLE);
+            replyButton.setOnClickListener(v -> openCreateMail("replay", email));
+            forwardButton.setOnClickListener(v -> openCreateMail("forward", email));
+        }
     }
+
+
+    private void openCreateMail(String type, Email email) {
+        Bundle args = new Bundle();
+        if(type.equals("replay")) {
+            args.putString("to", email.getFrom());
+            args.putString("subject",  email.getReplySubject());
+            args.putString("body", email.getReplyBody());
+        } else if(type.equals("forward")) {
+            args.putString("to", email.getTo());
+            args.putString("subject", "FWD: " + email.getForwardSubject());
+            args.putString("body", email.getForwardBody());
+        } else if(type.equals("edit")) {
+            args.putString("to", email.getTo());
+            args.putString("subject", email.getSubject());
+            args.putString("body", email.getBody());
+        }
+
+        CreateMailFragment fragment = new CreateMailFragment();
+        fragment.setArguments(args);
+        findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
 
     private void displayError() {
         senderView.setText("Error loading email");

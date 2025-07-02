@@ -1,6 +1,7 @@
 package com.example.android_app.ui.activity; // Make sure this package is correct
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -8,7 +9,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.widget.EditText; // Added import for EditText
+import android.widget.ImageView; // Added import for ImageView
+import android.widget.ProgressBar;
+import android.widget.TextView; // Added import for TextView
+
+import com.bumptech.glide.Glide;
+
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar; // Added import for Toolbar
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout; // Added import for DrawerLayout
+
+import android.view.Menu;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,14 +48,26 @@ import com.example.android_app.BuildConfig;
 import com.example.android_app.R;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
+import com.example.android_app.utils.SharedPrefsManager; // Import SharedPrefsManager
+import com.example.android_app.model.User;
+import com.bumptech.glide.Glide; // Make sure to add Glide to your build.gradle
+import com.example.android_app.model.viewmodel.EditProfileViewModel;
 import com.example.android_app.model.viewmodel.InboxViewModel;
+import com.example.android_app.model.viewmodel.MailViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
-import com.example.android_app.ui.fragments.SideBarFragment;
+import com.example.android_app.ui.fragments.EditProfileFragment;
+import com.example.android_app.ui.fragments.SideBarFragment; // Added import for SideBarFragment
+
+import com.example.android_app.utils.MailMapper;
+import com.example.android_app.utils.SharedPrefsManager;
+import com.example.android_app.utils.UserManager;
+
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Locale;
 
 public class InboxActivity extends AppCompatActivity implements
@@ -47,6 +76,8 @@ public class InboxActivity extends AppCompatActivity implements
         SideBarFragment.SideBarFragmentListener { // Implement the new interface
 
     private InboxViewModel viewModel;
+
+    private MailViewModel viewModel_mail;
     private EmailAdapter adapter;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -58,8 +89,12 @@ public class InboxActivity extends AppCompatActivity implements
 
     private String profileImage;
 
+    private ImageView profilePicture; // Declare ImageView for profile picture
+    private User currentUser; // Declare a User object
+
     // Multi-select UI elements
     private ConstraintLayout multiSelectToolbar;
+    private Toolbar toolbar;
     private TextView selectedCountTextView;
     private ImageView iconCloseMultiSelect;
     private ImageView iconDelete;
@@ -72,8 +107,47 @@ public class InboxActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
+        multiSelectToolbar = findViewById(R.id.multiSelectToolbar);
         setSupportActionBar(toolbar);
+
+
+        profilePicture = findViewById(R.id.profile_picture); // Initialize the ImageView
+
+        // Retrieve user data from SharedPrefsManager
+        String userId = SharedPrefsManager.get(this, "userId");
+        String fullName = SharedPrefsManager.get(this, "fullName");
+        String profileImageUrl = SharedPrefsManager.get(this, "profileImage");
+
+        // Construct the full URL for the profile image if it's a relative path
+        if (profileImageUrl != null && !profileImageUrl.isEmpty() && !profileImageUrl.startsWith("http")) {
+            profileImageUrl = BuildConfig.SERVER_URL + profileImageUrl;
+        }
+
+        // Create the User object
+        currentUser = new User(userId, fullName, profileImageUrl);
+
+        // Load the profile picture using Glide
+        if (currentUser != null && currentUser.getProfilePicUrl() != null && !currentUser.getProfilePicUrl().isEmpty()) {
+            Glide.with(this)
+                    .load(currentUser.getProfilePicUrl())
+                    .placeholder(R.drawable.default_profile) // Optional: default image while loading
+                    .error(R.drawable.default_profile) // Optional: image to show if loading fails
+                    .circleCrop() // Optional: to make the image circular
+                    .into(profilePicture);
+            Log.d("InboxActivity", "Profile picture loaded: " + currentUser.getProfilePicUrl());
+        } else {
+            profilePicture.setImageResource(R.drawable.default_profile);
+            Log.d("InboxActivity", "User profile URL is missing or null, showing default profile picture.");
+        }
+
+        // Set up profile picture click listener (optional)
+        profilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Hide the default title as we have a custom layout within the toolbar
         if (getSupportActionBar() != null) {
@@ -102,6 +176,28 @@ public class InboxActivity extends AppCompatActivity implements
         searchEditText = findViewById(R.id.search_edit_text);
         ImageView profilePicture = findViewById(R.id.profile_picture);
 
+        EditProfileViewModel editProfileViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
+        String profileImageUrl = UserManager.getProfileImage(this); // UserManager.getProfileImage already provides a default of null
+        // Then handle the default image logic if profileImageUrl is null
+        if (profileImageUrl == null || profileImageUrl.isEmpty()) {
+            profileImageUrl = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
+        }
+        String fullUrl;
+        if (!profileImageUrl.startsWith("http")) {
+            fullUrl = BuildConfig.SERVER_URL + profileImageUrl;
+        } else {
+            fullUrl = profileImageUrl;
+        }
+
+        // put it into the ImageView
+        Glide.with(this)
+                .load(fullUrl)
+                .placeholder(R.drawable.default_profile)
+                .error(R.drawable.default_profile)
+                .circleCrop()
+                .into(profilePicture);
+
+
         // Set up search action listener for the EditText
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -114,18 +210,40 @@ public class InboxActivity extends AppCompatActivity implements
             }
         });
 
-        // Set up profile picture click listener (optional: opens another fragment/activity)
-        profilePicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
-                // Example: Open a profile fragment or activity
-                // getSupportFragmentManager().beginTransaction()
-                //         .replace(R.id.fragment_container, new ProfileFragment())
-                //         .addToBackStack(null)
-                //         .commit();
+        // Set up profile picture click listener
+        profilePicture.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(InboxActivity.this, v);
+            popup.getMenuInflater().inflate(R.menu.menu_profile_popup, popup.getMenu());
+
+            popup.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
+                if (id == R.id.action_edit_profile) {
+                    //go to edit profile fragment
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragmentProfileContainer, new EditProfileFragment())
+                            .addToBackStack("editProfile")
+                            .commit();
+                    findViewById(R.id.fragmentProfileContainer).setVisibility(View.VISIBLE);
+                    return true;
+
+                } else if (id == R.id.action_logout) {
+                    //logout from this user
+                    performLogout();
+                    return true;
+                }
+                return false;
+            });
+
+            popup.show();
+        });
+
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            if (getSupportFragmentManager().findFragmentById(R.id.fragmentProfileContainer) == null) {
+                findViewById(R.id.fragmentProfileContainer).setVisibility(View.GONE);
             }
         });
+
+
 
         // Initialize views
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
@@ -143,6 +261,7 @@ public class InboxActivity extends AppCompatActivity implements
 
 
         viewModel = new ViewModelProvider(this).get(InboxViewModel.class);
+        viewModel_mail = new ViewModelProvider(this).get(MailViewModel.class);
 
         getSupportFragmentManager().setFragmentResultListener(
                 CreateMailFragment.REQUEST_KEY_EMAIL_SENT, // המפתח שהגדרת ב-CreateMailFragment
@@ -407,6 +526,23 @@ public class InboxActivity extends AppCompatActivity implements
     //     // getWindow().setStatusBarColor(ContextCompat.getColor(this,
     //     //         inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
     // }
+//    @Override
+//    public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
+//        Log.d("DEBUG_MULTISELECT", "InboxActivity onMultiSelectModeChanged received: " + inMultiSelectMode); // Add this
+//
+//        multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
+//        Log.d("DEBUG_MULTISELECT", "multiSelectToolbar visibility set to: " + (inMultiSelectMode ? "VISIBLE" : "GONE")); // Add this
+//
+//        // Crucial change: Toggle visibility of the regular toolbar
+//        toolbar.setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // ADD THIS LINE
+//        Log.d("DEBUG_MULTISELECT", "Regular toolbar visibility set to: " + (inMultiSelectMode ? "GONE" : "VISIBLE")); // Add this
+//
+//        findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // Hide FAB
+//
+//        // You might want to change the status bar color here as well
+//        // getWindow().setStatusBarColor(ContextCompat.getColor(this,
+//        //         inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
+//    }
     @Override
     public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
         Log.d("MultiSelect", "Mode changed to: " + (inMultiSelectMode ? "active" : "inactive"));
@@ -432,7 +568,7 @@ public class InboxActivity extends AppCompatActivity implements
         multiSelectToolbar.invalidate();
     }
 
-    @Override
+        @Override
     public void onSelectedCountChanged(int count) {
         selectedCountTextView.setText(String.valueOf(count));
         // Dynamically change the "Mark as Read/Unread" icon based on current selection
@@ -572,6 +708,42 @@ public class InboxActivity extends AppCompatActivity implements
         viewModel.fetchEmailsForCategoryOrLabel(labelId);
     }
 
+    // In InboxActivity.java, add this method
+    private void updateToolbarForSearchState() {
+        // Determine if search is active based on the search EditText content
+        boolean isSearchActive = !searchEditText.getText().toString().isEmpty();
+
+        if (isSearchActive) {
+            // When search is active, show the back arrow
+            toggle.setDrawerIndicatorEnabled(false); // Hide the hamburger icon
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true); // Show the Up/Home button (which will be a back arrow)
+        } else {
+            // When no search is active, show the hamburger icon
+            toggle.setDrawerIndicatorEnabled(true); // Show the hamburger icon
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false); // Hide the Up/Home button
+        }
+        // Synchronize the state of the ActionBarDrawerToggle with the toolbar to reflect changes
+        toggle.syncState();
+    }
+
+    // In InboxActivity.java, add this method
+    private void updateToolbarForSearchState() {
+        // Determine if search is active based on the search EditText content
+        boolean isSearchActive = !searchEditText.getText().toString().isEmpty();
+
+        if (isSearchActive) {
+            // When search is active, show the back arrow
+            toggle.setDrawerIndicatorEnabled(false); // Hide the hamburger icon
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true); // Show the Up/Home button (which will be a back arrow)
+        } else {
+            // When no search is active, show the hamburger icon
+            toggle.setDrawerIndicatorEnabled(true); // Show the hamburger icon
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false); // Hide the Up/Home button
+        }
+        // Synchronize the state of the ActionBarDrawerToggle with the toolbar to reflect changes
+        toggle.syncState();
+    }
+
     /**
      * Placeholder method for performing the search.
      * You would implement your email filtering logic here.
@@ -579,8 +751,13 @@ public class InboxActivity extends AppCompatActivity implements
      */
     private void performSearch(String query) {
         Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_SHORT).show();
-        // Implement your search logic here, e.g.,
-        // viewModel.searchEmails(query);
+        viewModel_mail.searchMails(query);
+        viewModel_mail.getSearchResults().observe(this, emails -> {
+            if (emails != null) {
+                adapter.setEmails(emails);
+                Toast.makeText(this, "Search results: " + emails.size(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public String getProfileImage() {
@@ -588,5 +765,18 @@ public class InboxActivity extends AppCompatActivity implements
             return BuildConfig.SERVER_URL + profileImage;
         }
         return profileImage;
+    }
+
+    private void performLogout() {
+        //clear shared prefs
+        SharedPreferences prefs = getSharedPreferences("SmailPrefs", MODE_PRIVATE);
+        prefs.edit().clear().apply();
+
+        //back to Login Screen
+        Intent intent = new Intent(InboxActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // מנקה את ה־BackStack
+        startActivity(intent);
+
+        finish();
     }
 }
