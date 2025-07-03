@@ -7,6 +7,8 @@ public class UserManager {
     private static final String KEY_PROFILE_IMAGE = "profileImage";
     private static final String KEY_FULL_NAME = "fullName";
     private static final String KEY_USER_ID = "userId";
+    private static final String KEY_AUTH_TOKEN = "token";
+
 
     public static void saveUserId(Context context, String userId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -41,4 +43,20 @@ public class UserManager {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return prefs.getString(KEY_PROFILE_IMAGE, null);
     }
+
+    public static void saveAuthToken(Context context, String authToken) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putString(KEY_AUTH_TOKEN, authToken).apply();
+    }
+
+    public static String getAuthToken(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(KEY_AUTH_TOKEN, null);
+    }
+
+    public static void clearUserData(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().clear().apply();
+    }
+    
 }

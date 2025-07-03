@@ -4,51 +4,36 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent; // Added import for KeyEvent
+import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText; // Added import for EditText
-import android.widget.ImageView; // Added import for ImageView
-import android.widget.ProgressBar;
-import android.widget.TextView; // Added import for TextView
-
-import com.bumptech.glide.Glide;
-
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar; // Added import for Toolbar
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout; // Added import for DrawerLayout
-
-import android.view.Menu;
-import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.android_app.BuildConfig;
 import com.example.android_app.R;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
-import com.example.android_app.utils.SharedPrefsManager; // Import SharedPrefsManager
 import com.example.android_app.model.User;
-import com.bumptech.glide.Glide; // Make sure to add Glide to your build.gradle
 import com.example.android_app.model.viewmodel.EditProfileViewModel;
 import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.model.viewmodel.MailViewModel;
@@ -56,15 +41,13 @@ import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
 import com.example.android_app.ui.fragments.CreateMailFragment;
 import com.example.android_app.ui.fragments.EditProfileFragment;
-import com.example.android_app.ui.fragments.SideBarFragment; // Added import for SideBarFragment
-
-import com.example.android_app.utils.MailMapper;
+import com.example.android_app.ui.fragments.SideBarFragment;
 import com.example.android_app.utils.SharedPrefsManager;
 import com.example.android_app.utils.UserManager;
 
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class InboxActivity extends AppCompatActivity implements
@@ -97,6 +80,7 @@ public class InboxActivity extends AppCompatActivity implements
     private ImageView iconDelete;
     private ImageView iconMarkReadUnread;
     private ImageView iconMoreOptions;
+    private ImageView iconSpam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,15 +97,15 @@ public class InboxActivity extends AppCompatActivity implements
         // Retrieve user data from SharedPrefsManager
         String userId = SharedPrefsManager.get(this, "userId");
         String fullName = SharedPrefsManager.get(this, "fullName");
-        String profileImageUrl = SharedPrefsManager.get(this, "profileImage");
+        String profileImage = SharedPrefsManager.get(this, "profileImage");
 
         // Construct the full URL for the profile image if it's a relative path
-        if (profileImageUrl != null && !profileImageUrl.isEmpty() && !profileImageUrl.startsWith("http")) {
-            profileImageUrl = BuildConfig.SERVER_URL + profileImageUrl;
+        if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
+            profileImage = BuildConfig.SERVER_URL + profileImage;
         }
 
         // Create the User object
-        currentUser = new User(userId, fullName, profileImageUrl);
+        currentUser = new User(userId, fullName, profileImage);
 
         // Load the profile picture using Glide
         if (currentUser != null && currentUser.getProfilePicUrl() != null && !currentUser.getProfilePicUrl().isEmpty()) {
@@ -168,19 +152,6 @@ public class InboxActivity extends AppCompatActivity implements
         // OnClickListener for a custom ImageView placed in the toolbar, and disable
         // ActionBarDrawerToggle's default indicator.
 
-//        // FIND YOUR NEW CUSTOM HAMBURGER ICON AND SET ITS CLICK LISTENER
-//        ImageView iconMenu = findViewById(R.id.icon_menu); // This is the new ImageView you added
-//        iconMenu.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (drawerLayout.isDrawerOpen(GravityCompat.START)) { // Use Gravity.START for RTL compatibility
-//                    drawerLayout.closeDrawer(GravityCompat.START);
-//                } else {
-//                    drawerLayout.openDrawer(GravityCompat.START);
-//                }
-//            }
-//        });
-
         // Initialize search bar and profile picture
         searchEditText = findViewById(R.id.search_edit_text);
         ImageView profilePicture = findViewById(R.id.profile_picture);
@@ -188,14 +159,14 @@ public class InboxActivity extends AppCompatActivity implements
         EditProfileViewModel editProfileViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
         String profileImageUrl_new = UserManager.getProfileImage(this); // UserManager.getProfileImage already provides a default of null
         // Then handle the default image logic if profileImageUrl is null
-        if (profileImageUrl_new == null || profileImageUrl_new.isEmpty()) {
-            profileImageUrl_new = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
+        if (profileImage == null || profileImage.isEmpty()) {
+            profileImage = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
         }
         String fullUrl;
-        if (!profileImageUrl_new.startsWith("http")) {
-            fullUrl = BuildConfig.SERVER_URL + profileImageUrl_new;
+        if (!profileImage.startsWith("http")) {
+            fullUrl = BuildConfig.SERVER_URL + profileImage;
         } else {
-            fullUrl = profileImageUrl_new;
+            fullUrl = profileImage;
         }
 
         // put it into the ImageView
@@ -266,9 +237,41 @@ public class InboxActivity extends AppCompatActivity implements
         iconDelete = findViewById(R.id.iconDelete);
         iconMarkReadUnread = findViewById(R.id.iconMarkReadUnread);
         iconMoreOptions = findViewById(R.id.iconMoreOptions);
+        iconSpam = findViewById(R.id.iconSpam);
+
 
         viewModel = new ViewModelProvider(this).get(InboxViewModel.class);
         viewModel_mail = new ViewModelProvider(this).get(MailViewModel.class);
+
+        getSupportFragmentManager().setFragmentResultListener(
+                CreateMailFragment.REQUEST_KEY_EMAIL_SENT, // המפתח שהגדרת ב-CreateMailFragment
+                this, // ה-LifecycleOwner הוא ה-Activity עצמו
+                (requestKey, result) -> {
+                    Log.d("InboxActivity", "Received fragment result. Request Key: " + requestKey);
+                    // Callback כאשר מתקבלת תוצאה
+                    if (requestKey.equals(CreateMailFragment.REQUEST_KEY_EMAIL_SENT)) {
+                        // בדוק אם המייל נשלח בהצלחה על פי הנתונים בחבילה (Bundle)
+                        boolean emailSentSuccess = result.getBoolean(CreateMailFragment.BUNDLE_KEY_EMAIL_SENT_SUCCESS, false);
+                        Log.d("InboxActivity", "Email sent success flag: " + emailSentSuccess);
+                        if (emailSentSuccess) {
+                            // המייל נשלח בהצלחה. כעת רענן את האינבוקס.
+                            String currentCategory = viewModel.getCurrentCategoryOrLabelId();
+                            Log.d("InboxActivity", "Email sent successfully. Refreshing category: " + currentCategory);
+                            if (currentCategory == null || currentCategory.isEmpty()) {
+                                // רענן את האינבוקס הראשי אם אין קטגוריה ספציפית פעילה
+                                viewModel.fetchEmailsForCategoryOrLabel("inbox");
+                            } else {
+                                // רענן את הקטגוריה הפעילה הנוכחית (לדוגמה, "inbox", "sent", "allmail")
+                                viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
+                            }
+                            Toast.makeText(this, "המייל נשלח בהצלחה!", Toast.LENGTH_SHORT).show();
+                            // <--- הוסף את שתי השורות האלה:
+                            findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
+                            findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+        );
 
         setupRecyclerView();
         setupMultiSelectToolbarListeners(); // New method for toolbar listeners
@@ -283,10 +286,10 @@ public class InboxActivity extends AppCompatActivity implements
                     .commit();
         }
 
-        viewModel.fetchEmails();
+        Log.d("MyDebug", "Activity onCreate: Calling viewModel.fetchInbox()");
+        viewModel.fetchEmailsForCategoryOrLabel("inbox");
 
         findViewById(R.id.fabCompose).setOnClickListener(v -> {
-            // If in multi-select mode, exit it when compose button is clicked (optional, but good UX)
             if (adapter.isMultiSelectMode()) {
                 adapter.clearSelection();
             }
@@ -296,12 +299,16 @@ public class InboxActivity extends AppCompatActivity implements
                     .commit();
 
             findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.VISIBLE);
+            findViewById(R.id.fabCompose).setVisibility(View.GONE); // <--- הוסף את השורה הזו
         });
 
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             // Refresh the inbox when the CreateMailFragment is popped from back stack
             if (getSupportFragmentManager().findFragmentById(R.id.fragmentCreateMailContainer) == null) {
-                viewModel.fetchEmails();
+                viewModel.fetchEmailsForCategoryOrLabel(viewModel.getCurrentCategoryOrLabelId());
+                // <--- הוסף את שתי השורות האלה:
+                findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
+                findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
             }
         });
     }
@@ -343,13 +350,26 @@ public class InboxActivity extends AppCompatActivity implements
                 swipeRefreshLayout.setRefreshing(false);
                 return;
             }
-            viewModel.fetchEmails();
+            viewModel.fetchEmailsForCategoryOrLabel(viewModel.getCurrentCategoryOrLabelId());
         });
     }
 
     private void setupMultiSelectToolbarListeners() {
         iconCloseMultiSelect.setOnClickListener(v -> {
             adapter.clearSelection(); // Exit multi-select mode
+        });
+        iconSpam.setOnClickListener(v -> {
+            List<Email> selectedEmails = adapter.getSelectedEmails();
+            if (selectedEmails.isEmpty()) {
+                Toast.makeText(this, "No emails selected.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            for (Email email : selectedEmails) {
+                viewModel.markEmailAsSpam(email.getId());
+            }
+            Toast.makeText(this, "Marked as spam", Toast.LENGTH_SHORT).show();
+            adapter.clearSelection();
         });
 
         iconDelete.setOnClickListener(v -> {
@@ -429,7 +449,7 @@ public class InboxActivity extends AppCompatActivity implements
                                         return true;
                                     }
                                     for (Email email : selectedEmails) {
-                                        viewModel.addLabelToEmail(email.getId(), label.getId()); // Call ViewModel to add label
+                                        viewModel.addMailToLabel(email.getId(), label.getId());
                                     }
                                     Toast.makeText(this, "Adding to label: " + label.getName() + "...", Toast.LENGTH_SHORT).show();
                                     adapter.clearSelection();
@@ -441,12 +461,8 @@ public class InboxActivity extends AppCompatActivity implements
                     labelsSubMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "No labels available");
                 }
             }
-            // Ensure the observer is removed to prevent multiple additions if popup is opened multiple times
-            // This is a bit tricky with LiveData and PopupMenu, consider using `removeObservers` if needed
-            // For now, `labelsSubMenu.clear()` handles re-adding, but `removeObservers` is cleaner for single-shot updates.
-            // Or, make sure `getLabels()` returns a LiveData that doesn't re-trigger on config changes.
+            viewModel.getLabels().removeObservers(this); // Remove observer after use
         });
-
         popup.setOnMenuItemClickListener(item -> {
             int id = item.getItemId(); // זה ה-ID של פריט התפריט שנבחר מה-menu_multi_select_more.xml
             List<Email> selectedEmails = adapter.getSelectedEmails();
@@ -463,17 +479,17 @@ public class InboxActivity extends AppCompatActivity implements
                 Toast.makeText(this, "Marking as important...", Toast.LENGTH_SHORT).show();
                 adapter.clearSelection();
                 return true;
-            } else if (id == R.id.action_mark_spam) {
-                for (Email email : selectedEmails) {
-                    viewModel.markEmailAsSpam(email.getId());
-                }
-                Toast.makeText(this, "Reporting as spam...", Toast.LENGTH_SHORT).show();
-                adapter.clearSelection();
-                return true;
-            } else if (id == R.id.action_move_to_folder) {
-                // This would typically open another dialog or activity to select a folder
-                Toast.makeText(this, "Move to folder functionality (not implemented yet)", Toast.LENGTH_SHORT).show();
-                return true;
+//            } else if (id == R.id.action_mark_spam) {
+//                for (Email email : selectedEmails) {
+//                    viewModel.markEmailAsSpam(email.getId());
+//                }
+//                Toast.makeText(this, "Reporting as spam...", Toast.LENGTH_SHORT).show();
+//                adapter.clearSelection();
+//                return true;
+//            } else if (id == R.id.action_move_to_folder) {
+//                // This would typically open another dialog or activity to select a folder
+//                Toast.makeText(this, "Move to folder functionality (not implemented yet)", Toast.LENGTH_SHORT).show();
+//                return true;
             }
             // For labels, the listener is set directly on each submenu item, so it won't reach here.
             return false;
@@ -482,6 +498,15 @@ public class InboxActivity extends AppCompatActivity implements
     }
 
     // --- Callbacks from EmailAdapter.MultiSelectModeListener ---
+    // @Override
+    // public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
+    //     multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
+    //     findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // Hide FAB
+
+    //     // You might want to change the status bar color here as well
+    //     // getWindow().setStatusBarColor(ContextCompat.getColor(this,
+    //     //         inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
+    // }
 //    @Override
 //    public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
 //        Log.d("DEBUG_MULTISELECT", "InboxActivity onMultiSelectModeChanged received: " + inMultiSelectMode); // Add this
@@ -501,19 +526,27 @@ public class InboxActivity extends AppCompatActivity implements
 //    }
     @Override
     public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
-        // Show/hide the multiSelectToolbar based on selection mode
-        multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
-
-        // Show/hide the regular toolbar (opposite of multiSelectToolbar)
+        Log.d("MultiSelect", "Mode changed to: " + (inMultiSelectMode ? "active" : "inactive"));
+        
+        // Get both toolbar references
         Toolbar toolbar = findViewById(R.id.toolbar);
+        ConstraintLayout multiSelectToolbar = findViewById(R.id.multiSelectToolbar);
+        if (multiSelectToolbar.getChildCount() == 0) {
+            Log.e("MultiSelect", "MultiSelectToolbar has no child views!");
+        }
+        
+        // Toggle visibility with logging
         toolbar.setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE);
-
-        // Hide/show the FAB
+        multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
+        
+        Log.d("MultiSelect", "Toolbar visibility: " + 
+            (toolbar.getVisibility() == View.VISIBLE ? "VISIBLE" : "GONE"));
+        Log.d("MultiSelect", "MultiSelectToolbar visibility: " + 
+            (multiSelectToolbar.getVisibility() == View.VISIBLE ? "VISIBLE" : "GONE"));
+        
         findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE);
-
-        // Optional: Change the status bar color to match the selection mode
-        // getWindow().setStatusBarColor(ContextCompat.getColor(this,
-        //     inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
+        multiSelectToolbar.requestLayout();
+        multiSelectToolbar.invalidate();
     }
 
         @Override
@@ -583,7 +616,7 @@ public class InboxActivity extends AppCompatActivity implements
     }
 
     private void observeViewModel() {
-        viewModel.getInboxEmails().observe(this, emails -> {
+        viewModel.getCurrentEmails().observe(this, emails -> {
             if (emails != null) {
                 // List<Email> emailsToShow = MailMapper.toEmails(emails);
                 // adapter.setEmails(emailsToShow);
@@ -642,9 +675,10 @@ public class InboxActivity extends AppCompatActivity implements
     // Implement the SideBarFragmentListener methods
     @Override
     public void onCategorySelected(String categoryName) {
-        Log.d("InboxActivity", "Category selected: " + categoryName);
+        Log.d("InboxActivity", "onCategorySelected received: " + categoryName);
         drawerLayout.closeDrawers(); // Close the drawer(s) after selection
         // Handle category selection (e.g., filter emails)
+        viewModel.fetchEmailsForCategoryOrLabel(categoryName.toLowerCase(Locale.ROOT));
     }
 
     @Override
@@ -652,6 +686,7 @@ public class InboxActivity extends AppCompatActivity implements
         Log.d("InboxActivity", "Label selected: " + labelName + " (ID: " + labelId + ")");
         drawerLayout.closeDrawers(); // Close the drawer(s) after selection
         // Handle label selection (e.g., filter emails)
+        viewModel.fetchEmailsForCategoryOrLabel(labelId);
     }
 
     // In InboxActivity.java, add this method

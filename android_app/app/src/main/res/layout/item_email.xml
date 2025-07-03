@@ -41,16 +41,17 @@
             app:layout_constraintTop_toTopOf="@id/imageSenderOrSelected" />
 
         <TextView
-            android:paddingStart="8dp"
             android:id="@+id/subjectTextView"
-            android:text="@string/email_subject"
-            android:textSize="14sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:paddingStart="8dp"
+            android:text="@string/email_subject"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@id/senderTextView"
             app:layout_constraintTop_toBottomOf="@id/senderTextView"
-            app:layout_constraintEnd_toStartOf="@id/textTime"
-            android:layout_marginTop="4dp"
             tools:ignore="RtlSymmetry" />
 
         <TextView
@@ -67,25 +68,25 @@
             android:id="@+id/iconStar"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:clickable="true"
+            android:focusable="true"
             android:padding="2dp"
             android:src="@drawable/starred"
-            app:layout_constraintEnd_toStartOf="@id/textTime"
             app:layout_constraintBottom_toBottomOf="@id/subjectTextView"
+            app:layout_constraintEnd_toEndOf="@+id/subjectTextView"
             app:layout_constraintTop_toTopOf="@id/subjectTextView"
-            android:clickable="true"
-            android:focusable="true"/>
+            app:layout_constraintVertical_bias="0.6" />
 
         <View
             android:id="@+id/unreadIndicator"
             android:layout_width="8dp"
             android:layout_height="8dp"
-            android:background="@drawable/circle_unread_indicator"
+            android:background="@color/white"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            tools:visibility="visible" />
+            android:layout_marginEnd="8dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
