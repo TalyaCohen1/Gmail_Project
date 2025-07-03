@@ -251,8 +251,7 @@ public class MailRepository {
     }
 
     public void getDrafts(ListEmailsCallback callback) {
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
+        String token = SharedPrefsManager.get(context, "token");        if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
             return;
         }

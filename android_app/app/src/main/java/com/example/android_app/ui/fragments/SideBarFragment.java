@@ -395,4 +395,13 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
         super.onDetach(); //
         listener = null; //
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof SideBarFragmentListener) {
+            listener = (SideBarFragmentListener) getActivity();
+        } else {
+            listener = null; // ודאי שהוא null אם האקטיביטי לא מתאים יותר
+        }
+    }
 }
