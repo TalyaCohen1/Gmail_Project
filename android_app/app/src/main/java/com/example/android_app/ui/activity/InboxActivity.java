@@ -157,6 +157,7 @@ public class InboxActivity extends AppCompatActivity implements
         ImageView profilePicture = findViewById(R.id.profile_picture);
 
         EditProfileViewModel editProfileViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
+        String profileImageUrl_new = UserManager.getProfileImage(this); // UserManager.getProfileImage already provides a default of null
         // Then handle the default image logic if profileImageUrl is null
         if (profileImage == null || profileImage.isEmpty()) {
             profileImage = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage

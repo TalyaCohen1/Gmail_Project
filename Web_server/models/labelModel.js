@@ -176,11 +176,20 @@ const getMailsByLabel = async (labelId, userId, userEmail) => {
     const label = await Label.findOne({ _id: labelId, userId }).exec();
     if (!label || !label.mails) return [];
 
-    // Use Promise.all to fetch mails concurrently
-    const mailPromises = label.mails.map(mailId => Mail.getById(userEmail, mailId));
-    const mails = await Promise.all(mailPromises);
+    // 1. Create an array of Promises to fetch individual mails
+    const mailFetchPromises = label.mails.map(mailId => Mail.getById(userEmail, mailId));
 
-    return mails.filter(mail => mail !== null); // Filter out any null results
+    // 2. Await all mail fetch promises to get an array of resolved mail objects
+    const fetchedMails = await Promise.all(mailFetchPromises);
+
+    // 3. Filter out any null results from the initial fetch
+    const nonNullMails = fetchedMails.filter(mail => mail !== null);
+
+    // 4. Now, apply the `attachFromUserDetailsToArray` function to the array of *resolved* mail objects
+    //    This function itself returns a Promise, so you need to await it.
+    const mailsWithFromDetails = await Mail.attachFromUserDetailsToArray(nonNullMails);
+
+    return mailsWithFromDetails;
 };
 
 module.exports = {

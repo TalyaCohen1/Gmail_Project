@@ -252,10 +252,13 @@ exports.getMailsByLabel = async (req, res) => {
         }
         const userEmail = user.emailAddress;
 
+        // Label.getMailsByLabel will now return mails with 'fromUser' already attached
         const mails = await Label.getMailsByLabel(id, req.userId, userEmail);
+
         // Map mails to include 'id' property for frontend compatibility
+        // Mails are ALREADY plain objects from mailModel.js's attachFromUserDetails
         const formattedMails = mails.map(mail => ({
-            ...mail.toObject(), // Convert Mongoose document to plain object
+            ...mail, // 👈 CHANGE THIS LINE: Use spread operator directly on 'mail'
             id: mail._id // Add 'id' property
         }));
         res.json(formattedMails);
