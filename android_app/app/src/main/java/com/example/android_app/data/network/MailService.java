@@ -4,7 +4,6 @@ package com.example.android_app.data.network;
 import com.example.android_app.BuildConfig;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
-import com.example.android_app.utils.SendCallback; // וודא שזה מיובא
 import android.util.Log; // הוסף ייבוא עבור Log אם חסר
 import java.io.IOException;
 import java.util.List;
@@ -92,54 +91,56 @@ public class MailService {
         });
     }
 
-    // New: Method to send a draft
-    public void sendDraft(String mailId, String token, SendDraftCallback callback) {
-        api.sendDraft("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() { // Or <Email>
+    // *** וודא שמתודת sendDraft קיימת בחתימה זו ***
+    public void sendDraft(String mailId, String token, EmailRequest request, SendDraftCallback callback) {
+        api.sendDraft(mailId, "Bearer " + token, request).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
                 } else {
-                    String errorMsg = "Failed to send draft. Code: " + response.code();
                     try {
-                        if (response.errorBody() != null) {
-                            errorMsg += ": " + response.errorBody().string();
-                        }
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        Log.e("MailService", "Failed to send draft. Code: " + response.code() + ", Error: " + errorBody);
+                        callback.onFailure("Failed to send draft: " + errorBody);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Log.e("MailService", "Failed to send draft and read error body: " + e.getMessage(), e);
+                        callback.onFailure("Failed to send draft: " + e.getMessage());
                     }
-                    Log.e("MailService", "Error sending draft: " + errorMsg); // הוסף לוג
-                    callback.onFailure(errorMsg);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("MailService", "Network error sending draft: " + t.getMessage(), t); // הוסף לוג
-                callback.onFailure("Network error sending draft: " + t.getMessage());
+                Log.e("MailService", "Network error sending draft: " + t.getMessage(), t);
+                callback.onFailure("Network error: " + t.getMessage());
             }
         });
     }
 
-    // Existing sendEmail method (for new emails, not drafts)
-    public void sendEmail(String to, String subject, String body, String token, SendCallback callback) {
-        EmailRequest request = new EmailRequest(to, subject, body);
-        api.sendEmail("Bearer " + token, request).enqueue(new Callback<Void>() {
+
+    // *** וודא שמתודת sendEmail קיימת בחתימה זו ***
+    public void sendEmail(String token, EmailRequest request, SendEmailCallback callback) { // עבור מייל חדש
+        api.sendEmail("Bearer " + token, request).enqueue(new Callback<ResponseBody>() { // <--- תיקון תחביר כאן
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
                 } else {
-                    String errorMsg = "Failed to send email. Code: " + response.code();
-                    // ניתן להוסיף קריאה ל-response.errorBody().string() כאן גם
-                    Log.e("MailService", "Error sending email: " + errorMsg); // הוסף לוג
-                    callback.onFailure(errorMsg);
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        Log.e("MailService", "Failed to send email. Code: " + response.code() + ", Error: " + errorBody);
+                        callback.onFailure("Failed to send email: " + errorBody);
+                    } catch (IOException e) {
+                        Log.e("MailService", "Failed to send email and read error body: " + e.getMessage(), e);
+                        callback.onFailure("Failed to send email: " + e.getMessage());
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("MailService", "Network error sending email: " + t.getMessage(), t); // הוסף לוג
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("MailService", "Network error sending email: " + t.getMessage(), t);
                 callback.onFailure("Network error: " + t.getMessage());
             }
         });
@@ -194,16 +195,6 @@ public class MailService {
         void onFailure(String error);
     }
 
-    public interface SendDraftCallback {
-        void onSuccess(); // Indicates the draft was successfully sent
-        void onFailure(String error);
-    }
-
-    public interface MailCallback { // ייתכן שזהו ממשק כללי יותר, אם לא בשימוש, ניתן להסירו
-        void onSuccess();
-        void onFailure(String error);
-    }
-
     public interface InboxCallback {
         void onSuccess(List<Email> emails);
         void onFailure(String error);
@@ -211,6 +202,16 @@ public class MailService {
 
     public interface EmailDetailsCallback {
         void onSuccess(Email email);
+        void onFailure(String error);
+    }
+
+    public interface SendEmailCallback {
+        void onSuccess();
+        void onFailure(String error);
+    }
+
+    public interface SendDraftCallback {
+        void onSuccess();
         void onFailure(String error);
     }
 }

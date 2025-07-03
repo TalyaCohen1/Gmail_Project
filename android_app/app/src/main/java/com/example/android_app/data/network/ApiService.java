@@ -61,14 +61,16 @@ public interface ApiService {
     );
 
     // Send a previously saved draft
-    @POST("api/mails/{mailId}/send")
+    @PATCH("/api/mails/{id}")
     Call<ResponseBody> sendDraft(
-        @Header("Authorization") String token,
-        @Path("mailId") String mailId
+            @Path("id") String mailId,
+            @Header("Authorization") String token,
+            @Body EmailRequest request
     );
 
+
     @POST("api/mails")
-    Call<Void> sendEmail(
+    Call<ResponseBody> sendEmail(
             @Header("Authorization") String token,
             @Body EmailRequest request
     );

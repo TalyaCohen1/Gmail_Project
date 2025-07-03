@@ -1,5 +1,6 @@
 package com.example.android_app.ui.activity; // Make sure this package is correct
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -81,6 +84,8 @@ public class InboxActivity extends AppCompatActivity implements
     private ImageView iconMarkReadUnread;
     private ImageView iconMoreOptions;
     private ImageView iconSpam;
+
+    private ActivityResultLauncher<Intent> emailDetailsLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -273,12 +278,6 @@ public class InboxActivity extends AppCompatActivity implements
                 }
         );
 
-        setupRecyclerView();
-        setupMultiSelectToolbarListeners(); // New method for toolbar listeners
-        setupRefreshListener();
-        observeViewModel();
-
-
         // Load the SideBarFragment into the sidebar_container
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -311,6 +310,33 @@ public class InboxActivity extends AppCompatActivity implements
                 findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
             }
         });
+
+        //back from sending email
+        emailDetailsLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        // בדוק אם התוצאה מצביעה על כך שמייל נשלח מפרטי המייל
+                        if (data != null && data.getBooleanExtra("email_sent_from_details", false)) {
+                            Log.d("InboxActivity", "Refresh triggered by EmailDetailsActivity result.");
+                            // בצע את לוגיקת הרענון הקיימת שלך:
+                            String currentCategory = viewModel.getCurrentCategoryOrLabelId();
+                            if (currentCategory == null || currentCategory.isEmpty()) {
+                                viewModel.fetchEmailsForCategoryOrLabel("inbox");
+                            } else {
+                                viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
+                            }
+                            Toast.makeText(this, "אינבוקס רוענן לאחר שליחת מייל מפרטים", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+
+        setupRecyclerView();
+        setupMultiSelectToolbarListeners(); // New method for toolbar listeners
+        setupRefreshListener();
+        observeViewModel();
     }
 
 //    @Override
@@ -577,7 +603,8 @@ public class InboxActivity extends AppCompatActivity implements
         if (!adapter.isMultiSelectMode()) {
             Intent intent = new Intent(this, EmailDetailsActivity.class);
             intent.putExtra("email_id", email.getId());
-            startActivity(intent);
+//            startActivity(intent);
+            emailDetailsLauncher.launch(intent);
         }
         // If in multi-select mode, the adapter already handled the toggle
     }
