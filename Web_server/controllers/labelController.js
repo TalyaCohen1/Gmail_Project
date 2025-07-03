@@ -258,7 +258,7 @@ exports.getMailsByLabel = async (req, res) => {
         // Map mails to include 'id' property for frontend compatibility
         // Mails are ALREADY plain objects from mailModel.js's attachFromUserDetails
         const formattedMails = mails.map(mail => ({
-            ...mail, // 👈 CHANGE THIS LINE: Use spread operator directly on 'mail'
+            ...mail, // use spread operator directly on 'mail'
             id: mail._id // Add 'id' property
         }));
         res.json(formattedMails);
