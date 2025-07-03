@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF9F0">
+    android:background="@color/background">
 
     <LinearLayout
         android:orientation="vertical"
@@ -15,16 +15,16 @@
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:contentDescription="Logo"
+            android:contentDescription="@string/logo"
             android:src="@drawable/ic_launcher_foreground"
             android:layout_marginBottom="24dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign in to Smail"
+            android:text="@string/sign_in_to_smail"
             android:textSize="24sp"
-            android:textColor="#FFB300"
+            android:textColor="@color/login_text"
             android:textStyle="bold"
             android:layout_marginBottom="32dp"/>
 
@@ -33,19 +33,19 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#FFFCF7"
+            app:boxBackgroundColor="@color/login_fields"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="#FF9800"
-            app:hintTextColor="#FF9800">
+            app:boxStrokeColor="@color/buttons"
+            app:hintTextColor="@color/buttons">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:padding="12dp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -55,19 +55,19 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#FFFCF7"
+            app:boxBackgroundColor="@color/login_fields"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="#FF9800"
-            app:hintTextColor="#FF9800">
+            app:boxStrokeColor="@color/buttons"
+            app:hintTextColor="@color/buttons">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:inputType="textPassword"
                 android:padding="12dp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -76,7 +76,7 @@
             android:id="@+id/errorMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#F44336"
+            android:textColor="@color/error"
             android:layout_marginBottom="16dp"
             android:textSize="14sp" />
 
@@ -84,8 +84,8 @@
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="Login"
-            android:textColor="#000000"
+            android:text="@string/login"
+            android:textColor="@color/black"
             android:backgroundTint="#FFD54F"
             android:elevation="4dp" />
 
@@ -93,8 +93,8 @@
             android:id="@+id/tvNoAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't have an account? Click here to register"
-            android:textColor="#FF9800"
+            android:text="@string/login_text"
+            android:textColor="@color/buttons"
             android:textSize="14sp"
             android:textStyle="bold"
             android:layout_marginTop="16dp"

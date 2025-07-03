@@ -58,7 +58,7 @@
             android:id="@+id/textTime"
             android:text="@string/time"
             android:textSize="12sp"
-            android:textColor="#888888"
+            android:textColor="@color/time_color"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBaseline_toBaselineOf="@id/senderTextView"

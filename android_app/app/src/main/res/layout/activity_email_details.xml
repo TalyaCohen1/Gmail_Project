@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#FFF9F0"
+    android:background="@color/background"
     tools:context=".ui.EmailDetailsActivity">
 
     <ScrollView
@@ -98,7 +98,7 @@
             android:layout_weight="1"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="@color/text_color"
             tools:text="Important Project Update" />
 
         <ImageButton
@@ -133,6 +133,7 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/text_color"
             tools:text="shani.levi@example.com" />
 
         <View
@@ -144,7 +145,7 @@
             android:id="@+id/emailTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/time_color"
             android:textSize="14sp"
             tools:text="10:30 AM" />
     </LinearLayout>
@@ -155,7 +156,7 @@
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@android:color/darker_gray" />
+        android:background="@color/time_color" />
 
     <TextView
         android:id="@+id/emailBody"
@@ -163,6 +164,7 @@
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:lineSpacingExtra="4dp"
+        android:textColor="@color/text_color"
         tools:text="Hi team,\n\nThis is the full body of the email. We need to make sure that it wraps correctly and displays multiple lines if needed.\n\nThanks,\nShani" />
 
     <LinearLayout
@@ -179,8 +181,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FFD54F"
+            android:textColor="@color/buttons_text"
+            android:backgroundTint="@color/regular_buttons"
             android:text="↩️ Reply" />
 
         <Button
@@ -188,8 +190,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FFD54F"
+            android:textColor="@color/buttons_text"
+            android:backgroundTint="@color/regular_buttons"
             android:text="↪️ Forward"
             android:layout_marginStart="8dp" />
     </LinearLayout>
@@ -207,8 +209,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="✏️ Edit Draft"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FFD54F" />
+            android:textColor="@color/buttons_text"
+            android:backgroundTint="@color/regular_buttons" />
     </LinearLayout>
     </LinearLayout>
     </ScrollView>

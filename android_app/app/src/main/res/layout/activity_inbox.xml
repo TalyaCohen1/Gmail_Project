@@ -5,7 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF9F0"
+    android:background="@color/background"
     android:fitsSystemWindows="true" tools:openDrawer="start">
 
 
@@ -19,7 +19,7 @@
             android:id="@+id/multiSelectToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/background"
             android:elevation="8dp" 
             android:visibility="gone" 
             app:layout_constraintTop_toTopOf="parent"
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textSize="20sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/buttons_text"
                 android:layout_marginStart="16dp"
                 app:layout_constraintStart_toEndOf="@id/iconCloseMultiSelect"
                 app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/spam"
                 android:padding="12dp"
-                android:contentDescription="Mark as spam"
+                android:contentDescription="@string/mark_as_spam"
                 app:layout_constraintEnd_toStartOf="@id/iconDelete"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/trash"
                 android:padding="12dp"
-                android:contentDescription="Delete selected emails"
+                android:contentDescription="@string/delete_selected_emails"
                 app:layout_constraintEnd_toStartOf="@id/iconMarkReadUnread"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/mark_as_read"
                 android:padding="12dp"
-                android:contentDescription="Mark as read/unread"
+                android:contentDescription="@string/mark_as_read_unread"
                 app:layout_constraintEnd_toStartOf="@id/iconMoreOptions"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -109,10 +109,10 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#FFFEF9"
+            android:background="@color/background"
             android:theme="?attr/actionBarTheme"
             app:popupTheme="?attr/popupTheme"
-            app:titleTextColor="@android:color/white"
+            app:titleTextColor="@color/buttons_text"
             android:layoutDirection="ltr"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -129,7 +129,7 @@
                     android:layout_width="0dp"
                     android:layout_height="36dp"
                     android:layout_weight="1"
-                    android:background="@drawable/search_bar_background"
+                    android:background="@color/search_background"
                     android:hint="email search..."
                     android:imeOptions="actionSearch"
                     android:inputType="text"
@@ -138,7 +138,7 @@
                     android:paddingEnd="16dp"
                     android:singleLine="true"
                     android:textColor="@android:color/black"
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/buttons_text"
                     android:textSize="16sp"
                     android:layout_marginEnd="8dp" />
 
@@ -206,14 +206,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:backgroundTint="#FFD54F"
             android:src="@drawable/new_mail"
-            app:tint="@android:color/white" />
+            app:tint="@color/buttons_text" />
 
         <FrameLayout
             android:id="@+id/fragmentCreateMailContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            android:background="@android:color/white"
+            android:background="@color/buttons_text"
             android:elevation="100dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -235,7 +235,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        android:background="@android:color/white"
+        android:background="@color/buttons_text"
         android:elevation="8dp"
         />
 
