@@ -4,19 +4,19 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background"
+    android:background="?android:attr/background"
     android:padding="16dp">
 
     <TextView
         android:id="@+id/dialog_title"
         android:text="Label"
-        android:textColor="@color/text_color"
+        android:textColor="?android:attr/textColor"
         android:textSize="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="8dp"
-        android:background="@color/background"
+        android:background="?android:attr/background"
         android:textAlignment="center"
         android:textStyle="bold"
         android:layout_marginTop="8dp"
@@ -26,13 +26,13 @@
         android:id="@+id/label_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:drawable/edit_text"
+        android:background="?attr/searchBackgroundAttr"
         android:padding="8dp"
         android:gravity="top"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:hint="@string/enter_label_name"
-        android:textColor="@color/text_color"
+        android:textColor="?android:attr/textColor"
         android:textStyle="normal"/>
 
     <LinearLayout
@@ -46,18 +46,18 @@
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#e2ba35"
+            android:backgroundTint="@color/regular_buttons"
             android:text="Cancel"
-            android:textColor="@color/background"
+            android:textColor="?attr/buttonsTextAttr"
             android:layout_marginEnd="8dp"/>
 
         <Button
             android:id="@+id/save_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/buttons"
+            android:backgroundTint="@color/regular_buttons"
             android:text="@string/save"
-            android:textColor="@android:color/white" />
+            android:textColor="?attr/buttonsTextAttr" />
 
     </LinearLayout>
 

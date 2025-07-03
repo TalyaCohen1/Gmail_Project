@@ -29,4 +29,5 @@
     <string name="mark_as_spam">Mark as spam</string>
     <string name="delete_selected_emails">Delete selected emails</string>
     <string name="mark_as_read_unread">Mark as read/unread</string>
+    <string name="important">Important</string>
 </resources>

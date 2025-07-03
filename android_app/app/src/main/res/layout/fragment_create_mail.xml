@@ -4,7 +4,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background"
+    android:background="?android:attr/background"
         android:padding="0dp">
 
     <!-- Top Bar with back button -->
@@ -59,8 +59,10 @@
                 android:layout_height="150dp"
                 android:gravity="top"
                 android:inputType="textMultiLine"
-                android:background="@android:drawable/edit_text"
-                android:padding="8dp"/>
+                android:background="?attr/searchBackgroundAttr"
+                android:padding="8dp"
+                android:textColor="?android:attr/textColor"
+                android:textColorHint="?android:attr/textColor" />
 
             <TextView
                 android:id="@+id/textError"

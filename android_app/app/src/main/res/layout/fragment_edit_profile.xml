@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="?android:attr/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,6 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/hello_user"
+            android:textColor="?android:attr/textColor"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
@@ -36,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="@color/login_fields"
+            android:textColor="?android:attr/textColor"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
@@ -60,7 +61,7 @@
             android:layout_height="48dp"
             android:text="@string/save"
             android:backgroundTint="#FFD54F"
-            android:textColor="@color/text_color"
+            android:textColor="?attr/buttonsTextAttr"
             android:elevation="4dp"
             android:layout_marginBottom="16dp" />
 

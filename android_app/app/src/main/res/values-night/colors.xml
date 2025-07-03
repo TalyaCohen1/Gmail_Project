@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#202124</color>
+    <color name="search_background">#282A2C</color>
+    <color name="text_color">#E0E4EB</color>
+    <color name="selected_item_background">#3B4455</color>
+    <color name="login_fields">#282A2C</color>
+    <color name="buttons_text">#202124</color>
+
+</resources>

@@ -1,9 +1,11 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Android_app" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Android_app" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:background">@color/background</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="searchBackgroundAttr">@color/search_background</item>
+        <item name="selectedItemBackgroundAttr">@color/selected_item_background</item>
+        <item name="loginFieldsAttr">@color/login_fields</item>
+        <item name="buttonsTextAttr">@color/buttons_text</item>
     </style>
-
-    <style name="Theme.Android_app" parent="Base.Theme.Android_app" />
 </resources>
