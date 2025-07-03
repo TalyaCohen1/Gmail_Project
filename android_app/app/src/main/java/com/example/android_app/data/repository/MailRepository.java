@@ -95,30 +95,13 @@ public class MailRepository {
         });
     }
 
-//    // New: Method to send a draft
-//    public void sendDraft(String mailId, String to, String subject, String body, String token, MailService.SendDraftCallback callback) { // <--- הוספנו את to, subject, body!
-//        EmailRequest emailRequest = new EmailRequest(to, subject, body, true);
-//        mailService.sendDraft(mailId, token, emailRequest, new MailService.SendDraftCallback() { // <--- העברנו את emailRequest!
-//            @Override
-//            public void onSuccess() {
-//                // Optionally remove from local drafts and update main email list
-//                callback.onSuccess();
-//            }
-//
-//            @Override
-//            public void onFailure(String error) {
-//                callback.onFailure(error);
-//            }
-//        });
-//    }
-
     public void sendEmail(String mailId, String to, String subject, String body, String token, SendCallback callback) {
-        // בונה את אובייקט ה-EmailRequest עם send=true, כי אנחנו תמיד רוצים לשלוח
+        //update to send = true so we can send it, either if it is a new draft or an existing one
         EmailRequest emailRequest = new EmailRequest(to, subject, body, true);
 
         if (mailId != null && !mailId.isEmpty()) {
-            // אם קיים mailId, זה עדכון (PATCH) של טיוטה קיימת ושליחתה
-            mailService.sendDraft(mailId, token, emailRequest, new MailService.SendDraftCallback() { // <--- העברנו את emailRequest!
+            //if mailId exist- its draft, just PATCH
+            mailService.sendDraft(mailId, token, emailRequest, new MailService.SendDraftCallback() {
                 @Override
                 public void onSuccess() {
                     callback.onSuccess();
@@ -130,8 +113,8 @@ public class MailRepository {
                 }
             });
         } else {
-            // אם אין mailId, זה מייל חדש (POST)
-            mailService.sendEmail(token, emailRequest, new MailService.SendEmailCallback() { // <--- וודא ש-SendEmailCallback ומתודותיו מוגדרות נכון ב-MailService
+            // if there is no MailId- its new mail :)
+            mailService.sendEmail(token, emailRequest, new MailService.SendEmailCallback() {
                 @Override
                 public void onSuccess() {
                     callback.onSuccess();

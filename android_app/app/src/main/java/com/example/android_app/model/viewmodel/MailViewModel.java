@@ -32,7 +32,6 @@ public class MailViewModel extends AndroidViewModel {
     public MailViewModel(@NonNull Application application) {
         super(application);
         this.mailRepository = new MailRepository(application.getApplicationContext());
-        // Initialize counts map when ViewModel is created
         initializeMailCounts();
     }
 
