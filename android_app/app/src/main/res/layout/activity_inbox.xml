@@ -129,7 +129,7 @@
                     android:layout_width="0dp"
                     android:layout_height="36dp"
                     android:layout_weight="1"
-                    android:background="?attr/searchBackgroundAttr"
+                    android:background="@drawable/search_bar_background"
                     android:hint="email search..."
                     android:imeOptions="actionSearch"
                     android:inputType="text"
@@ -138,7 +138,7 @@
                     android:paddingEnd="16dp"
                     android:singleLine="true"
                     android:textColor="?android:attr/textColor"
-                    android:textColorHint="?attr/buttonsTextAttr"
+                    android:textColorHint="?android:attr/textColorHint"
                     android:textSize="16sp"
                     android:layout_marginEnd="8dp" />
 
