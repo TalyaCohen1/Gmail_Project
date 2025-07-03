@@ -41,6 +41,7 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
 
     // Default categories layouts
     private LinearLayout inboxLayout;
+    private LinearLayout starredLayout;
     private LinearLayout sentLayout;
     private LinearLayout draftsLayout;
 
@@ -95,6 +96,7 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
         // Initialize UI elements for default categories
         inboxLayout = view.findViewById(R.id.inbox_layout); //
         sentLayout = view.findViewById(R.id.sent_layout); //
+        starredLayout = view.findViewById(R.id.starred_layout); //
         draftsLayout = view.findViewById(R.id.drafts_layout); //
 
         // Initialize UI elements for "More" section
@@ -143,6 +145,12 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
             inboxLayout.setOnClickListener(v -> { //
                 mailViewModel.fetchInboxMails(); //
                 if (listener != null) listener.onCategorySelected("Inbox"); //
+            });
+        }
+        if (starredLayout != null) { //
+            starredLayout.setOnClickListener(v -> { //
+                mailViewModel.fetchStarredMails(); //
+                if (listener != null) listener.onCategorySelected("Starred"); //
             });
         }
         if (sentLayout != null) { //

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const userModel = require('./userModel'); // Assuming you have a user model to validate emails against
 
 // Define the Mail Schema
 const mailSchema = new mongoose.Schema({
@@ -687,6 +688,36 @@ async function getStarredMails(email) {
     .exec();
 }
 
+/**
+ * Helper function to attach 'fromUser' details to a single mail object.
+ * This is similar to your formatMailForResponse but designed for model level.
+ */
+async function attachFromUserDetails(mail) {
+    if (!mail) return null;
+
+    // Convert Mongoose document to a plain JavaScript object to add properties
+    let mailObject = mail.toObject ? mail.toObject() : { ...mail }; // Use .toObject() for Mongoose docs
+
+    if (mailObject.from) {
+        const senderUser = await userModel.findByEmail(mailObject.from); // Manual lookup!
+        if (senderUser) {
+            mailObject.fromUser = {
+                fullName: senderUser.fullName,
+                email: senderUser.emailAddress, // Assuming your user model uses emailAddress
+                profileImage: senderUser.profileImage || '/uploads/default-profile.png'
+            };
+        }
+    }
+    return mailObject;
+}
+
+/**
+ * Helper function to process an array of mail documents.
+ */
+async function attachFromUserDetailsToArray(mails) {
+    return Promise.all(mails.map(mail => attachFromUserDetails(mail)));
+}
+
 module.exports = {
     getAll,
     getById,
@@ -712,5 +743,8 @@ module.exports = {
     markAsStarred,
     unmarkAsStarred,
     getStarredMails,
-    getDraftById
+    getDraftById,
+    getLabels,
+    attachFromUserDetails,
+    attachFromUserDetailsToArray
 };
