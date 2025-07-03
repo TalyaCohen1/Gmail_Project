@@ -140,7 +140,8 @@ public class CreateMailFragment extends Fragment {
             String to = editTextTo.getText().toString();
             String subject = editTextSubject.getText().toString();
             String body = editTextBody.getText().toString();
-            viewModel.sendEmail(to, subject, body);
+             String mailId = getArguments() != null ? getArguments().getString(ARG_MAIL_ID) : null;
+             viewModel.sendEmail(mailId, to, subject, body);
         });
 
         // חזרה לתיבת הדואר הנכנס + שמירת טיוטה

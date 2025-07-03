@@ -152,10 +152,11 @@ public class CreateMailViewModel extends AndroidViewModel {
         });
     }
 
-    // 3. מתודת שליחת מייל
-    // היא תמיד תשתמש ב-repository.sendEmail עם התוכן הנוכחי
-    public void sendEmail(String to, String subject, String body) {
+    public void sendEmail(String mailId, String to, String subject, String body) {
         _isLoading.postValue(true);
+        errorMessage.setValue(null);
+        _actionSuccess.postValue(false);
+
         if (TextUtils.isEmpty(to)) {
             errorMessage.setValue("Recipient is required");
             _isLoading.postValue(false);
@@ -179,15 +180,31 @@ public class CreateMailViewModel extends AndroidViewModel {
         }
 
         // שלח את המייל
-        repository.sendEmail(to, subject, body, token, new SendCallback() {
+        repository.sendEmail(mailId, to, subject, body, token, new SendCallback() { // <--- וודא שאתה מעביר את mailId ל-repository
             @Override
             public void onSuccess() {
                 emailSent.setValue(true);
                 errorMessage.setValue(null);
                 _isLoading.postValue(false);
-                _currentDraft.setValue(null); // נקה את הטיוטה ב-ViewModel לאחר שליחה מוצלחת
                 _actionSuccess.postValue(true);
                 Log.d(TAG, "Email sent successfully.");
+
+                // *** כעת זה יפעל כראוי עם ה-mailId ***
+                if (mailId != null && !mailId.isEmpty()) {
+                    repository.deleteDraft(mailId, new MailRepository.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "Draft with ID " + mailId + " successfully deleted from local DB.");
+                            _currentDraft.postValue(null);
+                        }
+                        @Override
+                        public void onFailure(String error) {
+                            Log.e(TAG, "Failed to delete draft with ID " + mailId + " from local DB: " + error);
+                        }
+                    });
+                } else {
+                    _currentDraft.postValue(null);
+                }
             }
 
             @Override
@@ -200,4 +217,5 @@ public class CreateMailViewModel extends AndroidViewModel {
             }
         });
     }
+
 }
