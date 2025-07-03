@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/background"
+    android:background="?android:attr/background"
     tools:context=".ui.EmailDetailsActivity">
 
     <ScrollView
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/important"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="סמן כחשוב"
+            android:contentDescription="mark as important"
             android:padding="8dp"/>
 
         <ImageButton
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/spam"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="סמן כספאם"
+            android:contentDescription="@string/mark_as_spam"
             android:padding="8dp"/>
 
         <ImageButton
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/trash"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="מחק מייל"
+            android:contentDescription="delete mail"
             android:padding="8dp"/>
 
         <ImageButton
@@ -98,7 +98,7 @@
             android:layout_weight="1"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="@color/text_color"
+            android:textColor="?android:attr/textColor"
             tools:text="Important Project Update" />
 
         <ImageButton
@@ -107,7 +107,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/starred"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="סמן בכוכב"
+            android:contentDescription="mark as starred"
             android:padding="8dp"/>
     </LinearLayout>
 
@@ -133,7 +133,7 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/text_color"
+            android:textColor="?android:attr/textColor"
             tools:text="shani.levi@example.com" />
 
         <View
@@ -147,7 +147,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/time_color"
             android:textSize="14sp"
-            tools:text="10:30 AM" />
+            tools:text="Jun 3 10:30AM " />
     </LinearLayout>
 
 
@@ -164,7 +164,7 @@
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:lineSpacingExtra="4dp"
-        android:textColor="@color/text_color"
+        android:textColor="?android:attr/textColor"
         tools:text="Hi team,\n\nThis is the full body of the email. We need to make sure that it wraps correctly and displays multiple lines if needed.\n\nThanks,\nShani" />
 
     <LinearLayout
