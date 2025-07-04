@@ -1,5 +1,7 @@
 package com.example.android_app.ui;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -57,10 +59,10 @@ public class EmailDetailsActivity extends AppCompatActivity {
         btnLabels = findViewById(R.id.btnLabels);
         btnStar = findViewById(R.id.btnStar);
 
-        // btnBack.setOnClickListener(v -> finish());
-        // btnLabels.setOnClickListener(v -> {
-        //     showLabelsMenu(v);
-        // });
+         btnBack.setOnClickListener(v -> finish());
+         btnLabels.setOnClickListener(v -> {
+             showLabelsMenu(v);
+         });
 
         String emailId = getIntent().getStringExtra("email_id");
 
@@ -81,7 +83,7 @@ public class EmailDetailsActivity extends AppCompatActivity {
 
         setupObservers();
 
-        // *** שינוי חדש: האזנה לתוצאות מ-CreateMailFragment ***
+        //listen to chenge in create mail fragment - so we refresh page if new mail is send
         getSupportFragmentManager().setFragmentResultListener(
                 CreateMailFragment.REQUEST_KEY_EMAIL_SENT,
                 this, // LifecycleOwner
@@ -89,8 +91,19 @@ public class EmailDetailsActivity extends AppCompatActivity {
                     if (requestKey.equals(CreateMailFragment.REQUEST_KEY_EMAIL_SENT)) {
                         boolean emailSentSuccess = result.getBoolean(CreateMailFragment.BUNDLE_KEY_EMAIL_SENT_SUCCESS, false);
                         if (emailSentSuccess) {
-                            // המייל נשלח בהצלחה מ-CreateMailFragment, לכן נסיים את הפעילות הנוכחית
-                            finish(); // חזרה לאינבוקס
+                            Toast.makeText(EmailDetailsActivity.this, "mail sent successfully", Toast.LENGTH_SHORT).show();
+
+                            //bring back to inbox the result of sending mail
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("email_sent_from_details", true);
+                            setResult(Activity.RESULT_OK, resultIntent);
+
+                            getSupportFragmentManager().popBackStack();
+                            View fragmentContainer = findViewById(R.id.fragment_container);
+                            if (fragmentContainer != null) {
+                                fragmentContainer.setVisibility(View.GONE);
+                            }
+                            finish(); //back to inbox
                         }
                     }
                 }
@@ -346,23 +359,21 @@ public class EmailDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // *** שינוי חדש: טיפול בחזרה לאינבוקס לאחר סגירת הפרגמנט ***
+        //back to inbox
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            // אם יש פרגמנטים במחסנית (כלומר, CreateMailFragment פתוח), נוציא אותו
             getSupportFragmentManager().popBackStack();
             View fragmentContainer = findViewById(R.id.fragment_container);
             if (fragmentContainer != null) {
-                fragmentContainer.setVisibility(View.GONE); // נסתיר את הקונטיינר
+                fragmentContainer.setVisibility(View.GONE);
             }
-            // לאחר הוצאת הפרגמנט, אם אין יותר פרגמנטים, נסיים את הפעילות הנוכחית
             if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-                finish(); // חזרה לאינבוקס
+                finish();
             }
         } else {
-            // אם אין פרגמנטים במחסנית, נבצע את פעולת ברירת המחדל של כפתור החזרה (שתחזיר לאינבוקס)
             super.onBackPressed();
         }
     }
+
 }
 
 

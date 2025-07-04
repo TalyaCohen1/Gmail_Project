@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import static android.content.ContentValues.TAG;
 
 import com.example.android_app.R;
 import com.example.android_app.model.viewmodel.CreateMailViewModel;
@@ -29,7 +30,7 @@ public class CreateMailFragment extends Fragment {
     private Button buttonSend;
     private ImageButton buttonBack;
     private CreateMailViewModel viewModel;
-
+    private String currentDraftIdForSending;
     public static final String REQUEST_KEY_EMAIL_SENT = "email_sent_request_key";
     public static final String BUNDLE_KEY_EMAIL_SENT_SUCCESS = "email_sent_success";
     public static final String ARG_MAIL_ID = "mail_id"; // ארגומנט ל-ID של מייל (טיוטה קיימת)
@@ -54,6 +55,17 @@ public class CreateMailFragment extends Fragment {
         ViewModelFactory factory = new ViewModelFactory(requireActivity().getApplication());
         viewModel = new ViewModelProvider(this, factory).get(CreateMailViewModel.class);
 
+        viewModel.getCurrentDraft().observe(getViewLifecycleOwner(), email -> {
+            if (email != null && email.getId() != null) {
+                this.currentDraftIdForSending = email.getId();
+                Log.d(TAG, "CreateMailFragment: _currentDraft updated. Storing ID: " + currentDraftIdForSending);
+
+            } else {
+                this.currentDraftIdForSending = null;
+                Log.d(TAG, "CreateMailFragment: _currentDraft is null or ID is null.");
+            }
+        });
+
         // get draftID and initial values if exist
         String existingMailId = null;
         String defaultTo = "";
@@ -67,9 +79,6 @@ public class CreateMailFragment extends Fragment {
             defaultSubject = args.getString(ARG_SUBJECT, ""); // השתמש בקבוע ARG_SUBJECT
             defaultBody = args.getString(ARG_BODY, ""); // השתמש בקבוע ARG_BODY
 
-//            editTextTo.setText(defaultTo);
-//            editTextSubject.setText(defaultSubject);
-//            editTextBody.setText(defaultBody);
         }
         //load the draft if exist
         if (savedInstanceState == null) { // only once
@@ -100,9 +109,6 @@ public class CreateMailFragment extends Fragment {
             editTextBody.setEnabled(!isLoading);
             buttonSend.setEnabled(!isLoading);
             buttonBack.setEnabled(!isLoading);
-//            if (!isLoading) {
-//                requireActivity().findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
-//            }
         });
 
         // צפה בהודעות שגיאה
@@ -140,7 +146,8 @@ public class CreateMailFragment extends Fragment {
             String to = editTextTo.getText().toString();
             String subject = editTextSubject.getText().toString();
             String body = editTextBody.getText().toString();
-            viewModel.sendEmail(to, subject, body);
+            //             String mailId = getArguments() != null ? getArguments().getString(ARG_MAIL_ID) : null;
+            viewModel.sendEmail(currentDraftIdForSending, to, subject, body);
         });
 
         // חזרה לתיבת הדואר הנכנס + שמירת טיוטה

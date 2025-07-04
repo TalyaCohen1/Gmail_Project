@@ -1,6 +1,7 @@
 package com.example.android_app.data.repository;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -41,6 +42,7 @@ public class MailRepository {
     private final MailService mailService = new MailService();
 
     private final ExecutorService executor; //so room run in another thread
+    private final Handler mainThreadHandler;     // <--- הוסף את זה
 
     public MailRepository(Context context) {
         this.context = context.getApplicationContext();
@@ -48,7 +50,7 @@ public class MailRepository {
         AppDatabase db = AppDatabase.getInstance(context);
         mailDao = db.mailDao();
         executor = Executors.newSingleThreadExecutor();
-
+        mainThreadHandler = new Handler(context.getMainLooper());
     }
 
     private String getTokenFromPrefs(Context context) {
@@ -93,24 +95,53 @@ public class MailRepository {
         });
     }
 
-    // New: Method to send a draft
-    public void sendDraft(String mailId, String token, MailService.SendDraftCallback callback) {
-        mailService.sendDraft(mailId, token, new MailService.SendDraftCallback() {
-            @Override
-            public void onSuccess() {
-                // Optionally remove from local drafts and update main email list
-                callback.onSuccess();
-            }
+    public void sendEmail(String mailId, String to, String subject, String body, String token, SendCallback callback) {
+        //update to send = true so we can send it, either if it is a new draft or an existing one
+        EmailRequest emailRequest = new EmailRequest(to, subject, body, true);
 
-            @Override
-            public void onFailure(String error) {
-                callback.onFailure(error);
-            }
-        });
+        if (mailId != null && !mailId.isEmpty()) {
+            //if mailId exist- its draft, just PATCH
+            mailService.sendDraft(mailId, token, emailRequest, new MailService.SendDraftCallback() {
+                @Override
+                public void onSuccess() {
+                    callback.onSuccess();
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    callback.onFailure(error);
+                }
+            });
+        } else {
+            // if there is no MailId- its new mail :)
+            mailService.sendEmail(token, emailRequest, new MailService.SendEmailCallback() {
+                @Override
+                public void onSuccess() {
+                    callback.onSuccess();
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    callback.onFailure(error);
+                }
+            });
+        }
     }
 
-    public void sendEmail(String to, String subject, String body, String token, SendCallback callback) {
-        mailService.sendEmail(to, subject, body, token, callback);
+    public void deleteDraft(String mailId, ActionCallback callback) {
+        executor.execute(() -> {
+            try {
+                MailEntity mailToDelete = mailDao.getMailByIdNow(mailId);
+                if (mailToDelete != null) {
+                    mailDao.deleteMail(mailToDelete);
+                    mainThreadHandler.post(callback::onSuccess);
+                } else {
+                    mainThreadHandler.post(() -> callback.onFailure("Draft not found locally: " + mailId));
+                }
+            } catch (Exception e) {
+                mainThreadHandler.post(() -> callback.onFailure("Failed to delete draft from local DB: " + e.getMessage()));
+            }
+        });
     }
 
 
@@ -220,8 +251,7 @@ public class MailRepository {
     }
 
     public void getDrafts(ListEmailsCallback callback) {
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
+        String token = SharedPrefsManager.get(context, "token");        if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
             return;
         }
