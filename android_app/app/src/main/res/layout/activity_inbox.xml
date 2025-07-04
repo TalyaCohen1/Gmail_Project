@@ -112,7 +112,7 @@
             android:background="?android:attr/background"
             android:theme="?attr/actionBarTheme"
             app:popupTheme="?attr/popupTheme"
-            android:textColor="?attr/buttonsTextAttr"
+            app:titleTextColor="?attr/buttonsTextAttr"
             android:layoutDirection="ltr"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -138,7 +138,7 @@
                     android:paddingEnd="16dp"
                     android:singleLine="true"
                     android:textColor="?android:attr/textColor"
-                    android:textColorHint="?android:attr/textColorHint"
+                    android:textColorHint="?attr/buttonsTextAttr"
                     android:textSize="16sp"
                     android:layout_marginEnd="8dp" />
 
