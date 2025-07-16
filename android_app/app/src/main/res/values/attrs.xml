@@ -4,4 +4,7 @@
     <attr name="selectedItemBackgroundAttr" format="color"/>
     <attr name="loginFieldsAttr" format="color"/>
     <attr name="buttonsTextAttr" format="color"/>
+    <attr name="colorButton" format="reference" />
+    <attr name="colorButtonText" format="reference" />
+
 </resources>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="buttons_text">#FFFFFF</color>
-    <color name="selected_item_background">#CCE0F9</color>
     <color name="text_color">#000000</color>
     <color name="time_color">#888888</color>
     <color name="background">#FFF9F0</color>
@@ -12,5 +11,10 @@
     <color name="success">#669900</color>
     <color name="regular_buttons">#FFD54F</color>
     <color name="search_background">#E2E0E0</color>
+    <color name="button_background">#FFD54F</color>
+    <color name="button_text">#000000</color>
+    <color name="custom_yellow">#FFF59D</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
 
 </resources>
