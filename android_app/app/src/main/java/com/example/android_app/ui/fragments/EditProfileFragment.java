@@ -32,6 +32,17 @@ public class EditProfileFragment extends Fragment {
     private Uri selectedImageUri;
     private EditProfileViewModel viewModel;
 
+    private OnProfilePictureUpdatedListener listener; // Declare the listener variable
+
+    // Method to set the listener
+    public void setOnProfilePictureUpdatedListener(OnProfilePictureUpdatedListener listener) {
+        this.listener = listener;
+    }
+    // Inside EditProfileFragment.java, outside the class, or as a nested public interface
+    public interface OnProfilePictureUpdatedListener {
+        void onProfilePictureUpdated();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -105,6 +116,12 @@ public class EditProfileFragment extends Fragment {
                 textSuccess.setText(success);
                 textSuccess.setVisibility(View.VISIBLE);
                 textError.setVisibility(View.GONE);
+                if (listener != null) {
+                    android.util.Log.d("EditProfileFragment", "Notifying listener of profile picture update.");
+                    listener.onProfilePictureUpdated(); // <--- THIS IS CRUCIAL!
+                } else {
+                    android.util.Log.w("EditProfileFragment", "Listener is null, cannot notify profile picture update.");
+                }
                 // Update greeting and profile image immediately after successful save
                 String updatedFullName = UserManager.getFullName(requireContext());
                 String updatedProfileImageUrl = UserManager.getProfileImage(requireContext());
@@ -125,6 +142,10 @@ public class EditProfileFragment extends Fragment {
                 } else {
                     imageProfile.setImageResource(R.drawable.default_profile);
                 }
+//                // Notify the listener that the profile picture has been updated
+//                if (listener != null) {
+//                    listener.onProfilePictureUpdated();
+//                }
             }
             new android.os.Handler().postDelayed(() -> {
                 requireActivity().getSupportFragmentManager().popBackStack();
