@@ -5,8 +5,8 @@
         android:drawable="@color/background" />
     <item
         android:state_focused="true"
-        android:drawable="@color/background" />
+        android:drawable="@drawable/item_pressed" />
     <item android:state_activated="true"
-        android:drawable="@color/background" />
+        android:drawable="@drawable/item_pressed" />
     <item android:drawable="@android:color/transparent" />
 </selector>
