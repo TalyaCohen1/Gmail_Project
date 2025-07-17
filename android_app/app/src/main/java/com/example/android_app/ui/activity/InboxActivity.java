@@ -35,6 +35,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.example.android_app.BuildConfig;
 import com.example.android_app.R;
+import com.example.android_app.data.network.ApiClient;
+import com.example.android_app.data.network.ApiService;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
 import com.example.android_app.model.User;
@@ -53,6 +55,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class InboxActivity extends AppCompatActivity implements
         EmailAdapter.EmailItemClickListener, // Implement the new interface
@@ -101,12 +107,63 @@ public class InboxActivity extends AppCompatActivity implements
 
         profilePicture = findViewById(R.id.profile_picture); // Initialize the ImageView
 
-        // ----------------------------------------------------
-        // CALL THE NEW LOAD PROFILE IMAGE METHOD HERE
-        loadProfileImage();
-        // ----------------------------------------------------
+        // Retrieve user data from SharedPrefsManager
+        String userId = SharedPrefsManager.get(this, "userId");
+        String fullName = SharedPrefsManager.get(this, "fullName");
+        String profileImage = SharedPrefsManager.get(this, "profileImage");
 
-        // Set up profile picture click listener (optional, but needed to open EditProfileFragment)
+        if (userId != null && !userId.isEmpty()) {
+            ApiService apiService = ApiClient.getClient().create(ApiService.class);
+            Call<User> call = apiService.getUserById(userId);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String email = response.body().getEmailAddress();
+                        if (email != null && !email.isEmpty()) {
+                            SharedPrefsManager.save(InboxActivity.this, "emailAddress", email);
+                            Log.d("InboxActivity", "Email loaded from server and saved: " + email);
+                            viewModel.fetchEmailsForCategoryOrLabel("inbox");
+                        } else {
+                            Log.w("InboxActivity", "Email in response is null or empty");
+                        }
+                    } else {
+                        Log.e("InboxActivity", "Failed to fetch user. Response code: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    Log.e("InboxActivity", "Error fetching user from server: " + t.getMessage());
+                }
+            });
+        } else {
+            Log.e("InboxActivity", "userId is null or empty");
+        }
+
+        // Construct the full URL for the profile image if it's a relative path
+        if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
+            profileImage = BuildConfig.SERVER_URL + profileImage;
+        }
+
+        // Create the User object
+        currentUser = new User(userId, fullName, profileImage);
+
+        // Load the profile picture using Glide
+        if (currentUser != null && currentUser.getProfilePicUrl() != null && !currentUser.getProfilePicUrl().isEmpty()) {
+            Glide.with(this)
+                    .load(currentUser.getProfilePicUrl())
+                    .placeholder(R.drawable.default_profile) // Optional: default image while loading
+                    .error(R.drawable.default_profile) // Optional: image to show if loading fails
+                    .circleCrop() // Optional: to make the image circular
+                    .into(profilePicture);
+            Log.d("InboxActivity", "Profile picture loaded: " + currentUser.getProfilePicUrl());
+        } else {
+            profilePicture.setImageResource(R.drawable.default_profile);
+            Log.d("InboxActivity", "User profile URL is missing or null, showing default profile picture.");
+        }
+
+        // Set up profile picture click listener (optional)
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -329,6 +386,13 @@ public class InboxActivity extends AppCompatActivity implements
                 findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
             }
         });
+
+        String currentUserEmail = SharedPrefsManager.get(this, "emailAddress");
+        String token = SharedPrefsManager.get(this, "token");
+
+        if (currentUserEmail == null || currentUserEmail.isEmpty() || token == null || token.isEmpty()) {
+            Log.d("TAG", "User session data missing! currentUserEmail: " + currentUserEmail + ", Token: " + token);
+        }
 
         //back from sending email
         emailDetailsLauncher = registerForActivityResult(

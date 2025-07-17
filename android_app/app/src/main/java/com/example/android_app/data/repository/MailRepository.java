@@ -7,40 +7,39 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
-import com.example.android_app.data.network.ApiClient;
-import com.example.android_app.data.network.ApiService;
-import com.example.android_app.model.Email;
-import com.example.android_app.model.EmailRequest;
-import com.example.android_app.model.Label; // Needed for getMailLabels
-import com.example.android_app.model.MailLabelRequest; // Needed for addLabelToMail, removeMailFromLabel
-import com.example.android_app.utils.MailMapper;
-import com.example.android_app.utils.SendCallback;
-import com.example.android_app.utils.SharedPrefsManager;
-import com.example.android_app.data.network.MailService;
-
-//Room Database
 import com.example.android_app.data.local.AppDatabase;
 import com.example.android_app.data.local.MailDAO;
 import com.example.android_app.data.local.MailEntity;
-
+import com.example.android_app.data.local.UserDao;
+import com.example.android_app.data.network.ApiClient;
+import com.example.android_app.data.network.ApiService;
+import com.example.android_app.data.network.MailService;
+import com.example.android_app.model.Email;
+import com.example.android_app.model.EmailRequest;
+import com.example.android_app.model.Label;
+import com.example.android_app.model.MailLabelRequest;
+import com.example.android_app.utils.MailMapper;
+import com.example.android_app.utils.SendCallback;
+import com.example.android_app.utils.SharedPrefsManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
-import okhttp3.ResponseBody; // Needed for various success/failure responses
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MailRepository {
 
-    private final ApiService apiService; // הממשק של Retrofit
+    private final ApiService apiService;
     private final Context context;
     private final MailDAO mailDao;
+    private final UserDao userDao;
     private final MailService mailService = new MailService();
-
     private final ExecutorService executor; //so room run in another thread
     private final Handler mainThreadHandler;     // <--- הוסף את זה
 
@@ -49,6 +48,7 @@ public class MailRepository {
         apiService = ApiClient.getClient().create(ApiService.class); //create object from retrofit
         AppDatabase db = AppDatabase.getInstance(context);
         mailDao = db.mailDao();
+        this.userDao = db.userDao();
         executor = Executors.newSingleThreadExecutor();
         mainThreadHandler = new Handler(context.getMainLooper());
     }
@@ -57,9 +57,81 @@ public class MailRepository {
         return SharedPrefsManager.get(context, "token");
     }
 
-    // --- מתודות קיימות שנשארות ---
+//    public void fetchAndStoreCurrentUserEmail(Context context, ApiService apiService) {
+//        String userId = SharedPrefsManager.get(context, "userId");
+//        if (userId == null) {
+//            Log.e("USER", "userId is null – can't fetch user");
+//            return;
+//        }
+//
+//        apiService.getUserById(userId).enqueue(new Callback<User>() {
+//            @Override
+//            public void onResponse(Call<User> call, Response<User> response) {
+//                if (response.isSuccessful() && response.body() != null) {
+//                    String email = response.body().getEmailAddress();
+//                    SharedPrefsManager.save(context, "emailAddress", email);
+//                    Log.d("USER", "Fetched email from server: " + email);
+//                } else {
+//                    Log.e("USER", "Failed to fetch user info. Code=" + response.code());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<User> call, Throwable t) {
+//                Log.e("USER", "Network error: " + t.getMessage());
+//            }
+//        });
+//    }
 
-    // New: Method to create a draft
+    public void getCurrentUserEmail(LocalCallback<String> callback) {
+        executor.execute(() -> {
+            String email = SharedPrefsManager.get(context, "emailAddress");
+            Log.d("MailRepository", "Fetching email from SharedPrefs: " + email);
+            callback.onResult(email);
+        });
+    }
+
+    private void filterVisibleAsync(List<Email> emails, LocalCallback<List<Email>> callback) {
+        getCurrentUserEmail(currentUserEmail -> {
+            List<Email> filtered = new ArrayList<>();
+            for (Email email : emails) {
+                String from = email.getFrom();
+                String to = email.getTo();
+                boolean isSender = from != null && currentUserEmail != null && from.equalsIgnoreCase(currentUserEmail);
+                boolean isReceiver = to != null && currentUserEmail != null && to.equalsIgnoreCase(currentUserEmail);
+
+                boolean visibleToSender = isSender && !email.isDeletedForSender();
+                boolean visibleToReceiver = isReceiver && !email.isDeletedForReceiver();
+
+                Log.d("FILTER", "From=" + from + ", To=" + to + ", currentUserEmail=" + currentUserEmail);
+
+                if (visibleToSender || visibleToReceiver) {
+                    filtered.add(email);
+                }
+            }
+            callback.onResult(filtered);
+        });
+    }
+
+    private void filterDeletedAsync(List<Email> emails, LocalCallback<List<Email>> callback) {
+        getCurrentUserEmail(currentUserEmail -> {
+            List<Email> filtered = new ArrayList<>();
+            for (Email email : emails) {
+                String from = email.getFrom();
+                String to = email.getTo();
+                boolean isSender = from != null && currentUserEmail != null && from.equalsIgnoreCase(currentUserEmail);
+                boolean isReceiver = to != null && currentUserEmail != null && to.equalsIgnoreCase(currentUserEmail);
+
+                boolean deletedBySender = isSender && email.isDeletedForSender();
+                boolean deletedByReceiver = isReceiver && email.isDeletedForReceiver();
+
+                if (deletedBySender || deletedByReceiver) {
+                    filtered.add(email);
+                }
+            }
+            callback.onResult(filtered);
+        });
+    }
     public void createDraft(EmailRequest request, MailService.DraftMailCallback callback) {
         String token = SharedPrefsManager.get(context, "token");
         if (token == null || token.isEmpty()) {
@@ -79,7 +151,6 @@ public class MailRepository {
         });
     }
 
-    // New: Method to update a draft
     public void updateDraft(String mailId, String to, String subject, String body, String token, MailService.DraftMailCallback callback) {
         mailService.updateDraft(mailId, to, subject, body, token, new MailService.DraftMailCallback() {
             @Override
@@ -155,10 +226,11 @@ public class MailRepository {
         apiService.getInboxEmails("Bearer " + token).enqueue(new Callback<List<Email>>() {
             @Override
             public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
-                if (response.isSuccessful()) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);
+                if (response.isSuccessful() && response.body() != null) {
+                    filterVisibleAsync(response.body(), filtered -> {
+                        saveEmailsToLocalDb(filtered);
+                        callback.onSuccess(filtered);
+                    });
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -208,10 +280,10 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Email> emails = response.body();
-                    // וודא שאתה שומר ל-DB המקומי *אחרי* קבלת התשובה מהשרת
-                    saveEmailsToLocalDb(emails); // אם יש לך פונקציה כזו
-                    callback.onSuccess(response.body());
+                    filterVisibleAsync(response.body(), filtered -> {
+                        saveEmailsToLocalDb(filtered);
+                        callback.onSuccess(filtered);
+                    });
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -260,9 +332,10 @@ public class MailRepository {
             @Override
             public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
                 if (response.isSuccessful()) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);
+                    filterVisibleAsync(response.body(), filtered -> {
+                        saveEmailsToLocalDb(filtered);
+                        callback.onSuccess(filtered);
+                    });
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -288,9 +361,11 @@ public class MailRepository {
             @Override
             public void onResponse(Call<List<Email>> call, Response<List<Email>> response) {
                 if (response.isSuccessful()) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);                } else {
+                    filterVisibleAsync(response.body(), filtered -> {
+                        saveEmailsToLocalDb(filtered);
+                        callback.onSuccess(filtered);
+                    });
+                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -315,9 +390,11 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);                } else {
+                    filterVisibleAsync(response.body(), filtered -> {
+                        saveEmailsToLocalDb(filtered);
+                        callback.onSuccess(filtered);
+                    });
+                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -342,9 +419,11 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);                } else {
+                    filterDeletedAsync(response.body(), filtered -> {
+                        saveEmailsToLocalDb(filtered);
+                        callback.onSuccess(filtered);
+                    });
+                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -369,7 +448,10 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
+                    filterVisibleAsync(response.body(), filtered -> {
+                        saveEmailsToLocalDb(filtered);
+                        callback.onSuccess(filtered);
+                    });
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -395,7 +477,10 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
+                    filterVisibleAsync(response.body(), filtered -> {
+                        saveEmailsToLocalDb(filtered);
+                        callback.onSuccess(filtered);
+                    });
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -948,7 +1033,6 @@ public class MailRepository {
         });
     }
 
-    // NEW method to get mails by label
     public void getMailsByLabel(String labelId, ListEmailsCallback callback) {
         Log.d("MyDebug", "Repository getMailsByLabel: Calling apiService.getMailsByLabel()");
         String token = getTokenFromPrefs(context);
@@ -961,10 +1045,12 @@ public class MailRepository {
         apiService.getMailsByLabel("Bearer " + token, labelId).enqueue(new Callback<List<Email>>() {
             @Override
             public void onResponse(@NonNull Call<List<Email>> call, @NonNull Response<List<Email>> response) {
-                if (response.isSuccessful()) {
-                    List<Email> emails = response.body();
-                    saveEmailsToLocalDb(emails);
-                    callback.onSuccess(emails);                } else {
+                if (response.isSuccessful() && response.body() != null) {
+                    filterVisibleAsync(response.body(), filtered -> {
+                        saveEmailsToLocalDb(filtered);
+                        callback.onSuccess(filtered);
+                    });
+                } else {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
@@ -981,9 +1067,16 @@ public class MailRepository {
             executor.execute(() -> {
                 List<MailEntity> entities = new ArrayList<>();
                 for (Email email : emails) {
+                    if (email.getId() == null) {
+                        Log.e("SAVE_EMAILS", "Email has null ID, skipping! " + email);
+                        continue;
+                    }
+                    Log.d("SAVE_EMAILS", "Saving emails with IDs: " + entities.stream().map(MailEntity::getId).collect(Collectors.toList()));
+
                     entities.add(MailMapper.toEntity(email));
                 }
                 mailDao.insertAll(entities);
+                Log.d("SAVE_EMAILS", "Saved " + entities.size() + " emails to local DB");
             });
         }
 
@@ -1021,12 +1114,9 @@ public class MailRepository {
         mailService.getInbox(token, new MailService.InboxCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                // המרת Email ל־MailEntity
                 List<MailEntity> entities = MailMapper.toEntities(emails);
-
-                // שמירה במסד המקומי (Room)
                 executor.execute(() -> {
-                    mailDao.insertAll(entities); // פעולה שכותבת במסד המקומי
+                    mailDao.insertAll(entities);
                     callback.onSuccess();
                 });
             }
@@ -1063,7 +1153,7 @@ public class MailRepository {
             }
         });
     }
-    // --- Interfaces שנשארים ---
+
     public interface InboxCallback {
         void onSuccess(List<Email> emails);
         void onFailure(String error);

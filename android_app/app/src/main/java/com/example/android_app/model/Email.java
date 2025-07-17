@@ -21,16 +21,16 @@ public class Email {
     @SerializedName("to")
     private String to;
 
-    @SerializedName("subject") // או "mail_subject"
+    @SerializedName("subject")
     private String subject;
 
-    @SerializedName("body") // או "content"
+    @SerializedName("body")
     private String body;
 
-    @SerializedName("date") // או "sent_at"
+    @SerializedName("date")
     private String date;
 
-    @SerializedName("isRead") // או "is_read"
+    @SerializedName("isRead")
     private boolean isRead;
 
     @SerializedName("send")
@@ -219,12 +219,28 @@ public class Email {
         return fromUser != null ? fromUser.getProfileImage() : null;
     }
 
+    public boolean isDeletedForSender() {
+        return deletedForSender;
+    }
+
+    public boolean isDeletedForReceiver() {
+        return deletedForReceiver;
+    }
+
+    public void setDeletedForSender(boolean deletedForSender) {
+        this.deletedForSender = deletedForSender;
+    }
+
+    public void setDeletedForReceiver(boolean deletedForReceiver) {
+        this.deletedForReceiver = deletedForReceiver;
+    }
+
     // מחלקה פנימית שמייצגת את האובייקט fromUser
     public static class FromUser {
         @SerializedName("fullName")
         private String fullName;
         @SerializedName("email")
-        private String email; // שים לב שזהו ה-emailAddress מה-backend
+        private String emailAddress;
         @SerializedName("profileImage")
         private String profileImage;
 
@@ -234,7 +250,7 @@ public class Email {
         }
 
         public String getEmail() {
-            return email;
+            return emailAddress;
         }
 
         public String getProfileImage() {
@@ -244,18 +260,19 @@ public class Email {
             return profileImage;
         }
 
-        // setters (אם יש צורך)
         public void setFullName(String fullName) {
             this.fullName = fullName;
         }
 
         public void setEmail(String email) {
-            this.email = email;
+            this.emailAddress = email;
         }
 
         public void setProfileImage(String profileImage) {
             this.profileImage = profileImage;
         }
+
+
     }
 }
 
