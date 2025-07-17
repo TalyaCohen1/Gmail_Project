@@ -2,6 +2,7 @@ package com.example.android_app.model;
 
 import com.google.gson.annotations.SerializedName;
 
+// User class representing a user in the application
 public class User {
     private String id;
     @SerializedName("fullName")

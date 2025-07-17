@@ -19,6 +19,7 @@
     <string name="sign_in_to_smail">Sign in to Smail</string>
     <string name="logo">Logo</string>
     <string name="save">Save</string>
+    <string name="cancle">Cancle</string>
     <string name="enter_label_name">Enter label name</string>
     <string name="successful_update">Profile updated successfully</string>
     <string name="failed_to_update">Failed to update profile</string>
@@ -30,4 +31,5 @@
     <string name="delete_selected_emails">Delete selected emails</string>
     <string name="mark_as_read_unread">Mark as read/unread</string>
     <string name="important">Important</string>
+    <string name="subject">Subject</string>
 </resources>

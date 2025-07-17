@@ -4,6 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
+//this class represents the User entity in the local database
 
 @Entity(tableName = "users")
 public class UserEntity {

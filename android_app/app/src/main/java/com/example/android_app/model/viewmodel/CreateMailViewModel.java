@@ -13,26 +13,26 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.android_app.data.network.MailService;
 import com.example.android_app.data.repository.MailRepository;
 import com.example.android_app.model.Email;
-import com.example.android_app.model.EmailRequest; // וודא שזה מיובא
+import com.example.android_app.model.EmailRequest;
 import com.example.android_app.utils.SendCallback;
 import com.example.android_app.utils.SharedPrefsManager;
 
+// ViewModel for creating and managing email drafts and sending emails
+// Handles loading existing drafts, creating new drafts, saving drafts, and sending emails
 public class CreateMailViewModel extends AndroidViewModel {
 
-    private static final String TAG = "CreateMailViewModel"; // הוסף לוג לניפוי באגים
-
+    private static final String TAG = "CreateMailViewModel";
     private final MailRepository repository;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> emailSent = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false); // מצב טעינה
-
-    // המשתנה הראשי לניהול אובייקט הטיוטה הנוכחי (או המייל החדש)
+    private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Email> _currentDraft = new MutableLiveData<>();
+    // LiveData to observe the current draft email
     public LiveData<Email> getCurrentDraft() {
         return _currentDraft;
     }
 
-    // מציין הצלחה כללית של פעולה (שמירה, שליחה)
+    // LiveData to observe action success status
     private final MutableLiveData<Boolean> _actionSuccess = new MutableLiveData<>();
     public LiveData<Boolean> getActionSuccess() {
         return _actionSuccess;
@@ -55,7 +55,8 @@ public class CreateMailViewModel extends AndroidViewModel {
         return emailSent;
     }
 
-    // 1. מתודה לטעינת טיוטה קיימת או יצירת טיוטה חדשה
+// Load or create a draft email
+    // If an existing draft ID is provided, it loads that draft
     public void loadOrCreateDraft(String existingMailId, String defaultTo, String defaultSubject, String defaultBody) {
         _isLoading.postValue(true);
         String token = SharedPrefsManager.get(getApplication(), "token");
@@ -65,12 +66,12 @@ public class CreateMailViewModel extends AndroidViewModel {
             return;
         }
 
+// If an existing draft ID is provided, load that draft
         if (existingMailId != null && !existingMailId.isEmpty()) {
-            // טען טיוטה קיימת
             repository.getEmailById(existingMailId, new MailRepository.EmailDetailsCallback() {
                 @Override
                 public void onSuccess(Email email) {
-                    _currentDraft.setValue(email); // הגדר את הטיוטה שנטענה
+                    _currentDraft.setValue(email);
                     errorMessage.setValue(null);
                     _isLoading.postValue(false);
                 }
@@ -79,9 +80,6 @@ public class CreateMailViewModel extends AndroidViewModel {
                 public void onFailure(String error) {
                     errorMessage.setValue("Failed to load draft: " + error);
                     _isLoading.postValue(false);
-                    // אם טיוטה קיימת לא נמצאה, צור טיוטה חדשה עם ערכי ברירת המחדל
-                    // למקרה חירום, כדי לא להשאיר את המשתמש תקוע
-                    // אך במצב רגיל, loadOrCreateDraft לא אמור להיכשל כאן
                     EmailRequest newDraftRequest = new EmailRequest(defaultTo, defaultSubject, defaultBody);
                     repository.createDraft(newDraftRequest, new MailService.DraftMailCallback() {
                         @Override
@@ -97,14 +95,12 @@ public class CreateMailViewModel extends AndroidViewModel {
                 }
             });
         } else {
-            // צור טיוטה חדשה ב-Backend עם התוכן הראשוני
-            // השתמש ב-defaultTo, defaultSubject, defaultBody מהפרמטרים
             EmailRequest newDraftRequest = new EmailRequest(defaultTo, defaultSubject, defaultBody);
 
             repository.createDraft(newDraftRequest, new MailService.DraftMailCallback() {
                 @Override
                 public void onSuccess(Email email) {
-                    _currentDraft.setValue(email); // הגדר את הטיוטה שנוצרה (כעת עם תוכן התחלתי!)
+                    _currentDraft.setValue(email);
                     errorMessage.setValue(null);
                     _isLoading.postValue(false);
                 }
@@ -118,12 +114,10 @@ public class CreateMailViewModel extends AndroidViewModel {
         }
     }
 
-    // 2. מתודה לשמירת/עדכון טיוטה
+    //save draft if edit but not send
     public void saveDraft(String to, String subject, String body) {
         Email current = _currentDraft.getValue();
         if (current == null || current.getId() == null) {
-            Log.w(TAG, "No current draft ID to save. Skipping save.");
-            // זו לא אמורה לקרות אם loadOrCreateDraft נקרא בהתחלה
             return;
         }
 
@@ -133,11 +127,11 @@ public class CreateMailViewModel extends AndroidViewModel {
             return;
         }
 
-        // עדכן את הטיוטה הקיימת
+        //patch existing draft
         repository.updateDraft(current.getId(), to, subject, body, token, new MailService.DraftMailCallback() {
             @Override
             public void onSuccess(Email updatedEmail) {
-                _currentDraft.setValue(updatedEmail); // עדכן את הטיוטה ב-ViewModel
+                _currentDraft.setValue(updatedEmail);
                 _actionSuccess.postValue(true);
                 errorMessage.setValue(null);
                 Log.d(TAG, "Draft saved successfully.");
@@ -152,10 +146,11 @@ public class CreateMailViewModel extends AndroidViewModel {
         });
     }
 
-    // 3. מתודת שליחת מייל
-    // היא תמיד תשתמש ב-repository.sendEmail עם התוכן הנוכחי
-    public void sendEmail(String to, String subject, String body) {
+    public void sendEmail(String mailId, String to, String subject, String body) {
         _isLoading.postValue(true);
+        errorMessage.setValue(null);
+        _actionSuccess.postValue(false);
+
         if (TextUtils.isEmpty(to)) {
             errorMessage.setValue("Recipient is required");
             _isLoading.postValue(false);
@@ -178,16 +173,31 @@ public class CreateMailViewModel extends AndroidViewModel {
             return;
         }
 
-        // שלח את המייל
-        repository.sendEmail(to, subject, body, token, new SendCallback() {
+        //send mail
+        repository.sendEmail(mailId, to, subject, body, token, new SendCallback() {
             @Override
             public void onSuccess() {
                 emailSent.setValue(true);
                 errorMessage.setValue(null);
                 _isLoading.postValue(false);
-                _currentDraft.setValue(null); // נקה את הטיוטה ב-ViewModel לאחר שליחה מוצלחת
                 _actionSuccess.postValue(true);
                 Log.d(TAG, "Email sent successfully.");
+
+                if (mailId != null && !mailId.isEmpty()) {
+                    repository.deleteDraft(mailId, new MailRepository.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "Draft with ID " + mailId + " successfully deleted from local DB.");
+                            _currentDraft.postValue(null);
+                        }
+                        @Override
+                        public void onFailure(String error) {
+                            Log.e(TAG, "Failed to delete draft with ID " + mailId + " from local DB: " + error);
+                        }
+                    });
+                } else {
+                    _currentDraft.postValue(null);
+                }
             }
 
             @Override
@@ -200,4 +210,5 @@ public class CreateMailViewModel extends AndroidViewModel {
             }
         });
     }
+
 }

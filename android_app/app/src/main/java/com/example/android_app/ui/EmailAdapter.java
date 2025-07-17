@@ -112,7 +112,7 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         }
 
         // --- 4. Handle Item Background and Activated State (for selector) ---
-        holder.itemView.setActivated(isSelected);
+        holder.itemView.setActivated(isMultiSelectMode && isSelected);
 
         // --- 5. Handle Read/Unread Status and Text Style ---
         if (currentEmail.isRead()) {

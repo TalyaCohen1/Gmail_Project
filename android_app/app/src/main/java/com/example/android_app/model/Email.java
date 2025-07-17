@@ -129,6 +129,18 @@ public class Email {
     public void setSend(boolean send) {
         this.send = send;
     }
+    public boolean isDeletedForSender() {
+        return deletedForSender;
+    }
+    public void setDeletedForSender(boolean deletedForSender) {
+        this.deletedForSender = deletedForSender;
+    }
+    public boolean isDeletedForReceiver() {
+        return deletedForReceiver;
+    }
+    public void setDeletedForReceiver(boolean deletedForReceiver) {
+        this.deletedForReceiver = deletedForReceiver;
+    }
     public boolean isSpam() {
         return isSpam;
     }

@@ -32,7 +32,6 @@ public class MailViewModel extends AndroidViewModel {
     public MailViewModel(@NonNull Application application) {
         super(application);
         this.mailRepository = new MailRepository(application.getApplicationContext());
-        // Initialize counts map when ViewModel is created
         initializeMailCounts();
     }
 
@@ -549,70 +548,6 @@ public class MailViewModel extends AndroidViewModel {
                 _errorMessage.postValue(error);
                 _isLoading.postValue(false);
                 Log.e(TAG, "Failed to fetch mails by label " + labelId + ": " + error);
-            }
-        });
-    }
-
-    // --- Mail Action Operations ---
-    public void sendEmail(String to, String subject, String body) {
-        _isLoading.postValue(true);
-        String token = SharedPrefsManager.get(getApplication(), "token"); // או "authToken" אם זה המפתח שבו אתה שומר אותו
-        if (token == null || token.isEmpty()) {
-            _errorMessage.postValue("Authentication token is missing.");
-            _isLoading.postValue(false);
-            _actionSuccess.postValue(false);
-            Log.e(TAG, "Failed to send email: Authentication token is missing.");
-            return;
-        }
-        mailRepository.sendEmail(to, subject, body,token, new SendCallback() {
-            @Override
-            public void onSuccess() {
-                _actionSuccess.postValue(true);
-                _isLoading.postValue(false);
-                _errorMessage.postValue(null);
-                Log.d(TAG, "Email sent successfully.");
-            }
-
-            @Override
-            public void onFailure(String error) {
-                _actionSuccess.postValue(false);
-                _errorMessage.postValue(error);
-                _isLoading.postValue(false);
-                Log.e(TAG, "Failed to send email: " + error);
-            }
-        });
-    }
-
-    public void updateDraft(String mailId, EmailRequest request) {
-        _isLoading.postValue(true);
-        String token = SharedPrefsManager.get(getApplication(), "token"); // או "authToken"
-        if (token == null || token.isEmpty()) {
-            _errorMessage.postValue("Authentication token is missing.");
-            _isLoading.postValue(false);
-            _actionSuccess.postValue(false); // הגדר כשל גם כאן
-            Log.e(TAG, "Failed to update draft: Authentication token is missing.");
-            return;
-        }
-
-        String to = request.getTo();
-        String subject = request.getSubject();
-        String body = request.getBody();
-
-        mailRepository.updateDraft(mailId, to, subject, body, token, new MailService.DraftMailCallback() {
-            @Override
-            public void onSuccess(Email email) { // שינוי מסוג String ל-Email
-                _actionSuccess.postValue(true);
-                _isLoading.postValue(false);
-                _errorMessage.postValue(null);
-                Log.d(TAG, "Draft updated successfully for ID: " + email.getId()); // השתמש ב-email.getId()
-            }
-
-            @Override
-            public void onFailure(String error) {
-                _actionSuccess.postValue(false);
-                _errorMessage.postValue(error);
-                _isLoading.postValue(false);
-                Log.e(TAG, "Failed to update draft for ID " + mailId + ": " + error);
             }
         });
     }

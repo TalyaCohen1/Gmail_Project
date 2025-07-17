@@ -176,24 +176,23 @@
         android:layout_marginTop="24dp"
         android:weightSum="2">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnReply"
+            style="@style/StyledButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/buttons_text"
-            android:backgroundTint="@color/regular_buttons"
-            android:text="↩️ Reply" />
+            android:layout_height="56dp"
+            android:text="↩️ Reply"
+            android:layout_marginEnd="4dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnForward"
+            style="@style/StyledButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/buttons_text"
-            android:backgroundTint="@color/regular_buttons"
+            android:layout_height="56dp"
             android:text="↪️ Forward"
-            android:layout_marginStart="8dp" />
+            android:layout_marginStart="4dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -204,13 +203,12 @@
         android:visibility="gone"
         android:layout_marginTop="24dp">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditDraft"
+            style="@style/StyledButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="✏️ Edit Draft"
-            android:textColor="@color/buttons_text"
-            android:backgroundTint="@color/regular_buttons" />
+            android:layout_height="56dp"
+            android:text="✏️ Edit Draft" />
     </LinearLayout>
     </LinearLayout>
     </ScrollView>

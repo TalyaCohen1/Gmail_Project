@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 import java.util.List;
 
+// This class represents the Mail entity in the local database.
 @Entity(tableName = "mails")
 public class MailEntity {
     @PrimaryKey

@@ -10,5 +10,12 @@
         <item name="secondaryButtonTintAttr">@color/buttons</item>
         <item name="loginFieldsAttr">@color/login_fields</item>
         <item name="buttonsTextAttr">@color/buttons_text</item>
+        <item name="colorButton">@color/button_background</item>
+        <item name="colorButtonText">@color/button_text</item>
+        <item name="android:statusBarColor">@color/selected_item_background</item>
+
+    </style>
+    <style name="popupTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 </resources>

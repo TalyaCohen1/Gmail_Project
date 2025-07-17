@@ -8,7 +8,7 @@
     android:background="?android:attr/background"
     android:fitsSystemWindows="true" tools:openDrawer="start">
 
-
+    <!--main screen-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
@@ -20,8 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?android:attr/background"
-            android:elevation="8dp" 
-            android:visibility="gone" 
+            android:elevation="8dp"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -111,7 +111,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?android:attr/background"
             android:theme="?attr/actionBarTheme"
-            app:popupTheme="?attr/popupTheme"
+            app:popupTheme="@style/popupTheme"
             app:titleTextColor="?attr/buttonsTextAttr"
             android:layoutDirection="ltr"
             app:layout_constraintTop_toTopOf="parent"
@@ -152,7 +152,6 @@
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:layout_marginEnd="8dp"/>
-
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
 
@@ -175,13 +174,13 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewEmails"
                 android:layout_width="match_parent"
-                android:layout_height="8dp"
-                app:layout_constraintTop_toBottomOf="@id/toolbar_guideline"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbar_guideline"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:listitem="@layout/item_email" />
-
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -220,6 +219,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <FrameLayout
+            android:id="@+id/fragmentProfileContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="#FFF9F0"
+            android:elevation="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"
+            />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
@@ -229,14 +242,5 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         tools:layout="@layout/fragment_sidebar" />
-
-    <FrameLayout
-        android:id="@+id/fragmentProfileContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="?attr/buttonsTextAttr"
-        android:elevation="8dp"
-        />
 
 </androidx.drawerlayout.widget.DrawerLayout>

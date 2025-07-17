@@ -1,9 +1,11 @@
 package com.example.android_app.ui.activity; // Make sure this package is correct
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +17,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -59,7 +63,8 @@ import retrofit2.Response;
 public class InboxActivity extends AppCompatActivity implements
         EmailAdapter.EmailItemClickListener, // Implement the new interface
         EmailAdapter.MultiSelectModeListener,
-        SideBarFragment.SideBarFragmentListener { // Implement the new interface
+        SideBarFragment.SideBarFragmentListener,
+        EditProfileFragment.OnProfilePictureUpdatedListener { // Implement the new interface
 
     private InboxViewModel viewModel;
 
@@ -73,7 +78,7 @@ public class InboxActivity extends AppCompatActivity implements
     private ActionBarDrawerToggle toggle;
     private EditText searchEditText; // Declare EditText for search
 
-    private String profileImage;
+//    private String profileImage;
 
     private ImageView profilePicture; // Declare ImageView for profile picture
     private User currentUser; // Declare a User object
@@ -87,6 +92,8 @@ public class InboxActivity extends AppCompatActivity implements
     private ImageView iconMarkReadUnread;
     private ImageView iconMoreOptions;
     private ImageView iconSpam;
+
+    private ActivityResultLauncher<Intent> emailDetailsLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,9 +167,46 @@ public class InboxActivity extends AppCompatActivity implements
         profilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
+                  Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
+//                showProfilePopupMenu(v); // Call the method that shows the popup menu
             }
         });
+
+
+//        // Retrieve user data from SharedPrefsManager
+//        String userId = SharedPrefsManager.get(this, "userId");
+//        String fullName = SharedPrefsManager.get(this, "fullName");
+//        String profileImage = SharedPrefsManager.get(this, "profileImage");
+//
+//        // Construct the full URL for the profile image if it's a relative path
+//        if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
+//            profileImage = BuildConfig.SERVER_URL + profileImage;
+//        }
+//
+//        // Create the User object
+//        currentUser = new User(userId, fullName, profileImage);
+//
+//        // Load the profile picture using Glide
+//        if (currentUser != null && currentUser.getProfilePicUrl() != null && !currentUser.getProfilePicUrl().isEmpty()) {
+//            Glide.with(this)
+//                    .load(currentUser.getProfilePicUrl())
+//                    .placeholder(R.drawable.default_profile) // Optional: default image while loading
+//                    .error(R.drawable.default_profile) // Optional: image to show if loading fails
+//                    .circleCrop() // Optional: to make the image circular
+//                    .into(profilePicture);
+//            Log.d("InboxActivity", "Profile picture loaded: " + currentUser.getProfilePicUrl());
+//        } else {
+//            profilePicture.setImageResource(R.drawable.default_profile);
+//            Log.d("InboxActivity", "User profile URL is missing or null, showing default profile picture.");
+//        }
+//
+//        // Set up profile picture click listener (optional)
+//        profilePicture.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         // Hide the default title as we have a custom layout within the toolbar
         if (getSupportActionBar() != null) {
@@ -191,26 +235,26 @@ public class InboxActivity extends AppCompatActivity implements
         searchEditText = findViewById(R.id.search_edit_text);
         ImageView profilePicture = findViewById(R.id.profile_picture);
 
-        EditProfileViewModel editProfileViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
-        String profileImageUrl_new = UserManager.getProfileImage(this); // UserManager.getProfileImage already provides a default of null
-        // Then handle the default image logic if profileImageUrl is null
-        if (profileImage == null || profileImage.isEmpty()) {
-            profileImage = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
-        }
-        String fullUrl;
-        if (!profileImage.startsWith("http")) {
-            fullUrl = BuildConfig.SERVER_URL + profileImage;
-        } else {
-            fullUrl = profileImage;
-        }
-
-        // put it into the ImageView
-        Glide.with(this)
-                .load(fullUrl)
-                .placeholder(R.drawable.default_profile)
-                .error(R.drawable.default_profile)
-                .circleCrop()
-                .into(profilePicture);
+//        EditProfileViewModel editProfileViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
+//        String profileImageUrl_new = UserManager.getProfileImage(this); // UserManager.getProfileImage already provides a default of null
+//        // Then handle the default image logic if profileImageUrl is null
+//        if (profileImage == null || profileImage.isEmpty()) {
+//            profileImage = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
+//        }
+//        String fullUrl;
+//        if (!profileImage.startsWith("http")) {
+//            fullUrl = BuildConfig.SERVER_URL + profileImage;
+//        } else {
+//            fullUrl = profileImage;
+//        }
+//
+//        // put it into the ImageView
+//        Glide.with(this)
+//                .load(fullUrl)
+//                .placeholder(R.drawable.default_profile)
+//                .error(R.drawable.default_profile)
+//                .circleCrop()
+//                .into(profilePicture);
 
 
         // Set up search action listener for the EditText
@@ -227,15 +271,17 @@ public class InboxActivity extends AppCompatActivity implements
 
         // Set up profile picture click listener
         profilePicture.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(InboxActivity.this, v);
+            PopupMenu popup = new PopupMenu(new ContextThemeWrapper(this, R.style.PopupMenuStyle), v);
             popup.getMenuInflater().inflate(R.menu.menu_profile_popup, popup.getMenu());
 
             popup.setOnMenuItemClickListener(item -> {
                 int id = item.getItemId();
                 if (id == R.id.action_edit_profile) {
                     //go to edit profile fragment
+                    // CORRECTED PART: Create fragment instance, set listener, then replace
+                    EditProfileFragment editProfileFragment = new EditProfileFragment();
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragmentProfileContainer, new EditProfileFragment())
+                            .replace(R.id.fragmentProfileContainer, editProfileFragment)
                             .addToBackStack("editProfile")
                             .commit();
                     findViewById(R.id.fragmentProfileContainer).setVisibility(View.VISIBLE);
@@ -308,12 +354,6 @@ public class InboxActivity extends AppCompatActivity implements
                 }
         );
 
-        setupRecyclerView();
-        setupMultiSelectToolbarListeners(); // New method for toolbar listeners
-        setupRefreshListener();
-        observeViewModel();
-
-
         // Load the SideBarFragment into the sidebar_container
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -352,6 +392,70 @@ public class InboxActivity extends AppCompatActivity implements
 
         if (currentUserEmail == null || currentUserEmail.isEmpty() || token == null || token.isEmpty()) {
             Log.d("TAG", "User session data missing! currentUserEmail: " + currentUserEmail + ", Token: " + token);
+        }
+
+        //back from sending email
+        emailDetailsLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        // בדוק אם התוצאה מצביעה על כך שמייל נשלח מפרטי המייל
+                        if (data != null && data.getBooleanExtra("email_sent_from_details", false)) {
+                            Log.d("InboxActivity", "Refresh triggered by EmailDetailsActivity result.");
+                            // בצע את לוגיקת הרענון הקיימת שלך:
+                            String currentCategory = viewModel.getCurrentCategoryOrLabelId();
+                            if (currentCategory == null || currentCategory.isEmpty()) {
+                                viewModel.fetchEmailsForCategoryOrLabel("inbox");
+                            } else {
+                                viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
+                            }
+                            Toast.makeText(this, "אינבוקס רוענן לאחר שליחת מייל מפרטים", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+
+        setupRecyclerView();
+        setupMultiSelectToolbarListeners(); // New method for toolbar listeners
+        setupRefreshListener();
+        observeViewModel();
+    }
+
+    // NEW METHOD: loadProfileImage()
+    private void loadProfileImage() {
+        // Retrieve current user data from UserManager (which should be updated after profile save)
+        String userId = UserManager.getUserId(this);
+        String fullName = UserManager.getFullName(this);
+        String profileImageUrl = UserManager.getProfileImage(this); // This should be the latest URL
+
+        // Update the User object if needed, or simply use the fetched values
+         currentUser = new User(userId, fullName, profileImageUrl); // Only if you actively use currentUser object later
+
+        // Update username TextView if you have one in the toolbar/sidebar
+        // if (userNameTextView != null && fullName != null) {
+        //     userNameTextView.setText(fullName);
+        // }
+
+        if (profilePicture != null) {
+            if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                String fullUrl;
+                if (!profileImageUrl.startsWith("http") && !profileImageUrl.startsWith("content://") && !profileImageUrl.startsWith("file://")) {
+                    fullUrl = BuildConfig.SERVER_URL + profileImageUrl;
+                } else {
+                    fullUrl = profileImageUrl;
+                }
+                Glide.with(this)
+                        .load(fullUrl)
+                        .placeholder(R.drawable.default_profile) // Your default placeholder
+                        .error(R.drawable.default_profile)     // Your error image
+                        .circleCrop() // If you want circular images
+                        .into(profilePicture);
+                Log.d("InboxActivity", "Profile picture loaded: " + fullUrl);
+            } else {
+                profilePicture.setImageResource(R.drawable.default_profile);
+                Log.d("InboxActivity", "User profile URL is missing or null, showing default profile picture.");
+            }
         }
     }
 
@@ -619,7 +723,8 @@ public class InboxActivity extends AppCompatActivity implements
         if (!adapter.isMultiSelectMode()) {
             Intent intent = new Intent(this, EmailDetailsActivity.class);
             intent.putExtra("email_id", email.getId());
-            startActivity(intent);
+//            startActivity(intent);
+            emailDetailsLauncher.launch(intent);
         }
         // If in multi-select mode, the adapter already handled the toggle
     }
@@ -765,12 +870,12 @@ public class InboxActivity extends AppCompatActivity implements
         });
     }
 
-    public String getProfileImage() {
-        if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
-            return BuildConfig.SERVER_URL + profileImage;
-        }
-        return profileImage;
-    }
+//    public String getProfileImage() {
+//        if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
+//            return BuildConfig.SERVER_URL + profileImage;
+//        }
+//        return profileImage;
+//    }
 
     private void performLogout() {
         //clear shared prefs
@@ -783,5 +888,13 @@ public class InboxActivity extends AppCompatActivity implements
         startActivity(intent);
 
         finish();
+    }
+
+    @Override
+    public void onProfilePictureUpdated() {
+        // This method will be called by EditProfileFragment when done
+        Log.d("InboxActivity", "Profile picture updated, reloading image in InboxActivity.");
+        loadProfileImage(); // CALL THE NEW METHOD TO RELOAD THE IMAGE!
+        Log.d("InboxActivity", "Profile picture updated, reloading image.");
     }
 }

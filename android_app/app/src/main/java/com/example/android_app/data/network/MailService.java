@@ -4,8 +4,7 @@ package com.example.android_app.data.network;
 import com.example.android_app.BuildConfig;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
-import com.example.android_app.utils.SendCallback; // וודא שזה מיובא
-import android.util.Log; // הוסף ייבוא עבור Log אם חסר
+import android.util.Log;
 import java.io.IOException;
 import java.util.List;
 import okhttp3.ResponseBody;
@@ -47,7 +46,6 @@ public class MailService {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Log.e("MailService", "Error creating draft: " + errorMsg); // הוסף לוג
                     callback.onFailure(errorMsg);
                 }
             }
@@ -79,67 +77,63 @@ public class MailService {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Log.e("MailService", "Error updating draft: " + errorMsg); // הוסף לוג
                     callback.onFailure(errorMsg);
                 }
             }
 
             @Override
             public void onFailure(Call<Email> call, Throwable t) {
-                Log.e("MailService", "Network error updating draft: " + t.getMessage(), t); // הוסף לוג
-                callback.onFailure("Network error updating draft: " + t.getMessage());
+               callback.onFailure("Network error updating draft: " + t.getMessage());
             }
         });
     }
 
-    // New: Method to send a draft
-    public void sendDraft(String mailId, String token, SendDraftCallback callback) {
-        api.sendDraft("Bearer " + token, mailId).enqueue(new Callback<ResponseBody>() { // Or <Email>
+    // Method to send a draft
+    // This method sends a draft email by its ID and token, using the EmailRequest object
+    public void sendDraft(String mailId, String token, EmailRequest request, SendDraftCallback callback) {
+        api.sendDraft(mailId, "Bearer " + token, request).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
                 } else {
-                    String errorMsg = "Failed to send draft. Code: " + response.code();
                     try {
-                        if (response.errorBody() != null) {
-                            errorMsg += ": " + response.errorBody().string();
-                        }
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        callback.onFailure("Failed to send draft: " + errorBody);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        callback.onFailure("Failed to send draft: " + e.getMessage());
                     }
-                    Log.e("MailService", "Error sending draft: " + errorMsg); // הוסף לוג
-                    callback.onFailure(errorMsg);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("MailService", "Network error sending draft: " + t.getMessage(), t); // הוסף לוג
-                callback.onFailure("Network error sending draft: " + t.getMessage());
+                callback.onFailure("Network error: " + t.getMessage());
             }
         });
     }
 
-    // Existing sendEmail method (for new emails, not drafts)
-    public void sendEmail(String to, String subject, String body, String token, SendCallback callback) {
-        EmailRequest request = new EmailRequest(to, subject, body);
-        api.sendEmail("Bearer " + token, request).enqueue(new Callback<Void>() {
+
+    // Method to send a new email
+    // This method sends a new email using the EmailRequest object and token
+    public void sendEmail(String token, EmailRequest request, SendEmailCallback callback) {
+        api.sendEmail("Bearer " + token, request).enqueue(new Callback<ResponseBody>() { 
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
                 } else {
-                    String errorMsg = "Failed to send email. Code: " + response.code();
-                    // ניתן להוסיף קריאה ל-response.errorBody().string() כאן גם
-                    Log.e("MailService", "Error sending email: " + errorMsg); // הוסף לוג
-                    callback.onFailure(errorMsg);
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        callback.onFailure("Failed to send email: " + errorBody);
+                    } catch (IOException e) {
+                        callback.onFailure("Failed to send email: " + e.getMessage());
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("MailService", "Network error sending email: " + t.getMessage(), t); // הוסף לוג
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 callback.onFailure("Network error: " + t.getMessage());
             }
         });
@@ -153,14 +147,12 @@ public class MailService {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    Log.e("MailService", "Failed to fetch inbox. Code: " + response.code());
                     callback.onFailure("Failed to fetch inbox. Code: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Email>> call, Throwable t) {
-                Log.e("MailService", "Network error fetching inbox: " + t.getMessage(), t);
                 callback.onFailure("Network error: " + t.getMessage());
             }
         });
@@ -174,33 +166,22 @@ public class MailService {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    Log.e("MailService", "Failed to fetch email details. Code: " + response.code());
                     callback.onFailure("Failed to fetch email details. Code: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<Email> call, Throwable t) {
-                Log.e("MailService", "Network error fetching email details: " + t.getMessage(), t);
                 callback.onFailure("Network error: " + t.getMessage());
             }
         });
     }
 
-    // --- Callback Interfaces (מועברות לסוף הקובץ ומוגדרות פעם אחת בלבד) ---
 
+// Callback interfaces for various operations
+    // These interfaces are used to handle the results of network operations in a clean way.
     public interface DraftMailCallback {
         void onSuccess(Email email); // Returns the saved/updated draft
-        void onFailure(String error);
-    }
-
-    public interface SendDraftCallback {
-        void onSuccess(); // Indicates the draft was successfully sent
-        void onFailure(String error);
-    }
-
-    public interface MailCallback { // ייתכן שזהו ממשק כללי יותר, אם לא בשימוש, ניתן להסירו
-        void onSuccess();
         void onFailure(String error);
     }
 
@@ -211,6 +192,16 @@ public class MailService {
 
     public interface EmailDetailsCallback {
         void onSuccess(Email email);
+        void onFailure(String error);
+    }
+
+    public interface SendEmailCallback {
+        void onSuccess();
+        void onFailure(String error);
+    }
+
+    public interface SendDraftCallback {
+        void onSuccess();
         void onFailure(String error);
     }
 }

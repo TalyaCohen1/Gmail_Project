@@ -12,6 +12,8 @@ import com.example.android_app.data.repository.UserRepository;
 import com.example.android_app.utils.SharedPrefsManager;
 
 
+// ViewModel for editing user profile
+// Handles the logic for updating user profile information and retrieving updated user data
 public class EditProfileViewModel extends AndroidViewModel {
 
     private final UserRepository repository;

@@ -3,10 +3,11 @@
     <color name="background">#202124</color>
     <color name="search_background">#282A2C</color>
     <color name="text_color">#E0E4EB</color>
-    <color name="selected_item_background">#3B4455</color>
+    <color name="selected_item_background">#D7BC92</color>
     <color name="login_fields">#282A2C</color>
     <color name="buttons_text">#202124</color>
-
+    <color name="button_background">#FFB300</color>
+    <color name="button_text">#202124</color>
     <color name="time_color">#AAAAAA</color>
     <color name="login_text">#FFC107</color>
     <color name="buttons">#FFB300</color>
