@@ -268,7 +268,6 @@ public class InboxActivity extends AppCompatActivity implements
                             } else {
                                 viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
                             }
-                            Toast.makeText(this, "email sent successfully!", Toast.LENGTH_SHORT).show();
                             findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
                             findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
                         }

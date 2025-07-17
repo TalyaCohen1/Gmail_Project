@@ -83,8 +83,6 @@ public class EmailDetailsActivity extends AppCompatActivity {
                     if (requestKey.equals(CreateMailFragment.REQUEST_KEY_EMAIL_SENT)) {
                         boolean emailSentSuccess = result.getBoolean(CreateMailFragment.BUNDLE_KEY_EMAIL_SENT_SUCCESS, false);
                         if (emailSentSuccess) {
-                            Toast.makeText(EmailDetailsActivity.this, "mail sent successfully", Toast.LENGTH_SHORT).show();
-
                             //bring back to inbox the result of sending mail
                             Intent resultIntent = new Intent();
                             resultIntent.putExtra("email_sent_from_details", true);
@@ -340,5 +338,4 @@ public class EmailDetailsActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-
 }
