@@ -1,20 +1,20 @@
 package com.example.android_app.model.viewmodel;
 
 import android.app.Application;
-import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.android_app.data.network.LabelService; // Still needed for LabelService.LabelServiceCallback
-import com.example.android_app.data.repository.LabelRepository; // Import the LabelRepository
+import com.example.android_app.data.network.LabelService;
+import com.example.android_app.data.repository.LabelRepository;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
 
 import java.util.List;
 
-import okhttp3.ResponseBody; // For addMailToLabel success response if needed
+import okhttp3.ResponseBody;
 
 public class LabelViewModel extends AndroidViewModel {
 
@@ -23,7 +23,7 @@ public class LabelViewModel extends AndroidViewModel {
 
     // LiveData for labels list
     private final MutableLiveData<List<Label>> _labels = new MutableLiveData<>();
-    public LiveData<List<Label>> getLabels() {
+    public MutableLiveData<List<Label>> getLabels() {
         return _labels;
     }
 

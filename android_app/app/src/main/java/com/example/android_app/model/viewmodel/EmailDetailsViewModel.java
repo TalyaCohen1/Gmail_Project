@@ -25,7 +25,6 @@ public class EmailDetailsViewModel extends AndroidViewModel {
         mailRepository = new MailRepository(application);
     }
 
-    // LiveData שה-Activity יאזין לו כדי לקבל את פרטי המייל
     public LiveData<Email> getEmailDetails() {
         return emailDetails;
     }
@@ -44,7 +43,7 @@ public class EmailDetailsViewModel extends AndroidViewModel {
             mailRepository.markMailAsImportant(emailId, new MailRepository.MailActionCallback() {
                 @Override
                 public void onSuccess(String id) {
-                    fetchEmailById(id); // רענן את נתוני המייל לאחר שינוי
+                    fetchEmailById(id);
                 }
                 @Override
                 public void onFailure(String errorMessage) {

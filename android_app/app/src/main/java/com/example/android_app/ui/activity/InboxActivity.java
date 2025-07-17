@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Looper;
+import android.os.Handler;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -41,6 +43,7 @@ import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
 import com.example.android_app.model.User;
 import com.example.android_app.model.viewmodel.InboxViewModel;
+import com.example.android_app.model.viewmodel.LabelViewModel;
 import com.example.android_app.model.viewmodel.MailViewModel;
 import com.example.android_app.ui.EmailAdapter;
 import com.example.android_app.ui.EmailDetailsActivity;
@@ -66,13 +69,16 @@ public class InboxActivity extends AppCompatActivity implements
         EditProfileFragment.OnProfilePictureUpdatedListener { // Implement the new interface
 
     private InboxViewModel viewModel;
-
     private MailViewModel viewModel_mail;
+    private LabelViewModel labelViewModel;
     private EmailAdapter adapter;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar loadingProgressBar;
 
+    private androidx.lifecycle.Observer<List<Label>> labelsObserver;
+    private PopupMenu currentPopupMenu;
+    private boolean isPopupMenuReadyToShow = false;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private EditText searchEditText; // Declare EditText for search
@@ -152,9 +158,9 @@ public class InboxActivity extends AppCompatActivity implements
         if (currentUser != null && currentUser.getProfilePicUrl() != null && !currentUser.getProfilePicUrl().isEmpty()) {
             Glide.with(this)
                     .load(currentUser.getProfilePicUrl())
-                    .placeholder(R.drawable.default_profile) // Optional: default image while loading
-                    .error(R.drawable.default_profile) // Optional: image to show if loading fails
-                    .circleCrop() // Optional: to make the image circular
+                    .placeholder(R.drawable.default_profile)
+                    .error(R.drawable.default_profile)
+                    .circleCrop()
                     .into(profilePicture);
             Log.d("InboxActivity", "Profile picture loaded: " + currentUser.getProfilePicUrl());
         } else {
@@ -171,41 +177,6 @@ public class InboxActivity extends AppCompatActivity implements
             }
         });
 
-
-//        // Retrieve user data from SharedPrefsManager
-//        String userId = SharedPrefsManager.get(this, "userId");
-//        String fullName = SharedPrefsManager.get(this, "fullName");
-//        String profileImage = SharedPrefsManager.get(this, "profileImage");
-//
-//        // Construct the full URL for the profile image if it's a relative path
-//        if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
-//            profileImage = BuildConfig.SERVER_URL + profileImage;
-//        }
-//
-//        // Create the User object
-//        currentUser = new User(userId, fullName, profileImage);
-//
-//        // Load the profile picture using Glide
-//        if (currentUser != null && currentUser.getProfilePicUrl() != null && !currentUser.getProfilePicUrl().isEmpty()) {
-//            Glide.with(this)
-//                    .load(currentUser.getProfilePicUrl())
-//                    .placeholder(R.drawable.default_profile) // Optional: default image while loading
-//                    .error(R.drawable.default_profile) // Optional: image to show if loading fails
-//                    .circleCrop() // Optional: to make the image circular
-//                    .into(profilePicture);
-//            Log.d("InboxActivity", "Profile picture loaded: " + currentUser.getProfilePicUrl());
-//        } else {
-//            profilePicture.setImageResource(R.drawable.default_profile);
-//            Log.d("InboxActivity", "User profile URL is missing or null, showing default profile picture.");
-//        }
-//
-//        // Set up profile picture click listener (optional)
-//        profilePicture.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         // Hide the default title as we have a custom layout within the toolbar
         if (getSupportActionBar() != null) {
@@ -224,37 +195,9 @@ public class InboxActivity extends AppCompatActivity implements
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Set the navigation click listener for the toolbar to control the drawer
-        // ActionBarDrawerToggle manages the icon and its click, but you can override it for custom behavior.
-        // If the hamburger icon should be on the right, you will need to set an explicit
-        // OnClickListener for a custom ImageView placed in the toolbar, and disable
-        // ActionBarDrawerToggle's default indicator.
-
         // Initialize search bar and profile picture
         searchEditText = findViewById(R.id.search_edit_text);
         ImageView profilePicture = findViewById(R.id.profile_picture);
-
-//        EditProfileViewModel editProfileViewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
-//        String profileImageUrl_new = UserManager.getProfileImage(this); // UserManager.getProfileImage already provides a default of null
-//        // Then handle the default image logic if profileImageUrl is null
-//        if (profileImage == null || profileImage.isEmpty()) {
-//            profileImage = "/uploads/default-profile.png"; // Or handle this within UserManager.getProfileImage
-//        }
-//        String fullUrl;
-//        if (!profileImage.startsWith("http")) {
-//            fullUrl = BuildConfig.SERVER_URL + profileImage;
-//        } else {
-//            fullUrl = profileImage;
-//        }
-//
-//        // put it into the ImageView
-//        Glide.with(this)
-//                .load(fullUrl)
-//                .placeholder(R.drawable.default_profile)
-//                .error(R.drawable.default_profile)
-//                .circleCrop()
-//                .into(profilePicture);
-
 
         // Set up search action listener for the EditText
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -303,8 +246,6 @@ public class InboxActivity extends AppCompatActivity implements
             }
         });
 
-
-
         // Initialize views
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
@@ -322,30 +263,25 @@ public class InboxActivity extends AppCompatActivity implements
 
         viewModel = new ViewModelProvider(this).get(InboxViewModel.class);
         viewModel_mail = new ViewModelProvider(this).get(MailViewModel.class);
+        labelViewModel = new ViewModelProvider(this).get(LabelViewModel.class);
 
         getSupportFragmentManager().setFragmentResultListener(
-                CreateMailFragment.REQUEST_KEY_EMAIL_SENT, // המפתח שהגדרת ב-CreateMailFragment
-                this, // ה-LifecycleOwner הוא ה-Activity עצמו
+                CreateMailFragment.REQUEST_KEY_EMAIL_SENT,
+                this,
                 (requestKey, result) -> {
                     Log.d("InboxActivity", "Received fragment result. Request Key: " + requestKey);
-                    // Callback כאשר מתקבלת תוצאה
                     if (requestKey.equals(CreateMailFragment.REQUEST_KEY_EMAIL_SENT)) {
-                        // בדוק אם המייל נשלח בהצלחה על פי הנתונים בחבילה (Bundle)
                         boolean emailSentSuccess = result.getBoolean(CreateMailFragment.BUNDLE_KEY_EMAIL_SENT_SUCCESS, false);
                         Log.d("InboxActivity", "Email sent success flag: " + emailSentSuccess);
                         if (emailSentSuccess) {
-                            // המייל נשלח בהצלחה. כעת רענן את האינבוקס.
                             String currentCategory = viewModel.getCurrentCategoryOrLabelId();
                             Log.d("InboxActivity", "Email sent successfully. Refreshing category: " + currentCategory);
                             if (currentCategory == null || currentCategory.isEmpty()) {
-                                // רענן את האינבוקס הראשי אם אין קטגוריה ספציפית פעילה
                                 viewModel.fetchEmailsForCategoryOrLabel("inbox");
                             } else {
-                                // רענן את הקטגוריה הפעילה הנוכחית (לדוגמה, "inbox", "sent", "allmail")
                                 viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
                             }
-                            Toast.makeText(this, "המייל נשלח בהצלחה!", Toast.LENGTH_SHORT).show();
-                            // <--- הוסף את שתי השורות האלה:
+                            Toast.makeText(this, "email sent successfully!", Toast.LENGTH_SHORT).show();
                             findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
                             findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
                         }
@@ -373,14 +309,13 @@ public class InboxActivity extends AppCompatActivity implements
                     .commit();
 
             findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.VISIBLE);
-            findViewById(R.id.fabCompose).setVisibility(View.GONE); // <--- הוסף את השורה הזו
+            findViewById(R.id.fabCompose).setVisibility(View.GONE);
         });
 
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             // Refresh the inbox when the CreateMailFragment is popped from back stack
             if (getSupportFragmentManager().findFragmentById(R.id.fragmentCreateMailContainer) == null) {
                 viewModel.fetchEmailsForCategoryOrLabel(viewModel.getCurrentCategoryOrLabelId());
-                // <--- הוסף את שתי השורות האלה:
                 findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
                 findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
             }
@@ -399,29 +334,27 @@ public class InboxActivity extends AppCompatActivity implements
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
-                        // בדוק אם התוצאה מצביעה על כך שמייל נשלח מפרטי המייל
+
                         if (data != null && data.getBooleanExtra("email_sent_from_details", false)) {
                             Log.d("InboxActivity", "Refresh triggered by EmailDetailsActivity result.");
-                            // בצע את לוגיקת הרענון הקיימת שלך:
                             String currentCategory = viewModel.getCurrentCategoryOrLabelId();
                             if (currentCategory == null || currentCategory.isEmpty()) {
                                 viewModel.fetchEmailsForCategoryOrLabel("inbox");
                             } else {
                                 viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
                             }
-                            Toast.makeText(this, "אינבוקס רוענן לאחר שליחת מייל מפרטים", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "refresh inbox", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
         );
 
         setupRecyclerView();
-        setupMultiSelectToolbarListeners(); // New method for toolbar listeners
+        setupMultiSelectToolbarListeners();
         setupRefreshListener();
         observeViewModel();
     }
 
-    // NEW METHOD: loadProfileImage()
     private void loadProfileImage() {
         // Retrieve current user data from UserManager (which should be updated after profile save)
         String userId = UserManager.getUserId(this);
@@ -430,11 +363,6 @@ public class InboxActivity extends AppCompatActivity implements
 
         // Update the User object if needed, or simply use the fetched values
          currentUser = new User(userId, fullName, profileImageUrl); // Only if you actively use currentUser object later
-
-        // Update username TextView if you have one in the toolbar/sidebar
-        // if (userNameTextView != null && fullName != null) {
-        //     userNameTextView.setText(fullName);
-        // }
 
         if (profilePicture != null) {
             if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
@@ -458,30 +386,6 @@ public class InboxActivity extends AppCompatActivity implements
         }
     }
 
-//    @Override
-//    public void onToggleEmailStarred(Email email, int position) {
-//        // --- THIS IS THE MISSING METHOD YOU NEED TO ADD ---
-//
-//        // 1. Toggle the 'starred' status in your data model
-//        // Assuming your Email object is mutable and email.setStarred() works
-//        email.setStarred(!email.isStarred());
-//
-//        // 2. Notify the adapter that this specific item's data has changed.
-//        // This will cause onBindViewHolder to be re-executed for this item,
-//        // which will update the star icon based on the new email.isStarred() state.
-//        adapter.notifyItemChanged(position);
-//
-//        // 3. (Optional) Show a Toast message or update UI
-//        String message = email.isStarred() ? "Marked as starred" : "Unmarked as starred";
-//        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-//
-//        // 4. (Important) If you're using a ViewModel or persistent storage (like a database),
-//        // you would typically call a method on your ViewModel here to persist this change.
-//        // For example:
-//        // myEmailViewModel.updateEmailStarredStatus(email.getId(), email.isStarred());
-//    }
-
-
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new EmailAdapter(this, new ArrayList<>(), this); // Pass 'this' as EmailItemClickListener
@@ -500,6 +404,7 @@ public class InboxActivity extends AppCompatActivity implements
     }
 
     private void setupMultiSelectToolbarListeners() {
+        labelViewModel.fetchLabels();
         iconCloseMultiSelect.setOnClickListener(v -> {
             adapter.clearSelection(); // Exit multi-select mode
         });
@@ -568,55 +473,73 @@ public class InboxActivity extends AppCompatActivity implements
 
         iconMoreOptions.setOnClickListener(this::showMoreOptionsPopupMenu);
     }
-
     private void showMoreOptionsPopupMenu(View anchorView) {
-        PopupMenu popup = new PopupMenu(this, anchorView);
-        // *** שינוי כאן: ניפוח הקובץ החדש menu_multi_select_more.xml ***
-        popup.getMenuInflater().inflate(R.menu.menu_multi_select_more, popup.getMenu());
+        if (currentPopupMenu != null) {
+            currentPopupMenu.dismiss();
+        }
 
-        // Fetch labels to populate the "Add to Label" submenu dynamically
-        // Observe labels once when the popup is shown to populate the submenu
-        viewModel.getLabels().observe(this, labels -> {
-            // Find the "Add to Label" item in the popup menu
-            Menu labelsSubMenu = popup.getMenu().findItem(R.id.action_add_to_label).getSubMenu();
-            if (labelsSubMenu != null) {
-                labelsSubMenu.clear(); // Clear existing items before adding new ones
-                if (labels != null && !labels.isEmpty()) {
-                    for (Label label : labels) { // Assuming `Label` model has getId() and getName()
-                        labelsSubMenu.add(Menu.NONE, // Group ID (none)
-                                        View.generateViewId(), // Item ID (unique, can be Menu.NONE if not needed for direct lookup)
-                                        Menu.NONE, // Order (none)
-                                        label.getName()) // Title
-                                .setOnMenuItemClickListener(item -> {
-                                    List<Email> selectedEmails = adapter.getSelectedEmails();
-                                    if (selectedEmails.isEmpty()) {
-                                        Toast.makeText(this, "No emails selected.", Toast.LENGTH_SHORT).show();
+        currentPopupMenu = new PopupMenu(this, anchorView);
+        currentPopupMenu.getMenuInflater().inflate(R.menu.menu_multi_select_more, currentPopupMenu.getMenu());
+
+        isPopupMenuReadyToShow = false;
+
+        if (labelsObserver != null) {
+            labelViewModel.getLabels().removeObserver(labelsObserver);
+        }
+
+        labelsObserver = new androidx.lifecycle.Observer<List<Label>>() {
+            @Override
+            public void onChanged(List<Label> labels) {
+                Menu labelsSubMenu = currentPopupMenu.getMenu().findItem(R.id.action_add_to_label).getSubMenu();
+                if (labelsSubMenu != null) {
+                    labelsSubMenu.clear();
+                    if (labels != null && !labels.isEmpty()) {
+                        for (Label label : labels) {
+                            labelsSubMenu.add(Menu.NONE,
+                                            View.generateViewId(),
+                                            Menu.NONE,
+                                            label.getName()) // Title
+                                    .setOnMenuItemClickListener(item -> {
+                                        List<Email> selectedEmails = adapter.getSelectedEmails();
+                                        if (selectedEmails.isEmpty()) {
+                                            Toast.makeText(InboxActivity.this, "No emails selected.", Toast.LENGTH_SHORT).show();
+                                            return true;
+                                        }
+                                        for (Email email : selectedEmails) {
+                                            labelViewModel.addMailToLabel(label.getId(), email.getId());
+                                        }
+                                        Toast.makeText(InboxActivity.this, "Adding to label: " + label.getName() + "...", Toast.LENGTH_SHORT).show();
+                                        adapter.clearSelection();
                                         return true;
-                                    }
-                                    for (Email email : selectedEmails) {
-                                        viewModel.addMailToLabel(email.getId(), label.getId());
-                                    }
-                                    Toast.makeText(this, "Adding to label: " + label.getName() + "...", Toast.LENGTH_SHORT).show();
-                                    adapter.clearSelection();
-                                    // viewModel.fetchEmails(); // Refresh emails (optional, ViewModel callbacks might do it)
-                                    return true;
-                                });
+                                    });
+                        }
+                    } else {
+                        labelsSubMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "No labels available");
                     }
-                } else {
-                    labelsSubMenu.add(Menu.NONE, Menu.NONE, Menu.NONE, "No labels available");
+                }
+
+                if (!isPopupMenuReadyToShow) {
+                    isPopupMenuReadyToShow = true;
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        if (currentPopupMenu != null) {
+                            currentPopupMenu.show();
+                        }
+                    });
                 }
             }
-            viewModel.getLabels().removeObservers(this); // Remove observer after use
-        });
-        popup.setOnMenuItemClickListener(item -> {
-            int id = item.getItemId(); // זה ה-ID של פריט התפריט שנבחר מה-menu_multi_select_more.xml
+        };
+
+        labelViewModel.getLabels().observe(this, labelsObserver);
+        labelViewModel.fetchLabels();
+
+        currentPopupMenu.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
             List<Email> selectedEmails = adapter.getSelectedEmails();
             if (selectedEmails.isEmpty()) {
                 Toast.makeText(this, "No emails selected.", Toast.LENGTH_SHORT).show();
                 return true;
             }
 
-            // *** שינוי כאן: בדיקה מול ה-IDs החדשים מה-menu_multi_select_more.xml ***
             if (id == R.id.action_mark_important) {
                 for (Email email : selectedEmails) {
                     viewModel.markEmailAsImportant(email.getId());
@@ -624,51 +547,23 @@ public class InboxActivity extends AppCompatActivity implements
                 Toast.makeText(this, "Marking as important...", Toast.LENGTH_SHORT).show();
                 adapter.clearSelection();
                 return true;
-//            } else if (id == R.id.action_mark_spam) {
-//                for (Email email : selectedEmails) {
-//                    viewModel.markEmailAsSpam(email.getId());
-//                }
-//                Toast.makeText(this, "Reporting as spam...", Toast.LENGTH_SHORT).show();
-//                adapter.clearSelection();
-//                return true;
-//            } else if (id == R.id.action_move_to_folder) {
-//                // This would typically open another dialog or activity to select a folder
-//                Toast.makeText(this, "Move to folder functionality (not implemented yet)", Toast.LENGTH_SHORT).show();
-//                return true;
             }
-            // For labels, the listener is set directly on each submenu item, so it won't reach here.
             return false;
         });
-        popup.show();
+
+        currentPopupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+            @Override
+            public void onDismiss(PopupMenu menu) {
+                if (labelsObserver != null) {
+                    labelViewModel.getLabels().removeObserver(labelsObserver);
+                    labelsObserver = null;
+                }
+                currentPopupMenu = null;
+                isPopupMenuReadyToShow = false;
+            }
+        });
     }
 
-    // --- Callbacks from EmailAdapter.MultiSelectModeListener ---
-    // @Override
-    // public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
-    //     multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
-    //     findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // Hide FAB
-
-    //     // You might want to change the status bar color here as well
-    //     // getWindow().setStatusBarColor(ContextCompat.getColor(this,
-    //     //         inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
-    // }
-//    @Override
-//    public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
-//        Log.d("DEBUG_MULTISELECT", "InboxActivity onMultiSelectModeChanged received: " + inMultiSelectMode); // Add this
-//
-//        multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
-//        Log.d("DEBUG_MULTISELECT", "multiSelectToolbar visibility set to: " + (inMultiSelectMode ? "VISIBLE" : "GONE")); // Add this
-//
-//        // Crucial change: Toggle visibility of the regular toolbar
-//        toolbar.setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // ADD THIS LINE
-//        Log.d("DEBUG_MULTISELECT", "Regular toolbar visibility set to: " + (inMultiSelectMode ? "GONE" : "VISIBLE")); // Add this
-//
-//        findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE); // Hide FAB
-//
-//        // You might want to change the status bar color here as well
-//        // getWindow().setStatusBarColor(ContextCompat.getColor(this,
-//        //         inMultiSelectMode ? R.color.selected_toolbar_color : R.color.colorPrimaryDark));
-//    }
     @Override
     public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
         Log.d("MultiSelect", "Mode changed to: " + (inMultiSelectMode ? "active" : "inactive"));
@@ -869,13 +764,6 @@ public class InboxActivity extends AppCompatActivity implements
         });
     }
 
-//    public String getProfileImage() {
-//        if (profileImage != null && !profileImage.isEmpty() && !profileImage.startsWith("http")) {
-//            return BuildConfig.SERVER_URL + profileImage;
-//        }
-//        return profileImage;
-//    }
-
     private void performLogout() {
         //clear shared prefs
         SharedPreferences prefs = getSharedPreferences("SmailPrefs", MODE_PRIVATE);
@@ -883,7 +771,7 @@ public class InboxActivity extends AppCompatActivity implements
 
         //back to Login Screen
         Intent intent = new Intent(InboxActivity.this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // מנקה את ה־BackStack
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
 
         finish();

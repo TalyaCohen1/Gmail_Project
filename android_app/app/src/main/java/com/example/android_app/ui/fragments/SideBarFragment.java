@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.android_app.R;
 import com.example.android_app.model.Label;
+import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.model.viewmodel.LabelViewModel;
 import com.example.android_app.model.viewmodel.MailViewModel;
 
@@ -34,6 +35,7 @@ import java.util.ArrayList; // Added for filtering
 public class SideBarFragment extends Fragment implements LabelDialogFragment.LabelModalListener { //
 
     private MailViewModel mailViewModel;
+    private InboxViewModel inboxViewModel;
     private LabelViewModel labelViewModel;
 
     // Predefined category label names (must match backend)
@@ -92,6 +94,8 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
         // Initialize ViewModels
         mailViewModel = new ViewModelProvider(this).get(MailViewModel.class); //
         labelViewModel = new ViewModelProvider(this).get(LabelViewModel.class); //
+        inboxViewModel = new ViewModelProvider(this).get(InboxViewModel.class);
+
 
         // Initialize UI elements for default categories
         inboxLayout = view.findViewById(R.id.inbox_layout); //
@@ -347,6 +351,8 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
     public void onSubmit(String labelName) { //
         // Here, you would call your LabelViewModel to add the new label
         labelViewModel.createLabel(labelName); // (Assuming your ViewModel has an addLabel method)
+        inboxViewModel.fetchEmailsForCategoryOrLabel(inboxViewModel.getCurrentCategoryOrLabelId());
+        inboxViewModel.fetchLabels();
         Toast.makeText(getContext(), "Label '" + labelName + "' created!", Toast.LENGTH_SHORT).show(); //
     }
 
@@ -363,6 +369,8 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
                 return true;
             } else if (itemId == R.id.action_delete_label) { // Corrected this line
                 labelViewModel.deleteLabel(label.getId()); // Call ViewModel to delete label
+                inboxViewModel.fetchEmailsForCategoryOrLabel(inboxViewModel.getCurrentCategoryOrLabelId());
+                inboxViewModel.fetchLabels();
                 Toast.makeText(getContext(), "Delete label: " + label.getName(), Toast.LENGTH_SHORT).show(); //
                 return true;
             }
@@ -380,7 +388,9 @@ public class SideBarFragment extends Fragment implements LabelDialogFragment.Lab
             // Update the label via ViewModel
             labelToEdit.setName(newValue); // Update the local Label object
             labelViewModel.updateLabel(labelToEdit.getId(), newValue); // Assuming you have an updateLabel method in ViewModel
-            Toast.makeText(getContext(), "Label updated to: " + newValue, Toast.LENGTH_SHORT).show(); //
+            Toast.makeText(getContext(), "Label updated to: " + newValue, Toast.LENGTH_SHORT).show();
+            inboxViewModel.fetchEmailsForCategoryOrLabel(inboxViewModel.getCurrentCategoryOrLabelId());
+            inboxViewModel.fetchLabels();
         });
         dialogFragment.show(getChildFragmentManager(), "edit_label_dialog"); //
     }
