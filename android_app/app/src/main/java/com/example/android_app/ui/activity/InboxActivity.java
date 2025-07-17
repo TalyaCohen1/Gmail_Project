@@ -40,7 +40,6 @@ import com.example.android_app.data.network.ApiService;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
 import com.example.android_app.model.User;
-import com.example.android_app.model.viewmodel.EditProfileViewModel;
 import com.example.android_app.model.viewmodel.InboxViewModel;
 import com.example.android_app.model.viewmodel.MailViewModel;
 import com.example.android_app.ui.EmailAdapter;

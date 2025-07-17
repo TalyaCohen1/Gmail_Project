@@ -219,22 +219,6 @@ public class Email {
         return fromUser != null ? fromUser.getProfileImage() : null;
     }
 
-    public boolean isDeletedForSender() {
-        return deletedForSender;
-    }
-
-    public boolean isDeletedForReceiver() {
-        return deletedForReceiver;
-    }
-
-    public void setDeletedForSender(boolean deletedForSender) {
-        this.deletedForSender = deletedForSender;
-    }
-
-    public void setDeletedForReceiver(boolean deletedForReceiver) {
-        this.deletedForReceiver = deletedForReceiver;
-    }
-
     // מחלקה פנימית שמייצגת את האובייקט fromUser
     public static class FromUser {
         @SerializedName("fullName")
