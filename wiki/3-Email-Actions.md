@@ -15,10 +15,10 @@
    - **X buttun** to save without sending
    - **"Send"** to send the email
 
-![new_message_webclient](images/new_message_webclient.png)
+![edit_mail_action_webclient](images/web_sendMSG.png)
 
 ➡️ Sent mails appear in the **Sent** folder.  
-![webclient_sent_mail_list](images/webclient_sent_mail_list.png)
+![](images/web_sent.png)
 
 ---
 
@@ -54,10 +54,8 @@ By **clicking on the message selection mark**, you can choose to assign to a lab
 
 In addition, next to the email you can choose to quickly mark as important or star it
 
-![edit_mail_action_webclient](images/web_sendMSG.png)
 ![](images/web_choose_msg.png)
 ![](images/web_delete-mark.png)
-![](images/web_sent.png)
 
 
 #### From the Mail View:
