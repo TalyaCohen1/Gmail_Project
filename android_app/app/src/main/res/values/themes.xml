@@ -13,4 +13,7 @@
         <item name="colorButton">@color/button_background</item>
         <item name="colorButtonText">@color/button_text</item>
     </style>
+    <style name="popupTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 </resources>

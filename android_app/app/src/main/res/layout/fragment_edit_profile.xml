@@ -36,26 +36,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
+            android:hint="@string/full_name"
             app:boxBackgroundMode="filled"
-            android:textColor="?android:attr/textColor"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
             app:boxStrokeColor="@color/buttons"
-            app:hintTextColor="@color/buttons">
+            app:boxBackgroundColor="@color/white">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextName"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="@string/full_name"
+                android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                android:padding="12dp"/>
+                android:padding="12dp"
+                android:textColor="?android:attr/textColor"
+                android:textColorHint="?android:attr/textColorHint"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+
         <!--save buttun-->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSave"
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -63,6 +65,7 @@
             android:backgroundTint="#FFD54F"
             android:textColor="?attr/buttonsTextAttr"
             android:elevation="4dp"
+            app:cornerRadius="12dp"
             android:layout_marginBottom="16dp" />
 
         <TextView

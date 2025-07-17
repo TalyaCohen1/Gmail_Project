@@ -111,7 +111,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?android:attr/background"
             android:theme="?attr/actionBarTheme"
-            app:popupTheme="?attr/popupTheme"
+            app:popupTheme="@style/popupTheme"
             app:titleTextColor="?attr/buttonsTextAttr"
             android:layoutDirection="ltr"
             app:layout_constraintTop_toTopOf="parent"
