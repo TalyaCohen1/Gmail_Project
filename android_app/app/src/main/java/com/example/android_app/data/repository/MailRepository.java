@@ -33,6 +33,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// This class serves as a repository for managing email-related operations.
+// It interacts with both the local database (Room) and remote API (Retrofit) to
 public class MailRepository {
 
     private final ApiService apiService;
@@ -41,7 +43,7 @@ public class MailRepository {
     private final UserDao userDao;
     private final MailService mailService = new MailService();
     private final ExecutorService executor; //so room run in another thread
-    private final Handler mainThreadHandler;     // <--- הוסף את זה
+    private final Handler mainThreadHandler; 
 
     public MailRepository(Context context) {
         this.context = context.getApplicationContext();
@@ -57,36 +59,9 @@ public class MailRepository {
         return SharedPrefsManager.get(context, "token");
     }
 
-//    public void fetchAndStoreCurrentUserEmail(Context context, ApiService apiService) {
-//        String userId = SharedPrefsManager.get(context, "userId");
-//        if (userId == null) {
-//            Log.e("USER", "userId is null – can't fetch user");
-//            return;
-//        }
-//
-//        apiService.getUserById(userId).enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    String email = response.body().getEmailAddress();
-//                    SharedPrefsManager.save(context, "emailAddress", email);
-//                    Log.d("USER", "Fetched email from server: " + email);
-//                } else {
-//                    Log.e("USER", "Failed to fetch user info. Code=" + response.code());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//                Log.e("USER", "Network error: " + t.getMessage());
-//            }
-//        });
-//    }
-
     public void getCurrentUserEmail(LocalCallback<String> callback) {
         executor.execute(() -> {
             String email = SharedPrefsManager.get(context, "emailAddress");
-            Log.d("MailRepository", "Fetching email from SharedPrefs: " + email);
             callback.onResult(email);
         });
     }
@@ -102,8 +77,6 @@ public class MailRepository {
 
                 boolean visibleToSender = isSender && !email.isDeletedForSender();
                 boolean visibleToReceiver = isReceiver && !email.isDeletedForReceiver();
-
-                Log.d("FILTER", "From=" + from + ", To=" + to + ", currentUserEmail=" + currentUserEmail);
 
                 if (visibleToSender || visibleToReceiver) {
                     filtered.add(email);
@@ -132,6 +105,7 @@ public class MailRepository {
             callback.onResult(filtered);
         });
     }
+    // This method creates a new draft email.
     public void createDraft(EmailRequest request, MailService.DraftMailCallback callback) {
         String token = SharedPrefsManager.get(context, "token");
         if (token == null || token.isEmpty()) {
@@ -151,6 +125,7 @@ public class MailRepository {
         });
     }
 
+// This method updates an existing draft email - after it has been created.
     public void updateDraft(String mailId, String to, String subject, String body, String token, MailService.DraftMailCallback callback) {
         mailService.updateDraft(mailId, to, subject, body, token, new MailService.DraftMailCallback() {
             @Override
@@ -166,6 +141,7 @@ public class MailRepository {
         });
     }
 
+// This method sends an email, either as a new email or as a draft.
     public void sendEmail(String mailId, String to, String subject, String body, String token, SendCallback callback) {
         //update to send = true so we can send it, either if it is a new draft or an existing one
         EmailRequest emailRequest = new EmailRequest(to, subject, body, true);

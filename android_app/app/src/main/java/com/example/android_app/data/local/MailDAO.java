@@ -19,21 +19,11 @@ public interface MailDAO {
     @Query("SELECT * FROM mails ORDER BY timestamp DESC")
     List<MailEntity> getAllMailsNow(); //without LiveData
 
-
-    @Query("SELECT * FROM mails WHERE send = 0")
-    LiveData<List<MailEntity>> getDrafts();
-
-    @Query("SELECT * FROM mails WHERE send = 1")
-    LiveData<List<MailEntity>> getSentMails();
-
     @Query("DELETE FROM mails")
     void clearAll();
 
     @Delete
     void deleteMail(MailEntity mail);
-
-    @Query("SELECT * FROM mails WHERE id = :id")
-    LiveData<MailEntity> getMailById(int id);
 
     // added: quick getter for MailEntity
     @Query("SELECT * FROM mails WHERE id = :mailId")

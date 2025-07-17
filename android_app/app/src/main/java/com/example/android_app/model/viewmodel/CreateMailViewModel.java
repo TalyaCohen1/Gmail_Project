@@ -20,8 +20,6 @@ import com.example.android_app.utils.SharedPrefsManager;
 // ViewModel for creating and managing email drafts and sending emails
 // Handles loading existing drafts, creating new drafts, saving drafts, and sending emails
 public class CreateMailViewModel extends AndroidViewModel {
-
-    private static final String TAG = "CreateMailViewModel";
     private final MailRepository repository;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> emailSent = new MutableLiveData<>();
@@ -134,14 +132,12 @@ public class CreateMailViewModel extends AndroidViewModel {
                 _currentDraft.setValue(updatedEmail);
                 _actionSuccess.postValue(true);
                 errorMessage.setValue(null);
-                Log.d(TAG, "Draft saved successfully.");
             }
 
             @Override
             public void onFailure(String error) {
                 errorMessage.setValue("Failed to save draft: " + error);
                 _actionSuccess.postValue(false);
-                Log.e(TAG, "Failed to save draft: " + error);
             }
         });
     }
@@ -181,18 +177,15 @@ public class CreateMailViewModel extends AndroidViewModel {
                 errorMessage.setValue(null);
                 _isLoading.postValue(false);
                 _actionSuccess.postValue(true);
-                Log.d(TAG, "Email sent successfully.");
 
                 if (mailId != null && !mailId.isEmpty()) {
                     repository.deleteDraft(mailId, new MailRepository.ActionCallback() {
                         @Override
                         public void onSuccess() {
-                            Log.d(TAG, "Draft with ID " + mailId + " successfully deleted from local DB.");
                             _currentDraft.postValue(null);
                         }
                         @Override
                         public void onFailure(String error) {
-                            Log.e(TAG, "Failed to delete draft with ID " + mailId + " from local DB: " + error);
                         }
                     });
                 } else {
@@ -206,7 +199,6 @@ public class CreateMailViewModel extends AndroidViewModel {
                 errorMessage.setValue(error);
                 _isLoading.postValue(false);
                 _actionSuccess.postValue(false);
-                Log.e(TAG, "Failed to send email: " + error);
             }
         });
     }

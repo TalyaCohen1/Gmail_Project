@@ -2,21 +2,19 @@ package com.example.android_app.data.network;
 
 import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
-
-// NEW IMPORTS - these no longer need the 'static' keyword or 'ApiService.' prefix
 import com.example.android_app.model.LabelCreateRequest;
 import com.example.android_app.model.LabelUpdateRequest;
 import com.example.android_app.model.MailLabelRequest;
 
 
 import java.util.List;
-
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
+// This service class handles network operations related to labels in the Gmail application.
+// It provides methods to get, create, update, delete labels, and manage emails associated with labels.
 public class LabelService {
 
     private final ApiService api;
@@ -30,6 +28,8 @@ public class LabelService {
         void onFailure(String errorMessage);
     }
 
+// This method retrieves all labels for the authenticated user.
+// It requires a valid authentication token and returns a list of labels or an error message.
     public void getLabels(String token, final LabelServiceCallback<List<Label>> callback) {
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -60,6 +60,7 @@ public class LabelService {
         });
     }
 
+// This method creates a new label with the specified name.
     public void createLabel(String token, String name, final LabelServiceCallback<Label> callback) {
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -91,6 +92,7 @@ public class LabelService {
         });
     }
 
+// This method updates an existing label with a new name.
     public void updateLabel(String token, String id, String newName, final LabelServiceCallback<Label> callback) {
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -121,7 +123,8 @@ public class LabelService {
             }
         });
     }
-
+// This method deletes a label by its ID. 
+// It requires a valid authentication token and returns success or an error message.
     public void deleteLabel(String token, String id, final LabelServiceCallback<Void> callback) {
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -152,6 +155,7 @@ public class LabelService {
         });
     }
 
+// This method retrieves all emails associated with a specific label.
     public void getMailsByLabel(String token, String id, final LabelServiceCallback<List<Email>> callback) {
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -182,6 +186,7 @@ public class LabelService {
         });
     }
 
+// This method adds an email to a specific label.
     public void addMailToLabel(String token, String labelId, String mailId, final LabelServiceCallback<ResponseBody> callback) {
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -213,6 +218,7 @@ public class LabelService {
         });
     }
 
+// This method removes an email from a specific label.
     public void removeMailFromLabel(String token, String labelId, String mailId, final LabelServiceCallback<Void> callback) {
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");

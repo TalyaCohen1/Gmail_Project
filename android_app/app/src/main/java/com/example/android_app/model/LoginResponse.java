@@ -1,10 +1,6 @@
 package com.example.android_app.model;
 
 import com.google.gson.annotations.SerializedName;
-
-import com.google.gson.annotations.SerializedName;
-
-
 public class LoginResponse {
     @SerializedName("token")
     private String token;

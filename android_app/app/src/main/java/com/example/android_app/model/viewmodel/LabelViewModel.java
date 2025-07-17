@@ -29,15 +29,9 @@ public class LabelViewModel extends AndroidViewModel {
 
     // LiveData for any error messages
     private final MutableLiveData<String> _errorMessage = new MutableLiveData<>();
-    public LiveData<String> getErrorMessage() {
-        return _errorMessage;
-    }
 
     // LiveData for loading state
     private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
-    public LiveData<Boolean> isLoading() {
-        return _isLoading;
-    }
 
     // LiveData for mails associated with a specific label (if you have a dedicated screen for it)
     private final MutableLiveData<List<Email>> _mailsForLabel = new MutableLiveData<List<Email>>();

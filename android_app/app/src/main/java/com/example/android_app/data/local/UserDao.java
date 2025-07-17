@@ -14,9 +14,6 @@ public interface UserDao {
     @Query("SELECT * FROM users WHERE _id = :id LIMIT 1")
     UserEntity getUserById(String id);
 
-    @Update
-    void updateUser(UserEntity user);
-
     @Delete
     void deleteUser(UserEntity user);
 }

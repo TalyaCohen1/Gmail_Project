@@ -65,26 +65,17 @@ public class EmailDetailsActivity extends AppCompatActivity {
         });
 
         String emailId = getIntent().getStringExtra("email_id");
-        Log.d("DETAIL_ACTIVITY", "Loading mail with ID: " + emailId);
-
-        // אם אין ID, אין מה להמשיך
-//        if (emailId != null) {
-//            loadEmailFromLocalDb(emailId);
-//        } else {
-//            Toast.makeText(this, "No mail ID passed", Toast.LENGTH_SHORT).show();
-//        }
 
         emailDetailsViewModel = new ViewModelProvider(this).get(EmailDetailsViewModel.class);
         inboxViewModel = new ViewModelProvider(this).get(InboxViewModel.class);
 
         emailDetailsViewModel.fetchEmailById(emailId);
         emailDetailsViewModel.fetchAllLabels();
-        Log.d("EmailDetailsActivity", "Attempting to mark email as read for ID: " + emailId);
         inboxViewModel.markEmailAsRead(emailId);
 
         setupObservers();
 
-        //listen to chenge in create mail fragment - so we refresh page if new mail is send
+        //listen to change in create mail fragment - so we refresh page if new mail is send
         getSupportFragmentManager().setFragmentResultListener(
                 CreateMailFragment.REQUEST_KEY_EMAIL_SENT,
                 this, // LifecycleOwner
@@ -139,33 +130,30 @@ public class EmailDetailsActivity extends AppCompatActivity {
                     .load(email.getProfilePicUrl())
                     .placeholder(R.drawable.ic_profile_placeholder)
                     .error(R.drawable.ic_profile_placeholder)
-                    .circleCrop() // לעיגול התמונה
+                    .circleCrop()
                     .into(senderProfileImageView);
         } else {
             senderProfileImageView.setImageResource(R.drawable.ic_profile_placeholder);
         }
 
         if (email.getDate() != null) {
-            // פורמט לדוגמה: "Jun 29, 2025 10:30 AM"
             SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
             emailTimeView.setText(sdf.format(email.getDate()));
         } else {
-            emailTimeView.setText(""); // או טקסט ברירת מחדל
+            emailTimeView.setText("");
         }
-
-        // כפתור חשוב
+        //important button
         updateImportantButton(email.isImportant());
         btnImportant.setOnClickListener(v -> {
             emailDetailsViewModel.toggleMailImportant(email.getId(), !email.isImportant());
         });
-
-        // כפתור כוכב
+        //star button
         updateStarredButton(email.isStarred());
         btnStar.setOnClickListener(v -> {
             emailDetailsViewModel.toggleMailStarred(email.getId(), !email.isStarred());
         });
 
-        // כפתור נקרא/לא נקרא
+        // read/unread button
         updateReadUnreadButton(email.isRead());
         btnMarkAsReadUnread.setOnClickListener(v -> {
             emailDetailsViewModel.toggleMailReadStatus(email.getId(), !email.isRead());
@@ -173,36 +161,22 @@ public class EmailDetailsActivity extends AppCompatActivity {
 
         updateSpamButton(email.isSpam());
         btnSpam.setOnClickListener(v -> {
-            // הפיכת המצב הנוכחי של ספאם
             boolean newSpamStatus = !email.isSpam();
             emailDetailsViewModel.toggleMailSpam(email.getId(), newSpamStatus);
-            // אם המייל סומן כספאם, נחזור אחורה. אם הוסר מספאם, נשאר במסך.
             if (newSpamStatus) {
-                Toast.makeText(this, "המייל סומן כספאם והועבר", Toast.LENGTH_SHORT).show();
                 finish();
-            } else {
-                Toast.makeText(this, "המייל הוסר מספאם", Toast.LENGTH_SHORT).show();
             }
         });
-
-        // כפתור מחיקה
+        //delete button
         String currentCategory = inboxViewModel.getCurrentCategoryOrLabelId();
         if (currentCategory != null && currentCategory.equals("trash")) {
-            btnDelete.setVisibility(View.GONE); // הסתר את כפתור המחיקה
+            btnDelete.setVisibility(View.GONE);
         } else {
-            btnDelete.setVisibility(View.VISIBLE); // הצג את כפתור המחיקה
+            btnDelete.setVisibility(View.VISIBLE);
             btnDelete.setOnClickListener(v -> {
                 emailDetailsViewModel.deleteMail(email.getId());
-                Toast.makeText(this, "המייל נמחק", Toast.LENGTH_SHORT).show();
-                finish(); // חזור לפעילות הקודמת לאחר המחיקה
             });
         }
-
-//        // כפתור לייבלים (יישום עתידי)
-//        btnLabels.setOnClickListener(v -> {
-//            Toast.makeText(this, "פונקציונליות לייבלים טרם יושמה", Toast.LENGTH_SHORT).show();
-//        });
-
 
         LinearLayout sentButtonsGroup = findViewById(R.id.sentButtonsGroup);
         LinearLayout draftButtonsGroup = findViewById(R.id.draftButtonsGroup);
@@ -223,7 +197,6 @@ public class EmailDetailsActivity extends AppCompatActivity {
         }
     }
 
-
     private void openCreateMail(String type, Email email) {
         if(email == null) {
             Toast.makeText(this, "Email data not available.", Toast.LENGTH_SHORT).show();
@@ -240,14 +213,14 @@ public class EmailDetailsActivity extends AppCompatActivity {
             args.putString(CreateMailFragment.ARG_SUBJECT,  email.getReplySubject());
             args.putString(CreateMailFragment.ARG_BODY, email.getReplyBody());
         } else if(type.equals("forward")) {
-            args.putString(CreateMailFragment.ARG_TO, ""); // לרוב בהעברה השדה "אל" ריק
+            args.putString(CreateMailFragment.ARG_TO, "");
             args.putString(CreateMailFragment.ARG_SUBJECT, email.getForwardSubject());
             args.putString(CreateMailFragment.ARG_BODY, email.getForwardBody());
         } else if(type.equals("edit")) {
             args.putString(CreateMailFragment.ARG_TO, email.getTo());
             args.putString(CreateMailFragment.ARG_SUBJECT, email.getSubject());
             args.putString(CreateMailFragment.ARG_BODY, email.getBody());
-            args.putString(CreateMailFragment.ARG_MAIL_ID, email.getId()); // *** תיקון 3: שימוש בקבוע ***
+            args.putString(CreateMailFragment.ARG_MAIL_ID, email.getId());
         }
 
         CreateMailFragment fragment = new CreateMailFragment();
@@ -267,17 +240,17 @@ public class EmailDetailsActivity extends AppCompatActivity {
 
     private void updateImportantButton(boolean isImportant) {
         if (isImportant) {
-            btnImportant.setImageResource(R.drawable.full_important); // צרי קובץ important_on.xml/png ב-res/drawable
+            btnImportant.setImageResource(R.drawable.full_important);
         } else {
-            btnImportant.setImageResource(R.drawable.important); // צרי קובץ important_off.xml/png ב-res/drawable
+            btnImportant.setImageResource(R.drawable.important);
         }
     }
 
     private void updateStarredButton(boolean isStarred) {
         if (isStarred) {
-            btnStar.setImageResource(R.drawable.full_star); // צרי קובץ star_on.xml/png ב-res/drawable
+            btnStar.setImageResource(R.drawable.full_star);
         } else {
-            btnStar.setImageResource(R.drawable.starred); // צרי קובץ star_off.xml/png ב-res/drawable
+            btnStar.setImageResource(R.drawable.starred);
         }
     }
 
@@ -300,38 +273,32 @@ public class EmailDetailsActivity extends AppCompatActivity {
     }
 
     private void showLabelsMenu(View anchorView) {
-        // וודא שיש לנו את ה-emailId של המייל הנוכחי
         String emailId = getIntent().getStringExtra("email_id");
         if (emailId == null || emailId.isEmpty()) {
             Toast.makeText(this, "error: cannot load labels without emailId", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // קבל את רשימת הלייבלים הזמינים מה-ViewModel הנכון!
-        // השתמש ב-emailDetailsViewModel.getAllLabels()
         emailDetailsViewModel.getAllLabels().observe(this, labels -> {
-            if (labels != null) { // אין צורך ב-!labels.isEmpty() כאן, נטפל בזה בפנים
+            if (labels != null) {
                 if (labels.isEmpty()) {
                     Toast.makeText(EmailDetailsActivity.this, "labels not found", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 PopupMenu popup = new PopupMenu(EmailDetailsActivity.this, anchorView);
-                // הקודים 'isEmpty()', 'size()', 'get(int)' עובדים על אובייקט מסוג List<Label>
-                // ולכן הבעיות הללו ייפתרו ברגע שהטיפוס יהיה נכון (כמו עכשיו)
+
                 for (int i = 0; i < labels.size(); i++) {
-                    popup.getMenu().add(0, i, i, labels.get(i).getName()); // השתמש בשם הלייבל
+                    popup.getMenu().add(0, i, i, labels.get(i).getName());
                 }
 
                 popup.setOnMenuItemClickListener(item -> {
-                    // כאשר נבחר לייבל מהתפריט הראשון
-                    Label selectedLabel = labels.get(item.getItemId()); // קבל את אובייקט הלייבל שנבחר
+                    Label selectedLabel = labels.get(item.getItemId());
                     showAddRemoveMenu(anchorView, emailId, selectedLabel);
                     return true;
                 });
                 popup.show();
             } else {
-                // מקרה שבו ה-LiveData מחזיר null, למרות ש-postValue בדרך כלל מונע זאת
                 Toast.makeText(EmailDetailsActivity.this, "error loading labels", Toast.LENGTH_SHORT).show();
             }
         });
@@ -375,33 +342,3 @@ public class EmailDetailsActivity extends AppCompatActivity {
     }
 
 }
-
-
-
-
-//    private void fetchEmailById(String emailId, String userId) {
-//        ApiClient.getApiService().getEmailById(emailId, userId).enqueue(new Callback<Email>() {
-//            @Override
-//            public void onResponse(Call<Email> call, Response<Email> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    Email email = response.body();
-//                    senderView.setText("From: " + email.Sender);
-//                    subjectView.setText("Subject: " + email.subject);
-//                    bodyView.setText(email.body);
-//                } else {
-//                    senderView.setText("Email not found");
-//                    subjectView.setText("");
-//                    bodyView.setText("");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Email> call, Throwable t) {
-//                senderView.setText("Error loading email");
-//                subjectView.setText("");
-//                bodyView.setText("");
-//                Toast.makeText(EmailDetailsActivity.this, "Network error", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-
