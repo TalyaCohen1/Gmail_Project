@@ -23,4 +23,8 @@ public class UserEntity {
         this.profileImage = profileImage;
         this.emailAddress = emailAddress;
     }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
 }

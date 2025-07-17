@@ -1,10 +1,11 @@
 package com.example.android_app.data.local;
 
+import android.content.Context;
+
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
-import android.content.Context;
 
 // This class represents the AppDatabase which is the main database for the application.
 // It contains the entities and provides access to the DAOs. 

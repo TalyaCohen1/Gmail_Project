@@ -10,6 +10,11 @@ public class User {
     @SerializedName("profileImage")
     private String profilePicUrl;
 
+    @SerializedName("emailAddress")
+    private String emailAddress;
+
+
+
     // בנאי
     public User(String id, String username, String profilePicUrl) {
         this.id = id;
@@ -41,5 +46,9 @@ public class User {
 
     public void setProfilePicUrl(String profilePicUrl) {
         this.profilePicUrl = profilePicUrl;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
     }
 }

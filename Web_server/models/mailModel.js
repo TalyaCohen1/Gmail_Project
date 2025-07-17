@@ -117,11 +117,11 @@ async function getById(userEmail, mailId) {
         _id: mailId,
         $or: [
             // Mail is sent by user and not deleted by sender
-            { from: userEmail, deletedForSender: false },
+            { from: userEmail/*, deletedForSender: false*/ },
             // Mail is received by user and not deleted by receiver, and it's a sent mail
-            { to: userEmail, deletedForReceiver: false, send: true },
+            { to: userEmail/*, deletedForReceiver: false*/, send: true },
             // Mail is a draft by this user (not yet sent, not deleted by sender)
-            { from: userEmail, send: false, deletedForSender: false }
+            { from: userEmail, send: false/*, deletedForSender: false*/ }
         ]
     }).exec();
     return mail;

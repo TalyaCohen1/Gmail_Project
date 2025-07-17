@@ -1,12 +1,20 @@
 package com.example.android_app.model;
 
-// This class represents the response from the login API.
-// It contains the user's token, full name, profile image, user ID, email address,
+import com.google.gson.annotations.SerializedName;
+
+import com.google.gson.annotations.SerializedName;
+
+
 public class LoginResponse {
+    @SerializedName("token")
     private String token;
+    @SerializedName("fullName")
     private String fullName;
+    @SerializedName("profileImage")
     private String profileImage;
+    @SerializedName("_id")
     private String userId;
+    @SerializedName("emailAddress")
     private String emailAddress;
     private String errorMessage;
 

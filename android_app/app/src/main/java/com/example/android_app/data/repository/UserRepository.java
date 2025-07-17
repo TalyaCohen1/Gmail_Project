@@ -1,20 +1,25 @@
 package com.example.android_app.data.repository;
 
-import android.net.Uri;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.util.Log;
 
-import com.example.android_app.BuildConfig;
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.android_app.data.local.AppDatabase;
 import com.example.android_app.data.local.UserDao;
 import com.example.android_app.data.local.UserEntity;
 import com.example.android_app.data.network.ApiClient;
 import com.example.android_app.data.network.ApiService;
-import com.example.android_app.model.LoginResponse;
 import com.example.android_app.model.LoginRequest;
+import com.example.android_app.model.LoginResponse;
 import com.example.android_app.utils.SharedPrefsManager;
+import com.example.android_app.utils.UserManager;
+import com.example.android_app.utils.UserMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,17 +32,8 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-
-import com.example.android_app.utils.UserManager;
-import com.example.android_app.utils.UserMapper;
-import com.google.gson.JsonObject;
-import retrofit2.Response;
 import retrofit2.Callback;
-
-import androidx.lifecycle.MutableLiveData;
-import com.google.gson.Gson;
-
-import okhttp3.*;
+import retrofit2.Response;
 
 
 //This class is responsible for interacting with the Network layer (API):
@@ -134,6 +130,8 @@ public class UserRepository {
 
                     UserEntity user = UserMapper.fromLoginResponse(response.body());
                     insertUser(user);
+                    SharedPrefsManager.save(context, "userId", response.body().getUserId());
+                    Log.d("LOGIN", "Saved userId in LoginRepository: " + response.body().getUserId());
                 } else {
                     try {
                         String errorBody = response.errorBody().string();
@@ -181,6 +179,7 @@ public class UserRepository {
                     }
 
                     SharedPrefsManager.saveProfile(context, body.getFullName(), body.getProfileImage());
+
                     UserEntity updatedUser = UserMapper.fromLoginResponse(body);
                     insertUser(updatedUser);
                     successMsg.postValue("Profile updated successfully");

@@ -65,13 +65,14 @@ public class EmailDetailsActivity extends AppCompatActivity {
         });
 
         String emailId = getIntent().getStringExtra("email_id");
+        Log.d("DETAIL_ACTIVITY", "Loading mail with ID: " + emailId);
 
         // אם אין ID, אין מה להמשיך
-        if (emailId == null || emailId.isEmpty()) {
-            Toast.makeText(this, "Error: Email ID not provided", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
+//        if (emailId != null) {
+//            loadEmailFromLocalDb(emailId);
+//        } else {
+//            Toast.makeText(this, "No mail ID passed", Toast.LENGTH_SHORT).show();
+//        }
 
         emailDetailsViewModel = new ViewModelProvider(this).get(EmailDetailsViewModel.class);
         inboxViewModel = new ViewModelProvider(this).get(InboxViewModel.class);
@@ -356,7 +357,6 @@ public class EmailDetailsActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public void onBackPressed() {
         //back to inbox
@@ -375,6 +375,8 @@ public class EmailDetailsActivity extends AppCompatActivity {
     }
 
 }
+
+
 
 
 //    private void fetchEmailById(String emailId, String userId) {
