@@ -8,4 +8,10 @@
     <color name="buttons_text">#202124</color>
     <color name="button_background">#FFB300</color>
     <color name="button_text">#202124</color>
+    <color name="time_color">#AAAAAA</color>
+    <color name="login_text">#FFC107</color>
+    <color name="buttons">#FFB300</color>
+    <color name="error">#FF5252</color>
+    <color name="success">#99CC00</color>
+    <color name="regular_buttons">#FFC107</color>
 </resources>

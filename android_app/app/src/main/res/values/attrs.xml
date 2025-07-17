@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="searchBackgroundAttr" format="color"/>
-    <attr name="selectedItemBackgroundAttr" format="color"/>
-    <attr name="loginFieldsAttr" format="color"/>
-    <attr name="buttonsTextAttr" format="color"/>
+    <attr name="searchBackgroundAttr" format="color" />
+    <attr name="selectedItemBackgroundAttr" format="color" />
+    <attr name="primaryButtonTintAttr" format="color" />
+    <attr name="secondaryButtonTintAttr" format="color" />
+    <attr name="loginFieldsAttr" format="color" />
+    <attr name="buttonsTextAttr" format="color" />
     <attr name="colorButton" format="reference" />
     <attr name="colorButtonText" format="reference" />
 

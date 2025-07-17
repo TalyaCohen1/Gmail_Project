@@ -109,13 +109,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/login_text"
-            android:textColor="@color/buttons"
+            android:textColor="?attr/secondaryButtonTintAttr"
             android:textSize="14sp"
             android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_gravity="center"
             android:clickable="true"
-            android:focusable="true"/>
-
+            android:focusable="true" />
     </LinearLayout>
 </ScrollView>

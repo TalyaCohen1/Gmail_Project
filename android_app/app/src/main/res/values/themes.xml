@@ -3,8 +3,11 @@
     <style name="Theme.Android_app" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:background">@color/background</item>
         <item name="android:textColor">@color/text_color</item>
+        <item name="android:textColorHint">@color/text_color</item>
         <item name="searchBackgroundAttr">@color/search_background</item>
         <item name="selectedItemBackgroundAttr">@color/selected_item_background</item>
+        <item name="primaryButtonTintAttr">@color/regular_buttons</item>
+        <item name="secondaryButtonTintAttr">@color/buttons</item>
         <item name="loginFieldsAttr">@color/login_fields</item>
         <item name="buttonsTextAttr">@color/buttons_text</item>
         <item name="colorButton">@color/button_background</item>
