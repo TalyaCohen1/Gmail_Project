@@ -1,7 +1,5 @@
 # 📬 Mail Operations
 
-> ✅ **Make sure you are logged in before performing any mail actions.**
-
 ---
 
 ## ✉️ Send New Mail
@@ -10,11 +8,11 @@
 
 1. Click the **"Compose"** button in the sidebar.
 2. Fill in the following fields:
-   - **To**: Recipient email(s), e.g., `username@yea.com`
+   - **To**: Recipient email(s), e.g., `username@smail.com`
    - **Subject**: Subject of the message
    - **Body**: The message content
 3. Click:
-   - **"Save as Draft"** to save without sending
+   - **X buttun** to save without sending
    - **"Send"** to send the email
 
 ![new_message_webclient](images/new_message_webclient.png)
@@ -28,11 +26,11 @@
 
 1. Tap the **"Compose"** (✏️) button.
 2. Fill in:
-   - **To**: Recipients, e.g., `username@yea.com`
+   - **To**: Recipients, e.g., `username@smail.com`
    - **Subject**
    - **Body**
 3. Tap:
-   - **Draft icon** 💾 to save
+   - **<- Buttun>** to save draft
    - **Send icon** 📤 to send
 
 <img src="images/android_compose_mail.png" width="40%">
@@ -46,23 +44,25 @@
 
 ### 🌐 Web Client
 
-You can edit or manage emails from:
-- The **mail list**
-- The **individual mail view**
+You can edit or manage emails from the **mail list**
 
-#### From the Mail List:
-- Right-click an email to:
-  - Add labels
-  - Move to spam
+By **hovering over a message**, you can choose to mark the message as unread or delete it from the list.
 
-![edit_mail_action_webclient](images/edit_mail_action_webclient.png)
+By **clicking on the message selection mark**, you can choose to assign to a label, mark as read/unread, report as spam or delete.
+
+In addition, next to the email you can choose to quickly mark as important or star it
+
+![edit_mail_action_webclient](images/web_sendMSG.png)
+![](images/web_choose_msg.png)
+![](images/web_delete-mark.png)
+![](images/web_sent.png)
+
 
 #### From the Mail View:
-- Click:
-  - 📩 **Mark as Unread**
-  - 🗑️ **Delete**
+You can star the message and choose to reply or forward the message.
+If you are viewing a draft, you can choose to edit the draft and save changes or send it.
   
-![wizard_mail_item_webclient](images/wizard_mail_item_webclient.png)
+![wizard_mail_item_webclient](images/web_replay.png)
 
 ---
 
@@ -91,28 +91,6 @@ You can edit or manage emails from:
 
 ---
 
-## 🗑️ Delete Mails
-
-### 🌐 Web Client
-
-- Delete **single mail**: from its mail view using the 🗑️ icon.
-- Delete **multiple mails**:
-  1. Check the boxes beside the emails
-  2. Click the **Delete** icon
-
-![delete_multiple_mails_webclient](images/delete_multiple_mails_webclient.png)
-
----
-
-### 📱 Android Client
-
-- Long-press to select → Tap 🗑️ icon  
-- Or delete from inside the opened email view
-
-➡️ Deleted emails appear in the **Trash** folder and can be reviewed.
-
----
-
 ## ⭐ Additional Mail Actions
 
 Both clients support additional mail operations:
@@ -121,9 +99,13 @@ Both clients support additional mail operations:
 - 🔀 **Forward** mail
 - ⭐ **Mark as Important** or add star
 - 🚫 **Move to Spam**
-- 📁 **Move to Folder**
+- 📁 **Move to Lable**
 - 🏷️ **Add/Edit Labels**
+- ✏️ **Edit draft**
+- 🗑️ **Delete Mail**
+- 📩 **Mark as read/unread**
 - 🔎 **View Deleted Mails** in the Trash folder
+- ✏️ **Edit user information**
 
 > ✅ These actions are accessible via long-press (Android) or right-click / top menu (Web client).
 
