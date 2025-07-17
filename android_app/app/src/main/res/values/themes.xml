@@ -12,8 +12,10 @@
         <item name="buttonsTextAttr">@color/buttons_text</item>
         <item name="colorButton">@color/button_background</item>
         <item name="colorButtonText">@color/button_text</item>
-    </style>
+        <item name="android:statusBarColor">@color/buttons</item>
+</style>
     <style name="popupTheme" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+
 </resources>

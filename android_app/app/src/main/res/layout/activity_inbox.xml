@@ -20,8 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?android:attr/background"
-            android:elevation="8dp" 
-            android:visibility="gone" 
+            android:elevation="8dp"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -243,14 +243,5 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         tools:layout="@layout/fragment_sidebar" />
-
-    <FrameLayout
-        android:id="@+id/fragmentProfileContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="?attr/buttonsTextAttr"
-        android:elevation="8dp"
-        />
 
 </androidx.drawerlayout.widget.DrawerLayout>

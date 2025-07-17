@@ -4,92 +4,88 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/emailItemContainer"
     android:orientation="vertical"
-    android:layout_width="match_parent"
+    android:padding="12dp" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
     android:background="@drawable/item_email_background_selector">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imageSenderOrSelected"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_profile_placeholder"
+                    android:contentDescription="@string/sender_image"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/circle_background"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-<androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:padding="12dp">
+                <TextView
+                    android:paddingStart="8dp"
+                    android:id="@+id/senderTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sender_name"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColor" app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/imageSenderOrSelected"
+                app:layout_constraintTop_toTopOf="@id/imageSenderOrSelected"
+                />
 
-<ImageView
-            android:id="@+id/imageSenderOrSelected"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_profile_placeholder"
-            android:contentDescription="@string/sender_image"
-            android:scaleType="centerCrop"
-            android:background="@drawable/circle_background"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+                <TextView
+                    android:id="@+id/subjectTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:paddingStart="8dp"
+                    android:text="@string/email_subject"
+                    android:textSize="14sp"
+                    android:textColor="?android:attr/textColor" app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@id/senderTextView"
+                    app:layout_constraintTop_toBottomOf="@id/senderTextView"
+                    tools:ignore="RtlSymmetry" />
 
-        <TextView
-            android:paddingStart="8dp"
-            android:id="@+id/senderTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/sender_name"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/imageSenderOrSelected"
-            app:layout_constraintTop_toTopOf="@id/imageSenderOrSelected" />
+                <TextView
+                    android:id="@+id/textTime"
+                    android:text="@string/time"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBaseline_toBaselineOf="@id/senderTextView"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
-        <TextView
-            android:id="@+id/subjectTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:paddingStart="8dp"
-            android:text="@string/email_subject"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@id/senderTextView"
-            app:layout_constraintTop_toBottomOf="@id/senderTextView"
-            tools:ignore="RtlSymmetry" />
+                <ImageView
+                    android:id="@+id/iconStar"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="2dp"
+                    android:src="@drawable/starred"
+                    app:layout_constraintBottom_toBottomOf="@id/subjectTextView"
+                    app:layout_constraintEnd_toEndOf="@+id/subjectTextView"
+                    app:layout_constraintTop_toTopOf="@id/subjectTextView"
+                    app:layout_constraintVertical_bias="0.6" />
 
-        <TextView
-            android:id="@+id/textTime"
-            android:text="@string/time"
-            android:textSize="12sp"
-            android:textColor="@color/time_color"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@id/senderTextView"
-            app:layout_constraintEnd_toEndOf="parent"/>
+                <View
+                    android:id="@+id/unreadIndicator"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="?android:attr/background"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp" />
 
-        <ImageView
-            android:id="@+id/iconStar"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="2dp"
-            android:src="@drawable/starred"
-            app:layout_constraintBottom_toBottomOf="@id/subjectTextView"
-            app:layout_constraintEnd_toEndOf="@+id/subjectTextView"
-            app:layout_constraintTop_toTopOf="@id/subjectTextView"
-            app:layout_constraintVertical_bias="0.6" />
-
-        <View
-            android:id="@+id/unreadIndicator"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:background="?android:attr/background"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
