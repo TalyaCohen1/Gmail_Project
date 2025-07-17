@@ -33,10 +33,12 @@
    - **<- Buttun>** to save draft
    - **Send icon** 📤 to send
 
-<img src="images/android_compose_mail.png" width="40%">
-
 ➡️ Sent mails appear in the **Sent** tab.  
-<img src="images/android_send_mails_list.png" width="40%">
+
+<div style="display: flex; gap: 10px;">
+  <img src="images/app_sendMSG.jpg" width="40%" style="border:1px solid #ccc;"/>
+  <img src="images/app_sidebar.jpg" width="40%" style="border:1px solid #ccc;"/>
+</div>
 
 ---
 
@@ -69,25 +71,37 @@ If you are viewing a draft, you can choose to edit the draft and save changes or
 ### 📱 Android Client
 
 #### From the Inbox:
-1. Long-press an email.
-2. Tap the **three dots** in the top right corner.
-3. Available actions:
+Long-press an email.
+Now you can do this actions:
    - 🗑️ Delete
    - 📩 Mark as read/unread
    - 🚫 Move to spam
+   - ! Mark as important
    - 🏷️ Add/change labels
 
-<img src="images/android_operations_on_mail_list.png" width="40%">
+<img src="images/app_toolbar.jpg" width="40%">
 
 #### From the Mail View:
 - Tap an email to open it.
 - Use top icons to:
-  - 🗑️ Delete
-  - 📩 Mark as unread
-  - ↪️ Reply or 📤 Forward
-  - ⚙️ Access more actions via the three-dot menu
+  -⭐ Mark or unmark the mail with a star (important).
+  -🏷️ Mark the mail as important.
+  -🗑️ Delete the mail.
+  -🚫 Mark the mail as spam.
+  -📩 Mark the mail as read/unread.
+  -⚙️ Tap the three-dot menu for additional actions, including assigning labels.
 
-<img src="images/mail_item_android.png" width="40%">
+-At the bottom of the mail view, you can:
+↪️ Forward the mail.
+💬 Reply to the mail.
+✏️ If the mail is a draft, edit it and send.
+
+
+<div style="display: flex; gap: 10px;">
+  <img src="images/app_mail_details.jpg" width="40%" style="border:1px solid #ccc;"/>
+  <img src="images/app_draft.jpg" width="40%" style="border:1px solid #ccc;"/>
+</div>
+
 
 ---
 
@@ -106,7 +120,5 @@ Both clients support additional mail operations:
 - 📩 **Mark as read/unread**
 - 🔎 **View Deleted Mails** in the Trash folder
 - ✏️ **Edit user information**
-
-> ✅ These actions are accessible via long-press (Android) or right-click / top menu (Web client).
 
 ---
