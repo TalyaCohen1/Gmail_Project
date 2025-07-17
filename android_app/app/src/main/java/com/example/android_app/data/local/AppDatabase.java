@@ -6,6 +6,8 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import android.content.Context;
 
+// This class represents the AppDatabase which is the main database for the application.
+// It contains the entities and provides access to the DAOs. 
 @Database(entities = {MailEntity.class, UserEntity.class}, version = 3, exportSchema = false)
 @TypeConverters(LabelIdConverter.class)
 public abstract class AppDatabase extends RoomDatabase {

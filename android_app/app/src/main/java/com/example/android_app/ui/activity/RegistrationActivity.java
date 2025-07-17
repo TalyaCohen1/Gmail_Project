@@ -45,7 +45,7 @@ public class RegistrationActivity extends AppCompatActivity {
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, y, m, d) -> {
+            DatePickerDialog datePickerDialog = new DatePickerDialog(this,R.style.CustomDatePickerDialog, (view, y, m, d) -> {
                 selectedBirthDate.set(y, m, d);
                 String selectedDate = String.format("%02d/%02d/%04d", d, m + 1, y);
                 etBirthDate.setText(selectedDate);

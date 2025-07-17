@@ -59,10 +59,10 @@ public class EmailDetailsActivity extends AppCompatActivity {
         btnLabels = findViewById(R.id.btnLabels);
         btnStar = findViewById(R.id.btnStar);
 
-         btnBack.setOnClickListener(v -> finish());
-         btnLabels.setOnClickListener(v -> {
-             showLabelsMenu(v);
-         });
+        btnBack.setOnClickListener(v -> finish());
+        btnLabels.setOnClickListener(v -> {
+            showLabelsMenu(v);
+        });
 
         String emailId = getIntent().getStringExtra("email_id");
 

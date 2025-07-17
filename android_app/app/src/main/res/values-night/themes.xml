@@ -1,7 +1,21 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Android_app" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Android_app" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:background">@color/background</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textColorHint">@color/text_color</item>
+        <item name="searchBackgroundAttr">@color/search_background</item>
+        <item name="selectedItemBackgroundAttr">@color/selected_item_background</item>
+        <item name="primaryButtonTintAttr">@color/regular_buttons</item>
+        <item name="secondaryButtonTintAttr">@color/buttons</item>
+        <item name="loginFieldsAttr">@color/login_fields</item>
+        <item name="buttonsTextAttr">@color/buttons_text</item>
+        <item name="colorButton">@color/button_background</item>
+        <item name="colorButtonText">@color/button_text</item>
+        <item name="android:statusBarColor">@color/selected_item_background</item>
+
+    </style>
+    <style name="popupTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 </resources>

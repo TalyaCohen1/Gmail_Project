@@ -112,7 +112,7 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
         }
 
         // --- 4. Handle Item Background and Activated State (for selector) ---
-        holder.itemView.setActivated(isSelected);
+        holder.itemView.setActivated(isMultiSelectMode && isSelected);
 
         // --- 5. Handle Read/Unread Status and Text Style ---
         if (currentEmail.isRead()) {
@@ -120,17 +120,17 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
             holder.subjectTextView.setTypeface(null, Typeface.NORMAL);
             holder.textTime.setTypeface(null, Typeface.NORMAL);
             // holder.unreadIndicator.setVisibility(View.GONE);
-            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
-            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
-            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
+            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.text_color));
+            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.text_color));
+            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.text_color));
         } else {
             holder.senderTextView.setTypeface(null, Typeface.BOLD);
             holder.subjectTextView.setTypeface(null, Typeface.BOLD);
             holder.textTime.setTypeface(null, Typeface.BOLD);
             // holder.unreadIndicator.setVisibility(View.VISIBLE);
-            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
-            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
-            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
+            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.text_color));
+            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.text_color));
+            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.text_color));
         }
 
         // --- 6. Handle Star Icon (Important/Starred) ---

@@ -4,6 +4,7 @@ import androidx.room.*;
 
 import java.util.List;
 
+// This class represents the Mail entity in the local database - it contains the email details and query methods for accessing the emails.
 @Dao
 public interface MailDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)

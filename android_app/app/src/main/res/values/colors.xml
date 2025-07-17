@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="selected_item_background">#CCE0F9</color>
-    <color name="blue_500">#3871E0</color>
-    <color name="unread_email_background">#FFFFFF</color>
-    <color name="read_email_background">#F5F5F5</color>
-    <color name="unread_text_color">#000000</color>
-    <color name="read_text_color">#424242</color>
-    <color name="grey_light_pressed">#E0E0E0</color>
-    <color name="grey_light_focused">#E0E0E0</color>
+    <color name="buttons_text">#FFFFFF</color>
+    <color name="selected_item_background">#FBF0D8</color>
+    <color name="text_color">#000000</color>
+    <color name="time_color">#888888</color>
+    <color name="background">#FFF9F0</color>
+    <color name="login_text">#FFB300</color>
+    <color name="buttons">#FF9800</color>
+    <color name="error">#F44336</color>
+    <color name="login_fields">#FFFCF7</color>
+    <color name="success">#669900</color>
+    <color name="regular_buttons">#FFD54F</color>
+    <color name="search_background">#E2E0E0</color>
+    <color name="button_background">#FFD54F</color>
+    <color name="button_text">#000000</color>
+    <color name="custom_yellow">#FFF59D</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
 </resources>

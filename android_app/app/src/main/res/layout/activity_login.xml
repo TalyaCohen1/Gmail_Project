@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF9F0">
+    android:background="?android:attr/background"
+    android:fillViewport="true">
 
-    <LinearLayout
+
+<LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,16 +17,16 @@
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:contentDescription="Logo"
+            android:contentDescription="@string/logo"
             android:src="@drawable/ic_launcher_foreground"
             android:layout_marginBottom="24dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign in to Smail"
+            android:text="@string/sign_in_to_smail"
             android:textSize="24sp"
-            android:textColor="#FFB300"
+            android:textColor="@color/login_text"
             android:textStyle="bold"
             android:layout_marginBottom="32dp"/>
 
@@ -33,21 +35,26 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#FFFCF7"
+            app:boxBackgroundColor="?attr/loginFieldsAttr"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="#FF9800"
-            app:hintTextColor="#FF9800">
+            android:hint="@string/email"
+            app:boxStrokeColor="@color/buttons"
+            app:hintTextColor="@color/buttons"
+            app:expandedHintEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="Email"
+                android:layout_height="wrap_content"
+                android:minHeight="64dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="8dp"
                 android:inputType="textEmailAddress"
-                android:padding="12dp" />
+                android:textSize="16sp"/>
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -55,52 +62,59 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#FFFCF7"
+            app:boxBackgroundColor="?attr/loginFieldsAttr"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="#FF9800"
-            app:hintTextColor="#FF9800">
+            android:hint="@string/password"
+            app:boxStrokeColor="@color/buttons"
+            app:hintTextColor="@color/buttons"
+            app:expandedHintEnabled="true">
 
-            <com.google.android.material.textfield.TextInputEditText
+
+        <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="Password"
+                android:layout_height="wrap_content"
+                android:minHeight="64dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="8dp"
                 android:inputType="textPassword"
-                android:padding="12dp" />
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/errorMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#F44336"
+            android:textColor="@color/error"
             android:layout_marginBottom="16dp"
             android:textSize="14sp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Login"
-            android:textColor="#000000"
-            android:backgroundTint="#FFD54F"
-            android:elevation="4dp" />
+            android:layout_height="56dp"
+            android:text="@string/login"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorButtonText"
+            android:backgroundTint="?attr/colorButton"
+            android:textSize="16sp"
+            app:cornerRadius="32dp"
+            android:elevation="6dp" />
 
         <TextView
             android:id="@+id/tvNoAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't have an account? Click here to register"
-            android:textColor="#FF9800"
+            android:text="@string/login_text"
+            android:textColor="?attr/secondaryButtonTintAttr"
             android:textSize="14sp"
             android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_gravity="center"
             android:clickable="true"
-            android:focusable="true"/>
-
+            android:focusable="true" />
     </LinearLayout>
 </ScrollView>

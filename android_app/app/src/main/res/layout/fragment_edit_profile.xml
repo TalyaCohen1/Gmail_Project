@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF9F0">
+    android:background="?android:attr/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,13 +20,14 @@
             android:src="@drawable/default_profile"
             android:layout_marginBottom="16dp"
             android:background="@drawable/circle_background"
-            android:contentDescription="Profile Image" />
+            android:contentDescription="@string/profile_image" />
 
         <TextView
             android:id="@+id/textGreeting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello, User"
+            android:text="@string/hello_user"
+            android:textColor="?android:attr/textColor"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
@@ -35,50 +36,58 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
+            android:hint="@string/full_name"
             app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#FFFCF7"
             app:boxCornerRadiusTopStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
-            app:boxStrokeColor="#FF9800"
-            app:hintTextColor="#FF9800">
+            app:boxStrokeColor="@color/buttons"
+            app:boxBackgroundColor="@color/white"
+            app:hintTextColor="@color/buttons"
+            app:expandedHintEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextName"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="Full Name"
+                android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                android:padding="12dp"/>
+                android:minHeight="64dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="8dp"
+                android:textColor="?android:attr/textColor"
+                android:textColorHint="?android:attr/textColorHint"
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+
         <!--save buttun-->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSave"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="Save"
+            android:text="@string/save"
             android:backgroundTint="#FFD54F"
-            android:textColor="#000000"
+            android:textColor="?attr/buttonsTextAttr"
             android:elevation="4dp"
+            app:cornerRadius="12dp"
             android:layout_marginBottom="16dp" />
 
         <TextView
             android:id="@+id/textSuccess"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_green_dark"
+            android:textColor="@color/success"
             android:visibility="gone"
-            android:text="Profile updated successfully" />
+            android:text="@string/successful_update" />
 
         <TextView
             android:id="@+id/textError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_red_dark"
+            android:textColor="@color/error"
             android:visibility="gone"
-            android:text="Failed to update profile" />
+            android:text="@string/failed_to_update" />
 
     </LinearLayout>
 </ScrollView>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#202124</color>
+    <color name="search_background">#282A2C</color>
+    <color name="text_color">#E0E4EB</color>
+    <color name="selected_item_background">#D7BC92</color>
+    <color name="login_fields">#282A2C</color>
+    <color name="buttons_text">#202124</color>
+    <color name="button_background">#FFB300</color>
+    <color name="button_text">#202124</color>
+    <color name="time_color">#AAAAAA</color>
+    <color name="login_text">#FFC107</color>
+    <color name="buttons">#FFB300</color>
+    <color name="error">#FF5252</color>
+    <color name="success">#99CC00</color>
+    <color name="regular_buttons">#FFC107</color>
+</resources>
