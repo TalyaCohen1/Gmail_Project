@@ -27,10 +27,9 @@ public class MailMapper {
         entity.isSpam = email.isSpam();
         entity.isImportant = email.isImportant();
         entity.isStarred = email.isStarred();
-
+        entity.deletedForSender = email.isDeletedForSender();
+        entity.deletedForReceiver = email.isDeletedForReceiver();
         //default values
-        entity.deletedForSender = false;
-        entity.deletedForReceiver = false;
         entity.labelsForSender = new ArrayList<>();
         entity.labelsForReceiver = new ArrayList<>();
 

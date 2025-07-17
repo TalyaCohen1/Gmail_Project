@@ -31,4 +31,8 @@ public class MailEntity {
 
     @TypeConverters(LabelIdConverter.class)
     public List<String> labelsForReceiver;
+
+    public Object getId() {
+        return id;
+    }
 }

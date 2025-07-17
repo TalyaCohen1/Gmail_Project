@@ -22,6 +22,10 @@ public class SharedPrefsManager {
         save(context, "profileImage", imageUrl);
     }
 
+    public static void saveLoginInfo(Context context, String emailAddress) {
+        save(context, "emailAddress", emailAddress);
+    }
+
     //use to clear all data- for Logout
     public static void clearAll(Context context) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().clear().apply();

@@ -1,10 +1,17 @@
 package com.example.android_app.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class LoginResponse {
+    @SerializedName("token")
     private String token;
+    @SerializedName("fullName")
     private String fullName;
+    @SerializedName("profileImage")
     private String profileImage;
+    @SerializedName("_id")
     private String userId;
+    @SerializedName("emailAddress")
     private String emailAddress;
     private String errorMessage;
 

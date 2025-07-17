@@ -2,6 +2,7 @@ package com.example.android_app.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -44,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
             SharedPrefsManager.save(this, "fullName", result.getFullName());
             SharedPrefsManager.save(this, "profileImage", result.getProfileImage() != null ? result.getProfileImage() : "/uploads/default-profile.png");
             SharedPrefsManager.save(this, "userId", result.getUserId());
+            Log.d("LOGIN", "emailAddress from response: " + result.getEmailAddress());
+            SharedPrefsManager.save(this, "emailAddress", result.getEmailAddress());
 
 
             Intent intent = new Intent(this, InboxActivity.class);
