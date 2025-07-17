@@ -17,20 +17,22 @@ import com.example.android_app.model.EmailRequest;
 import com.example.android_app.utils.SendCallback;
 import com.example.android_app.utils.SharedPrefsManager;
 
+// ViewModel for creating and managing email drafts and sending emails
+// Handles loading existing drafts, creating new drafts, saving drafts, and sending emails
 public class CreateMailViewModel extends AndroidViewModel {
 
     private static final String TAG = "CreateMailViewModel";
-
     private final MailRepository repository;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> emailSent = new MutableLiveData<>();
     private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
-
     private final MutableLiveData<Email> _currentDraft = new MutableLiveData<>();
+    // LiveData to observe the current draft email
     public LiveData<Email> getCurrentDraft() {
         return _currentDraft;
     }
 
+    // LiveData to observe action success status
     private final MutableLiveData<Boolean> _actionSuccess = new MutableLiveData<>();
     public LiveData<Boolean> getActionSuccess() {
         return _actionSuccess;
@@ -53,6 +55,8 @@ public class CreateMailViewModel extends AndroidViewModel {
         return emailSent;
     }
 
+// Load or create a draft email
+    // If an existing draft ID is provided, it loads that draft
     public void loadOrCreateDraft(String existingMailId, String defaultTo, String defaultSubject, String defaultBody) {
         _isLoading.postValue(true);
         String token = SharedPrefsManager.get(getApplication(), "token");
@@ -62,6 +66,7 @@ public class CreateMailViewModel extends AndroidViewModel {
             return;
         }
 
+// If an existing draft ID is provided, load that draft
         if (existingMailId != null && !existingMailId.isEmpty()) {
             repository.getEmailById(existingMailId, new MailRepository.EmailDetailsCallback() {
                 @Override
@@ -113,7 +118,6 @@ public class CreateMailViewModel extends AndroidViewModel {
     public void saveDraft(String to, String subject, String body) {
         Email current = _currentDraft.getValue();
         if (current == null || current.getId() == null) {
-            Log.w(TAG, "No current draft ID to save. Skipping save.");
             return;
         }
 

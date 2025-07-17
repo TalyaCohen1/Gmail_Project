@@ -1,5 +1,7 @@
 package com.example.android_app.model;
 
+// This class represents the response from the login API.
+// It contains the user's token, full name, profile image, user ID, email address,
 public class LoginResponse {
     private String token;
     private String fullName;

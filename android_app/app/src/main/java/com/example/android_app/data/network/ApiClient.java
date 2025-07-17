@@ -23,14 +23,4 @@ public class ApiClient {
         return getClient().create(ApiService.class);
     }
 
-//    public static MailApiService getMailApiService() {
-//        if (retrofit == null) {
-//            retrofit = new Retrofit.Builder()
-//                    .baseUrl(BASE_URL)
-//                    .addConverterFactory(GsonConverterFactory.create())
-//                    .build();
-//        }
-//        return retrofit.create(MailApiService.class);
-//    }
-
 }
