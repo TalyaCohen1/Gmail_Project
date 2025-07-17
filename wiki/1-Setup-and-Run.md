@@ -90,7 +90,7 @@ Navigate to:
 android_app/app/src/main/res/xml/network_security_config.xml
 ```
 
-add your ip adress in thus way:
+add your ip adress in this way:
 
 ```xml
    <domain includeSubdomains="true"><your_ip></domain>
