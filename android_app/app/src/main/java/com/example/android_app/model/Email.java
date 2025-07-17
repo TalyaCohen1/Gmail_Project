@@ -77,7 +77,6 @@ public class Email {
         return fromUser;
     }
 
-    // Setter עבור FromUser
     public void setFromUser(FromUser fromUser) {
         this.fromUser = fromUser;
     }
@@ -152,22 +151,10 @@ public class Email {
         if (date == null || date.isEmpty()) {
             return null;
         }
-        // התאם את פורמט התאריך לפורמט שאת מקבלת מה-API
-        // לדוגמה, אם הפורמט הוא "2025-06-29T19:12:26Z" (ISO 8601), השתמשי בזה:
-        // SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-        // parser.setTimeZone(TimeZone.getTimeZone("UTC")); // חשוב אם התאריך הוא ב-UTC
-
-        // אם הפורמט שונה, תצטרכי לשנות את המחרוזת פה בהתאם
-        // לדוגמה, אם זה "Jun 29, 2025 7:12:26 PM" אז "MMM dd, yyyy hh:mm:ss a"
-        // עליך לדעת את הפורמט המדויק מהשרת!
         try {
-            // נניח פורמט ISO 8601 עם אזור זמן (Z for UTC)
-            // אם את משתמשת ב-API 26+, עדיף להשתמש ב-Instant/ZonedDateTime
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 return Date.from(Instant.parse(date));
             } else {
-                // Fallback for older APIs (needs exact string format)
-                // זו דוגמה לפורמט אם יש לך רק תאריך ושעה ללא Timezone
                 SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
                 return parser.parse(date);
             }
@@ -219,7 +206,6 @@ public class Email {
         return fromUser != null ? fromUser.getProfileImage() : null;
     }
 
-    // מחלקה פנימית שמייצגת את האובייקט fromUser
     public static class FromUser {
         @SerializedName("fullName")
         private String fullName;

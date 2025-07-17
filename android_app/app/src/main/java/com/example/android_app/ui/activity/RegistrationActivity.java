@@ -87,7 +87,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 viewModel.registerUser(
                         etFullName.getText().toString().trim(),
                         etEmail.getText().toString().trim(),
-                        getBirthDate(), // פונקציה שמחזירה תאריך לידה כ־"yyyy-MM-dd"
+                        getBirthDate(),
                         spinnerGender.getSelectedItem().toString(),
                         etPassword.getText().toString(),
                         selectedImageUri
@@ -112,14 +112,11 @@ public class RegistrationActivity extends AppCompatActivity {
         String confirmPassword = etConfirmPassword.getText().toString();
         String gender = spinnerGender.getSelectedItem().toString();
 
-
-
-        //check if age is above 12
+        //check if age is above 13
         int age = Calendar.getInstance().get(Calendar.YEAR) - selectedBirthDate.get(Calendar.YEAR);
         if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) < selectedBirthDate.get(Calendar.DAY_OF_YEAR)) {
             age--;
         }
-
 
         // check all fields
         if (fullName.isEmpty()) {
@@ -166,7 +163,5 @@ public class RegistrationActivity extends AppCompatActivity {
         int day = selectedBirthDate.get(Calendar.DAY_OF_MONTH);
         return String.format("%04d-%02d-%02d", year, month, day);
     }
-
-
 
 }

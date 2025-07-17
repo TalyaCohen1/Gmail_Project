@@ -12,7 +12,8 @@ import com.example.android_app.model.Email;
 import com.example.android_app.model.Label;
 
 import java.util.List;
-
+// This ViewModel is responsible for managing the email details and actions related to a specific email.
+// It interacts with the MailRepository to perform actions like marking an email as important, starred,
 public class EmailDetailsViewModel extends AndroidViewModel {
 
     private final MailRepository mailRepository;
@@ -29,15 +30,15 @@ public class EmailDetailsViewModel extends AndroidViewModel {
         return emailDetails;
     }
 
-    // LiveData שה-Activity יאזין לו כדי לדעת אם הייתה שגיאה
     public LiveData<String> getError() {
         return error;
     }
-
     public LiveData<List<Label>> getAllLabels() {
         return allLabels;
     }
 
+// This method toggles the important status of an email.
+// If the email is marked as important, it calls the repository method to mark it as important
     public void toggleMailImportant(String emailId, boolean isImportant) {
         if (isImportant) {
             mailRepository.markMailAsImportant(emailId, new MailRepository.MailActionCallback() {
@@ -64,6 +65,8 @@ public class EmailDetailsViewModel extends AndroidViewModel {
         }
     }
 
+// This method toggles the starred status of an email.
+// If the email is starred, it calls the repository method to mark it as starred, otherwise
     public void toggleMailStarred(String emailId, boolean isStarred) {
         if (isStarred) {
             mailRepository.markMailAsStarred(emailId, new MailRepository.MailActionCallback() {
@@ -90,6 +93,8 @@ public class EmailDetailsViewModel extends AndroidViewModel {
         }
     }
 
+// This method toggles the read status of an email.
+// If the email is marked as read, it calls the repository method to mark it as read
     public void toggleMailReadStatus(String emailId, boolean isRead) {
         if (isRead) {
             mailRepository.markAsRead(emailId, new MailRepository.MailActionCallback() {
@@ -116,6 +121,8 @@ public class EmailDetailsViewModel extends AndroidViewModel {
         }
     }
 
+// This method toggles the spam status of an email.
+// If the email is marked as spam, it calls the repository method to mark it as spam
     public void toggleMailSpam(String emailId, boolean isSpam) {
         if (isSpam) {
             mailRepository.markMailAsSpam(emailId, new MailRepository.MailActionCallback() {
@@ -142,11 +149,12 @@ public class EmailDetailsViewModel extends AndroidViewModel {
         }
     }
 
+// This method deletes an email.
+// It calls the repository method to delete the email and updates the error LiveData if the operation
     public void deleteMail(String emailId) {
         mailRepository.deleteMail(emailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String id) {
-                // אין צורך לרענן את המייל אם חוזרים אחורה
             }
             @Override
             public void onFailure(String errorMessage) {
@@ -169,7 +177,9 @@ public class EmailDetailsViewModel extends AndroidViewModel {
             }
         });
     }
-    public void fetchAllLabels() { // המתודה שקוראת ל-Repository כדי להביא את הלייבלים
+    // This method fetches all labels from the repository and updates the LiveData.
+    // It uses a callback to handle success and failure cases.
+    public void fetchAllLabels() { 
         mailRepository.getLabels(new MailRepository.LabelsCallback() {
             @Override
             public void onSuccess(List<Label> labels) {
@@ -183,34 +193,32 @@ public class EmailDetailsViewModel extends AndroidViewModel {
         });
     }
 
+// This method adds a label to an email.
+// It calls the repository method to add the label and updates the error LiveData if the operation
     public void addMailToLabel(String emailId, String labelId) {
         mailRepository.addMailToLabel(emailId, labelId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String id) {
-                // לאחר הוספת לייבל בהצלחה, רענן את פרטי המייל כדי שה-UI יתעדכן
-                fetchEmailById(id);
+                fetchEmailById(id); // After adding the label, refresh the email details to reflect the changes
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                // עדכן את LiveData השגיאות כדי שה-Activity יציג הודעה למשתמש
                 error.postValue("Failed to add label: " + errorMessage);
             }
         });
     }
 
-    // מתודה להסרת לייבל מהמייל
+    // This method removes a label from an email.
     public void removeMailFromLabel(String emailId, String labelId) {
         mailRepository.removeMailFromLabel(emailId, labelId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String id) {
-                // לאחר הסרת לייבל בהצלחה, רענן את פרטי המייל כדי שה-UI יתעדכן
-                fetchEmailById(id);
+                fetchEmailById(id); // After removing the label, refresh the email details to reflect the changes
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                // עדכן את LiveData השגיאות כדי שה-Activity יציג הודעה למשתמש
                 error.postValue("Failed to remove label: " + errorMessage);
             }
         });

@@ -9,7 +9,6 @@ public class UserManager {
     private static final String KEY_USER_ID = "userId";
     private static final String KEY_AUTH_TOKEN = "token";
 
-
     public static void saveUserId(Context context, String userId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         prefs.edit().putString(KEY_USER_ID, userId).apply();

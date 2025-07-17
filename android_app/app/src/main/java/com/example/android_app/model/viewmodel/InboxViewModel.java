@@ -21,8 +21,7 @@ public class InboxViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Email>> currentEmails = new MutableLiveData<>(); // changed fron inbox to current to generelize the view model
     private final MutableLiveData<String> error = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    private final MutableLiveData<List<Label>> labels = new MutableLiveData<>(); // New: LiveData for labels
-
+    private final MutableLiveData<List<Label>> labels = new MutableLiveData<>(); //LiveData for labels
     private String currentCategoryOrLabelId = "inbox"; // default to "inbox"
 
     public InboxViewModel(@NonNull Application application) {
@@ -32,9 +31,6 @@ public class InboxViewModel extends AndroidViewModel {
         fetchLabels(); // Fetch labels when ViewModel is created
     }
 
-    //    public LiveData<List<MailEntity>> getInboxEmails() {
-//        return mailRepository.getLocalInbox();
-//    }
     public LiveData<List<Email>> getCurrentEmails() {
         return currentEmails;
     }
@@ -47,14 +43,6 @@ public class InboxViewModel extends AndroidViewModel {
         return isLoading;
     }
 
-    //    public void refreshInboxFromServer() {
-//        mailRepository.syncInboxFromServer();
-//    }
-    public void refreshInboxFromServer() {
-        isLoading.setValue(true);
-        mailRepository.syncInboxFromServer();
-    }
-
     public LiveData<List<Label>> getLabels() { // New getter for labels
         return labels;
     }
@@ -63,45 +51,18 @@ public class InboxViewModel extends AndroidViewModel {
         return currentCategoryOrLabelId;
     }
 
-    // method that fetch the data
-//    public void fetchEmails() {
-//        isLoading.setValue(true);
-//        mailRepository.getInbox(new MailRepository.InboxCallback() {
-//            @Override
-//            public void onSuccess(List<Email> emails) {
-//                currentEmails.postValue(emails);
-//                isLoading.postValue(false);
-//                error.postValue(null); // Clear any previous errors
-//            }
-//
-//            @Override
-//            public void onFailure(String errorMessage) {
-//                error.postValue(errorMessage);
-//                isLoading.postValue(false);
-//            }
-//        });
-//    }
-
     public void fetchEmailsForCategoryOrLabel(String identifier) {
-        Log.d("InboxViewModel", "fetchEmailsForCategoryOrLabel called for: " + identifier);
         currentCategoryOrLabelId = identifier;
-        isLoading.postValue(true); // הצג טעינה
-        // Check if we are already displaying the current category/label
-//        if (identifier.equals(currentCategoryOrLabelId) && currentEmails.getValue() != null) {
-//            Log.d("InboxViewModel", "Already displaying " + identifier + ". Skipping refresh.");
-//            isLoading.postValue(false); // Ensure loading is finished if no refresh is needed
-//            return;
-//        }
+        isLoading.postValue(true);
+
 
         currentCategoryOrLabelId = identifier; // Save the current identifier
         isLoading.setValue(true);
         error.setValue(null); // clear previous errors
 
-        // MailRepository.InboxCallback callback = new MailRepository.InboxCallback() {
         MailRepository.ListEmailsCallback callback = new MailRepository.ListEmailsCallback() {
             @Override
             public void onSuccess(List<Email> emails) {
-                Log.d("InboxViewModel", "fetchEmailsForCategoryOrLabel onSuccess for " + identifier + ". Received " + (emails != null ? emails.size() : 0) + " emails.");
                 currentEmails.postValue(emails);
                 isLoading.postValue(false);
                 error.postValue(null);
@@ -109,7 +70,6 @@ public class InboxViewModel extends AndroidViewModel {
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("InboxViewModel", "fetchEmailsForCategoryOrLabel onFailure for " + identifier + ": " + errorMessage);
                 error.postValue(errorMessage);
                 error.postValue(errorMessage);
                 isLoading.postValue(false);
@@ -142,7 +102,6 @@ public class InboxViewModel extends AndroidViewModel {
             case "allmail":
                 mailRepository.listMails(callback);
                 break;
-                // הוסף כאן מקרים נוספים לקטגוריות מובנות
             default:
                 mailRepository.getMailsByLabel(identifier, callback);
                 break;
@@ -169,7 +128,6 @@ public class InboxViewModel extends AndroidViewModel {
         }
     }
 
-    // ממשק פונקציונלי פשוט ללוגיקת עדכון מייל
     private interface EmailUpdater {
         void update(Email email);
     }
@@ -178,7 +136,6 @@ public class InboxViewModel extends AndroidViewModel {
         mailRepository.deleteMail(emailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Email deleted: " + emailId);
                 List<Email> currentEmailsList = currentEmails.getValue();
                 if (currentEmailsList != null) {
                     List<Email> updatedList = new java.util.ArrayList<>(currentEmailsList);
@@ -196,26 +153,10 @@ public class InboxViewModel extends AndroidViewModel {
         });
     }
 
-//    public void markEmailAsRead(String emailId) {
-//        mailRepository.markAsRead(emailId, new MailActionCallback() {
-//            @Override
-//            public void onSuccess() {
-//                Log.d("InboxViewModel", "Email marked as read: " + emailId);
-//                fetchEmails(); // Refresh after action
-//            }
-//
-//            @Override
-//            public void onFailure(String errorMessage) {
-//                error.postValue("Failed to mark as read: " + errorMessage);
-//            }
-//        });
-//    }
-
     public void markEmailAsRead(String emailId) {
         mailRepository.markAsRead(emailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Email marked as read: " + emailId);
                 updateEmailStatusInList(emailId, email -> email.setIsRead(true));
                 fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
             }
@@ -227,26 +168,10 @@ public class InboxViewModel extends AndroidViewModel {
         });
     }
 
-//    public void markEmailAsUnread(String emailId) {
-//        mailRepository.markAsUnread(emailId, new MailActionCallback() {
-//            @Override
-//            public void onSuccess() {
-//                Log.d("InboxViewModel", "Email marked as unread: " + emailId);
-//                fetchEmails(); // Refresh after action
-//            }
-//
-//            @Override
-//            public void onFailure(String errorMessage) {
-//                error.postValue("Failed to mark as unread: " + errorMessage);
-//            }
-//        });
-//    }
-
     public void markEmailAsUnread(String emailId) {
         mailRepository.markAsUnread(emailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Email marked as unread: " + emailId);
                 updateEmailStatusInList(emailId, email -> email.setIsRead(false));
                 fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
             }
@@ -257,41 +182,11 @@ public class InboxViewModel extends AndroidViewModel {
             }
         });
     }
-    public void addMailToLabel(String emailId, String labelId) {
-        mailRepository.addMailToLabel(emailId, labelId, new MailRepository.MailActionCallback() {
-            @Override
-            public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Mail " + emailId + " added to label " + labelId);
-                fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                error.postValue("Failed to add mail to label: " + errorMessage);
-            }
-        });
-    }
-
-    public void addLabelToEmail(String emailId, String labelId) {
-        mailRepository.addLabelToMail(emailId, labelId, new MailRepository.MailActionCallback() {
-            @Override
-            public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Label " + labelId + " added to email " + emailId);
-                fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                error.postValue("Failed to add label: " + errorMessage);
-            }
-        });
-    }
 
     public void markEmailAsImportant(String emailId) {
         mailRepository.markMailAsImportant(emailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Email marked as important: " + emailId);
                 updateEmailStatusInList(emailId, email -> email.setImportant(true));
                 fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
 
@@ -308,7 +203,6 @@ public class InboxViewModel extends AndroidViewModel {
         mailRepository.unmarkMailAsImportant(emailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Email unmarked as important: " + emailId);
                 updateEmailStatusInList(emailId, email -> email.setImportant(false));
                 fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
             }
@@ -324,14 +218,12 @@ public class InboxViewModel extends AndroidViewModel {
         mailRepository.markMailAsSpam(emailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Email marked as spam: " + emailId);
                 List<Email> currentEmailsList = currentEmails.getValue();
                 if (currentEmailsList != null) {
                     List<Email> updatedList = new java.util.ArrayList<>(currentEmailsList);
                     updatedList.removeIf(email -> email.getId().equals(emailId));
                     currentEmails.postValue(updatedList); // Update the LiveData immediately
                 }
-                // updateEmailStatusInList(emailId, email -> email.setSpam(true));
                 fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
             }
 
@@ -342,27 +234,10 @@ public class InboxViewModel extends AndroidViewModel {
         });
     }
 
-    public void unmarkEmailAsSpam(String emailId) {
-        mailRepository.unmarkMailAsSpam(emailId, new MailRepository.MailActionCallback() {
-            @Override
-            public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Email unmarked as spam: " + emailId);
-                updateEmailStatusInList(emailId, email -> email.setSpam(false));
-                fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                error.postValue("Failed to unmark as spam: " + errorMessage);
-            }
-        });
-    }
-
     public void markEmailAsStarred(String emailId) {
         mailRepository.markMailAsStarred(emailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Email marked as starred: " + updatedEmailId);
                 updateEmailStatusInList(updatedEmailId, email -> email.setStarred(true));
                 fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
             }
@@ -378,7 +253,6 @@ public class InboxViewModel extends AndroidViewModel {
         mailRepository.unmarkMailAsStarred(emailId, new MailRepository.MailActionCallback() {
             @Override
             public void onSuccess(String updatedEmailId) {
-                Log.d("InboxViewModel", "Email unmarked as starred: " + emailId);
                 updateEmailStatusInList(emailId, email -> email.setStarred(false));
                 fetchEmailsForCategoryOrLabel(currentCategoryOrLabelId);
             }
@@ -390,7 +264,7 @@ public class InboxViewModel extends AndroidViewModel {
         });
     }
 
-    public void fetchLabels() { // New method to fetch labels
+    public void fetchLabels() {
         mailRepository.getLabels(new LabelsCallback() {
             @Override
             public void onSuccess(List<Label> fetchedLabels) {

@@ -125,7 +125,7 @@ public class CreateMailFragment extends Fragment {
                 //back to the previous fragment
                 requireActivity().getSupportFragmentManager().popBackStack();
                 // Add null check here for fragmentCreateMailContainer
-                View fragmentContainer = requireActivity().findViewById(R.id.fragment_container); // השתמש ב-fragment_container
+                View fragmentContainer = requireActivity().findViewById(R.id.fragment_container);
                 if (fragmentContainer != null) {
                     fragmentContainer.setVisibility(View.GONE);
                 }

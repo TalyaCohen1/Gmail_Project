@@ -34,10 +34,6 @@ public class EditProfileFragment extends Fragment {
 
     private OnProfilePictureUpdatedListener listener; // Declare the listener variable
 
-    // Method to set the listener
-    public void setOnProfilePictureUpdatedListener(OnProfilePictureUpdatedListener listener) {
-        this.listener = listener;
-    }
     // Inside EditProfileFragment.java, outside the class, or as a nested public interface
     public interface OnProfilePictureUpdatedListener {
         void onProfilePictureUpdated();
@@ -117,10 +113,7 @@ public class EditProfileFragment extends Fragment {
                 textSuccess.setVisibility(View.VISIBLE);
                 textError.setVisibility(View.GONE);
                 if (listener != null) {
-                    android.util.Log.d("EditProfileFragment", "Notifying listener of profile picture update.");
-                    listener.onProfilePictureUpdated(); // <--- THIS IS CRUCIAL!
-                } else {
-                    android.util.Log.w("EditProfileFragment", "Listener is null, cannot notify profile picture update.");
+                    listener.onProfilePictureUpdated();
                 }
                 // Update greeting and profile image immediately after successful save
                 String updatedFullName = UserManager.getFullName(requireContext());
@@ -142,10 +135,6 @@ public class EditProfileFragment extends Fragment {
                 } else {
                     imageProfile.setImageResource(R.drawable.default_profile);
                 }
-//                // Notify the listener that the profile picture has been updated
-//                if (listener != null) {
-//                    listener.onProfilePictureUpdated();
-//                }
             }
             new android.os.Handler().postDelayed(() -> {
                 requireActivity().getSupportFragmentManager().popBackStack();
@@ -170,20 +159,6 @@ public class EditProfileFragment extends Fragment {
             selectedImageUri = data.getData();
             imageProfile.setImageURI(selectedImageUri);
         }
-    }
-    //load image from url
-    private void loadImageFromUrl(String urlString, ImageView imageView) {
-        new Thread(() -> {
-            try {
-                java.net.URL url = new java.net.URL(urlString);
-                java.io.InputStream input = url.openStream();
-                android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(input);
-                requireActivity().runOnUiThread(() -> imageView.setImageBitmap(bitmap));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 
 }

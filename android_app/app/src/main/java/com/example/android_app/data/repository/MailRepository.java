@@ -5,8 +5,6 @@ import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-
 import com.example.android_app.data.local.AppDatabase;
 import com.example.android_app.data.local.MailDAO;
 import com.example.android_app.data.local.MailEntity;
@@ -26,13 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// This class serves as a repository for managing email-related operations.
+// It interacts with both the local database (Room) and remote API (Retrofit) to
 public class MailRepository {
 
     private final ApiService apiService;
@@ -41,7 +40,7 @@ public class MailRepository {
     private final UserDao userDao;
     private final MailService mailService = new MailService();
     private final ExecutorService executor; //so room run in another thread
-    private final Handler mainThreadHandler;     // <--- הוסף את זה
+    private final Handler mainThreadHandler; 
 
     public MailRepository(Context context) {
         this.context = context.getApplicationContext();
@@ -57,36 +56,9 @@ public class MailRepository {
         return SharedPrefsManager.get(context, "token");
     }
 
-//    public void fetchAndStoreCurrentUserEmail(Context context, ApiService apiService) {
-//        String userId = SharedPrefsManager.get(context, "userId");
-//        if (userId == null) {
-//            Log.e("USER", "userId is null – can't fetch user");
-//            return;
-//        }
-//
-//        apiService.getUserById(userId).enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    String email = response.body().getEmailAddress();
-//                    SharedPrefsManager.save(context, "emailAddress", email);
-//                    Log.d("USER", "Fetched email from server: " + email);
-//                } else {
-//                    Log.e("USER", "Failed to fetch user info. Code=" + response.code());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//                Log.e("USER", "Network error: " + t.getMessage());
-//            }
-//        });
-//    }
-
     public void getCurrentUserEmail(LocalCallback<String> callback) {
         executor.execute(() -> {
             String email = SharedPrefsManager.get(context, "emailAddress");
-            Log.d("MailRepository", "Fetching email from SharedPrefs: " + email);
             callback.onResult(email);
         });
     }
@@ -102,8 +74,6 @@ public class MailRepository {
 
                 boolean visibleToSender = isSender && !email.isDeletedForSender();
                 boolean visibleToReceiver = isReceiver && !email.isDeletedForReceiver();
-
-                Log.d("FILTER", "From=" + from + ", To=" + to + ", currentUserEmail=" + currentUserEmail);
 
                 if (visibleToSender || visibleToReceiver) {
                     filtered.add(email);
@@ -132,6 +102,7 @@ public class MailRepository {
             callback.onResult(filtered);
         });
     }
+    // This method creates a new draft email.
     public void createDraft(EmailRequest request, MailService.DraftMailCallback callback) {
         String token = SharedPrefsManager.get(context, "token");
         if (token == null || token.isEmpty()) {
@@ -151,6 +122,7 @@ public class MailRepository {
         });
     }
 
+// This method updates an existing draft email - after it has been created.
     public void updateDraft(String mailId, String to, String subject, String body, String token, MailService.DraftMailCallback callback) {
         mailService.updateDraft(mailId, to, subject, body, token, new MailService.DraftMailCallback() {
             @Override
@@ -166,6 +138,7 @@ public class MailRepository {
         });
     }
 
+// This method sends an email, either as a new email or as a draft.
     public void sendEmail(String mailId, String to, String subject, String body, String token, SendCallback callback) {
         //update to send = true so we can send it, either if it is a new draft or an existing one
         EmailRequest emailRequest = new EmailRequest(to, subject, body, true);
@@ -268,10 +241,8 @@ public class MailRepository {
     }
 
     public void listMails(ListEmailsCallback callback) {
-        Log.d("MailRepository", "listMails: Fetching from network.");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository listMails: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -297,10 +268,8 @@ public class MailRepository {
     }
 
     public void searchMails(String query, ListEmailsCallback callback) {
-        Log.d("MyDebug", "Repository searchMails: Calling apiService.searchMails()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository searchMails: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -323,7 +292,8 @@ public class MailRepository {
     }
 
     public void getDrafts(ListEmailsCallback callback) {
-        String token = SharedPrefsManager.get(context, "token");        if (token == null || token.isEmpty()) {
+        String token = SharedPrefsManager.get(context, "token");
+        if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -349,10 +319,8 @@ public class MailRepository {
     }
 
     public void getSentMails(ListEmailsCallback callback) {
-        Log.d("MyDebug", "Repository getSentMails: Calling apiService.getSent()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository getSentMails: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -378,10 +346,8 @@ public class MailRepository {
     }
 
     public void getSpamMails(ListEmailsCallback callback) {
-        Log.d("MyDebug", "Repository getSpamMails: Calling apiService.getSpamMails()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository getSpamMails: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -407,10 +373,8 @@ public class MailRepository {
     }
 
     public void getDeletedMails(ListEmailsCallback callback) {
-        Log.d("MyDebug", "Repository getDeletedMails: Calling apiService.getDeletedMails()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository getDeletedMails: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -436,10 +400,8 @@ public class MailRepository {
     }
 
     public void getImportantMails(ListEmailsCallback callback) {
-        Log.d("MyDebug", "Repository getImportantMails: Calling apiService.getImportantMails()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository getImportantMails: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -465,10 +427,8 @@ public class MailRepository {
     }
 
     public void getStarredMails(ListEmailsCallback callback) {
-        Log.d("MyDebug", "Repository getStarredMails: Calling apiService.getStarredMails()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository getStarredMails: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -492,36 +452,7 @@ public class MailRepository {
             }
         });
     }
-
-//    public void updateDraft(String mailId, EmailRequest request, MailActionCallback callback) {
-//        Log.d("MyDebug", "Repository updateDraft: Calling apiService.updateDraft()");
-//        String token = getTokenFromPrefs(context);
-//        if (token == null || token.isEmpty()) {
-//            Log.e("MyDebug", "Repository updateDraft: TOKEN IS MISSING!");
-//            callback.onFailure("Authentication token is missing.");
-//            return;
-//        }
-//
-//        apiService.updateDraft("Bearer " + token, mailId, request).enqueue(new Callback<ResponseBody>() {
-//            @Override
-//            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-//                if (response.isSuccessful()) {
-//                    callback.onSuccess(mailId);
-//                } else {
-//                    callback.onFailure("Server error: " + response.code());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-//                callback.onFailure("Network failure: " + t.getMessage());
-//            }
-//        });
-//    }
-
-
-    public void deleteMail(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository deleteMail: Calling apiService.deleteMail()");
+    public void deleteMail(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -545,8 +476,7 @@ public class MailRepository {
         });
     }
 
-    public void markAsRead(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MailRepository", "markMailAsRead: Sending request for mailId=" + mailId + ", isRead=" + true);
+    public void markAsRead(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -563,9 +493,6 @@ public class MailRepository {
                         if (existingMail != null) {
                             existingMail.isRead = true;
                             mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Updated local MailEntity as read: " + mailId);
-                        } else {
-                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
                         }
                     });
                     callback.onSuccess(mailId);
@@ -581,8 +508,7 @@ public class MailRepository {
         });
     }
 
-    public void markAsUnread(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MailRepository", "markMailAsUnread: Sending request for mailId=" + mailId + ", isRead=" + false);
+    public void markAsUnread(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -596,11 +522,8 @@ public class MailRepository {
                     executor.execute(() -> {
                         MailEntity existingMail = mailDao.getMailByIdNow(mailId);
                         if (existingMail != null) {
-                            existingMail.isRead = false; // עדכן את השדה
+                            existingMail.isRead = false;
                             mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Updated local MailEntity as unread: " + mailId);
-                        } else {
-                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
                         }
                     });
                     callback.onSuccess(mailId);
@@ -616,7 +539,7 @@ public class MailRepository {
         });
     }
 
-    public void markMailAsImportant(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
+    public void markMailAsImportant(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -635,7 +558,6 @@ public class MailRepository {
                         }
                         new Handler(context.getMainLooper()).post(() -> callback.onSuccess(mailId));
                     });
-//                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -648,11 +570,9 @@ public class MailRepository {
         });
     }
 
-    public void unmarkMailAsImportant(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository unmarkMailAsImportant: Calling apiService.unmarkMailAsImportant()");
+    public void unmarkMailAsImportant(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository unmarkMailAsImportant: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -666,11 +586,9 @@ public class MailRepository {
                         if (existingMail != null) {
                             existingMail.isImportant = false;
                             mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Updated local MailEntity as unread: " + mailId);
                         }
                         new Handler(context.getMainLooper()).post(() -> callback.onSuccess(mailId));
                     });
-                    // callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -683,11 +601,9 @@ public class MailRepository {
         });
     }
 
-    public void markMailAsStarred(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository markMailAsStarred: Calling apiService.markMailAsStarred()");
+    public void markMailAsStarred(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository markMailAsStarred: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -704,7 +620,6 @@ public class MailRepository {
                         }
                         new Handler(context.getMainLooper()).post(() -> callback.onSuccess(mailId));
                     });
-                    // callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -717,11 +632,9 @@ public class MailRepository {
         });
     }
 
-    public void unmarkMailAsStarred(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository unmarkMailAsStarred: Calling apiService.unmarkMailAsStarred()");
+    public void unmarkMailAsStarred(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository unmarkMailAsStarred: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -738,7 +651,6 @@ public class MailRepository {
                         }
                         new Handler(context.getMainLooper()).post(() -> callback.onSuccess(mailId));
                     });
-                    // callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -751,11 +663,9 @@ public class MailRepository {
         });
     }
 
-    public void markMailAsSpam(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository markMailAsSpam: Calling apiService.markMailAsSpam()");
+    public void markMailAsSpam(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository markMailAsSpam: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -769,9 +679,6 @@ public class MailRepository {
                         if (existingMail != null) {
                             existingMail.isSpam = true;
                             mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Updated local MailEntity as spam: " + mailId);
-                        } else {
-                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
                         }
                     });
                     callback.onSuccess(mailId);
@@ -779,7 +686,6 @@ public class MailRepository {
                     callback.onFailure("Server error: " + response.code());
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
@@ -787,11 +693,9 @@ public class MailRepository {
         });
     }
 
-    public void unmarkMailAsSpam(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository unmarkMailAsSpam: Calling apiService.unmarkMailAsSpam()");
+    public void unmarkMailAsSpam(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository unmarkMailAsSpam: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -805,7 +709,6 @@ public class MailRepository {
                         if (existingMail != null) {
                             existingMail.isSpam = false;
                             mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Updated local MailEntity as spam: " + mailId);
                         } else {
                             Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
                         }
@@ -824,48 +727,40 @@ public class MailRepository {
     }
 
     public void addMailToLabel(String emailId, String labelId, MailActionCallback callback) {
-        Log.d("MailRepository", "addMailToLabel: Adding mail " + emailId + " to label " + labelId);
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
             return;
         }
 
-        // יצירת אובייקט ה-Request Body עם ה-ID של המייל
         MailLabelRequest requestBody = new MailLabelRequest(emailId);
 
         apiService.addMailToLabel("Bearer " + token, labelId, requestBody).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    Log.d("MailRepository", "Successfully added mail " + emailId + " to label " + labelId);
-                    // כאן ניתן לעדכן את בסיס הנתונים המקומי אם המודל של המייל כולל את התוויות שלו
                     callback.onSuccess(emailId);
                 } else {
                     String errorMsg = "Failed to add label. Code: " + response.code();
                     try {
                         if (response.errorBody() != null) {
-                            // נסה לקרוא את גוף השגיאה כדי לקבל פרטים נוספים מהשרת
                             errorMsg += ", Body: " + response.errorBody().string();
                         }
                     } catch (Exception e) {
                         Log.e("MailRepository", "Error reading error body", e);
                     }
-                    Log.e("MailRepository", errorMsg);
                     callback.onFailure(errorMsg);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Log.e("MailRepository", "Network failure adding label: " + t.getMessage(), t);
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
     }
 
     public void removeMailFromLabel(String emailId, String labelId, MailActionCallback callback) {
-        Log.d("MailRepository", "removeMailFromLabel: Removing mail " + emailId + " from label " + labelId);
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -878,157 +773,30 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Log.d("MailRepository", "Successfully removed mail " + emailId + " from label " + labelId);
-                    // אין גוף תגובה כאן, לכן אין צורך לקרוא response.body()
                     callback.onSuccess(emailId);
                 } else {
                     String errorMsg = "Failed to remove label. Code: " + response.code();
                     try {
                         if (response.errorBody() != null) {
-                            // עדיין ניתן לקרוא את גוף השגיאה אם השרת שולח כזה במקרה של כישלון
                             errorMsg += ", Body: " + response.errorBody().string();
                         }
                     } catch (Exception e) {
                         Log.e("MailRepository", "Error reading error body", e);
                     }
-                    Log.e("MailRepository", errorMsg);
                     callback.onFailure(errorMsg);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Log.e("MailRepository", "Network failure removing label: " + t.getMessage(), t);
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
-
-    public void addLabelToMail(String mailId, String labelId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository addLabelToMail: Calling apiService.addLabelToMail()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository addLabelToMail: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-        MailLabelRequest request = new MailLabelRequest(labelId); // Assuming MailLabelRequest takes labelId
-
-        apiService.addLabelToMail("Bearer " + token, mailId, request).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    executor.execute(() -> {
-                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
-                        if (existingMail != null) {
-                            // ודא שהרשימה קיימת ואינה null
-                            // if (existingMail.labelsForSender == null) {
-                            //     existingMail.labelsForSender = new ArrayList<>();
-                            // }
-                            // if (!existingMail.labelsForSender.contains(labelId)) { // הוסף רק אם לא קיים
-                            //     existingMail.labelsForSender.add(labelId);
-                            // }
-                            // אם יש לך גם labelsForReceiver ואתה רוצה לעדכן אותו:
-                            // if (existingMail.labelsForReceiver == null) {
-                            //     existingMail.labelsForReceiver = new ArrayList<>();
-                            // }
-                            // if (!existingMail.labelsForReceiver.contains(labelId)) {
-                            //     existingMail.labelsForReceiver.add(labelId);
-                            // }
-
-                            mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Added label " + labelId + " to local MailEntity: " + mailId);
-                        } else {
-                            Log.w("MailRepository", "Mail not found in local DB, cannot add label: " + mailId);
-                        }
-                    });
-                    callback.onSuccess(mailId);
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
-
-    public void removeLabelFromMail(String mailId, String labelId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository removeLabelFromMail: Calling apiService.removeLabelFromMail()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository removeLabelFromMail: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-
-        apiService.removeLabelFromMail("Bearer " + token, mailId, labelId).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    executor.execute(() -> {
-                        MailEntity existingMail = mailDao.getMailByIdNow(mailId);
-                        if (existingMail != null) {
-                            if (existingMail.labelsForSender != null) {
-                                existingMail.labelsForSender.remove(labelId); // הסר את התווית
-                            }
-                            // אם יש לך גם labelsForReceiver ואתה רוצה לעדכן אותו:
-                            // if (existingMail.labelsForReceiver != null) {
-                            //     existingMail.labelsForReceiver.remove(labelId);
-                            // }
-
-                            mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Removed label " + labelId + " from local MailEntity: " + mailId);
-                        } else {
-                            Log.w("MailRepository", "Mail not found in local DB, cannot remove label: " + mailId);
-                        }
-                    });
-                    callback.onSuccess(mailId);
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                callback.onFailure("Network failure: " + t.getMessage());
-            }
-        });
-    }
-
-    public void getMailLabels(String mailId, LabelsCallback callback) { // Updated to use LabelsCallback
-        Log.d("MyDebug", "Repository getMailLabels: Calling apiService.getMailLabels()");
-        String token = getTokenFromPrefs(context);
-        if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository getMailLabels: TOKEN IS MISSING!");
-            callback.onFailure("Authentication token is missing.");
-            return;
-        }
-
-        apiService.getMailLabels("Bearer " + token, mailId).enqueue(new Callback<List<Label>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<Label>> call, @NonNull Response<List<Label>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
-                } else {
-                    callback.onFailure("Server error: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<Label>> call, @NonNull Throwable t) {
                 callback.onFailure("Network failure: " + t.getMessage());
             }
         });
     }
 
     public void getMailsByLabel(String labelId, ListEmailsCallback callback) {
-        Log.d("MyDebug", "Repository getMailsByLabel: Calling apiService.getMailsByLabel()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository getMailsByLabel: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -1059,45 +827,13 @@ public class MailRepository {
                 List<MailEntity> entities = new ArrayList<>();
                 for (Email email : emails) {
                     if (email.getId() == null) {
-                        Log.e("SAVE_EMAILS", "Email has null ID, skipping! " + email);
                         continue;
                     }
-                    Log.d("SAVE_EMAILS", "Saving emails with IDs: " + entities.stream().map(MailEntity::getId).collect(Collectors.toList()));
-
                     entities.add(MailMapper.toEntity(email));
                 }
                 mailDao.insertAll(entities);
-                Log.d("SAVE_EMAILS", "Saved " + entities.size() + " emails to local DB");
             });
         }
-
-        public void getMailsFromLocal(LocalCallback<List<MailEntity>> callback) {
-            executor.execute(() -> {
-                List<MailEntity> mails = mailDao.getAllMailsNow();
-                callback.onResult(mails);
-            });
-        }
-    public void syncInboxFromServer() {
-        getInbox(new ListEmailsCallback() {
-            @Override
-            public void onSuccess(List<Email> emails) {
-                executor.execute(() -> {
-                    List<MailEntity> entities = MailMapper.toEntities(emails);
-                    mailDao.clearAll();
-                    mailDao.insertAll(entities);
-                });
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Log.e("Repo", "Failed to sync: " + error);
-            }
-        });
-    }
-
-    public LiveData<List<MailEntity>> getLocalInbox() {
-        return mailDao.getAllMails();
-    }
 
     public void fetchInboxAndSaveToLocal(ActionCallback callback) {
         String token = getTokenFromPrefs(context);
@@ -1119,9 +855,8 @@ public class MailRepository {
         });
     }
 
-    // NEW method to fetch all labels (for the "Add to label" menu in InboxActivity)
+    //Method to fetch all labels (for the "Add to label" menu in InboxActivity)
     public void getLabels(LabelsCallback callback) {
-        Log.d("MyDebug", "Repository getLabels: Calling apiService.getLabels()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -1145,11 +880,6 @@ public class MailRepository {
         });
     }
 
-    public interface InboxCallback {
-        void onSuccess(List<Email> emails);
-        void onFailure(String error);
-    }
-
     public interface EmailDetailsCallback {
         void onSuccess(Email email);
         void onFailure(String error);
@@ -1164,8 +894,6 @@ public class MailRepository {
         void onResult(T result);
     }
 
-    // --- NEW Interfaces for Mail-Related Methods ---
-
     public interface ListEmailsCallback {
         void onSuccess(List<Email> emails);
         void onFailure(String error);
@@ -1176,11 +904,7 @@ public class MailRepository {
         void onFailure(String error);
     }
 
-    public interface LabelsCallback { // Changed from ListLabelsCallback to LabelsCallback for clarity and consistency
-        void onSuccess(List<Label> labels);
-        void onFailure(String error);
-    }
-    public interface ListLabelsCallback {
+    public interface LabelsCallback {
         void onSuccess(List<Label> labels);
         void onFailure(String error);
     }
