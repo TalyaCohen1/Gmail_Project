@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="buttons_text">#FFFFFF</color>
-    <color name="selected_item_background">#EFD2A4</color>
+    <color name="selected_item_background">#FBF0D8</color>
     <color name="text_color">#000000</color>
     <color name="time_color">#888888</color>
     <color name="background">#FFF9F0</color>

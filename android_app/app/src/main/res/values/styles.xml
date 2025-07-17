@@ -48,5 +48,10 @@
     <style name="PopupMenuStyleNoBackground" parent="Widget.AppCompat.PopupMenu.Overflow">
         <item name="android:popupBackground">@android:color/transparent</item>
     </style>
+    <style name="PopupMenuStyle" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:popupBackground">@color/background</item>
+        <item name="android:textColor">@color/text_color</item>
+    </style>
+
 
 </resources>

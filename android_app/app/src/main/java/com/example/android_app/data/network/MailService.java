@@ -83,7 +83,7 @@ public class MailService {
 
             @Override
             public void onFailure(Call<Email> call, Throwable t) {
-\                callback.onFailure("Network error updating draft: " + t.getMessage());
+               callback.onFailure("Network error updating draft: " + t.getMessage());
             }
         });
     }

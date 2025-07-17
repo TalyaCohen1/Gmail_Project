@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -213,7 +214,7 @@ public class InboxActivity extends AppCompatActivity implements
 
         // Set up profile picture click listener
         profilePicture.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(InboxActivity.this, v);
+            PopupMenu popup = new PopupMenu(new ContextThemeWrapper(this, R.style.PopupMenuStyle), v);
             popup.getMenuInflater().inflate(R.menu.menu_profile_popup, popup.getMenu());
 
             popup.setOnMenuItemClickListener(item -> {
@@ -222,7 +223,6 @@ public class InboxActivity extends AppCompatActivity implements
                     //go to edit profile fragment
                     // CORRECTED PART: Create fragment instance, set listener, then replace
                     EditProfileFragment editProfileFragment = new EditProfileFragment();
-                    editProfileFragment.setOnProfilePictureUpdatedListener(InboxActivity.this); // <--- THIS IS CRUCIAL!
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragmentProfileContainer, editProfileFragment)
                             .addToBackStack("editProfile")
