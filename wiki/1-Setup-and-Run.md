@@ -27,7 +27,7 @@ cd Gmail_Project
 
 ---
 
-## 🐳 Step 2: Start the System with Docker Compose
+## Step 2: Start the System with Docker Compose
 
 From the root directory, run:
 
@@ -47,7 +47,7 @@ To stop the services:
 docker-compose down
 ```
 
-> 🖼️ *Recommended screenshot:* Terminal with logs after running `docker-compose up`.
+![here an example](images/docker_up_pic.png)
 
 Access the system via:
 
@@ -56,7 +56,7 @@ Access the system via:
 
 ---
 
-## 🤖 Step 3: Android Configuration
+## Step 3: Android Configuration
 
 If you're working with the Android app, make sure to configure the IP address properly.
 
@@ -78,7 +78,7 @@ backend_ip=10.0.2.2
 
 If you're using a **real device**, replace the above IP with your computer's local IP address (e.g., `192.168.1.102`).
 
-> 🖼️ *Recommended screenshot:* Android Studio with `local.properties` open and the IP highlighted.
+![](images/local_proprties_pic.png)
 
 ---
 
@@ -90,21 +90,15 @@ Navigate to:
 android_app/app/src/main/res/xml/network_security_config.xml
 ```
 
-Ensure the file contains:
+add your ip adress in thus way:
 
 ```xml
-<network-security-config>
-    <base-config cleartextTrafficPermitted="true">
-        <trust-anchors>
-            <certificates src="system" />
-        </trust-anchors>
-    </base-config>
-</network-security-config>
+   <domain includeSubdomains="true"><your_ip></domain>
 ```
 
-> 💡 This allows HTTP (non-HTTPS) communication for development when using IPs like `10.0.2.2`.
+> 💡 This allows HTTP communication for development when using IPs like `10.0.2.2`.
 
-> 🖼️ *Recommended screenshot:* Full content of `network_security_config.xml` in Android Studio.
+![](images/network_pic.png)
 
 ---
 
@@ -114,8 +108,6 @@ Ensure the file contains:
 2. Wait for Gradle sync to complete.
 3. Make sure an emulator or physical device is running.
 4. Click ▶️ to build and run the app.
-
-> 🖼️ *Recommended screenshot:* App running on emulator, showing login or registration screen.
 
 ---
 
@@ -130,15 +122,4 @@ Ensure the file contains:
 
 ---
 
-## 📸 Suggested Images to Include
-
-| File Name             | Screenshot Content                        |
-|-----------------------|--------------------------------------------|
-| `docker-up.png`       | After running `docker-compose up`         |
-| `local-properties.png`| IP configuration in `local.properties`    |
-| `network-config.png`  | `network_security_config.xml` file open   |
-| `android-running.png` | App running in Android emulator/device    |
-
----
-
-Now you readt yo use our Smail!
+Now you ready to use Smail!
