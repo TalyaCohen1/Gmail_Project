@@ -617,10 +617,8 @@ public class MailRepository {
     }
 
     public void markMailAsImportant(String mailId, MailActionCallback callback) { // Updated to use MailActionCallback
-        Log.d("MyDebug", "Repository markMailAsImportant: Calling apiService.markMailAsImportant()");
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
-            Log.e("MyDebug", "Repository markMailAsImportant: TOKEN IS MISSING!");
             callback.onFailure("Authentication token is missing.");
             return;
         }
@@ -634,12 +632,10 @@ public class MailRepository {
                         if (existingMail != null) {
                             existingMail.isImportant = true;
                             mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Updated local MailEntity as unread: " + mailId);
-                        } else {
-                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
                         }
+                        new Handler(context.getMainLooper()).post(() -> callback.onSuccess(mailId));
                     });
-                    callback.onSuccess(mailId);
+//                    callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -671,11 +667,10 @@ public class MailRepository {
                             existingMail.isImportant = false;
                             mailDao.insertMail(existingMail);
                             Log.d("MailRepository", "Updated local MailEntity as unread: " + mailId);
-                        } else {
-                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
                         }
+                        new Handler(context.getMainLooper()).post(() -> callback.onSuccess(mailId));
                     });
-                    callback.onSuccess(mailId);
+                    // callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -706,12 +701,10 @@ public class MailRepository {
                         if (existingMail != null) {
                             existingMail.isStarred = true;
                             mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Updated local MailEntity as starred: " + mailId);
-                        } else {
-                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
                         }
+                        new Handler(context.getMainLooper()).post(() -> callback.onSuccess(mailId));
                     });
-                    callback.onSuccess(mailId);
+                    // callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }
@@ -742,12 +735,10 @@ public class MailRepository {
                         if (existingMail != null) {
                             existingMail.isStarred = false;
                             mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Updated local MailEntity as starred: " + mailId);
-                        } else {
-                            Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
                         }
+                        new Handler(context.getMainLooper()).post(() -> callback.onSuccess(mailId));
                     });
-                    callback.onSuccess(mailId);
+                    // callback.onSuccess(mailId);
                 } else {
                     callback.onFailure("Server error: " + response.code());
                 }

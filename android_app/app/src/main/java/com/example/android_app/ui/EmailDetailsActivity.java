@@ -309,7 +309,7 @@ public class EmailDetailsActivity extends AppCompatActivity {
 
         // קבל את רשימת הלייבלים הזמינים מה-ViewModel הנכון!
         // השתמש ב-emailDetailsViewModel.getAllLabels()
-        emailDetailsViewModel.getAllLabels().observe(this, labels -> { // *** התיקון כאן ***
+        emailDetailsViewModel.getAllLabels().observe(this, labels -> {
             if (labels != null) { // אין צורך ב-!labels.isEmpty() כאן, נטפל בזה בפנים
                 if (labels.isEmpty()) {
                     Toast.makeText(EmailDetailsActivity.this, "labels not found", Toast.LENGTH_SHORT).show();

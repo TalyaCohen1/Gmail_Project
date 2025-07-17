@@ -153,7 +153,6 @@ public class InboxViewModel extends AndroidViewModel {
     private void updateEmailStatusInList(String emailId, EmailUpdater updater) {
         List<Email> currentEmailsList = currentEmails.getValue();
         if (currentEmailsList != null) {
-            // יצירת רשימה חדשה כדי לא לשנות ישירות את הרשימה הקיימת (immutability)
             List<Email> updatedList = new java.util.ArrayList<>(currentEmailsList);
             boolean found = false;
             for (int i = 0; i < updatedList.size(); i++) {
@@ -161,13 +160,11 @@ public class InboxViewModel extends AndroidViewModel {
                 if (email.getId().equals(emailId)) {
                     updater.update(email);
                     found = true;
-                    Log.d("InboxViewModel", "updateEmailStatusInList: Email " + emailId + " updated locally. isRead=" + email.isRead());
                     break;
                 }
             }
             if (found) {
                 currentEmails.postValue(updatedList); // update the LiveData with the new list
-                Log.d("InboxViewModel", "updateEmailStatusInList: LiveData posted for " + emailId);
             }
         }
     }
