@@ -452,7 +452,7 @@ public class MailRepository {
             }
         });
     }
-    public void deleteMail(String mailId, MailActionCallback callback) { /
+    public void deleteMail(String mailId, MailActionCallback callback) {
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -709,7 +709,6 @@ public class MailRepository {
                         if (existingMail != null) {
                             existingMail.isSpam = false;
                             mailDao.insertMail(existingMail);
-                            Log.d("MailRepository", "Updated local MailEntity as spam: " + mailId);
                         } else {
                             Log.w("MailRepository", "Mail not found in local DB, cannot update: " + mailId);
                         }
@@ -728,7 +727,6 @@ public class MailRepository {
     }
 
     public void addMailToLabel(String emailId, String labelId, MailActionCallback callback) {
-        Log.d("MailRepository", "addMailToLabel: Adding mail " + emailId + " to label " + labelId);
         String token = getTokenFromPrefs(context);
         if (token == null || token.isEmpty()) {
             callback.onFailure("Authentication token is missing.");
@@ -741,7 +739,6 @@ public class MailRepository {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    Log.d("MailRepository", "Successfully added mail " + emailId + " to label " + labelId);
                     callback.onSuccess(emailId);
                 } else {
                     String errorMsg = "Failed to add label. Code: " + response.code();

@@ -51,7 +51,6 @@ public class MailService {
 
             @Override
             public void onFailure(Call<Email> call, Throwable t) {
-                Log.e("MailService", "Network error creating draft: " + t.getMessage(), t); // הוסף לוג
                 callback.onFailure("Network error creating draft: " + t.getMessage());
             }
         });

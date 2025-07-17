@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
             SharedPrefsManager.save(this, "fullName", result.getFullName());
             SharedPrefsManager.save(this, "profileImage", result.getProfileImage() != null ? result.getProfileImage() : "/uploads/default-profile.png");
             SharedPrefsManager.save(this, "userId", result.getUserId());
-            Log.d("LOGIN", "emailAddress from response: " + result.getEmailAddress());
             SharedPrefsManager.save(this, "emailAddress", result.getEmailAddress());
 
 

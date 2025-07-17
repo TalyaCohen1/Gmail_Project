@@ -672,14 +672,12 @@ public class InboxActivity extends AppCompatActivity implements
     // Implement the SideBarFragmentListener methods
     @Override
     public void onCategorySelected(String categoryName) {
-        Log.d("InboxActivity", "onCategorySelected received: " + categoryName);
         drawerLayout.closeDrawers(); // Close the drawer after selection
         viewModel.fetchEmailsForCategoryOrLabel(categoryName.toLowerCase(Locale.ROOT));
     }
 
     @Override
     public void onLabelSelected(String labelId, String labelName) {
-        Log.d("InboxActivity", "Label selected: " + labelName + " (ID: " + labelId + ")");
         drawerLayout.closeDrawers(); // Close the drawer after selection
         viewModel.fetchEmailsForCategoryOrLabel(labelId);
     }
