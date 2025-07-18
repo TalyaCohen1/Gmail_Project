@@ -85,7 +85,9 @@ Now you can do this actions:
    - ! Mark as important
    - 🏷️ Add/change labels
 
-<img src="images/app_toolbar.jpg" width="30%">
+<p align="center">
+   <img src="images/app_toolbar.jpg" width="30%">
+</p> 
 
 #### From the Mail View:
 - Tap an email to open it.
