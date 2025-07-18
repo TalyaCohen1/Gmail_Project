@@ -15,7 +15,7 @@ This page explains how users register and login to the system, both on the Web c
 
 <p align="center">
     <img src="images/web_reg_1.png" width="80%" />
-    <p>
+    <p align="center">
     <img src="images/web_reg_2.png" width="80%" />
 </p>
 
@@ -26,7 +26,7 @@ This page explains how users register and login to the system, both on the Web c
 - If login is successful, you will be redirected to the inbox page.
 <p align="center">
     <img src="images/login_web.png" width="80%" />
-    <p>
+    <p align="center">
     <img src="images/first_inbox_web.png" width="80%" />
 </p>
 ---
