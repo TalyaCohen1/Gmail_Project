@@ -23,9 +23,8 @@ This page explains how users register and login to the system, both on the Web c
 - Click the `Log in` button.
 - If login is successful, you will be redirected to the inbox page.
 
-![web_login_example](images/login_web.png)
----
-![first_inbox](images/first_inbox_web.png)
+<img src="images/login_web.png" width="80%" />
+<img src="images/first_inbox_web.png" width="80%" />
 
 ---
 
