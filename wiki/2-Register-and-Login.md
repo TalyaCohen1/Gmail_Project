@@ -22,10 +22,10 @@ This page explains how users register and login to the system, both on the Web c
 - Enter your email and password.
 - Click the `Log in` button.
 - If login is successful, you will be redirected to the inbox page.
-
-<img src="images/login_web.png" width="80%" />
-<img src="images/first_inbox_web.png" width="80%" />
-
+<p align="center">
+    <img src="images/login_web.png" width="80%" />
+    <img src="images/first_inbox_web.png" width="80%" />
+</p>
 ---
 
 ## 📱 Android Client
@@ -45,8 +45,8 @@ This page explains how users register and login to the system, both on the Web c
 - Tap the `Log in` button.
 - If login is successful, you will be redirected to the inbox screen.
 <p align="center">
-    <img src="images/app_login.jpg" width="40%">
-    <img src="images/app_first_inbox.jpg" width="40%">
+    <img src="images/app_login.jpg" width="30%">
+    <img src="images/app_first_inbox.jpg" width="30%">
 </p> 
 
 ---
