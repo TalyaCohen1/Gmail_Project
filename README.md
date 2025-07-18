@@ -169,9 +169,9 @@ To see screenshots and visual walkthroughs of the system:
 
 Detailed usage guides can be found in the project's [Wiki](https://github.com/TalyaCohen1/Gmail_Project/tree/main/wiki), including:
 
-- [Environment Setup](https://github.com/TalyaCohen1/Gmail_Project/blob/main/wiki/1-Setup-and-Run.md)
-- [Register & Login Flow](https://github.com/TalyaCohen1/Gmail_Project/blob/main/wiki/2-Register-and-Login.md)
-- [Email Actions](https://github.com/TalyaCohen1/Gmail_Project/blob/main/wiki/3-Email-Actions.md)
+- [Environment Setup](wiki/1-Setup-and-Run.md)
+- [Register & Login Flow](wiki/2-Register-and-Login.md)
+- [Email Actions](wiki/3-Email-Actions.md)
 - [Android Configuration](wiki/Android-Setup)
 
 ---
