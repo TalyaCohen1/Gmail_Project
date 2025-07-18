@@ -187,9 +187,8 @@ https://github.com/user-attachments/assets/5c786bff-8daa-4169-8f4e-1d90c46807dc
 - App Launch, registration & Login  
 - Viewing & Sending Emails  
  
-<p align="center">
-    https://github.com/user-attachments/assets/f0324833-d6d1-4557-8b61-9c5dba1fa3f0
-</p>
+https://github.com/user-attachments/assets/f0324833-d6d1-4557-8b61-9c5dba1fa3f0
+
 ---
 
 ## Documentation
