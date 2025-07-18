@@ -14,6 +14,7 @@ This page explains how users register and login to the system, both on the Web c
 - After successful registration, you will be redirected to the login page.
 
 ![web_registration_example](images/web_reg_1.png)
+---
 ![](images/web_reg_2.png)
 
 ### 2. Login
@@ -23,6 +24,7 @@ This page explains how users register and login to the system, both on the Web c
 - If login is successful, you will be redirected to the inbox page.
 
 ![web_login_example](images/login_web.png)
+---
 ![first_inbox](images/first_inbox_web.png)
 
 ---
@@ -43,9 +45,10 @@ This page explains how users register and login to the system, both on the Web c
 - Enter your email and password.
 - Tap the `Log in` button.
 - If login is successful, you will be redirected to the inbox screen.
-
-<img src="images/app_login.jpg" width="40%">
-<img src="images/app_first_inbox.jpg" width="40%">
+<p align="center">
+    <img src="images/app_login.jpg" width="40%">
+    <img src="images/app_first_inbox.jpg" width="40%">
+</p> 
 
 ---
 
