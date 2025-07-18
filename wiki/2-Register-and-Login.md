@@ -45,8 +45,9 @@ This page explains how users register and login to the system, both on the Web c
 - Tap the `Log in` button.
 - If login is successful, you will be redirected to the inbox screen.
 <p align="center">
-    <img src="images/app_login.jpg" width="30%">
-    <img src="images/app_first_inbox.jpg" width="30%">
+    <img src="images/app_login.jpg" width="30%" hspace="10">
+    <br>
+    <img src="images/app_first_inbox.jpg" width="30%" hspace="10">
 </p> 
 
 ---
