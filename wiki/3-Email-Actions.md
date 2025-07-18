@@ -59,9 +59,9 @@ By **clicking on the message selection mark**, you can choose to assign to a lab
 In addition, next to the email you can choose to quickly mark as important or star it
 
 <p align="center">
-  <img src="images/web_choose_msg.png" width="45%" />
-  <p>
-  <img src="images/web_delete-mark.png" width="45%" />
+  <img src="images/web_choose_msg.png" width="80%" />
+  <p align="center">
+  <img src="images/web_delete-mark.png" width="80%" />
 </p>
 
 
