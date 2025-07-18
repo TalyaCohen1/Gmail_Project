@@ -110,6 +110,29 @@ Now you can do this actions:
     <img src="images/app_draft.jpg" width="30%" hspace="10">
 </p> 
 
+---
+
+## ❗ Error Handling – Sending to Non-Existing Recipient
+
+### Web Client
+
+If a user attempts to send an email to an address that does not exist in the system, an error message is displayed clearly below the recipient field or in a popup.
+
+<p align="center">
+    <img src="images/mail_address_error.jpg" width="80%" />
+</p>
+
+The system performs backend verification before sending. Invalid recipients are not accepted, and the message is not sent.
+
+### Android Client
+
+A toast or dialog message notifies the user that the recipient is invalid and the message could not be delivered.
+
+<p align="center">
+    <img src="images/app_invalid_recipient.jpg" width="30%" />
+</p>
+
+> The system ensures that emails are only sent to valid, existing users. No messages are lost or sent to unknown addresses.
 
 ---
 

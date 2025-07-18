@@ -154,14 +154,40 @@ DELETE /api/labels/:id            - Remove label
 
 ---
 
-## Screenshots
+## Dark Mode
 
-To see screenshots and visual walkthroughs of the system:
-- Web and Android registration & login
-- Inbox and mail details
-- Compose and draft editing
-- Light/Dark theme toggle  
-→ Refer to the `Wiki` section.
+The following images demonstrate the application's dark mode interface on both web and Android, highlighting visual consistency and user-friendly design across platforms.
+
+### Web Client
+
+<p align="center">
+  <img src="wiki/images/dark_mode_web.jpg" width="80%" />
+</p>
+
+### Android App
+
+<p align="center">
+  <img src="wiki/images/dark_mode_app.jpg" width="30%" />
+</p>
+
+---
+
+## Demo Videos
+
+To see live demonstrations of the system in action:
+
+### Web Client
+- Registration & Login Flow  
+- Inbox, Mail View, Compose & Drafts
+- Mark mail as Spam & Important
+
+[▶️ Watch Web Demo](https://youtu.be/WccUVAksbDk?si=d3gGqg6m4k0uNFCX)
+
+### Android App
+- App Launch, registration & Login  
+- Viewing & Sending Emails  
+ 
+[▶️ Watch Android Demo](https://youtube.com/shorts/92ub0CrvDrk?feature=share)
 
 ---
 
@@ -172,7 +198,6 @@ Detailed usage guides can be found in the project's [Wiki](https://github.com/Ta
 - [Environment Setup](wiki/1-Setup-and-Run.md)
 - [Register & Login Flow](wiki/2-Register-and-Login.md)
 - [Email Actions](wiki/3-Email-Actions.md)
-- [Android Configuration](wiki/Android-Setup)
 
 ---
 

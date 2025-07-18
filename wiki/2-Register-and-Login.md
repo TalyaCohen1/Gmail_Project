@@ -55,6 +55,29 @@ This page explains how users register and login to the system, both on the Web c
     <img src="images/app_first_inbox.jpg" width="30%" hspace="10">
 </p> 
 
+---
+
+## ❗ Error Handling & Validation
+
+### Registration Errors (Web)
+
+- All required fields are validated before submission.
+- Passwords must include at least 8 characters, one uppercase letter, and one number.
+- Users are informed if an email is already registered or if any fields are invalid.
+
+<p align="center">
+    <img src="images/reg_error.jpg" width="30%" />
+</p>
+
+### Login Errors (Web)
+
+- If login credentials are incorrect, an error message is displayed clearly to the user.
+
+<p align="center">
+    <img src="images/login_error.jpg" width="40%" />
+</p>
+
+> All validation is handled both on the client-side and server-side to ensure data integrity and user experience.
 
 ---
 
