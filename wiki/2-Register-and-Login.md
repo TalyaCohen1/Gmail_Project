@@ -13,9 +13,11 @@ This page explains how users register and login to the system, both on the Web c
 - Click the `Register` button.
 - After successful registration, you will be redirected to the login page.
 
-![web_registration_example](images/web_reg_1.png)
----
-![](images/web_reg_2.png)
+<p align="center">
+    <img src="images/web_reg_1.png" width="80%" />
+    <p>
+    <img src="images/web_reg_2.png" width="80%" />
+</p>
 
 ### 2. Login
 
@@ -24,6 +26,7 @@ This page explains how users register and login to the system, both on the Web c
 - If login is successful, you will be redirected to the inbox page.
 <p align="center">
     <img src="images/login_web.png" width="80%" />
+    <p>
     <img src="images/first_inbox_web.png" width="80%" />
 </p>
 ---
@@ -37,19 +40,21 @@ This page explains how users register and login to the system, both on the Web c
 - Tap the `Register` button.
 - After successful registration, you will be redirected to the login screen.
 
-<img src="images/app_register.jpg" width="40%">
+<p align="center">
+    <img src="images/app_register.jpg" width="30%">
+</p>
 
 ### 2. Login
 
 - Enter your email and password.
 - Tap the `Log in` button.
 - If login is successful, you will be redirected to the inbox screen.
-<kbd>
-    <p align="center">
-        <img src="images/app_login.jpg" width="30%" hspace="10">
-        <img src="images/app_first_inbox.jpg" width="30%" hspace="10">
-    </p> 
-</kbd>
+
+<p align="center">
+    <img src="images/app_login.jpg" width="30%" hspace="10">
+    <img src="images/app_first_inbox.jpg" width="30%" hspace="10">
+</p> 
+
 
 ---
 
