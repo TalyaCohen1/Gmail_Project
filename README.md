@@ -1,4 +1,4 @@
-# Gmail-Like Email System
+# Smail - Gmail-Like Email System
 
 This project is a full-featured Gmail-like system, including both a modern **React web client**, a native **Android application**, and a custom **Node.js backend** server with URL blacklist integration. The system supports full email management, user authentication, search, labeling, spam filtering, and real-time synchronization.
 
