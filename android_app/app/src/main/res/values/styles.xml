@@ -30,9 +30,11 @@
         <item name="android:scaleType">fitCenter</item>
     </style>
 
-    <style name="CustomDatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog">
-        <item name="android:background">@color/background</item>
+    <style name="CustomDatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:background">@color/date_bg</item>
         <item name="android:textColorPrimary">@color/text_color</item>
+        <item name="android:textColorSecondary"> @color/text_color</item>
+        <item name="android:textColor">@color/text_color</item>
         <item name="android:calendarViewShown">true</item>
     </style>
 

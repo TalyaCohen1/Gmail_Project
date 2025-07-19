@@ -157,150 +157,6 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
             imageView.setBackgroundResource(R.drawable.circle_background); // Assuming this draws a circle
         }
     }
-//    @Override
-//    public void onBindViewHolder(@NonNull EmailViewHolder holder, int position) {
-//        Email currentEmail = emailList.get(position);
-//        holder.bind(currentEmail); // Bind basic data
-//
-//        boolean isSelected = selectedEmailIds.contains(currentEmail.getId());
-//        if (currentEmail.getSenderName() == null || currentEmail.getProfilePicUrl() == null) {
-//            // קריאה לשרת כדי לקבל את פרטי המשתמש
-//            ApiService apiService = ApiClient.getApiService();
-//            apiService.getUserById(currentEmail.getFromId()).enqueue(new Callback<User>() {
-//                @Override
-//                public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-//                    if (response.isSuccessful() && response.body() != null) {
-//                        User user = response.body();
-//                        currentEmail.getFromUser().setFullName(user.getUsername());
-//                        currentEmail.getFromUser().setProfileImage(user.getProfilePicUrl());
-//
-//                        // וודא שהשם והתמונה מוצגים ב-UI לאחר הטעינה
-//                        holder.senderTextView.setText(user.getUsername());
-//                        if (user.getProfilePicUrl() != null && !user.getProfilePicUrl().isEmpty()) {
-//                            Glide.with(context)
-//                                    .load(user.getProfilePicUrl())
-//                                    .placeholder(R.drawable.ic_profile_placeholder) // תמונת placeholder בזמן טעינה
-//                                    .error(R.drawable.ic_profile_placeholder) // תמונת שגיאה אם הטעינה נכשלה
-//                                    .circleCrop() // לחיתוך לתמונה עגולה
-//                                    .into(holder.imageSenderOrSelected);
-//                            holder.imageSenderOrSelected.setBackgroundResource(0); // הסר את רקע העיגול אם טענת תמונה
-//                        } else {
-//                            holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-//                            holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-//                        }
-//                    } else {
-//                        // טיפול בשגיאת API (לדוגמה: משתמש לא נמצא)
-//                        holder.senderTextView.setText("Unknown Sender");
-//                        holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-//                        holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-//                    // טיפול בשגיאת רשת
-//                    holder.senderTextView.setText("Error Loading Sender");
-//                    holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-//                    holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-//                    // Log.e("EmailAdapter", "Failed to load user: " + t.getMessage()); // לוג שגיאה
-//                }
-//            });
-//        } else {
-//            // אם השם והתמונה כבר קיימים במודל, פשוט הצג אותם
-//            holder.senderTextView.setText(currentEmail.getSenderName());
-//            if (currentEmail.getProfilePicUrl() != null && !currentEmail.getProfilePicUrl().isEmpty()) {
-//                Glide.with(context)
-//                        .load(currentEmail.getProfilePicUrl())
-//                        .placeholder(R.drawable.ic_profile_placeholder)
-//                        .error(R.drawable.ic_profile_placeholder)
-//                        .circleCrop()
-//                        .into(holder.imageSenderOrSelected);
-//                holder.imageSenderOrSelected.setBackgroundResource(0);
-//            } else {
-//                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-//                holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-//            }
-//        }
-//
-//        // --- Handle Multi-Select Visuals ---
-//        if (isMultiSelectMode) {
-//            holder.imageSenderOrSelected.setVisibility(View.VISIBLE); // Show the image view
-//            if (isSelected) {
-//                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_check_circle_blue);
-//                holder.imageSenderOrSelected.setBackgroundResource(0); // Remove any background circle
-//            } else {
-//                // Show initial of sender name in a circle if not selected (or default profile)
-//                if (currentEmail.getProfilePicUrl() != null && !currentEmail.getProfilePicUrl().isEmpty()) {
-//                    Glide.with(context)
-//                            .load(currentEmail.getProfilePicUrl())
-//                            .placeholder(R.drawable.ic_profile_placeholder)
-//                            .error(R.drawable.ic_profile_placeholder)
-//                            .circleCrop()
-//                            .into(holder.imageSenderOrSelected);
-//                    holder.imageSenderOrSelected.setBackgroundResource(0);
-//                } else {
-//                    holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-//                    holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background); // Assuming this draws a circle
-//                }
-//            }
-//        } else {
-//            // Not in multi-select mode, always show the default sender image (e.g., initial or profile pic placeholder)
-//            if (currentEmail.getProfilePicUrl() != null && !currentEmail.getProfilePicUrl().isEmpty()) {
-//                Glide.with(context)
-//                        .load(currentEmail.getProfilePicUrl())
-//                        .placeholder(R.drawable.ic_profile_placeholder)
-//                        .error(R.drawable.ic_profile_placeholder)
-//                        .circleCrop()
-//                        .into(holder.imageSenderOrSelected);
-//                holder.imageSenderOrSelected.setBackgroundResource(0);
-//            } else {
-//                holder.imageSenderOrSelected.setVisibility(View.VISIBLE); // Ensure it's visible
-//                holder.imageSenderOrSelected.setImageResource(R.drawable.ic_profile_placeholder);
-//                holder.imageSenderOrSelected.setBackgroundResource(R.drawable.circle_background);
-//            }
-//        }
-//        // --- Handle Item Background and Activated State (for selector) ---
-//        // The selector should manage selected_item_background and selectableItemBackground.
-//        // We only need to set 'activated' state and let the selector do its job.
-//        holder.itemView.setActivated(isSelected); // Activates the 'state_activated' item in your selector XML
-//
-//        // --- Handle Read/Unread Status and Text Style ---
-//        if (currentEmail.isRead()) {
-//            // Read state: Normal text, transparent or read_email_background (handled by selector's default)
-//            holder.senderTextView.setTypeface(null, Typeface.NORMAL);
-//            holder.subjectTextView.setTypeface(null, Typeface.NORMAL);
-//            holder.textTime.setTypeface(null, Typeface.NORMAL); // Added time text style
-//            holder.unreadIndicator.setVisibility(View.GONE); // Hide the unread indicator
-//            // Set text color for read emails (e.g., a darker grey for readability)
-//            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
-//            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
-//            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.read_text_color));
-//        } else {
-//            // Unread state: Bold text, unread_email_background (handled by selector's default)
-//            holder.senderTextView.setTypeface(null, Typeface.BOLD);
-//            holder.subjectTextView.setTypeface(null, Typeface.BOLD);
-//            holder.textTime.setTypeface(null, Typeface.BOLD); // Added time text style
-//            holder.unreadIndicator.setVisibility(View.VISIBLE); // Show the unread indicator
-//            // Set text color for unread emails (e.g., black)
-//            holder.senderTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
-//            holder.subjectTextView.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
-//            holder.textTime.setTextColor(ContextCompat.getColor(context, R.color.unread_text_color));
-//        }
-//
-//        // --- Handle Star Icon (Important/Starred) ---
-//        // Ensure you have 'full_star' (filled) and 'starred' (empty) drawables.
-//        // Based on your description, 'starred' might be your empty star and 'full_star' your filled.
-//        if (currentEmail.isStarred()) { // Assuming 'isStarred()' in Email model
-//            holder.iconStar.setImageResource(R.drawable.full_star); // Filled star
-//        } else {
-//            holder.iconStar.setImageResource(R.drawable.starred); // Empty star
-//        }
-//        holder.iconStar.setVisibility(View.VISIBLE); // Ensure star is always visible
-//
-//        // --- Set Click Listeners (Moved to ViewHolder constructor for efficiency) ---
-//        // The actual logic for what happens on click is now in the ViewHolder.
-//        // It uses the itemClickListener passed to the adapter.
-//    }
 
     @Override
     public int getItemCount() {
@@ -309,13 +165,12 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
 
     public void setEmails(List<Email> newEmails) {
         this.emailList = newEmails;
-        // Important: When setting new emails, ensure selection state is handled correctly.
         if (!isMultiSelectMode) {
             selectedEmailIds.clear(); // Clear selection if not in multi-select
         } else {
             // Re-validate existing selections if new emails list came in while in multi-select
             selectedEmailIds.retainAll(getEmailIds(newEmails));
-            updateMultiSelectMode(); // Update count and mode if needed
+            updateMultiSelectMode();
         }
         notifyDataSetChanged(); // Refresh the entire view
     }
@@ -429,11 +284,6 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
                                 notifyItemChanged(position); // Refresh this item's view
                             }
                         }
-                        // Original navigation logic if no specific itemClickListener is set for normal mode
-                        // (You likely want to handle navigation via the itemClickListener in the Activity)
-                        // Intent intent = new Intent(context, EmailDetailsActivity.class);
-                        // intent.putExtra("email_id", clickedEmail.getId());
-                        // context.startActivity(intent);
                     }
                 }
             });
@@ -460,15 +310,15 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION && itemClickListener != null) {
                     Email starredEmail = emailList.get(position);
-                    boolean newStarredStatus = !starredEmail.isStarred(); // זה עושה toggle
-                    starredEmail.setStarred(newStarredStatus); // מעדכן את המודל המקומי של האדפטר
+                    boolean newStarredStatus = !starredEmail.isStarred();
+                    starredEmail.setStarred(newStarredStatus);
 
-                    if (newStarredStatus) { // אם המצב החדש אחרי הטוגל הוא true
-                        itemClickListener.onMarkAsStarred(starredEmail.getId()); // קרא למתודת סימון
-                    } else { // אם המצב החדש אחרי הטוגל הוא false
-                        itemClickListener.onUnmarkAsStarred(starredEmail.getId()); // קרא למתודת ביטול סימון
+                    if (newStarredStatus) {
+                        itemClickListener.onMarkAsStarred(starredEmail.getId());
+                    } else {
+                        itemClickListener.onUnmarkAsStarred(starredEmail.getId());
                     }
-                    notifyItemChanged(position); // רענן את הפריט ב-UI מיד
+                    notifyItemChanged(position);
                 }
 
             });

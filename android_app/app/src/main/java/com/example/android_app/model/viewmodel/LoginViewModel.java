@@ -40,16 +40,5 @@ public class LoginViewModel extends AndroidViewModel {
         LoginRequest request = new LoginRequest(email, password);
         repository.login(request, loginResult, errorMessage);
     }
-    public LiveData<UserEntity> getLocalUser() {
-        return localUser;
-    }
-    public void loadUserFromLocal(String userId) {
-        repository.getUserById(userId, new UserRepository.LocalCallback<UserEntity>() {
-            @Override
-            public void onResult(UserEntity result) {
-                localUser.postValue(result);
-            }
-        });
-    }
 }
 

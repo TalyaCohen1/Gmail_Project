@@ -1,6 +1,5 @@
 package com.example.android_app.data.network;
 
-//import com.example.android_app.BuildConfig;
 import com.example.android_app.BuildConfig;
 import com.example.android_app.model.Email;
 import com.example.android_app.model.EmailRequest;
@@ -29,7 +28,7 @@ public class MailService {
         api = retrofit.create(ApiService.class);
     }
 
-    // New: Method to create a draft (using EmailRequest directly as discussed previously)
+    // Method to create a draft (using EmailRequest directly as discussed previously)
     public void createDraft(String token, EmailRequest request, DraftMailCallback callback) {
         request.setSend(false); // Set 'send' to false for drafts
         api.createDraft("Bearer " + token, request).enqueue(new Callback<Email>() {
@@ -52,16 +51,14 @@ public class MailService {
 
             @Override
             public void onFailure(Call<Email> call, Throwable t) {
-                Log.e("MailService", "Network error creating draft: " + t.getMessage(), t); // הוסף לוג
                 callback.onFailure("Network error creating draft: " + t.getMessage());
             }
         });
     }
 
-    // New: Method to update a draft
+    // Method to update a draft
     public void updateDraft(String mailId, String to, String subject, String body, String token, DraftMailCallback callback) {
         EmailRequest request = new EmailRequest(to, subject, body);
-        // If EmailRequest needs 'isDraft': request.setDraft(true); // אם יש לך שדה כזה ב-EmailRequest
         request.setSend(false);
         api.updateDraft("Bearer " + token, mailId, request).enqueue(new Callback<Email>() {
             @Override

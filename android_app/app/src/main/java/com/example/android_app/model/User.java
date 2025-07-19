@@ -13,9 +13,6 @@ public class User {
     @SerializedName("emailAddress")
     private String emailAddress;
 
-
-
-    // בנאי
     public User(String id, String username, String profilePicUrl) {
         this.id = id;
         this.username = username;

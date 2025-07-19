@@ -1,4 +1,4 @@
-package com.example.android_app.ui.activity; // Make sure this package is correct
+package com.example.android_app.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -63,10 +63,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class InboxActivity extends AppCompatActivity implements
-        EmailAdapter.EmailItemClickListener, // Implement the new interface
+        EmailAdapter.EmailItemClickListener,
         EmailAdapter.MultiSelectModeListener,
         SideBarFragment.SideBarFragmentListener,
-        EditProfileFragment.OnProfilePictureUpdatedListener { // Implement the new interface
+        EditProfileFragment.OnProfilePictureUpdatedListener {
 
     private InboxViewModel viewModel;
     private MailViewModel viewModel_mail;
@@ -75,16 +75,12 @@ public class InboxActivity extends AppCompatActivity implements
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar loadingProgressBar;
-
     private androidx.lifecycle.Observer<List<Label>> labelsObserver;
     private PopupMenu currentPopupMenu;
     private boolean isPopupMenuReadyToShow = false;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private EditText searchEditText; // Declare EditText for search
-
-//    private String profileImage;
-
     private ImageView profilePicture; // Declare ImageView for profile picture
     private User currentUser; // Declare a User object
 
@@ -127,10 +123,7 @@ public class InboxActivity extends AppCompatActivity implements
                         String email = response.body().getEmailAddress();
                         if (email != null && !email.isEmpty()) {
                             SharedPrefsManager.save(InboxActivity.this, "emailAddress", email);
-                            Log.d("InboxActivity", "Email loaded from server and saved: " + email);
                             viewModel.fetchEmailsForCategoryOrLabel("inbox");
-                        } else {
-                            Log.w("InboxActivity", "Email in response is null or empty");
                         }
                     } else {
                         Log.e("InboxActivity", "Failed to fetch user. Response code: " + response.code());
@@ -162,10 +155,8 @@ public class InboxActivity extends AppCompatActivity implements
                     .error(R.drawable.default_profile)
                     .circleCrop()
                     .into(profilePicture);
-            Log.d("InboxActivity", "Profile picture loaded: " + currentUser.getProfilePicUrl());
         } else {
             profilePicture.setImageResource(R.drawable.default_profile);
-            Log.d("InboxActivity", "User profile URL is missing or null, showing default profile picture.");
         }
 
         // Set up profile picture click listener (optional)
@@ -173,7 +164,6 @@ public class InboxActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                   Toast.makeText(InboxActivity.this, "Profile picture clicked!", Toast.LENGTH_SHORT).show();
-//                showProfilePopupMenu(v); // Call the method that shows the popup menu
             }
         });
 
@@ -270,19 +260,15 @@ public class InboxActivity extends AppCompatActivity implements
                 CreateMailFragment.REQUEST_KEY_EMAIL_SENT,
                 this,
                 (requestKey, result) -> {
-                    Log.d("InboxActivity", "Received fragment result. Request Key: " + requestKey);
                     if (requestKey.equals(CreateMailFragment.REQUEST_KEY_EMAIL_SENT)) {
                         boolean emailSentSuccess = result.getBoolean(CreateMailFragment.BUNDLE_KEY_EMAIL_SENT_SUCCESS, false);
-                        Log.d("InboxActivity", "Email sent success flag: " + emailSentSuccess);
                         if (emailSentSuccess) {
                             String currentCategory = viewModel.getCurrentCategoryOrLabelId();
-                            Log.d("InboxActivity", "Email sent successfully. Refreshing category: " + currentCategory);
                             if (currentCategory == null || currentCategory.isEmpty()) {
                                 viewModel.fetchEmailsForCategoryOrLabel("inbox");
                             } else {
                                 viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
                             }
-                            Toast.makeText(this, "email sent successfully!", Toast.LENGTH_SHORT).show();
                             findViewById(R.id.fragmentCreateMailContainer).setVisibility(View.GONE);
                             findViewById(R.id.fabCompose).setVisibility(View.VISIBLE);
                         }
@@ -297,7 +283,6 @@ public class InboxActivity extends AppCompatActivity implements
                     .commit();
         }
 
-        Log.d("MyDebug", "Activity onCreate: Calling viewModel.fetchInbox()");
         viewModel.fetchEmailsForCategoryOrLabel("inbox");
 
         findViewById(R.id.fabCompose).setOnClickListener(v -> {
@@ -326,7 +311,7 @@ public class InboxActivity extends AppCompatActivity implements
         String token = SharedPrefsManager.get(this, "token");
 
         if (currentUserEmail == null || currentUserEmail.isEmpty() || token == null || token.isEmpty()) {
-            Log.d("TAG", "User session data missing! currentUserEmail: " + currentUserEmail + ", Token: " + token);
+
         }
 
         //back from sending email
@@ -337,14 +322,12 @@ public class InboxActivity extends AppCompatActivity implements
                         Intent data = result.getData();
 
                         if (data != null && data.getBooleanExtra("email_sent_from_details", false)) {
-                            Log.d("InboxActivity", "Refresh triggered by EmailDetailsActivity result.");
                             String currentCategory = viewModel.getCurrentCategoryOrLabelId();
                             if (currentCategory == null || currentCategory.isEmpty()) {
                                 viewModel.fetchEmailsForCategoryOrLabel("inbox");
                             } else {
                                 viewModel.fetchEmailsForCategoryOrLabel(currentCategory);
                             }
-                            Toast.makeText(this, "refresh inbox", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -379,10 +362,8 @@ public class InboxActivity extends AppCompatActivity implements
                         .error(R.drawable.default_profile)     // Your error image
                         .circleCrop() // If you want circular images
                         .into(profilePicture);
-                Log.d("InboxActivity", "Profile picture loaded: " + fullUrl);
             } else {
                 profilePicture.setImageResource(R.drawable.default_profile);
-                Log.d("InboxActivity", "User profile URL is missing or null, showing default profile picture.");
             }
         }
     }
@@ -435,9 +416,7 @@ public class InboxActivity extends AppCompatActivity implements
                                 viewModel.deleteEmail(email.getId());
                             }
                             adapter.clearSelection(); // Clear selection after action
-                            Toast.makeText(this, "Deleting selected emails...", Toast.LENGTH_SHORT).show();
-                            // Fetch emails to update UI after deletion, could be done in ViewModel callback too
-                            // viewModel.fetchEmails(); // This will be called via observeViewModel anyway
+                            Toast.makeText(this, "Deleting selected mails", Toast.LENGTH_SHORT).show();
                         })
                         .setNegativeButton("Cancel", null)
                         .show();
@@ -468,10 +447,8 @@ public class InboxActivity extends AppCompatActivity implements
                     Toast.makeText(this, "Marked as read", Toast.LENGTH_SHORT).show();
                 }
                 adapter.clearSelection(); // Clear selection after action
-                // viewModel.fetchEmails(); // This will be called via observeViewModel anyway
             }
         });
-
         iconMoreOptions.setOnClickListener(this::showMoreOptionsPopupMenu);
     }
     private void showMoreOptionsPopupMenu(View anchorView) {
@@ -545,7 +522,7 @@ public class InboxActivity extends AppCompatActivity implements
                 for (Email email : selectedEmails) {
                     viewModel.markEmailAsImportant(email.getId());
                 }
-                Toast.makeText(this, "Marking as important...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Marking as important", Toast.LENGTH_SHORT).show();
                 adapter.clearSelection();
                 return true;
             }
@@ -567,30 +544,21 @@ public class InboxActivity extends AppCompatActivity implements
 
     @Override
     public void onMultiSelectModeChanged(boolean inMultiSelectMode) {
-        Log.d("MultiSelect", "Mode changed to: " + (inMultiSelectMode ? "active" : "inactive"));
-        
+
         // Get both toolbar references
         Toolbar toolbar = findViewById(R.id.toolbar);
         ConstraintLayout multiSelectToolbar = findViewById(R.id.multiSelectToolbar);
-        if (multiSelectToolbar.getChildCount() == 0) {
-            Log.e("MultiSelect", "MultiSelectToolbar has no child views!");
-        }
-        
+
         // Toggle visibility with logging
         toolbar.setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE);
         multiSelectToolbar.setVisibility(inMultiSelectMode ? View.VISIBLE : View.GONE);
-        
-        Log.d("MultiSelect", "Toolbar visibility: " + 
-            (toolbar.getVisibility() == View.VISIBLE ? "VISIBLE" : "GONE"));
-        Log.d("MultiSelect", "MultiSelectToolbar visibility: " + 
-            (multiSelectToolbar.getVisibility() == View.VISIBLE ? "VISIBLE" : "GONE"));
-        
+
         findViewById(R.id.fabCompose).setVisibility(inMultiSelectMode ? View.GONE : View.VISIBLE);
         multiSelectToolbar.requestLayout();
         multiSelectToolbar.invalidate();
     }
 
-        @Override
+    @Override
     public void onSelectedCountChanged(int count) {
         selectedCountTextView.setText(String.valueOf(count));
         // Dynamically change the "Mark as Read/Unread" icon based on current selection
@@ -609,7 +577,6 @@ public class InboxActivity extends AppCompatActivity implements
             }
         }
     }
-
 
     // --- Callbacks from EmailAdapter.EmailItemClickListener ---
     @Override
@@ -660,8 +627,6 @@ public class InboxActivity extends AppCompatActivity implements
     private void observeViewModel() {
         viewModel.getCurrentEmails().observe(this, emails -> {
             if (emails != null) {
-                // List<Email> emailsToShow = MailMapper.toEmails(emails);
-                // adapter.setEmails(emailsToShow);
                 adapter.setEmails(emails);
             }
             swipeRefreshLayout.setRefreshing(false); // Stop refresh animation regardless
@@ -696,57 +661,26 @@ public class InboxActivity extends AppCompatActivity implements
         });
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        if (drawerLayout.isDrawerOpen(Gravity.LEFT)) {
-//            drawerLayout.closeDrawer(Gravity.LEFT);
-//        } else {
-//            super.onBackPressed();
-//        }
-//    }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, which will handle the drawer open/close.
-        if (toggle.onOptionsItemSelected(item)) { // ADD THIS BLOCK
+        if (toggle.onOptionsItemSelected(item)) {
             return true;
         }
-        return super.onOptionsItemSelected(item); // Keep this for other menu items
+        return super.onOptionsItemSelected(item);
     }
 
     // Implement the SideBarFragmentListener methods
     @Override
     public void onCategorySelected(String categoryName) {
-        Log.d("InboxActivity", "onCategorySelected received: " + categoryName);
-        drawerLayout.closeDrawers(); // Close the drawer(s) after selection
-        // Handle category selection (e.g., filter emails)
+        drawerLayout.closeDrawers(); // Close the drawer after selection
         viewModel.fetchEmailsForCategoryOrLabel(categoryName.toLowerCase(Locale.ROOT));
     }
 
     @Override
     public void onLabelSelected(String labelId, String labelName) {
-        Log.d("InboxActivity", "Label selected: " + labelName + " (ID: " + labelId + ")");
-        drawerLayout.closeDrawers(); // Close the drawer(s) after selection
-        // Handle label selection (e.g., filter emails)
+        drawerLayout.closeDrawers(); // Close the drawer after selection
         viewModel.fetchEmailsForCategoryOrLabel(labelId);
-    }
-
-    // In InboxActivity.java, add this method
-    private void updateToolbarForSearchState() {
-        // Determine if search is active based on the search EditText content
-        boolean isSearchActive = !searchEditText.getText().toString().isEmpty();
-
-        if (isSearchActive) {
-            // When search is active, show the back arrow
-            toggle.setDrawerIndicatorEnabled(false); // Hide the hamburger icon
-            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true); // Show the Up/Home button (which will be a back arrow)
-        } else {
-            // When no search is active, show the hamburger icon
-            toggle.setDrawerIndicatorEnabled(true); // Show the hamburger icon
-            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false); // Hide the Up/Home button
-        }
-        // Synchronize the state of the ActionBarDrawerToggle with the toolbar to reflect changes
-        toggle.syncState();
     }
 
     /**
@@ -755,12 +689,10 @@ public class InboxActivity extends AppCompatActivity implements
      * @param query The search query entered by the user.
      */
     private void performSearch(String query) {
-        Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_SHORT).show();
         viewModel_mail.searchMails(query);
         viewModel_mail.getSearchResults().observe(this, emails -> {
             if (emails != null) {
                 adapter.setEmails(emails);
-                Toast.makeText(this, "Search results: " + emails.size(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -781,8 +713,6 @@ public class InboxActivity extends AppCompatActivity implements
     @Override
     public void onProfilePictureUpdated() {
         // This method will be called by EditProfileFragment when done
-        Log.d("InboxActivity", "Profile picture updated, reloading image in InboxActivity.");
-        loadProfileImage(); // CALL THE NEW METHOD TO RELOAD THE IMAGE!
-        Log.d("InboxActivity", "Profile picture updated, reloading image.");
+        loadProfileImage(); //call to relode image
     }
 }

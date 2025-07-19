@@ -6,7 +6,6 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -40,12 +39,10 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         viewModel.getLoginResult().observe(this, result -> {
-            Toast.makeText(this, "Welcome " + result.getFullName(), Toast.LENGTH_LONG).show();
             SharedPrefsManager.save(this, "token", result.getToken());
             SharedPrefsManager.save(this, "fullName", result.getFullName());
             SharedPrefsManager.save(this, "profileImage", result.getProfileImage() != null ? result.getProfileImage() : "/uploads/default-profile.png");
             SharedPrefsManager.save(this, "userId", result.getUserId());
-            Log.d("LOGIN", "emailAddress from response: " + result.getEmailAddress());
             SharedPrefsManager.save(this, "emailAddress", result.getEmailAddress());
 
 

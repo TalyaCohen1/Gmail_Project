@@ -131,7 +131,6 @@ public class UserRepository {
                     UserEntity user = UserMapper.fromLoginResponse(response.body());
                     insertUser(user);
                     SharedPrefsManager.save(context, "userId", response.body().getUserId());
-                    Log.d("LOGIN", "Saved userId in LoginRepository: " + response.body().getUserId());
                 } else {
                     try {
                         String errorBody = response.errorBody().string();
@@ -196,7 +195,6 @@ public class UserRepository {
     }
     public void insertUser(UserEntity user) {
         if (user == null || user._id == null || user._id.isEmpty()) {
-            Log.e("UserRepository", "Cannot insert user with null or empty _id!");
             return;
         }
         executor.execute(() -> userDao.insertUser(user));
@@ -206,10 +204,6 @@ public class UserRepository {
             UserEntity user = userDao.getUserById(id);
             callback.onResult(user);
         });
-    }
-
-    public void deleteUser(UserEntity user) {
-        executor.execute(() -> userDao.deleteUser(user));
     }
 
     public interface LocalCallback<T> {

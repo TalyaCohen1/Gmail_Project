@@ -17,5 +17,6 @@
     <color name="custom_yellow">#FFF59D</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="date_bg">#CEB76D</color>
 
 </resources>
