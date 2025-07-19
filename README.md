@@ -144,10 +144,11 @@ DELETE /api/labels/:id            - Remove label
 
 ```
 📦 gmail-project
- ┣ 📂 backend/             # Node.js API Server
+ ┣ 📂 backend_server/      # Node.js API Server
  ┣ 📂 blacklist-server/    # URL filtering service
- ┣ 📂 frontend/            # React app
+ ┣ 📂 web_client/          # React app
  ┣ 📂 android_app/         # Android Studio app
+ ┣ 📂 docker/              # Docker files for each part
  ┣ 📜 docker-compose.yml   # Docker multi-service configuration
  ┣ 📜 README.md            # Main project overview
 ```
