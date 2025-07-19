@@ -17,15 +17,15 @@ services:
       - "12345:12345"
     restart: unless-stopped
 
-  web_server:
+  backend_server:
     build:
-      context: ./Web_server          # matches your folder exactly (case-sensitive!)
-    container_name: web_server
+      context: ./backend_server          # matches your folder exactly (case-sensitive!)
+    container_name: backend_server
     init: true
     ports:
       - "3000:3000"
     volumes:
-      - ./Web_server/uploads:/app/uploads           # maps the local Web_server folder to /app in the container
+      - ./backend_server/uploads:/app/uploads           # maps the local backend_server folder to /app in the container
     depends_on:
       - blacklist_server           # must match the service name above exactly (lowercase)
       - mongodb           # must match the service name above exactly (lowercase)
@@ -35,14 +35,14 @@ services:
 
   react_server:
     build:
-      context: ./client       # matches your folder exactly (case-sensitive!)
-      dockerfile: ../client_frontend.Dockerfile
+      context: ./web_client       # matches your folder exactly (case-sensitive!)
+      dockerfile: ../docker/client_frontend.Dockerfile
     container_name: react_frontend
     init: true
     ports:
       - "8080:80"
     depends_on:
-      - web_server
+      - backend_server
     restart: unless-stopped
 
 volumes:

@@ -222,6 +222,7 @@ public class InboxActivity extends AppCompatActivity implements
                     //go to edit profile fragment
                     // CORRECTED PART: Create fragment instance, set listener, then replace
                     EditProfileFragment editProfileFragment = new EditProfileFragment();
+                    editProfileFragment.setOnProfilePictureUpdatedListener(this);
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragmentProfileContainer, editProfileFragment)
                             .addToBackStack("editProfile")
