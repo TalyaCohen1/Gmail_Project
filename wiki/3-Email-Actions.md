@@ -114,8 +114,6 @@ Now you can do this actions:
 
 ## ❗ Error Handling – Sending to Non-Existing Recipient
 
-### Web Client
-
 If a user attempts to send an email to an address that does not exist in the system, an error message is displayed clearly below the recipient field or in a popup.
 
 <p align="center">
@@ -124,15 +122,26 @@ If a user attempts to send an email to an address that does not exist in the sys
 
 The system performs backend verification before sending. Invalid recipients are not accepted, and the message is not sent.
 
-### Android Client
-
-A toast or dialog message notifies the user that the recipient is invalid and the message could not be delivered.
-
-<p align="center">
-    <img src="images/app_invalid_recipient.jpg" width="30%" />
-</p>
-
 > The system ensures that emails are only sent to valid, existing users. No messages are lost or sent to unknown addresses.
+
+---
+
+## 🧹 Additional Behavior Details
+
+### 🗑️ Soft Delete
+When a user deletes an email, it is removed only from their personal inbox or sent folder, but not from the system entirely. This "soft delete" ensures that The email remains accessible to the user through the Trash folder.
+
+
+### 🚫 Spam Detection & Blacklist Filtering
+
+When a user marks an email as spam, the system scans the content of the message for any embedded URLs. These URLs are then:
+
+- Sent to a **dedicated Blacklist Server** that uses a **Bloom Filter** to efficiently store and check URL existence.
+- Saved in a **local persistent file** on the Blacklist Server for future sessions.
+
+From that point on, **any incoming email** that contains one or more of those blacklisted URLs will be automatically classified as spam and redirected to the **Spam folder**, without reaching the main inbox.
+
+> This mechanism ensures real-time spam filtering based on crowd-sourced reporting, without needing centralized database lookups.
 
 ---
 
