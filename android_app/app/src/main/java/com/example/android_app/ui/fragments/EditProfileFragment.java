@@ -34,6 +34,10 @@ public class EditProfileFragment extends Fragment {
 
     private OnProfilePictureUpdatedListener listener; // Declare the listener variable
 
+    public void setOnProfilePictureUpdatedListener(OnProfilePictureUpdatedListener listener) {
+        this.listener = listener;
+    }
+
     // Inside EditProfileFragment.java, outside the class, or as a nested public interface
     public interface OnProfilePictureUpdatedListener {
         void onProfilePictureUpdated();

@@ -13,18 +13,22 @@ This page explains how users register and login to the system, both on the Web c
 - Click the `Register` button.
 - After successful registration, you will be redirected to the login page.
 
-![web_registration_example](images/web_reg_1.png)
-![](images/web_reg_2.png)
+<p align="center">
+    <img src="images/web_reg_1.png" width="80%" />
+    <p align="center">
+    <img src="images/web_reg_2.png" width="80%" />
+</p>
 
 ### 2. Login
 
 - Enter your email and password.
 - Click the `Log in` button.
 - If login is successful, you will be redirected to the inbox page.
-
-![web_login_example](images/login_web.png)
-![first_inbox](images/first_inbox_web.png)
-
+<p align="center">
+    <img src="images/login_web.png" width="80%" />
+    <p align="center">
+    <img src="images/first_inbox_web.png" width="80%" />
+</p>
 ---
 
 ## 📱 Android Client
@@ -36,7 +40,9 @@ This page explains how users register and login to the system, both on the Web c
 - Tap the `Register` button.
 - After successful registration, you will be redirected to the login screen.
 
-<img src="images/app_register.jpg" width="40%">
+<p align="center">
+    <img src="images/app_register.jpg" width="30%">
+</p>
 
 ### 2. Login
 
@@ -44,8 +50,34 @@ This page explains how users register and login to the system, both on the Web c
 - Tap the `Log in` button.
 - If login is successful, you will be redirected to the inbox screen.
 
-<img src="images/app_login.jpg" width="40%">
-<img src="images/app_first_inbox.jpg" width="40%">
+<p align="center">
+    <img src="images/app_login.jpg" width="30%" hspace="10">
+    <img src="images/app_first_inbox.jpg" width="30%" hspace="10">
+</p> 
+
+---
+
+## ❗ Error Handling & Validation
+
+### Registration Errors (Web)
+
+- All required fields are validated before submission.
+- Passwords must include at least 8 characters, one uppercase letter, and one number.
+- Users are informed if an email is already registered or if any fields are invalid.
+
+<p align="center">
+    <img src="images/reg_error.jpg" width="30%" />
+</p>
+
+### Login Errors (Web)
+
+- If login credentials are incorrect, an error message is displayed clearly to the user.
+
+<p align="center">
+    <img src="images/login_error.jpg" width="40%" />
+</p>
+
+> All validation is handled both on the client-side and server-side to ensure data integrity and user experience.
 
 ---
 

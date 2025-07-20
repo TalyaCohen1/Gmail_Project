@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -56,7 +56,6 @@ import com.example.android_app.utils.UserManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -212,6 +211,7 @@ public class InboxActivity extends AppCompatActivity implements
                     //go to edit profile fragment
                     // CORRECTED PART: Create fragment instance, set listener, then replace
                     EditProfileFragment editProfileFragment = new EditProfileFragment();
+                    editProfileFragment.setOnProfilePictureUpdatedListener(this);
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragmentProfileContainer, editProfileFragment)
                             .addToBackStack("editProfile")

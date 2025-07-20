@@ -154,7 +154,6 @@ useEffect(() => {
     }
 }, [
     labels, setCurrentView, fetchMailsForLabel, setDisplayedEmails, setDisplayLoading, setDisplayError, setCategoryCounts,
-    // ... וכל שאר פונקציות ה-getXEmails שהיא משתמשת בהן
     getInboxEmails, getSentEmails, getDraftEmails, getSpamEmails, getDeletedEmails, getImportantEmails, getStarredEmails
 ]);
 

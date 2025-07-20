@@ -1,253 +1,208 @@
-# Exercise 4 - Gmail-like React Web Application
-This project implements a complete Gmail-like web application using React that communicates with the web server from Exercise 3. The application provides a modern, responsive interface inspired by Gmail's design and functionality.
+# Smail - Gmail-Like Email System
+
+This project is a full-featured Gmail-like system, including both a modern **React web client**, a native **Android application**, and a custom **Node.js backend** server with URL blacklist integration. The system supports full email management, user authentication, search, labeling, spam filtering, and real-time synchronization.
+
+![Smail Preview](screenshots/smail_preview.png)
 
 ---
 
-## Project Overview
+## System Overview
 
-This is a full-stack Gmail clone consisting of:
+The system consists of the following components:
 
-- **Frontend**: React application with modern UI/UX
-- **Backend**: Multi-threaded web server (from Exercise 3)
-- **URL Filtering**: Blacklist server integration (from Exercise 2)
-
-The React application provides all the functionality of Gmail including user authentication, email management, search capabilities, and theme switching.
+- **React Web Client**: A responsive, Gmail-styled frontend application with full user interaction and dynamic updates.
+- **Android Mobile Application**: A native Android app implementing similar functionality for mobile users.
+- **Node.js Backend Server**: RESTful API server managing users, emails, labels, and authentication.
+- **MongoDB Database**: Persistent storage for all system entities.
+- **Blacklist Microservice**: A standalone URL filtering server that detects and redirects suspicious emails to spam.
+- **Dockerized Environment**: All services are orchestrated via Docker and Docker Compose for seamless deployment.
 
 ---
 
 ## Features
 
-### Authentication & User Management
+### User Management
 
-- **User Registration**: Complete registration form with profile image upload
-- **User Login**:  Secure authentication with JWT tokens
-- **Form Validation**: Client-side validation for all input fields
-- **Session Management**: Automatic session handling and route protection
+- User registration with full form validation
+- Profile picture upload (optional)
+- Secure login with JWT token-based authentication
+- Persistent session handling across reloads and sessions
+- Route protection for all authenticated-only views
 
 ### Email Management
 
-- **Inbox View**: Display emails with Gmail-like interface
-- **Compose Email**: Rich email composition with real-time validation
-- **Draft Management**: Save and edit email drafts
-- **Email Actions**: Reply, forward, delete emails
-- **Search Functionality**: Advanced email search with real-time results
+- Compose, send, and save email drafts
+- View full inbox, sent mail, drafts, and spam
+- Reply to and forward emails
+- Auto-save drafts during composition
+- Soft-delete emails (user-level)
+- Blacklisted URLs trigger spam redirection
 
-### Organization & Labels
+### Label System
 
-- **Custom Labels**: Create, edit, and manage email labels
-- **Email Categorization**: Organize emails with labels
-- **Folder Navigation**: Inbox, Sent, Drafts, Spam filtering
+- Create, edit, delete, and assign custom labels to emails
+- Navigate emails by label
+
+### Search & Organization
+
+- Real-time search by sender, subject, or content
+- Organize emails into folders: Inbox, Sent, Drafts, Spam, important, starred, trash and more
 
 ### User Experience
 
-- **Dark/Light Theme**: Toggle between themes with persistent settings
-- **Responsive Design**: Mobile-friendly responsive layout
-- **Gmail-inspired UI**: Authentic Gmail look and feel
-- **Real-time Update**s: Live email updates across browser tabs
+- Fully responsive design (desktop and mobile)
+- Light/Dark theme support with preference persistence
+- Real-time updates across browser tabs (cross-tab sync)
+- Clear validation errors, confirmation messages, and loading states
+- Collapsible sidebar navigation
 
 ---
 
-## Requirements
+## Architecture and Technologies
+
+| Component           | Technology Stack                          |
+|---------------------|-------------------------------------------|
+| Web Frontend        | React, Axios, JWT, CSS Modules            |
+| Android App         | Java, MVVM, Room, Retrofit                |
+| Backend API Server  | Node.js, Express, MongoDB, Mongoose       |
+| URL Filter Service  | C++, Persistent In-memory DB              |
+| Deployment          | Docker, Docker Compose                    |
+
+---
+
+## Setup and Installation
+
+### Prerequisites
 
 - Docker & Docker Compose
-- Node.js (for development)
-- Modern web browser
+- Git
+- Android Studio (optional, for Android app)
 
-## Getting Started
+### Clone and Run
 
-### Building and Running with Docker
-
-Build the Docker image + Start both servers:
 ```bash
+git clone https://github.com/TalyaCohen1/Gmail_Project.git
+cd Gmail_Project
 docker-compose up --build
 ```
 
-This will start:
+Services started:
 
-1. URL Blacklist Server
-2. Gmail Web Server
-3. React Application (served by web server)
+- Backend API: http://localhost:3000
+- Web Client: http://localhost:8080
+- Blacklist Server: http://localhost:12345
 
-### Access the application
+To stop services:
 
-```
-http://localhost:8080
-```
-
-To stop all running containers:
 ```bash
 docker-compose down
 ```
 
-Example of a successful build + launch of the servers:
+### Android Configuration
 
-![build](screenshots/build.png)
+To run the Android app, update the following:
 
----
-
-## Application Functionality
-
-### User Authentication & Registration
-
-#### Registration Process
-
-- **User Registration Form**: New users can register with full name, email, password, confirm password, birth date, and profile image (not required)
-- **Form Validation**: All fields are required with specific validation rules:
-
-  - Password must be at least 8 characters with uppercase letters and digits
-  - Email format validation and uniqueness check
-  - Birth date validation (must be 13+ years old)
-  - Profile image upload with file validation
-
-- Visual Feedback: Clear error messages and validation indicators for invalid inputs
-
-#### Login Process
-
-- **Login Form**: Existing users login with email and password
-- **JWT Authentication**: Upon successful login, users receive a JWT token for session management
-- **Session Persistence**: Authentication state maintained across browser sessions
-- **Automatic Redirect**: Successful login redirects to main inbox interface
-
-#### Route Protection
-
-- **Protected Routes**: Main application screens require authentication (inbox, compose, settings)
-- **Public Routes**: Login and registration accessible without authentication
-- **Auto-redirect**: Unauthenticated users automatically redirected to login when accessing protected content
-
-### Email Management System
-
-#### Inbox & Email Display
-
-- **Inbox View**: Gmail-like interface displaying all received emails
-- **Email List**: Shows sender, subject, date, and read/unread status
-- **Email Details**: Click any email to view full content with sender details, subject, body, and timestamps
-- **Real-time Updates**: New emails appear automatically without page refresh
-
-#### Email Composition & Sending
-
-- **Compose Interface**: Rich email editor with recipient, subject, and body fields
-- **Draft Management**:
-  - Save emails as drafts without sending
-  - Edit existing drafts and send later
-  - Drafts automatically saved during composition
-- **Send Functionality**:
-  - Send emails with URL validation through blacklist server
-  - Emails with blacklisted URLs are Will go to spam
-  - Successful sends show confirmation and update sent folder
-
-#### Email Actions & Management
-
-- **Delete Emails**: Remove emails from inbox (soft delete - only removes for current user)
-- **Email Search**:
-  - Search through all emails by content, sender, or subject
-  - Real-time search results.
-  - Search across inbox, sent, and draft folders
-
-### Labels System
-
-- **Create Labels**: Add custom labels for email organization
-- **Edit Labels**: Rename existing labels
-- **Delete Labels**: Remove labels (emails remain, just lose the label)
-- **Apply Labels**: Assign labels to emails for categorization
-
-#### Organization System
-
-- **Inbox**: All received emails
-- **Sent**: Emails you've sent to others
-- **Drafts**: Unsent email drafts
-- **Spam**: Filtered emails (through blacklist system)
-- **Custom Labels**: Navigate emails by custom labels
-
-### User Interface & Experience
-
-- **Dark/Light Mode Toggle**: Switch between themes via header button
-- **Theme Persistence**: Selected theme saved and restored on app reload
-- **Gmail-inspired Design**: Authentic Gmail look and feel in both themes
-- **Collapse sidebar**: Left navigation collapses on click and on hover.
-
-### Real-time Features
-
-- **Cross-tab Synchronization**: Changes in one browser tab reflect in others
-- **Automatic Refresh**: New emails appear without manual refresh
-- **Dynamic UI Updates**: Interface updates immediately after actions (send, delete, etc.)
-- **Clear Error Messages**: Specific error messages for various failure scenarios
-- **Loading States**: Visual indicators during server communication
-- **Success Confirmations**: Positive feedback for successful actions
+- In `local.properties`: set `backend_ip` to either `10.0.2.2` (emulator) or local IP (device).
+- In `network_security_config.xml`: add your backend IP for HTTP access.
+- Open the app in Android Studio, sync Gradle, and run.
 
 ---
 
-## API Integration
+## API Overview
 
-The React app communicates with the Exercise 3 server:
-
-### Authentication Endpoints
+### Authentication
 
 ```
-POST /api/users        // User registration
-POST /api/tokens       // User login
-GET /api/users/:id     // User profile
+POST   /api/users          - Register new user
+POST   /api/tokens         - Login and receive JWT
+GET    /api/users/:id      - Retrieve user info
 ```
 
-### Email Management
+### Emails
 
 ```
-GET /api/mails                    // Get inbox
-POST /api/mails                   // Send/save email
-GET /api/mails/:id               // Get specific email
-PATCH /api/mails/:id             // Update draft
-DELETE /api/mails/:id            // Delete email
-GET /api/mails/search/:query     // Search emails
+GET    /api/mails                  - Get inbox
+POST   /api/mails                  - Send or save email
+GET    /api/mails/:id              - Get email by ID
+PATCH  /api/mails/:id              - Update draft
+DELETE /api/mails/:id              - Delete email
+GET    /api/mails/search/:query    - Search emails
 ```
 
-### Label Management
+### Labels
 
 ```
-GET /api/labels        // Get all labels
-POST /api/labels       // Create label
-PATCH /api/labels/:id  // Update label
-DELETE /api/labels/:id // Delete label
+GET    /api/labels                - Retrieve labels
+POST   /api/labels                - Create new label
+PATCH  /api/labels/:id            - Edit label
+DELETE /api/labels/:id            - Remove label
 ```
 
 ---
 
-## Screenshots 
+## Folder Structure
 
-### Home Page
-
-![Home Page](screenshots/home.png)
-
-### Registration Page
-
-![Registration Page](screenshots/registration.png)
-
-### Login Page
-
-![Login Page](screenshots/login.png)
-
-### Main Screen
-
-![Main Page](screenshots/main.png)
-
-### Displaying An Email
-
-![Email View Page](screenshots/message.png)
-
-### Email Composition
-
-![Email Composition Page](screenshots/compose.png)
-
-### Reply To A Message
-
-![Reply Page](screenshots/reply.png)
-
-### Dark Theme
-
-![Dark Themed Page](screenshots/dark.png)
+```
+📦 gmail-project
+ ┣ 📂 backend_server/      # Node.js API Server
+ ┣ 📂 blacklist-server/    # URL filtering service
+ ┣ 📂 web_client/          # React app
+ ┣ 📂 android_app/         # Android Studio app
+ ┣ 📂 docker/              # Docker files for each part
+ ┣ 📜 docker-compose.yml   # Docker multi-service configuration
+ ┣ 📜 README.md            # Main project overview
+```
 
 ---
 
-## Data Persistence
+## Dark Mode
 
-This server uses in-memory storage. All data (users, emails, labels, drafts) is lost when the server restarts.
+The following images demonstrate the application's dark mode interface on both web and Android, highlighting visual consistency and user-friendly design across platforms.
 
-The blacklist server maintains its own persistence for URL validation and the blacklisted url's are still on the list also after shutting down the server.
+### Web Client
+
+<p align="center">
+  <img src="wiki/images/dark_mode_web.jpg" width="80%" />
+</p>
+
+### Android App
+
+<p align="center">
+  <img src="wiki/images/dark_mode_app.jpg" width="30%" />
+</p>
+
+---
+
+## Demo Videos
+
+To see live demonstrations of the system in action:
+
+### Web Client
+- Registration & Login Flow  
+- Inbox, Mail View, Compose & Drafts
+- Mark mail as Spam & Important
+
+https://github.com/user-attachments/assets/5c786bff-8daa-4169-8f4e-1d90c46807dc
+
+### Android App
+- App Launch, registration & Login  
+- Viewing & Sending Emails  
+ 
+https://github.com/user-attachments/assets/f0324833-d6d1-4557-8b61-9c5dba1fa3f0
+
+---
+
+## Documentation
+
+Detailed usage guides can be found in the project's [Wiki](https://github.com/TalyaCohen1/Gmail_Project/tree/main/wiki), including:
+
+- [Environment Setup](wiki/1-Setup-and-Run.md)
+- [Register & Login Flow](wiki/2-Register-and-Login.md)
+- [Email Actions](wiki/3-Email-Actions.md)
+
+---
+
+## Acknowledgments
+
+- Inspired by Gmail's design and functionality
+- Built as part of advanced programing course

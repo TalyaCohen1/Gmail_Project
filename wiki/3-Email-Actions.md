@@ -15,10 +15,14 @@
    - **X buttun** to save without sending
    - **"Send"** to send the email
 
-![edit_mail_action_webclient](images/web_sendMSG.png)
+<p align="center">
+   <img src="images/web_sendMSG.png" width="80%" />
+</p>
 
 ➡️ Sent mails appear in the **Sent** folder.  
-![](images/web_sent.png)
+<p align="center">
+   <img src="images/web_sent.png" width="80%" />
+</p>
 
 ---
 
@@ -35,10 +39,10 @@
 
 ➡️ Sent mails appear in the **Sent** tab.  
 
-<div style="display: flex; gap: 10px;">
-  <img src="images/app_sendMSG.jpg" width="40%" style="border:1px solid #ccc;"/>
-  <img src="images/app_sidebar.jpg" width="40%" style="border:1px solid #ccc;"/>
-</div>
+<p align="center">
+    <img src="images/app_sendMSG.jpg" width="30%" hspace="10">
+    <img src="images/app_sidebar.jpg" width="30%" hspace="10">
+</p> 
 
 ---
 
@@ -54,16 +58,20 @@ By **clicking on the message selection mark**, you can choose to assign to a lab
 
 In addition, next to the email you can choose to quickly mark as important or star it
 
-![](images/web_choose_msg.png)
-![](images/web_delete-mark.png)
+<p align="center">
+  <img src="images/web_choose_msg.png" width="80%" />
+  <p align="center">
+  <img src="images/web_delete-mark.png" width="80%" />
+</p>
 
 
 #### From the Mail View:
 You can star the message and choose to reply or forward the message.
 If you are viewing a draft, you can choose to edit the draft and save changes or send it.
   
-![wizard_mail_item_webclient](images/web_replay.png)
-
+<p align="center">
+  <img src="images/web_replay.png" width="80%" />
+</p>
 ---
 
 ### 📱 Android Client
@@ -77,7 +85,9 @@ Now you can do this actions:
    - ! Mark as important
    - 🏷️ Add/change labels
 
-<img src="images/app_toolbar.jpg" width="40%">
+<p align="center">
+   <img src="images/app_toolbar.jpg" width="30%">
+</p> 
 
 #### From the Mail View:
 - Tap an email to open it.
@@ -95,11 +105,34 @@ Now you can do this actions:
 ✏️ If the mail is a draft, edit it and send.
 
 
-<div style="display: flex; gap: 10px;">
-  <img src="images/app_mail_details.jpg" width="40%" style="border:1px solid #ccc;"/>
-  <img src="images/app_draft.jpg" width="40%" style="border:1px solid #ccc;"/>
-</div>
+<p align="center">
+    <img src="images/app_mail_details.jpg" width="30%" hspace="10">
+    <img src="images/app_draft.jpg" width="30%" hspace="10">
+</p> 
 
+---
+
+## ❗ Error Handling – Sending to Non-Existing Recipient
+
+### Web Client
+
+If a user attempts to send an email to an address that does not exist in the system, an error message is displayed clearly below the recipient field or in a popup.
+
+<p align="center">
+    <img src="images/mail_address_error.jpg" width="80%" />
+</p>
+
+The system performs backend verification before sending. Invalid recipients are not accepted, and the message is not sent.
+
+### Android Client
+
+A toast or dialog message notifies the user that the recipient is invalid and the message could not be delivered.
+
+<p align="center">
+    <img src="images/app_invalid_recipient.jpg" width="30%" />
+</p>
+
+> The system ensures that emails are only sent to valid, existing users. No messages are lost or sent to unknown addresses.
 
 ---
 
