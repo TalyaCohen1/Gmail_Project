@@ -152,7 +152,6 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.EmailViewHol
                     .circleCrop()
                     .into(imageView);
             imageView.setBackgroundResource(0); // Remove any background circle when image is loaded
-            android.util.Log.d("IMAGE_URL2", "Loading profile image:" + imageUrl);
         } else {
             imageView.setImageResource(R.drawable.ic_profile_placeholder);
             imageView.setBackgroundResource(R.drawable.circle_background); // Assuming this draws a circle

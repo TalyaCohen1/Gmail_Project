@@ -355,7 +355,6 @@ public class InboxActivity extends AppCompatActivity implements
                 } else {
                     fullUrl = profileImageUrl;
                 }
-                Log.d("IMAGE_URL", "try to load this url:" + fullUrl);
                 Glide.with(this)
                         .load(fullUrl)
                         .placeholder(R.drawable.default_profile) // Your default placeholder
